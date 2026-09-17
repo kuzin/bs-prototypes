@@ -4,6 +4,7 @@ import {
   ReadingGoalAndActions,
   FactorTable,
   FactorIcon,
+  TopFactors,
 } from '../../rmi/components/ReportBlocks'
 import { ALL_FACTORS, recommendationsFor, readingGoalFor, summaryFor } from '../../rmi/scoring'
 import { INDEXES } from '../../rmi/data'
@@ -154,6 +155,35 @@ export const rmiSections = [
             goal={readingGoalFor(FALL.scores)}
             recommendations={recommendationsFor(FALL.scores, { kind: 'group', seed: FALL.name })}
           />
+        </Variant>
+      </div>
+    ),
+  },
+  {
+    group: 'rmi',
+    id: 'rmi-top-factors',
+    name: 'TopFactors',
+    usage: `import { TopFactors } from './components/ReportBlocks'
+
+<TopFactors scores={response.scores} />`,
+    desc: (
+      <>
+        The three factors the engine actually reasoned from, stated above the full ranking.{' '}
+        <code>top_three_factors</code> is what the summary is written from and what the
+        recommendations are sampled against, but it was only ever legible on the reader&rsquo;s own
+        reveal, where it shows as personas &mdash; on the educator&rsquo;s side it was implied by
+        three tinted rows in a table of ten. This says it in the educator&rsquo;s vocabulary: the
+        factor, its definition, and the score that earned it the place. A reader with nothing above
+        the threshold has no top three, and the block says so rather than ranking noise.
+      </>
+    ),
+    render: () => (
+      <div className="rmi-report">
+        <Variant label="A reader with clear motivators">
+          <TopFactors scores={READER.scores} />
+        </Variant>
+        <Variant label="No factor above the threshold — the engine's mystery state">
+          <TopFactors scores={LOW} />
         </Variant>
       </div>
     ),

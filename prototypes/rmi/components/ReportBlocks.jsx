@@ -5,7 +5,7 @@ import { Table } from '@components/Table/Table'
 import '@components/BennyBubble/BennyBubble.css'
 import '@components/Table/Table.css'
 import { FACTORS, MOTIVATION_OF } from '../domain'
-import { rankedFactors } from '../scoring'
+import { rankedFactors, topThreeFactors } from '../scoring'
 import { asset } from '../assets'
 import './ReportBlocks.css'
 
@@ -202,6 +202,58 @@ export function ReadingGoalAndActions({ goal, recommendations }) {
         </ul>
       </section>
     </div>
+  )
+}
+
+// ── Top motivation factors ───────────────────────────────────────────────
+/**
+ * The three factors that actually drove this reader's result, called out above
+ * the full ranking.
+ *
+ * `top_three_factors` is the engine's own idea — it's what the summary is
+ * written from and what the recommendations are sampled against — but until now
+ * it was only legible on a reader's own reveal, where it shows as personas. On
+ * the educator's side it was implied by three tinted rows in a table of ten.
+ * This says it outright, in the educator's vocabulary: the factor's name, its
+ * definition, and the score that earned it the place.
+ *
+ * A reader with nothing above the low-score threshold has no top three — the
+ * engine hands back `mystery` instead, and the block says so rather than
+ * ranking noise.
+ */
+export function TopFactors({ scores }) {
+  const top = topThreeFactors(scores)
+  const unknown = top.length === 1 && top[0].name === 'mystery'
+
+  return (
+    <section className="rmi-top-factors">
+      <h3 className="rmi-block-title">Top Motivation Factors</h3>
+
+      {unknown ? (
+        <p className="rmi-top-factors-none">
+          No factor scored above the threshold, so there is no clear motivator yet. Talk the survey
+          through with them to check the answers reflect what they meant.
+        </p>
+      ) : (
+        <ol className="rmi-top-factors-list">
+          {top.map((factor, i) => (
+            <li key={factor.name} className="rmi-top-factor">
+              <span className="rmi-top-factor-rank">{i + 1}</span>
+              <FactorIcon factor={factor.name} />
+              <div className="rmi-top-factor-text">
+                <span className="rmi-top-factor-name">
+                  {factor.name[0].toUpperCase() + factor.name.slice(1)}
+                </span>
+                <span className="rmi-top-factor-desc">
+                  {FACTORS[factor.name]?.educator_definition}
+                </span>
+              </div>
+              <span className="rmi-top-factor-score">{factor.score.toFixed(1)}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
   )
 }
 

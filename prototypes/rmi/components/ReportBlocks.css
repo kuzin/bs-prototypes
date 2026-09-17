@@ -229,7 +229,13 @@
   margin-bottom: 20px;
 }
 
+/* The card stretches to whatever the actions beside it need, so the figure has
+   to sit on the card's own centre line — not on the centre of the space left
+   under the title, which is where it lands if the title takes part in the
+   centring. The title is pinned to the top instead, and `min-height` keeps the
+   figure clear of it on the shortest card. */
 .rmi-reading-goals {
+  position: relative;
   grid-column: span 2;
   background: #fff;
   padding: 20px;
@@ -237,6 +243,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 160px;
+}
+
+.rmi-reading-goals > .rmi-block-title--center {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
 }
 
 .rmi-reading-goals-content {
@@ -244,8 +259,6 @@
   flex-direction: column;
   gap: 8px;
   text-align: center;
-  flex: 1;
-  justify-content: center;
 }
 
 .rmi-reading-goals-number {
@@ -289,6 +302,79 @@
   font-size: var(--text-cell);
   line-height: 1.45;
   color: var(--c-gray-800);
+}
+
+/* ── Top motivation factors ────────────────────────────────────────────── */
+/* The three the engine actually reasoned from, stated plainly above the full
+   ranking. Its own card, so it reads as a finding rather than a table header. */
+.rmi-top-factors {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.rmi-top-factors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rmi-top-factor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--c-gray-150);
+}
+
+.rmi-top-factor-rank {
+  width: 22px;
+  flex-shrink: 0;
+  font-size: var(--text-cell);
+  font-weight: 800;
+  color: var(--c-gray-750);
+  text-align: center;
+}
+
+.rmi-top-factor-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.rmi-top-factor-name {
+  font-size: var(--text-cell);
+  font-weight: 800;
+  color: var(--c-gray-800);
+}
+
+.rmi-top-factor-desc {
+  font-size: var(--text-cell);
+  color: var(--c-gray-750);
+}
+
+.rmi-top-factor-score {
+  font-size: var(--text-subhead);
+  font-weight: 800;
+  color: var(--c-text-dark);
+  flex-shrink: 0;
+}
+
+/* No factor above the threshold — the engine's "mystery" state. */
+.rmi-top-factors-none {
+  margin: 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--c-gray-150);
+  font-size: var(--text-cell);
+  line-height: 1.5;
+  color: var(--c-gray-750);
 }
 
 /* ── Factor table ──────────────────────────────────────────────────────── */
