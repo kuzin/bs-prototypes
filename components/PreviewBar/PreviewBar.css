@@ -41,7 +41,10 @@ html:has(.pvb) {
   z-index: 300;
   display: flex;
   flex: none;
-  flex-wrap: wrap;
+  /* One row: a long prototype name truncates rather than shoving the view strip
+     onto a second line. Below 760px the strip taking its own row *is* the
+     layout, and that query turns wrapping back on. */
+  flex-wrap: nowrap;
   gap: 8px 18px;
   align-items: center;
   min-height: var(--preview-bar-h);
@@ -59,7 +62,8 @@ html:has(.pvb) {
    centred text, a border and a background. */
 .pvb-titles {
   display: flex;
-  flex: none;
+  /* Shrinks so the title can ellipsise; the strip keeps its size. */
+  flex: 0 1 auto;
   flex-direction: column;
   min-width: 0;
   padding: 3px 7px;
@@ -84,16 +88,14 @@ html:has(.pvb) {
 .pvb-title {
   font-size: var(--text-label);
   font-weight: 800;
-  white-space: nowrap;
-}
-.pvb-subtitle {
-  font-size: var(--text-micro);
-  color: var(--c-gray-500);
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .pvb-views {
   display: flex;
+  flex: none;
   gap: 2px;
   height: var(--pvb-tray-h);
   padding: 3px;
@@ -216,9 +218,6 @@ html:has(.pvb) {
 }
 
 @media (max-width: 560px) {
-  .pvb-subtitle {
-    display: none;
-  }
   /* The strip goes and the dropdown takes the row. */
   .pvb-views {
     display: none;

@@ -691,15 +691,15 @@ import '@components/BackBar/BackBar.css'
         wasn&apos;t teal.
         <br />
         <br />
-        Props: <code>title</code>, optional <code>subtitle</code>, <code>views</code> (
-        <code>{'{ id, label, short?, icon }'}</code>), <code>active</code>, <code>onChange</code>,
-        optional <code>actions</code> (right-side controls, styled by the bar), and{' '}
-        <code>sticky</code> — default true; pass <code>false</code> inside a flex-column shell that
-        owns its own scrolling. <code>short</code> is the label the strip swaps to before it would
-        overflow. Deliberately <strong>no accent prop</strong>: the active pill is white everywhere,
-        which is what keeps the bars consistent. The bar publishes its height as{' '}
-        <code>--preview-bar-h</code>, so a prototype can size a full-height shell or a sticky header
-        beneath it without guessing pixels.
+        Props: <code>title</code>, <code>views</code> (<code>{'{ id, label, short?, icon }'}</code>
+        ), <code>active</code>, <code>onChange</code>, optional <code>actions</code> (right-side
+        controls, styled by the bar), and <code>sticky</code> — default true; pass{' '}
+        <code>false</code> inside a flex-column shell that owns its own scrolling.{' '}
+        <code>short</code> is the label the strip swaps to before it would overflow. Deliberately{' '}
+        <strong>no accent prop</strong>: the active pill is white everywhere, which is what keeps
+        the bars consistent. The bar publishes its height as <code>--preview-bar-h</code>, so a
+        prototype can size a full-height shell or a sticky header beneath it without guessing
+        pixels.
       </>
     ),
     render: () => (
@@ -707,10 +707,9 @@ import '@components/BackBar/BackBar.css'
         <Variant label="three views — the common case">
           <PreviewBarShowcase />
         </Variant>
-        <Variant label="a subtitle + a right-side action">
+        <Variant label="a right-side action">
           <PreviewBar
             title="Book Talks: Comprehension"
-            subtitle="Site-wide completion setting"
             views={PREVIEW_VIEWS}
             active="reader"
             onChange={() => {}}
