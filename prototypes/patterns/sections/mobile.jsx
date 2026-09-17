@@ -10,6 +10,8 @@
  */
 import {
   ProfileBar,
+  TextField,
+  ToggleSwitch,
   PhoneFrame,
   Header,
   TabBar,
@@ -124,6 +126,53 @@ function Dot() {
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.9" />
     </svg>
+  )
+}
+
+function TextFieldDemo() {
+  const [title, setTitle] = useState('The Wild Robot')
+  const [author, setAuthor] = useState('')
+  return (
+    <>
+      <MVariant label="raised — a value keeps the label up">
+        <div style={{ padding: '12px 0' }}>
+          <TextField label="Title" value={title} onChange={setTitle} />
+        </div>
+      </MVariant>
+      <MVariant label="at rest — the label sits in the box until it is needed">
+        <div style={{ padding: '12px 0' }}>
+          <TextField label="Author (Optional)" value={author} onChange={setAuthor} />
+        </div>
+      </MVariant>
+    </>
+  )
+}
+
+function ToggleSwitchDemo() {
+  const [on, setOn] = useState(true)
+  return (
+    <>
+      <MVariant label="the three sizes">
+        <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
+          <ToggleSwitch
+            size="small"
+            isOn={on}
+            announcementLabel="Small"
+            onToggle={() => setOn(!on)}
+          />
+          <ToggleSwitch isOn={on} announcementLabel="Track progress" onToggle={() => setOn(!on)} />
+          <ToggleSwitch
+            size="large"
+            isOn={on}
+            announcementLabel="Large"
+            onToggle={() => setOn(!on)}
+          />
+        </div>
+      </MVariant>
+      <MVariant label="off">
+        <ToggleSwitch isOn={false} announcementLabel="Track progress" onToggle={() => {}} />
+      </MVariant>
+    </>
   )
 }
 
@@ -473,6 +522,51 @@ color: var(--m-green-dark);`,
         </MVariant>
       </>
     ),
+  },
+  {
+    group: 'm-content',
+    id: 'm-text-field',
+    name: 'TextField',
+    desc: (
+      <>
+        <code>src/components/FloatingTextField.tsx</code> &mdash; the app&rsquo;s one text input,
+        and the reason every form in it looks the same. The label starts inside the box at
+        placeholder weight and rises to sit <em>on</em> the border once there is focus or a value:
+        16/500 grey at rest, 12/bold black raised, with a white ground and 4pt of side padding so it{' '}
+        <strong>notches</strong> the stroke rather than crossing it. That notch is the whole idiom
+        &mdash; a label floating in clear air over a 2pt border reads as a mistake.
+        <br />
+        <br />
+        56 tall (48 <code>small</code>) at radius 10, the stroke `gainsboroWhite` at rest and the
+        tenant&rsquo;s colour while focused.
+      </>
+    ),
+    usage: `import { TextField } from '@mobile/components'
+
+<TextField label="Title" value={title} onChange={setTitle} />
+<TextField label="Pages" value={pages} onChange={setPages} inputMode="numeric" small />`,
+    render: () => <TextFieldDemo />,
+  },
+  {
+    group: 'm-content',
+    id: 'm-toggle-switch',
+    name: 'ToggleSwitch',
+    desc: (
+      <>
+        <code>readingLogging/components/CustomToggleSwitch.tsx</code>. Three sizes; medium is what
+        every caller uses &mdash; a 60pt track at radius 16 carrying a 24pt knob that travels 32. On
+        is <code>jadeGreen</code>, off is <code>lightGray</code>: the app&rsquo;s own green rather
+        than the tenant accent, so a switch reads the same on every microsite.
+        <br />
+        <br />
+        <code>announcementLabel</code> is the app&rsquo;s, and it appends the state &mdash; a switch
+        that only says its name tells a screen reader nothing about which way it is set.
+      </>
+    ),
+    usage: `import { ToggleSwitch } from '@mobile/components'
+
+<ToggleSwitch isOn={on} announcementLabel="Track progress" onToggle={() => setOn(!on)} />`,
+    render: () => <ToggleSwitchDemo />,
   },
   {
     group: 'm-content',

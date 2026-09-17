@@ -19,6 +19,8 @@ import { BookListDashboard } from './screens/discover/BookListDashboard'
 import { Settings } from './screens/Settings'
 import { LogSearch } from './screens/LogSearch'
 import { ReadingSession } from './screens/log/ReadingSession'
+import { EditReadingSession } from './screens/log/EditReadingSession'
+import { EditTitle } from './screens/log/EditTitle'
 import { SwitchReadersSheet } from './modals/SwitchReadersSheet'
 import { TitleOptionsModal } from './modals/TitleOptionsModal'
 import { ReviewOptionsModal } from './modals/ReviewOptionsModal'
@@ -193,6 +195,24 @@ export function App() {
   /* A session opened from the book panel. The panel stays mounted underneath — in the app this is
      a push onto the same stack, so closing the session returns to the book rather than the tab. */
   const [openSession, setOpenSession] = useState(null)
+  const [editSession, setEditSession] = useState(null)
+  const [editTitle, setEditTitle] = useState(null)
+
+  /* The book panel's edits land on `openBook`, which the panel merges over the fixture — so a
+     saved title or a changed session shows immediately and survives closing the panel. */
+  function patchBook(patch) {
+    setOpenBook((b) => ({ ...BOOK_DETAIL, ...b, ...patch }))
+  }
+
+  function replaceSession(next) {
+    setOpenBook((b) => {
+      const merged = { ...BOOK_DETAIL, ...b }
+      return {
+        ...merged,
+        sessions: merged.sessions.map((s) => (s.id === next.id ? next : s)),
+      }
+    })
+  }
 
   /* What the Log tab's search searches: every title the reader has logged, flattened out of the
      month sections All Titles reads them in. */
@@ -415,11 +435,43 @@ export function App() {
                 achievement={openAchievement}
                 onClose={() => setOpenAchievement(null)}
               />
+            ) : editTitle ? (
+              <EditTitle
+                book={editTitle}
+                onBack={() => setEditTitle(null)}
+                onSave={(next) => {
+                  patchBook(next)
+                  setEditTitle(null)
+                }}
+              />
+            ) : editSession ? (
+              <EditReadingSession
+                session={editSession}
+                onBack={() => setEditSession(null)}
+                onSave={(next) => {
+                  replaceSession(next)
+                  setEditSession(null)
+                  setOpenSession(next)
+                }}
+                /* `pop(SCREENS_TO_POP_ON_DELETE)` — deleting from the edit screen goes back TWO,
+                   past the session it just removed, to the book. */
+                onDelete={(session) => {
+                  setOpenBook((b) => {
+                    const merged = { ...BOOK_DETAIL, ...b }
+                    return {
+                      ...merged,
+                      sessions: merged.sessions.filter((x) => x.id !== session.id),
+                    }
+                  })
+                  setEditSession(null)
+                  setOpenSession(null)
+                }}
+              />
             ) : openSession ? (
               <ReadingSession
                 session={openSession}
                 onBack={() => setOpenSession(null)}
-                onEdit={() => {}}
+                onEdit={setEditSession}
                 onDelete={(session) => {
                   /* Merge BEFORE filtering: `openBook` is whatever was tapped — a Home title
                      carries no sessions of its own, they arrive from BOOK_DETAIL at render.
@@ -462,6 +514,11 @@ export function App() {
                   setTitleOptions(null)
                   setOpenSession(null)
                   setOpenBook(null)
+                }}
+                /* `handleNavigation` — the options close and `editBook` is pushed. */
+                onEdit={(b) => {
+                  setTitleOptions(null)
+                  setEditTitle({ ...BOOK_DETAIL, ...openBook, ...b })
                 }}
               />
               <ReviewOptionsModal

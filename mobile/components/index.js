@@ -38,6 +38,8 @@ export {
 } from './Loading/Loading'
 export { ProfileRow } from './ProfileRow/ProfileRow'
 export { ProfileBar } from './ProfileBar/ProfileBar'
+export { TextField } from './TextField/TextField'
+export { ToggleSwitch } from './ToggleSwitch/ToggleSwitch'
 export * from './SheetHeader/SheetHeader'
 export * from './ActionsModal/ActionsModal'
 export * from './SelectSheet/SelectSheet'
