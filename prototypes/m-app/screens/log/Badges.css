@@ -12,10 +12,16 @@
   background: var(--m-white);
 }
 
+/* DIVERGENCE — no `paddingTop: 24`.
+ *
+ * The source's flatlist has it because its list starts with a badge ROW: 24 is the air above the
+ * first badge. This list starts with a month header, which brings its own 16 — and 24 + 16 put
+ * Badges 8pt lower than All Titles and Book Talks, so the page visibly jumped as you moved
+ * between three tabs that are the same kind of list. The header's own margin is the only top
+ * spacing now, which is what the other two do. */
 .m-badges-list {
   display: flex;
   flex-direction: column;
-  padding-top: 24px;
   padding-bottom: 34px;
   background: var(--m-white);
 }
@@ -33,11 +39,6 @@
 .m-badges-section {
   letter-spacing: -0.3px;
   margin: 16px 20px;
-}
-
-/* The list already opens with 24pt of its own, so the first month doesn't add to it. */
-.m-badges-list > section:first-child > .m-badges-section-head > .m-badges-section {
-  margin-top: 0;
 }
 
 .m-badges-divider {
