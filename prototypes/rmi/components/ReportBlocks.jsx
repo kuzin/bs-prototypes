@@ -1,5 +1,9 @@
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { Icon } from '@components/Icon/Icon'
+import { BennyBubble } from '@components/BennyBubble/BennyBubble'
+import { Table } from '@components/Table/Table'
+import '@components/BennyBubble/BennyBubble.css'
+import '@components/Table/Table.css'
 import { FACTORS, MOTIVATION_OF } from '../domain'
 import { rankedFactors } from '../scoring'
 import { asset } from '../assets'
@@ -137,23 +141,20 @@ export function ScoreCards({ scores, deltas = {}, average = false }) {
 }
 
 // ── Benny says ───────────────────────────────────────────────────────────
-/** The generated summary, in Benny's speech bubble, with when it last ran. */
+/**
+ * The generated summary in Benny's speech bubble, inside the white card the app
+ * gives it (`.benny-says`: 20px padding, 12px radius, an 18px/800 title above).
+ * The bubble itself is the shared <BennyBubble> — same 52px avatar, same grey
+ * ground and left-pointing tail, and it already renders the "Analysis last run
+ * on …" line this page wants.
+ */
 export function BennySays({ summary, analysedAt }) {
   return (
     <section className="rmi-benny-says">
-      <h3 className="rmi-benny-says-title">Benny Says...</h3>
-      <div className="rmi-benny-says-body">
-        <img className="rmi-benny-says-image" src={asset('benny-thinking.svg')} alt="Benny" />
-        <div className="rmi-benny-says-content">
-          <div className="rmi-benny-says-triangle" />
-          <div className="rmi-benny-says-bubble-wrap">
-            <p className="rmi-benny-says-bubble">{summary}</p>
-            {analysedAt && (
-              <span className="rmi-benny-says-last-run">Analysis last run on {analysedAt}</span>
-            )}
-          </div>
-        </div>
-      </div>
+      <h3 className="rmi-block-title">Benny Says...</h3>
+      <BennyBubble avatar={asset('benny-thinking.svg')} timestamp={analysedAt}>
+        {summary}
+      </BennyBubble>
     </section>
   )
 }
@@ -173,11 +174,16 @@ export function FactorIcon({ factor }) {
 }
 
 // ── Reading goal + recommended actions ───────────────────────────────────
+/**
+ * `.actions-reading-goals` — a six-column grid, the goal taking two and the
+ * actions four, each its own white card with its title *inside* it. Below 960px
+ * they stack.
+ */
 export function ReadingGoalAndActions({ goal, recommendations }) {
   return (
     <div className="rmi-actions-goals">
       <section className="rmi-reading-goals">
-        <h3 className="rmi-block-title">Recommended Reading Goals</h3>
+        <h3 className="rmi-block-title rmi-block-title--center">Recommended Reading Goals</h3>
         <div className="rmi-reading-goals-content">
           <span className="rmi-reading-goals-number">{goal}</span>
           <span className="rmi-reading-goals-text">Minutes Daily</span>
@@ -201,56 +207,60 @@ export function ReadingGoalAndActions({ goal, recommendations }) {
 
 // ── Factor table ─────────────────────────────────────────────────────────
 /**
- * All ten factors ranked, each with its 1.0–4.0 bar. The app tints the first
- * three rows (`.factors-table tr:nth-child(-n+3)`), which is what makes the
- * table read as "these are the motivators" rather than a flat list.
+ * All ten factors ranked, each with its 1.0–4.0 bar, on the shared <Table>.
+ * The app tints the first three rows (`.factors-table tr:nth-child(-n+3)`),
+ * which is what makes the table read as "these are the motivators" rather than
+ * a flat list — here that's Table's own `highlightRow`.
  */
 export function FactorTable({ scores, deltas = {}, scoreLabel = 'Motivation Score' }) {
-  const rows = rankedFactors(scores)
+  const rows = rankedFactors(scores).map((factor, i) => ({
+    ...factor,
+    id: factor.name,
+    rank: i + 1,
+  }))
+
+  const columns = [
+    {
+      key: 'name',
+      label: 'Motivation Type',
+      render: (name, row) => (
+        <div className="rmi-table-factors">
+          <span className="rmi-table-factors-number">{row.rank}.</span>
+          <FactorIcon factor={name} />
+          <div className="rmi-table-factors-content">
+            <span className="rmi-table-factors-name">{name[0].toUpperCase() + name.slice(1)}</span>
+            <span className="rmi-table-factors-description">
+              {FACTORS[name]?.educator_definition}
+            </span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'score',
+      label: scoreLabel,
+      width: 300,
+      render: (score, row) => (
+        <div className="rmi-factor-score">
+          <div className="rmi-factor-bar">
+            <div className="rmi-factor-bar-bg" />
+            <div className="rmi-factor-bar-total" style={{ width: `${(score / 4) * 100}%` }} />
+          </div>
+          <span className="rmi-factor-score-number">{score.toFixed(1)}</span>
+          <Delta value={deltas[row.name]} />
+        </div>
+      ),
+    },
+  ]
 
   return (
-    <div className="rmi-factors-table">
-      <table>
-        <thead>
-          <tr>
-            <th>Motivation Type</th>
-            <th className="rmi-factors-score-col">{scoreLabel}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((factor, i) => (
-            <tr key={factor.name} className={i < 3 ? 'rmi-factors-top' : undefined}>
-              <td>
-                <div className="rmi-table-factors">
-                  <span className="rmi-table-factors-number">{i + 1}.</span>
-                  <FactorIcon factor={factor.name} />
-                  <div className="rmi-table-factors-content">
-                    <span className="rmi-table-factors-name">
-                      {factor.name[0].toUpperCase() + factor.name.slice(1)}
-                    </span>
-                    <span className="rmi-table-factors-description">
-                      {FACTORS[factor.name]?.educator_definition}
-                    </span>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div className="rmi-factor-score">
-                  <div className="rmi-factor-bar">
-                    <div className="rmi-factor-bar-bg" />
-                    <div
-                      className="rmi-factor-bar-total"
-                      style={{ width: `${(factor.score / 4) * 100}%` }}
-                    />
-                  </div>
-                  <span className="rmi-factor-score-number">{factor.score.toFixed(1)}</span>
-                  <Delta value={deltas[factor.name]} />
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table
+      className="rmi-factors-table"
+      columns={columns}
+      rows={rows}
+      getRowKey={(r) => r.id}
+      highlightRow={(r) => r.rank <= 3}
+      scrollX
+    />
   )
 }

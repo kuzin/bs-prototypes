@@ -1,46 +1,66 @@
 /* One index period: the header's tag strip, then whichever tab body. */
 
+/* `.page-header__actions-index-tags` — buttons on top, tags under them, the
+   whole column ranged right against the header. */
+.rmi-header-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.rmi-header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 /* `.index-tags` — the two facts the educator needs while the survey is open:
    how many have answered, and the URL to put on the board. */
 .rmi-index-tags {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: -4px 0 18px;
+  gap: 8px;
+  align-items: center;
 }
 
+/* `.index-tag`: a grey pill with a white chip inside it, not the reverse. */
 .rmi-index-tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px 6px 14px;
-  background: #fff;
-  border-radius: 999px;
-  font-size: var(--text-tag);
-  font-weight: 700;
-  color: var(--c-gray-750);
+  height: 32px;
+  padding: 0 4px 0 12px;
+  border-radius: 16px;
+  background: var(--c-gray-300);
+  color: var(--c-gray-800);
+  font-size: var(--text-cell);
+  line-height: 1.5;
+  white-space: nowrap;
 }
 
 .rmi-index-tag-highlight {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  background: var(--c-teal-wash);
-  color: var(--c-teal-ink);
-  border-radius: 999px;
+  justify-content: center;
+  gap: 8px;
+  height: 24px;
+  padding: 4px 8px;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--c-gray-800);
   font-size: var(--text-tag);
-  font-weight: 800;
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 button.rmi-index-tag-copy {
   border: none;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.13s ease;
+  transition: background-color 0.13s ease;
 }
 button.rmi-index-tag-copy:hover {
-  background: #c3ecf3;
+  background: var(--c-gray-150);
 }
 
 /* The report body sits on the page's grey; its blocks bring their own white. */

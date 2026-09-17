@@ -38,42 +38,46 @@ export function IndexView({ index, tab, onTab, onOpenStudent }) {
 
   return (
     <>
+      {/* `.page-header__actions-index-tags` — the buttons and the two tags are
+          one right-hand column in the header, not a strip under it. */}
       <PageHeader
         title={index.name}
         subtitle={formatLongRange(index.startDate, index.endDate)}
         actions={
-          <>
-            <Button variant="secondary" size="md">
-              Edit Index
-            </Button>
-            <Button variant="primary" size="md">
-              Print Access Codes
-            </Button>
-            <Button variant="primary" size="md">
-              Download
-            </Button>
-          </>
+          <div className="rmi-header-stack">
+            <div className="rmi-header-buttons">
+              <Button variant="secondary" size="md">
+                Edit Index
+              </Button>
+              <Button variant="primary" size="md">
+                Print Access Codes
+              </Button>
+              <Button variant="primary" size="md">
+                Download
+              </Button>
+            </div>
+
+            <div className="rmi-index-tags">
+              <div className="rmi-index-tag">
+                Results collected
+                <span className="rmi-index-tag-highlight">{fractionCollected(index)}</span>
+              </div>
+              <div className="rmi-index-tag">
+                Index URL
+                <button
+                  type="button"
+                  className="rmi-index-tag-highlight rmi-index-tag-copy"
+                  onClick={copyUrl}
+                  aria-label="Copy survey URL"
+                >
+                  {SURVEY_URL}
+                  <Icon name={copied ? 'check' : 'copy'} size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
         }
       />
-
-      <div className="rmi-index-tags">
-        <div className="rmi-index-tag">
-          Results collected
-          <span className="rmi-index-tag-highlight">{fractionCollected(index)}</span>
-        </div>
-        <div className="rmi-index-tag">
-          Index URL
-          <button
-            type="button"
-            className="rmi-index-tag-highlight rmi-index-tag-copy"
-            onClick={copyUrl}
-            aria-label="Copy survey URL"
-          >
-            {SURVEY_URL}
-            <Icon name={copied ? 'check' : 'copy'} size={16} />
-          </button>
-        </div>
-      </div>
 
       <Tabs
         active={tab}
