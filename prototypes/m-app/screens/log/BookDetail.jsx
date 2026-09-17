@@ -23,6 +23,32 @@ import './BookDetail.css'
  */
 const BASE_TABS = ['Overview', 'Reading Sessions']
 
+/**
+ * `getImageColor(cover_image_url)` — the band and the header bar take the COVER's own colour, not
+ * the tenant accent, which is why a green book gets a green header and a red one a red.
+ *
+ * The app SAMPLES the jacket, so what it gets back is something like the image's average — which
+ * is why it can tint the chevron and the dots `doveGray` and still have them read. Our covers are
+ * two-stop gradients, so the equivalent is the midpoint of the two stops. Taking the first stop
+ * instead picked the dark end of every jacket and put dark grey icons on a near-black band.
+ *
+ * Deriving it at all beats carrying a `headerColor` on the fixture: that field went stale the
+ * moment a book arrived from somewhere with its own cover, and the panel showed a teal band over
+ * a green book.
+ */
+function coverColor(cover) {
+  const stops = [...(cover ?? '').matchAll(/#([0-9a-f]{6})/gi)].map((m) => m[1])
+  if (stops.length === 0) return 'var(--m-grey-light-4)'
+  if (stops.length === 1) return `#${stops[0]}`
+
+  const channels = [0, 2, 4].map((i) =>
+    Math.round(
+      stops.reduce((sum, hex) => sum + parseInt(hex.slice(i, i + 2), 16), 0) / stops.length,
+    ),
+  )
+  return `#${channels.map((c) => c.toString(16).padStart(2, '0')).join('')}`
+}
+
 /** `M/D/YYYY`, which is what `OverviewDataItems.getDate` builds by hand. */
 function shortDate(iso) {
   const [y, m, d] = iso.split('-').map(Number)
@@ -100,6 +126,7 @@ export function BookDetail({
 }) {
   const tabs = showQuestions ? [...BASE_TABS, 'Questions'] : BASE_TABS
   const [tab, setTab] = useState('Overview')
+  const headerColor = coverColor(book.cover)
 
   return (
     <div className="m-bd2">
@@ -110,13 +137,13 @@ export function BookDetail({
         onClose={onClose}
         className="m-bd2-header"
         onOptions={onOptions}
-        background={book.headerColor}
+        background={headerColor}
       />
 
       <div className="m-bd2-scroll">
-        {/* The band takes the cover's dominant colour, not the tenant accent. */}
+        {/* The band takes the cover's own colour — see `coverColor`. */}
         <div className="m-bd2-band">
-          <div className="m-bd2-band-fill" style={{ background: book.headerColor }} />
+          <div className="m-bd2-band-fill" style={{ background: headerColor }} />
           <Img name="headerCurveGrey" className="m-bd2-curve" fit="fill" />
         </div>
 

@@ -44,15 +44,37 @@ export const HOME_CHALLENGES = [
   },
 ]
 
+/* Author and page count travel with a title, because the book panel merges whatever it is handed
+   over its own fixture — without them, tapping Amari on Home showed Peter Brown. */
 export const RECENT_TITLES = [
-  { id: 'b1', title: 'The Wild Robot', cover: 'linear-gradient(150deg,#2f6f4f,#7bb98f)' },
+  {
+    id: 'b1',
+    title: 'The Wild Robot',
+    author: 'Peter Brown',
+    pageCount: 279,
+    cover: 'linear-gradient(150deg,#2f6f4f,#7bb98f)',
+  },
   {
     id: 'b2',
     title: 'Amari and the Night Brothers',
+    author: 'B. B. Alston',
+    pageCount: 407,
     cover: 'linear-gradient(150deg,#2b2a6b,#6d6ac4)',
   },
-  { id: 'b3', title: 'New Kid', cover: 'linear-gradient(150deg,#1f5f8b,#6fb3d6)' },
-  { id: 'b4', title: 'Wings of Fire', cover: 'linear-gradient(150deg,#8a3d2e,#d98b6a)' },
+  {
+    id: 'b3',
+    title: 'New Kid',
+    author: 'Jerry Craft',
+    pageCount: 256,
+    cover: 'linear-gradient(150deg,#1f5f8b,#6fb3d6)',
+  },
+  {
+    id: 'b4',
+    title: 'Wings of Fire',
+    author: 'Tui T. Sutherland',
+    pageCount: 336,
+    cover: 'linear-gradient(150deg,#8a3d2e,#d98b6a)',
+  },
 ]
 
 /** `useStatistics('allTime')` → total_minutes / total_pages / total_books / total_sessions. */
@@ -768,10 +790,6 @@ export const COMPLETED_TITLES = [
  * three logging ones. `longestSession` is preformatted `H:MM` by `longestSessionText`.
  */
 /**
- * The `bookDetail` modal. `headerColor` stands in for `getImageColor(cover_image_url)` — the band
- * is tinted from the COVER's dominant colour, not from the tenant accent.
- */
-/**
  * The book panel's inputs, not its output.
  *
  * `OverviewDataItems` DERIVES every card from these — reading time from `total_hours` and
@@ -786,7 +804,6 @@ export const BOOK_DETAIL = {
   author: 'Peter Brown',
   pageCount: 279,
   cover: 'linear-gradient(150deg,#2FB5A8,#0E8CA0)',
-  headerColor: '#2FB5A8',
 
   /* `attributes.data.last_read_on` and `archived_on` — the second is set when a title is
      completed, and is what puts a Date Completed card second in the list. */
@@ -797,14 +814,19 @@ export const BOOK_DETAIL = {
   totalMinutes: 200,
   totalPages: 279,
 
+  /* `log_item_sessions`. A session carries what was entered — a date, a duration, and EITHER a
+     start and end page or a bare page count — and the session screen derives the rest from that:
+     pages read, and time per page. `hours` is its own field in the app, not minutes over 60. */
   sessions: [
-    { id: 's1', date: 'Aug 28, 2026', minutes: 32, pages: '244–279' },
-    { id: 's2', date: 'Aug 26, 2026', minutes: 48, pages: '180–244' },
-    { id: 's3', date: 'Aug 24, 2026', minutes: 25, pages: '140–180' },
-    { id: 's4', date: 'Aug 21, 2026', minutes: 30, pages: '96–140' },
-    { id: 's5', date: 'Aug 19, 2026', minutes: 22, pages: '60–96' },
-    { id: 's6', date: 'Aug 17, 2026', minutes: 25, pages: '28–60' },
-    { id: 's7', date: 'Aug 15, 2026', minutes: 18, pages: '1–28' },
+    { id: 's1', happenedOn: '2026-08-28', hours: 0, minutes: 32, startPage: 244, endPage: 279 },
+    { id: 's2', happenedOn: '2026-08-26', hours: 0, minutes: 48, startPage: 180, endPage: 244 },
+    { id: 's3', happenedOn: '2026-08-24', hours: 0, minutes: 25, startPage: 140, endPage: 180 },
+    { id: 's4', happenedOn: '2026-08-21', hours: 0, minutes: 30, startPage: 96, endPage: 140 },
+    { id: 's5', happenedOn: '2026-08-19', hours: 0, minutes: 22, startPage: 60, endPage: 96 },
+    /* No page range on this one — a reader who logged minutes and a count, which is the other
+       half of the app's fork: Pages Read instead of Start Page and End Page. */
+    { id: 's6', happenedOn: '2026-08-17', hours: 0, minutes: 25, pages: 32 },
+    { id: 's7', happenedOn: '2026-08-15', hours: 1, minutes: 78, startPage: 1, endPage: 28 },
   ],
 }
 
