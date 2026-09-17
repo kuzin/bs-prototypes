@@ -771,6 +771,15 @@ export const COMPLETED_TITLES = [
  * The `bookDetail` modal. `headerColor` stands in for `getImageColor(cover_image_url)` — the band
  * is tinted from the COVER's dominant colour, not from the tenant accent.
  */
+/**
+ * The book panel's inputs, not its output.
+ *
+ * `OverviewDataItems` DERIVES every card from these — reading time from `total_hours` and
+ * `total_minutes`, minutes and pages per session by dividing by the session count, and two dates
+ * that only appear when they exist. Holding the derived strings here instead is how the card list
+ * drifted into three invented sentences ("Your longest ran 48 minutes"); the numbers are the
+ * fixture and the formats belong to the screen.
+ */
 export const BOOK_DETAIL = {
   id: 'bk1',
   title: 'The Wild Robot',
@@ -778,31 +787,24 @@ export const BOOK_DETAIL = {
   pageCount: 279,
   cover: 'linear-gradient(150deg,#2FB5A8,#0E8CA0)',
   headerColor: '#2FB5A8',
-  overview: [
-    {
-      key: 'ov1',
-      source: 'reading_time',
-      detail: '3 hours 20 minutes',
-      description: 'Total time logged against this title.',
-    },
-    {
-      key: 'ov2',
-      source: 'pages_read',
-      detail: '279 of 279 pages',
-      description: 'You finished this one on August 28.',
-    },
-    {
-      key: 'ov3',
-      source: 'reading_sessions',
-      detail: '7 sessions',
-      description: 'Your longest ran 48 minutes.',
-    },
-  ],
+
+  /* `attributes.data.last_read_on` and `archived_on` — the second is set when a title is
+     completed, and is what puts a Date Completed card second in the list. */
+  lastReadOn: '2026-08-28',
+  archivedOn: '2026-08-28',
+  /* `attributes` — the totals the app divides. 3h 20m across 7 sessions of 279 pages. */
+  totalHours: 3,
+  totalMinutes: 200,
+  totalPages: 279,
+
   sessions: [
-    { id: 's1', date: 'Aug 28, 2026', detail: '32 minutes · pages 244–279' },
-    { id: 's2', date: 'Aug 26, 2026', detail: '48 minutes · pages 180–244' },
-    { id: 's3', date: 'Aug 24, 2026', detail: '25 minutes · pages 140–180' },
-    { id: 's4', date: 'Aug 21, 2026', detail: '30 minutes · pages 96–140' },
+    { id: 's1', date: 'Aug 28, 2026', minutes: 32, pages: '244–279' },
+    { id: 's2', date: 'Aug 26, 2026', minutes: 48, pages: '180–244' },
+    { id: 's3', date: 'Aug 24, 2026', minutes: 25, pages: '140–180' },
+    { id: 's4', date: 'Aug 21, 2026', minutes: 30, pages: '96–140' },
+    { id: 's5', date: 'Aug 19, 2026', minutes: 22, pages: '60–96' },
+    { id: 's6', date: 'Aug 17, 2026', minutes: 25, pages: '28–60' },
+    { id: 's7', date: 'Aug 15, 2026', minutes: 18, pages: '1–28' },
   ],
 }
 

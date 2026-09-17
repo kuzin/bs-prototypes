@@ -414,6 +414,7 @@ export function App() {
             ) : openBook ? (
               <BookDetail
                 book={{ ...BOOK_DETAIL, ...openBook }}
+                readerName={profile.name.split(' ')[0]}
                 onClose={() => setOpenBook(null)}
                 onOptions={() => setTitleOptions({ ...BOOK_DETAIL, ...openBook })}
               />

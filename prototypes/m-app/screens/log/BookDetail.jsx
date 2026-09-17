@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Img, PressableButton, SheetHeader } from '@mobile/components'
+import { Img, PressableButton, SheetHeader, EmptyStateView } from '@mobile/components'
 import './BookDetail.css'
 
 /**
@@ -19,8 +19,76 @@ import './BookDetail.css'
  */
 const BASE_TABS = ['Overview', 'Reading Sessions']
 
+/** `M/D/YYYY`, which is what `OverviewDataItems.getDate` builds by hand. */
+function shortDate(iso) {
+  const [y, m, d] = iso.split('-').map(Number)
+  return `${m}/${d}/${y}`
+}
+
+/**
+ * The Overview cards, derived the way `OverviewDataItems` derives them — including the two that
+ * only exist sometimes and where each one inserts itself.
+ *
+ * The formats are the app's, oddities included: reading time is `3h, 20m` with the comma, while
+ * minutes and pages per session are BARE NUMBERS under their labels rather than carrying a unit.
+ */
+function overviewCards(book) {
+  const sessions = book.sessions?.length ?? 0
+
+  const perSession = (total) => {
+    if (!sessions) return '0 m'
+    const time = total / sessions
+    const h = Math.trunc(time / 60)
+    const m = Math.trunc(time % 60)
+    return h ? `${h} h ${m} m` : `${m}`
+  }
+
+  const cards = [
+    {
+      key: 'readingTime',
+      source: 'challengeStatsMinutes',
+      description: 'Reading Time',
+      detail: `${book.totalHours}h, ${book.totalMinutes % 60}m`,
+    },
+    {
+      key: 'timeRead',
+      source: 'bookDetailMinutes',
+      description: 'Minutes Per Session',
+      detail: perSession(book.totalMinutes),
+    },
+    {
+      key: 'pagesSession',
+      source: 'challengeStatsPages',
+      description: 'Pages Per Session',
+      detail: sessions && book.totalPages > 0 ? `${Math.trunc(book.totalPages / sessions)}` : '0',
+    },
+  ]
+
+  // `unshift` — a title you have read goes first.
+  if (book.lastReadOn) {
+    cards.unshift({
+      key: 'lastReadOn',
+      source: 'challengeStatsDays',
+      description: 'Date Last Read',
+      detail: shortDate(book.lastReadOn),
+    })
+  }
+  // `splice(1, 0, …)` — completed lands SECOND, under the date you last read it.
+  if (book.archivedOn) {
+    cards.splice(1, 0, {
+      key: 'dateCompleted',
+      source: 'challengeStatsActivities',
+      description: 'Date Completed',
+      detail: shortDate(book.archivedOn),
+    })
+  }
+
+  return cards
+}
+
 export function BookDetail({
   book,
+  readerName,
   reviewsEnabled = true,
   showQuestions = false,
   onClose,
@@ -97,7 +165,16 @@ export function BookDetail({
         <div className="m-bd2-body">
           {tab === 'Overview' && (
             <div className="m-bd2-overview">
-              {book.overview.map((o) => (
+              {/* `OverviewReader` — the cards are this reader's, and on a shared device that
+                  needs saying. The possessive is the app's own rule: a name ending in s takes
+                  the apostrophe alone. */}
+              {readerName && (
+                <h3 className="m-t-title-small m-bd2-ov-head">
+                  {readerName}
+                  {readerName.endsWith('s') ? '’' : '’s'} Stats
+                </h3>
+              )}
+              {overviewCards(book).map((o) => (
                 <div key={o.key} className="m-bd2-ov-card">
                   <Img name={o.source} className="m-bd2-ov-img" />
                   <span className="m-bd2-ov-text">
@@ -108,16 +185,34 @@ export function BookDetail({
               ))}
             </div>
           )}
-          {tab === 'Reading Sessions' && (
-            <div className="m-bd2-sessions">
-              {book.sessions.map((s) => (
-                <div key={s.id} className="m-bd2-session">
-                  <span className="m-t-item-title">{s.date}</span>
-                  <span className="m-t-body-small m-bd2-session-meta">{s.detail}</span>
-                </div>
-              ))}
-            </div>
-          )}
+          {tab === 'Reading Sessions' &&
+            (book.sessions.length === 0 ? (
+              /* `SessionsEmpty` — the challenges artwork, and copy that names the button above
+                 rather than leaving the reader to find it. */
+              <EmptyStateView
+                source="my_challenges_empty_state"
+                boldText="No Reading Sessions to Show"
+                middleText="Record a reading session by tapping the Log Reading button above."
+              />
+            ) : (
+              <div className="m-bd2-sessions">
+                {book.sessions.map((s) => (
+                  /* `SessionsItem` — three lines and a trailing arrow. The arrow is the app's:
+                     a row opens `readingSession`, a screen this prototype doesn't carry, and the
+                     arrow is what says there is one. */
+                  <div key={s.id} className="m-bd2-session">
+                    <span className="m-bd2-session-text">
+                      <span className="m-t-body-regular m-bd2-session-date">{s.date}</span>
+                      <span className="m-t-body-small m-bd2-session-time">{s.minutes} minutes</span>
+                      {s.pages && (
+                        <span className="m-t-body-small m-bd2-session-sub">pages {s.pages}</span>
+                      )}
+                    </span>
+                    <Img name="new_arrow_right" className="m-bd2-session-arrow" />
+                  </div>
+                ))}
+              </div>
+            ))}
         </div>
       </div>
     </div>

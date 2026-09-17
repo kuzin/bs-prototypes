@@ -189,10 +189,12 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
 }
 
+/* `cardImage` — 40, which `OverviewDataItems` passes as `imageSize` on every one of the five. */
 .m-bd2-ov-img {
   flex: none;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 .m-bd2-ov-text {
@@ -206,23 +208,61 @@
   color: var(--m-grey-dark-3);
 }
 
+/* `OverviewReader` — "Maya's Stats" over the cards. */
+.m-bd2-ov-head {
+  margin: 0 0 4px;
+  color: var(--m-grey-dark-1);
+}
+
 .m-bd2-sessions {
   display: flex;
   flex-direction: column;
-  padding: 8px 20px;
+  padding: 8px 0;
 }
 
+/* `sessionItem` — 16 above and below, 20 either side, the text and the arrow pushed apart. */
 .m-bd2-session {
   display: flex;
-  flex-direction: column;
-  padding: 16px 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
 }
 
 .m-bd2-session + .m-bd2-session {
   border-top: 1px solid var(--m-grey-light-2);
 }
 
-.m-bd2-session-meta {
+.m-bd2-session-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* `sessionDate` is bold greyDark2; the two lines under it step down in size and lightness —
+   15 then 14, greyDark2 then greyDark3 — which is what separates the time from the pages. */
+.m-bd2-session-date {
+  font-weight: 700;
+  color: var(--m-grey-dark-2);
+}
+
+.m-bd2-session-time {
   margin-top: 4px;
+  font-size: 15px;
+  color: var(--m-grey-dark-2);
+}
+
+.m-bd2-session-sub {
+  margin-top: 4px;
+  font-size: 14px;
   color: var(--m-grey-dark-3);
+}
+
+/* `arrow` — 24 in warmGrey. A row opens the session in the app. */
+.m-bd2-session-arrow {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
