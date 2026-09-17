@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, useEffect } from 'react'
-import { BookListItem, EmptyStateView, Img, Keyboard } from '@mobile/components'
+import { BookListItem, EmptyStateView, Img } from '@mobile/components'
 import './LogSearch.css'
 
 /**
@@ -15,6 +15,10 @@ import './LogSearch.css'
  * and Cancel beside it at 14/bold in the tenant's colour — the field takes 80% of the row and
  * Cancel takes what is left.
  *
+ * The keyboard is PhoneFrame's — it opens whenever a field inside the frame takes focus, and
+ * rendering one here as well put two of them on the screen, stacked, which is what made opening
+ * the screen jump.
+ *
  * DIVERGENCE — results update as you type rather than on submit. The app debounces at 500ms and
  * has a `returnKeyType="search"`; a prototype where nothing happens until you find the return key
  * reads as broken. The submit path still works.
@@ -23,8 +27,11 @@ export function LogSearch({ titles = [], onOpenBook, onClose }) {
   const [query, setQuery] = useState('')
   const input = useRef(null)
 
+  /* `preventScroll` — the field is inside the frame's own scroll region, so a plain focus()
+     scrolls whatever ancestor it can to bring the input into view and the whole screen jumps as
+     it opens. The field is already at the top; there is nothing to scroll to. */
   useEffect(() => {
-    input.current?.focus()
+    input.current?.focus({ preventScroll: true })
   }, [])
 
   const results = useMemo(() => {
@@ -66,7 +73,7 @@ export function LogSearch({ titles = [], onOpenBook, onClose }) {
                 aria-label="Clear search text"
                 onClick={() => {
                   setQuery('')
-                  input.current?.focus()
+                  input.current?.focus({ preventScroll: true })
                 }}
               >
                 <Img name="close" className="m-lsr-clear-icon" />
@@ -81,11 +88,23 @@ export function LogSearch({ titles = [], onOpenBook, onClose }) {
       </div>
 
       <div className="m-lsr-results">
-        {query.trim() === '' ? null : results.length === 0 ? (
+        {/* Before anything is typed the screen still has to say what it searches: this is the
+            reader's OWN log, not the catalogue, and a blank white page under a search field
+            invites a title the app was never going to find. */}
+        {query.trim() === '' ? (
           <EmptyStateView
-            source="my_activities_empty_state"
-            boldText="No Titles Found"
-            middleText={`Nothing in your log matches “${query.trim()}”.`}
+            source="no_titles_empty_state"
+            boldText="Search for titles…"
+            middleText="Find anything you have logged, by title or author."
+          />
+        ) : results.length === 0 ? (
+          /* `EmptySearchResult` — the app's own artwork and its own two strings. It offers
+             "Enter Title Info" under them, which belongs to the catalogue search that can add a
+             book it didn't find; there is nothing to add to a log you already kept. */
+          <EmptyStateView
+            source="recent_titles_empty_state"
+            boldText={`No Books Matching “${query.trim()}”`}
+            middleText="Try again with a different search term."
           />
         ) : (
           results.map((b) => (
@@ -93,8 +112,6 @@ export function LogSearch({ titles = [], onOpenBook, onClose }) {
           ))
         )}
       </div>
-
-      <Keyboard />
     </div>
   )
 }

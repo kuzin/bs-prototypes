@@ -87,10 +87,19 @@
 }
 
 .m-lsr-results {
+  display: flex;
+  flex-direction: column;
   flex: 1 1 0%;
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: none;
+}
+
+/* The empty state takes the whole results region rather than sitting at the top of it: it already
+   centres its own art and copy, and it can only do that against a box with height to centre in.
+   Result rows are unaffected — a column stacks them from the top either way. */
+.m-lsr-results > .m-esv {
+  flex: 1 1 auto;
 }
 .m-lsr-results::-webkit-scrollbar {
   display: none;

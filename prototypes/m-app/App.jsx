@@ -361,6 +361,11 @@ export function App() {
               }
             />
           }
+          /* Settings is a PUSHED stack route — `navigation.navigate('settings')` — so it covers
+             the whole navigator with no scale-back and no peeking edge: somewhere the app went,
+             rather than something laid over it. Search keeps the presented card, which is what a
+             screen you open, use once and dismiss should feel like. */
+          overlayVariant={showSettings ? 'card' : 'sheet'}
           overlay={
             showSettings ? (
               <Settings onBack={() => setShowSettings(false)} />
