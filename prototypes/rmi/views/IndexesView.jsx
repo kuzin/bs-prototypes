@@ -14,28 +14,17 @@ import './IndexesView.css'
  * year's four they've used.
  */
 
-// The allowance donut: four segments, one per index the plan permits.
+// `.index-count` — the allowance card. The ring is a conic gradient with a
+// hole punched by an ::after, exactly as `index_progress_controller.ts` drives
+// it: one custom property carrying the swept angle.
 function IndexCount({ used, limit }) {
-  const R = 26
-  const CIRC = 2 * Math.PI * R
-  const dash = (used / limit) * CIRC
-
   return (
     <div className="rmi-index-count">
-      <svg className="rmi-index-count-donut" viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="32" cy="32" r={R} fill="none" strokeWidth="9" stroke="var(--c-gray-250)" />
-        <circle
-          cx="32"
-          cy="32"
-          r={R}
-          fill="none"
-          strokeWidth="9"
-          stroke="var(--c-teal)"
-          strokeDasharray={`${dash} ${CIRC - dash}`}
-          transform="rotate(-90 32 32)"
-          strokeLinecap="round"
-        />
-      </svg>
+      <div
+        className="rmi-index-count-donut"
+        style={{ '--progress': `${(used / limit) * 360}deg` }}
+        aria-hidden="true"
+      />
       <div className="rmi-index-count-content">
         <h3 className="rmi-index-count-heading">
           {used}/{limit} Indexes

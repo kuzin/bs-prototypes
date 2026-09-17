@@ -4,6 +4,9 @@
    lighter teals and the whole purple ramp are RMI's own, so they're declared
    here rather than pretending to be design-system tokens. */
 
+/* `.rmi-root` so every RMI surface gets them; `.rmi-report` as well so a
+   pattern-library showcase, which renders that wrapper on its own, still does. */
+.rmi-root,
 .rmi-report {
   --rmi-teal-50: #cdfaff;
   --rmi-teal-100: #b4f7ff;
@@ -313,14 +316,17 @@
 .rmi-factor-score {
   display: flex;
   align-items: center;
+  gap: 12px;
 }
 
+/* The app pins the bar at 150px. Ours takes whatever the cell has left over
+   instead, so it fills the column when nothing is being compared and gives the
+   room back to the ± when something is. */
 .rmi-factor-bar {
-  width: 150px;
+  flex: 1;
+  min-width: 80px;
   height: 10px;
   position: relative;
-  margin-right: 12px;
-  flex-shrink: 0;
 }
 
 .rmi-factor-bar-bg {
@@ -346,6 +352,7 @@
   font-weight: 700;
   color: var(--c-text-dark);
   min-width: 26px;
+  text-align: right;
 }
 
 /* ── Narrow ────────────────────────────────────────────────────────────── */
@@ -384,7 +391,7 @@
 
 @media (max-width: 860px) {
   .rmi-factor-bar {
-    width: 90px;
+    min-width: 60px;
   }
   .rmi-table-factors-description {
     display: none;

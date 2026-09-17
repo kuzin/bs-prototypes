@@ -1,0 +1,33 @@
+/* `.search-bar` — a white card, not a bare input. */
+.rmi-search-bar {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+/* `.field-group`: the field and its buttons on one baseline. */
+.rmi-field-group {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+.rmi-search-field {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The app hides the native clear affordance; Clear is a button of its own. */
+.rmi-search-bar input[type='search']::-webkit-search-cancel-button {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .rmi-field-group {
+    flex-wrap: wrap;
+  }
+  .rmi-search-field {
+    flex: 1 0 100%;
+  }
+}

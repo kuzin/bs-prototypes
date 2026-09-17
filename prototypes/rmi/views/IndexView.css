@@ -63,20 +63,13 @@ button.rmi-index-tag-copy:hover {
   background: var(--c-gray-150);
 }
 
-/* The report body sits on the page's grey; its blocks bring their own white. */
+/* The report body sits on the page's grey; its blocks bring their own white.
+   The tab strip above it owns the gap. */
 .rmi-report {
-  padding-top: 20px;
+  padding-top: 0;
 }
 
 /* ── Students tab ──────────────────────────────────────────────────────── */
-.rmi-students-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
 
 .rmi-top-motivators {
   display: flex;

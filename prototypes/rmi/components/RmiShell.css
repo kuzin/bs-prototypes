@@ -41,6 +41,22 @@
     max(var(--admin-gutter), calc((100% - var(--admin-content-max)) / 2)) var(--admin-pad-bottom);
 }
 
+/* ── Vertical rhythm ─────────────────────────────────────────────────────
+   The app's, measured off its own Sass: 24px under the page header
+   (`.page-header`) and under the tab strip (`.nav-bar`), 20px under everything
+   else — the back link, the filter bar, each card in a report. The shared
+   PageHeader/BackBar/Tabs deliberately carry no bottom margin (their admin
+   containers use a flex `gap`), and `.rmi-page` is block flow, so the page
+   supplies them here rather than each view inventing its own. */
+.rmi-page > .page-header,
+.rmi-page > .tabs {
+  margin-bottom: 24px;
+}
+
+.rmi-page > .back-bar {
+  margin-bottom: 20px;
+}
+
 .rmi-footer {
   padding: 20px max(var(--admin-gutter), calc((100% - var(--admin-content-max)) / 2)) 28px;
   color: var(--c-gray-600);

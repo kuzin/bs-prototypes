@@ -1,7 +1,5 @@
+/* The roster's notice sits on its own above the table; the search panel that
+   follows owns its own 20px. */
 .rmi-readers-bar {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 4px 0 18px;
-  align-items: flex-start;
+  margin-bottom: 20px;
 }

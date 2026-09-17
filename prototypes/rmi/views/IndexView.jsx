@@ -3,7 +3,7 @@ import { PageHeader } from '@components/PageHeader/PageHeader'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Table } from '@components/Table/Table'
-import { SearchInput } from '@components/SearchInput/SearchInput'
+import { SearchBar } from '../components/SearchBar'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
 import {
@@ -26,6 +26,7 @@ import './IndexView.css'
  */
 export function IndexView({ index, tab, onTab, onOpenStudent }) {
   const [query, setQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const scored = index.responses.length > 0
@@ -46,6 +47,18 @@ export function IndexView({ index, tab, onTab, onOpenStudent }) {
         actions={
           <div className="rmi-header-stack">
             <div className="rmi-header-buttons">
+              {tab === 'students' && (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  iconOnly
+                  aria-label="Toggle search"
+                  aria-expanded={searchOpen}
+                  onClick={() => setSearchOpen((o) => !o)}
+                >
+                  <Icon name={searchOpen ? 'x' : 'search'} size={18} />
+                </Button>
+              )}
               <Button variant="secondary" size="md">
                 Edit Index
               </Button>
@@ -96,6 +109,8 @@ export function IndexView({ index, tab, onTab, onOpenStudent }) {
             index={index}
             query={query}
             onQuery={setQuery}
+            searchOpen={searchOpen}
+            onCloseSearch={() => setSearchOpen(false)}
             onOpenStudent={onOpenStudent}
           />
         )}
@@ -131,7 +146,7 @@ function SummaryTab({ index, scored }) {
   )
 }
 
-function StudentsTab({ index, query, onQuery, onOpenStudent }) {
+function StudentsTab({ index, query, onQuery, searchOpen, onCloseSearch, onOpenStudent }) {
   const rows = index.responses
     .map((response) => {
       const student = studentById(response.studentId)
@@ -201,14 +216,13 @@ function StudentsTab({ index, query, onQuery, onOpenStudent }) {
 
   return (
     <>
-      <div className="rmi-students-bar">
-        <SearchInput
-          value={query}
-          onChange={onQuery}
-          placeholder="Search students by name"
-          ariaLabel="Search students by name"
-        />
-      </div>
+      <SearchBar
+        open={searchOpen}
+        label="Student Name"
+        value={query}
+        onChange={onQuery}
+        onClose={onCloseSearch}
+      />
 
       {rows.length > 0 ? (
         <div className="rmi-card-table">

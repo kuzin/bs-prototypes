@@ -1,22 +1,14 @@
 /* `classroom/survey_responses/show` — the back link, then the filter bar above
    one reader's report. */
 
-/* BackBar deliberately carries no bottom margin: on the admin surfaces its
-   container supplies the gap with a flex `gap`. `.rmi-page` is block flow, so
-   the page supplies it here — 20px, the same as the app's own `.back-button`. */
-.rmi-page > .back-bar {
-  margin-bottom: 20px;
-}
-
 /* `.filter-bar` — one row: the index selector takes the slack so the comparison
-   selector sits against the right edge, the way `.filter-bar__flex` does it.
-   PageHeader owns no bottom margin, so the top gap is the bar's. */
+   selector sits against the right edge, the way `.filter-bar__flex` does it. */
 .rmi-filter-bar {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
   gap: 20px;
-  margin: 20px 0;
+  margin-bottom: 20px;
   padding: 14px;
   border-radius: 12px;
   background: #fff;

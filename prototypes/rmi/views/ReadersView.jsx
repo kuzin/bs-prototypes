@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { PageHeader } from '@components/PageHeader/PageHeader'
 import { Button } from '@components/Button/Button'
 import { Table } from '@components/Table/Table'
-import { SearchInput } from '@components/SearchInput/SearchInput'
+import { SearchBar } from '../components/SearchBar'
 import { Banner, EmptyState } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
 import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
@@ -18,6 +18,7 @@ import './ReadersView.css'
  */
 export function ReadersView() {
   const [query, setQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
 
   const rows = STUDENTS.filter((s) =>
     s.name.toLowerCase().includes(query.trim().toLowerCase()),
@@ -58,9 +59,21 @@ export function ReadersView() {
       <PageHeader
         title="Students"
         actions={
-          <Button variant="primary" size="md">
-            Print Access Codes
-          </Button>
+          <>
+            <Button
+              variant="secondary"
+              size="md"
+              iconOnly
+              aria-label="Toggle search"
+              aria-expanded={searchOpen}
+              onClick={() => setSearchOpen((o) => !o)}
+            >
+              <Icon name={searchOpen ? 'x' : 'search'} size={18} />
+            </Button>
+            <Button variant="primary" size="md">
+              Print Access Codes
+            </Button>
+          </>
         }
       />
 
@@ -68,14 +81,15 @@ export function ReadersView() {
         <Banner level="info" icon={<Icon name="info" size={22} />}>
           {STUDENTS.length} students out of {EDUCATOR.studentsLimit} students added.
         </Banner>
-
-        <SearchInput
-          value={query}
-          onChange={setQuery}
-          placeholder="Student Name"
-          ariaLabel="Search students by name"
-        />
       </div>
+
+      <SearchBar
+        open={searchOpen}
+        label="Student Name"
+        value={query}
+        onChange={setQuery}
+        onClose={() => setSearchOpen(false)}
+      />
 
       {rows.length > 0 ? (
         <div className="rmi-card-table">
