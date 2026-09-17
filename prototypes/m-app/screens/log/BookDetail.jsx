@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Img, PressableButton, SheetHeader, EmptyStateView } from '@mobile/components'
+import { longDate, duration, pagesRead } from './ReadingSession'
 import './BookDetail.css'
 
 /**
@@ -65,6 +66,15 @@ function isDark(hex) {
   const [r, g, b] = [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16) / 255)
   const lin = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
   return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b) < 0.5
+}
+
+/** What a row says about its pages — the range when there is one, the count when there isn't. */
+function pageLabel(session) {
+  if (session.startPage != null && session.endPage != null) {
+    return `pages ${session.startPage}\u2013${session.endPage}`
+  }
+  const read = pagesRead(session)
+  return read == null ? '' : `${read} pages`
 }
 
 /** `M/D/YYYY`, which is what `OverviewDataItems.getDate` builds by hand. */
@@ -141,6 +151,7 @@ export function BookDetail({
   showQuestions = false,
   onClose,
   onOptions,
+  onOpenSession,
 }) {
   const tabs = showQuestions ? [...BASE_TABS, 'Questions'] : BASE_TABS
   const [tab, setTab] = useState('Overview')
@@ -254,19 +265,23 @@ export function BookDetail({
             ) : (
               <div className="m-bd2-sessions">
                 {book.sessions.map((s) => (
-                  /* `SessionsItem` — three lines and a trailing arrow. The arrow is the app's:
-                     a row opens `readingSession`, a screen this prototype doesn't carry, and the
-                     arrow is what says there is one. */
-                  <div key={s.id} className="m-bd2-session">
+                  /* `SessionsItem` — three lines and a trailing arrow, and the whole row opens
+                     the session (`navigate('readingSession', { readingSessionId })`). */
+                  <button
+                    key={s.id}
+                    type="button"
+                    className="m-bd2-session"
+                    onClick={() => onOpenSession?.(s)}
+                  >
                     <span className="m-bd2-session-text">
                       <span className="m-t-body-regular m-bd2-session-date">{s.date}</span>
                       <span className="m-t-body-small m-bd2-session-time">{s.minutes} minutes</span>
-                      {s.pages && (
-                        <span className="m-t-body-small m-bd2-session-sub">pages {s.pages}</span>
+                      {pageLabel(s) && (
+                        <span className="m-t-body-small m-bd2-session-sub">{pageLabel(s)}</span>
                       )}
                     </span>
                     <Img name="new_arrow_right" className="m-bd2-session-arrow" />
-                  </div>
+                  </button>
                 ))}
               </div>
             ))}

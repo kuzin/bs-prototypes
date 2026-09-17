@@ -60,9 +60,13 @@
   height: 180px;
 }
 
+/* The placeholder centres its title, the way `BookImage`'s does on every other surface. It sat
+   bottom-left here and on Home while the list rows centred theirs, so the same missing jacket
+   looked like two different components. */
 .m-bd2-cover {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   width: 120px;
   height: 180px;
   padding: 10px;
@@ -75,6 +79,7 @@
   font-weight: 700;
   color: var(--m-white);
   line-height: 1.2;
+  text-align: center;
 }
 
 /* bookShadowWrapper — hung 6 below, 20 tall, inset 10 each side, and BEHIND the cover on z-index
@@ -225,7 +230,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  width: 100%;
   padding: 16px 20px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: var(--m-white);
+  border: 0;
+}
+.m-bd2-session:active {
+  background: var(--m-grey-light-4);
 }
 
 .m-bd2-session + .m-bd2-session {

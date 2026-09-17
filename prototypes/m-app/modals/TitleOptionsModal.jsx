@@ -14,10 +14,19 @@ import { ActionsModal, Alert } from '@mobile/components'
  * the count is null — “the title” instead of “all N session(s) … for {title}”. Both strings ship.
  */
 export function TitleOptionsModal({ open, book, isRlcBook = false, onClose, onEdit, onDelete }) {
-  const [confirmOpen, setConfirmOpen] = useState(false)
+  /* The book the confirm is ABOUT, held here rather than read from the prop.
+     `ActionsModal` closes before it runs a row's action, and closing clears the book — so by the
+     time the alert rendered it had neither the title nor the session count and fell back to
+     "this title" and the shorter of the two messages. Both strings ship; the reader should see
+     the one that names what they are about to lose. */
+  const [pending, setPending] = useState(null)
+  const confirmOpen = pending != null
 
-  const sessions = book?.sessionCount ?? null
-  const title = book?.title ?? 'this title'
+  /* `relationships.log_item_sessions.meta.count` — the sessions this title would take with it.
+     Reading it off the list the panel already holds is the same number, and it moves when one is
+     deleted rather than going stale. */
+  const sessions = pending?.sessions?.length ?? pending?.sessionCount ?? null
+  const title = pending?.title ?? 'this title'
 
   const options = isRlcBook
     ? [
@@ -25,7 +34,7 @@ export function TitleOptionsModal({ open, book, isRlcBook = false, onClose, onEd
           title: 'Delete Title',
           source: 'modal_delete_icon',
           destructive: true,
-          onPress: () => setConfirmOpen(true),
+          onPress: () => setPending(book),
         },
       ]
     : [
@@ -34,7 +43,7 @@ export function TitleOptionsModal({ open, book, isRlcBook = false, onClose, onEd
           title: 'Delete Title',
           source: 'modal_delete_icon',
           destructive: true,
-          onPress: () => setConfirmOpen(true),
+          onPress: () => setPending(book),
         },
       ]
 
@@ -50,10 +59,18 @@ export function TitleOptionsModal({ open, book, isRlcBook = false, onClose, onEd
             : `Are you sure you would like to delete ${title}? This will delete the title and cannot be undone.`
         }
         buttons={[
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete', style: 'destructive', onPress: () => onDelete?.(book) },
+          { text: 'Cancel', style: 'cancel', onPress: () => setPending(null) },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: () => {
+              const target = pending
+              setPending(null)
+              onDelete?.(target)
+            },
+          },
         ]}
-        onDismiss={() => setConfirmOpen(false)}
+        onDismiss={() => setPending(null)}
       />
     </>
   )

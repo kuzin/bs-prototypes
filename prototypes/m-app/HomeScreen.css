@@ -73,7 +73,8 @@
  * loaded, which is what BookImage itself falls back to. */
 .m-home-cover {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   width: 131px;
   height: 197px;
   padding: 12px;
@@ -86,7 +87,7 @@
   font-weight: 700;
   line-height: 23px;
   color: var(--m-white);
-  text-align: left;
+  text-align: center;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 

@@ -18,6 +18,7 @@ import { BookDetail } from './screens/log/BookDetail'
 import { BookListDashboard } from './screens/discover/BookListDashboard'
 import { Settings } from './screens/Settings'
 import { LogSearch } from './screens/LogSearch'
+import { ReadingSession } from './screens/log/ReadingSession'
 import { SwitchReadersSheet } from './modals/SwitchReadersSheet'
 import { TitleOptionsModal } from './modals/TitleOptionsModal'
 import { ReviewOptionsModal } from './modals/ReviewOptionsModal'
@@ -189,6 +190,9 @@ export function App() {
   /* The streak card's dismissal, which the app keeps per profile in `streakComponentClosed`. */
   const [streakClosed, setStreakClosed] = useSticky('streakClosed', false)
   const [showLogSearch, setShowLogSearch] = useState(false)
+  /* A session opened from the book panel. The panel stays mounted underneath — in the app this is
+     a push onto the same stack, so closing the session returns to the book rather than the tab. */
+  const [openSession, setOpenSession] = useState(null)
 
   /* What the Log tab's search searches: every title the reader has logged, flattened out of the
      month sections All Titles reads them in. */
@@ -411,12 +415,32 @@ export function App() {
                 achievement={openAchievement}
                 onClose={() => setOpenAchievement(null)}
               />
+            ) : openSession ? (
+              <ReadingSession
+                session={openSession}
+                onBack={() => setOpenSession(null)}
+                onEdit={() => {}}
+                onDelete={(session) => {
+                  /* Merge BEFORE filtering: `openBook` is whatever was tapped — a Home title
+                     carries no sessions of its own, they arrive from BOOK_DETAIL at render.
+                     Filtering the unmerged object wrote `sessions: []` and deleted all seven. */
+                  setOpenBook((b) => {
+                    const merged = { ...BOOK_DETAIL, ...b }
+                    return {
+                      ...merged,
+                      sessions: merged.sessions.filter((x) => x.id !== session.id),
+                    }
+                  })
+                  setOpenSession(null)
+                }}
+              />
             ) : openBook ? (
               <BookDetail
                 book={{ ...BOOK_DETAIL, ...openBook }}
                 readerName={profile.name.split(' ')[0]}
                 onClose={() => setOpenBook(null)}
                 onOptions={() => setTitleOptions({ ...BOOK_DETAIL, ...openBook })}
+                onOpenSession={setOpenSession}
               />
             ) : openList ? (
               <BookListDashboard
@@ -432,6 +456,13 @@ export function App() {
                 open={Boolean(titleOptions)}
                 book={titleOptions}
                 onClose={() => setTitleOptions(null)}
+                /* `deleteBook` — the request goes out and then `navigation.goBack()`, so the
+                   panel you deleted the title from closes with it. */
+                onDelete={() => {
+                  setTitleOptions(null)
+                  setOpenSession(null)
+                  setOpenBook(null)
+                }}
               />
               <ReviewOptionsModal
                 open={Boolean(reviewOptions)}
