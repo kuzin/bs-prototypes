@@ -9,12 +9,10 @@
 /* headerButtons — this sheet's header FLOATS over the band rather than sitting above it, which is
  * the one place the shared SheetHeader needs positioning. Everything else about it (the 60pt row,
  * the -1 overlap, the chevron's 15pt inset) comes from the component. */
+/* `headerWrapper` — 60pt, in flow, and tinted the band's own colour. NOT floated: the app's
+   header takes its height, which is what puts the cover 68pt down the panel rather than 8. */
 .m-bd2-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
+  flex: none;
 }
 
 .m-bd2-scroll {

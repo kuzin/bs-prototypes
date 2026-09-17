@@ -8,10 +8,14 @@ import './BookDetail.css'
  * `presentation: 'modal'`, so it arrives in the same sheet slot as the badge and achievement
  * panels.
  *
- * The header is the same punch-up idiom those two use, but built differently: a 130pt band tinted
- * from the COVER's own dominant colour (`getImageColor`), with `headerCurveGrey` stretched 44pt
- * across its base, and then `infoContainer` pulled up `marginTop: -122` so the 120×180 cover
- * straddles the curve.
+ * The header is the same punch-up idiom those two use, but built differently: a 60pt header bar
+ * and a 130pt band BOTH tinted from the COVER's own dominant colour (`getImageColor`), with
+ * `headerCurveGrey` stretched 44pt across the band's base, and then `infoContainer` pulled up
+ * `marginTop: -122` so the 120×180 cover straddles the curve.
+ *
+ * The header bar takes its 60pt in flow rather than floating over the band — `headerWrapper` has
+ * a height and a background and no position. Floating it put the cover 8pt from the top of the
+ * panel instead of 68, which read as the cover poking out of the band.
  *
  * Tabs start as ['Overview', 'Reading Sessions'] and only become three when `getQuestionsForTab`
  * says the reading-integrity questions exist — so a two-tab panel is the normal case, not a
@@ -100,8 +104,14 @@ export function BookDetail({
   return (
     <div className="m-bd2">
       {/* The only sheet with a trailing action — the options dots go in SheetHeader's `right`
-          slot. It floats over the band rather than sitting above it, so the class positions it. */}
-      <SheetHeader onClose={onClose} className="m-bd2-header" onOptions={onOptions} />
+          slot. Tinted like the band and sitting above it, so the two read as one field of colour
+          with the cover hung off the bottom of it. */}
+      <SheetHeader
+        onClose={onClose}
+        className="m-bd2-header"
+        onOptions={onOptions}
+        background={book.headerColor}
+      />
 
       <div className="m-bd2-scroll">
         {/* The band takes the cover's dominant colour, not the tenant accent. */}
