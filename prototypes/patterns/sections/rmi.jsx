@@ -8,6 +8,10 @@ import {
 import { ALL_FACTORS, recommendationsFor, readingGoalFor, summaryFor } from '../../rmi/scoring'
 import { INDEXES } from '../../rmi/data'
 import { FACTORS } from '../../rmi/domain'
+import { useState } from 'react'
+import { SearchBar } from '../../rmi/components/SearchBar'
+import { ConfirmModal } from '../../rmi/components/ConfirmModal'
+import { Button } from '@components/Button/Button'
 import { Variant } from './_shared'
 import '../../rmi/components/ReportBlocks.css'
 
@@ -176,5 +180,103 @@ export const rmiSections = [
         </Variant>
       </div>
     ),
+  },
+  {
+    group: 'rmi',
+    id: 'rmi-search-bar',
+    name: 'SearchBar',
+    usage: `import { SearchBar } from './components/SearchBar'
+
+<SearchBar
+  open={searchOpen}
+  label="Student Name"
+  value={query}
+  onChange={setQuery}
+  onClose={() => setSearchOpen(false)}
+/>`,
+    desc: (
+      <>
+        The app&rsquo;s search is a <em>panel</em>, not an always-on filter box: a white card
+        holding the field, a Search button, and a Clear button once there&rsquo;s something to
+        clear. It stays hidden until the magnifier in the page header reveals it, which is what that
+        toggle in every index and roster header is for. <code>label</code> is the placeholder rather
+        than a rendered label &mdash; the panel only ever holds one field, so a heading over it says
+        the same thing twice.
+      </>
+    ),
+    render: function SearchBarShowcase() {
+      const [value, setValue] = useState('')
+      return (
+        <>
+          <Variant label="open, empty — Search only">
+            <SearchBar open label="Student Name" value="" onChange={() => {}} />
+          </Variant>
+          <Variant label="with a query — Clear appears">
+            <SearchBar open label="Student Name" value={value || 'Amara'} onChange={setValue} />
+          </Variant>
+        </>
+      )
+    },
+  },
+  {
+    group: 'rmi',
+    id: 'rmi-confirm-modal',
+    name: 'ConfirmModal',
+    usage: `import { ConfirmModal } from './components/ConfirmModal'
+
+<ConfirmModal
+  open={!!confirm}
+  onClose={() => setConfirm(null)}
+  title="Delete Amara Osei"
+  confirmLabel="Delete"
+  onConfirm={() => remove(student)}
+>
+  Are you sure? This will delete all of their RMI results, if present.
+</ConfirmModal>`,
+    desc: (
+      <>
+        <code>.modal--small</code> &mdash; the dialogue both of the roster&rsquo;s destructive
+        actions use. A title, a paragraph saying what the action <em>costs</em>, and Cancel /
+        confirm at the foot. The copy is the app&rsquo;s: deleting a student takes their RMI results
+        with them, and regenerating a code locks the old one out. Built on the shared{' '}
+        <code>Modal</code> at <code>variant=&quot;center&quot;</code>, so it brings the backdrop and
+        the corner close badge with it.
+      </>
+    ),
+    render: function ConfirmModalShowcase() {
+      const [open, setOpen] = useState(null)
+      return (
+        <Variant label="the two the roster raises">
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <Button variant="secondary" size="md" onClick={() => setOpen('delete')}>
+              Delete a student
+            </Button>
+            <Button variant="secondary" size="md" onClick={() => setOpen('regenerate')}>
+              Regenerate a code
+            </Button>
+          </div>
+
+          <ConfirmModal
+            open={open === 'delete'}
+            onClose={() => setOpen(null)}
+            title="Delete Amara Osei"
+            confirmLabel="Delete"
+          >
+            Are you sure you want to delete this student? This will delete all of their RMI results,
+            if present.
+          </ConfirmModal>
+
+          <ConfirmModal
+            open={open === 'regenerate'}
+            onClose={() => setOpen(null)}
+            title="Are you sure you want to regenerate this student's access code?"
+            confirmLabel="Regenerate"
+          >
+            Students with old access codes will be unable to access their survey or results.
+            However, students who already took the survey can view results at their new access code.
+          </ConfirmModal>
+        </Variant>
+      )
+    },
   },
 ]
