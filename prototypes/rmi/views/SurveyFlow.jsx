@@ -327,7 +327,7 @@ function MotivationType({ answers, student, onRestart }) {
         {recommendations.map((rec) => (
           <li key={rec.id}>
             <span className="rmi-motivation-recs-icon">
-              <Icon name="star" size={18} />
+              <Icon name="star" size={16} />
             </span>
             {rec.text}
           </li>
