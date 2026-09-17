@@ -8,7 +8,7 @@ import {
   ScoreCards,
   BennySays,
   ReadingGoalAndActions,
-  TopFactors,
+  TopMotivationTypes,
   FactorTable,
 } from '../components/ReportBlocks'
 import {
@@ -110,7 +110,7 @@ export function StudentReportView({
                 seed: student.name,
               })}
             />
-            <TopFactors scores={response.scores} />
+            <TopMotivationTypes scores={response.scores} />
             <FactorTable scores={response.scores} deltas={factorDeltas} />
           </>
         ) : (

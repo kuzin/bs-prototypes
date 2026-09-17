@@ -4,7 +4,7 @@ import {
   ReadingGoalAndActions,
   FactorTable,
   FactorIcon,
-  TopFactors,
+  TopMotivationTypes,
 } from '../../rmi/components/ReportBlocks'
 import { ALL_FACTORS, recommendationsFor, readingGoalFor, summaryFor } from '../../rmi/scoring'
 import { INDEXES } from '../../rmi/data'
@@ -161,29 +161,30 @@ export const rmiSections = [
   },
   {
     group: 'rmi',
-    id: 'rmi-top-factors',
-    name: 'TopFactors',
-    usage: `import { TopFactors } from './components/ReportBlocks'
+    id: 'rmi-top-types',
+    name: 'TopMotivationTypes',
+    usage: `import { TopMotivationTypes } from './components/ReportBlocks'
 
-<TopFactors scores={response.scores} />`,
+<TopMotivationTypes scores={response.scores} />`,
     desc: (
       <>
-        The three factors the engine actually reasoned from, stated above the full ranking.{' '}
-        <code>top_three_factors</code> is what the summary is written from and what the
-        recommendations are sampled against, but it was only ever legible on the reader&rsquo;s own
-        reveal, where it shows as personas &mdash; on the educator&rsquo;s side it was implied by
-        three tinted rows in a table of ten. This says it in the educator&rsquo;s vocabulary: the
-        factor, its definition, and the score that earned it the place. A reader with nothing above
-        the threshold has no top three, and the block says so rather than ranking noise.
+        The three motivation types a reader came out as &mdash; the same ones their own reveal shows
+        them, named the way they were named there. An educator needs both vocabularies at once: the
+        reader was told they are <strong>The Lion</strong>, while the factor table, the summary and
+        the recommendation copy all say <strong>confidence</strong>. So each row carries the
+        persona, the factor it stands for, and the educator&rsquo;s definition.{' '}
+        <strong>The Mystery</strong> is a motivation type like any other &mdash; it&rsquo;s what{' '}
+        <code>top_three_factors</code> returns when nothing clears the threshold, so it renders as a
+        row rather than as an absence.
       </>
     ),
     render: () => (
       <div className="rmi-report">
         <Variant label="A reader with clear motivators">
-          <TopFactors scores={READER.scores} />
+          <TopMotivationTypes scores={READER.scores} />
         </Variant>
-        <Variant label="No factor above the threshold — the engine's mystery state">
-          <TopFactors scores={LOW} />
+        <Variant label="Nothing above the threshold — The Mystery">
+          <TopMotivationTypes scores={LOW} />
         </Variant>
       </div>
     ),

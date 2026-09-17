@@ -205,54 +205,64 @@ export function ReadingGoalAndActions({ goal, recommendations }) {
   )
 }
 
-// ── Top motivation factors ───────────────────────────────────────────────
+// ── Top motivation types ─────────────────────────────────────────────────
 /**
- * The three factors that actually drove this reader's result, called out above
- * the full ranking.
+ * The three motivation types this reader came out as — the same ones their own
+ * reveal shows them, named the way they were named there.
  *
- * `top_three_factors` is the engine's own idea — it's what the summary is
- * written from and what the recommendations are sampled against — but until now
- * it was only legible on a reader's own reveal, where it shows as personas. On
- * the educator's side it was implied by three tinted rows in a table of ten.
- * This says it outright, in the educator's vocabulary: the factor's name, its
- * definition, and the score that earned it the place.
+ * `top_three_factors` drives the summary and the recommendations, but until now
+ * it was only legible on the reader's side. An educator needs it in both
+ * vocabularies at once: the reader was told they are **The Lion**, while the
+ * table below this, the summary and the recommendation copy all say
+ * **confidence**. So each row carries the persona, the factor it stands for,
+ * and the educator's definition of it.
  *
- * A reader with nothing above the low-score threshold has no top three — the
- * engine hands back `mystery` instead, and the block says so rather than
- * ranking noise.
+ * `mystery` is a motivation type like any other, with its own portrait and its
+ * own definition — it's what the engine returns when nothing clears the
+ * threshold, so it renders as a row rather than as an absence.
  */
-export function TopFactors({ scores }) {
+export function TopMotivationTypes({ scores }) {
   const top = topThreeFactors(scores)
-  const unknown = top.length === 1 && top[0].name === 'mystery'
 
   return (
-    <section className="rmi-top-factors">
-      <h3 className="rmi-block-title">Top Motivation Factors</h3>
+    <section className="rmi-top-types">
+      <h3 className="rmi-block-title">Top Motivation Types</h3>
 
-      {unknown ? (
-        <p className="rmi-top-factors-none">
-          No factor scored above the threshold, so there is no clear motivator yet. Talk the survey
-          through with them to check the answers reflect what they meant.
-        </p>
-      ) : (
-        <ol className="rmi-top-factors-list">
-          {top.map((factor, i) => (
-            <li key={factor.name} className="rmi-top-factor">
-              <span className="rmi-top-factor-rank">{i + 1}</span>
-              <FactorIcon factor={factor.name} />
-              <div className="rmi-top-factor-text">
-                <span className="rmi-top-factor-name">
-                  {factor.name[0].toUpperCase() + factor.name.slice(1)}
+      <ol className="rmi-top-types-list">
+        {top.map((factor, i) => {
+          const def = FACTORS[factor.name]
+          const slug = def.student_name.toLowerCase().replace(/\s+/g, '-')
+          const mystery = factor.name === 'mystery'
+
+          return (
+            <li key={factor.name} className="rmi-top-type">
+              {!mystery && <span className="rmi-top-type-rank">{i + 1}</span>}
+
+              <img
+                className="rmi-top-type-portrait"
+                src={asset(`factors/${slug}.png`)}
+                alt=""
+                width={44}
+                height={44}
+              />
+
+              <div className="rmi-top-type-text">
+                <span className="rmi-top-type-name">
+                  {def.student_name}
+                  {!mystery && (
+                    <span className="rmi-top-type-factor">
+                      {factor.name[0].toUpperCase() + factor.name.slice(1)}
+                    </span>
+                  )}
                 </span>
-                <span className="rmi-top-factor-desc">
-                  {FACTORS[factor.name]?.educator_definition}
-                </span>
+                <span className="rmi-top-type-desc">{def.educator_definition}</span>
               </div>
-              <span className="rmi-top-factor-score">{factor.score.toFixed(1)}</span>
+
+              {!mystery && <span className="rmi-top-type-score">{factor.score.toFixed(1)}</span>}
             </li>
-          ))}
-        </ol>
-      )}
+          )
+        })}
+      </ol>
     </section>
   )
 }
