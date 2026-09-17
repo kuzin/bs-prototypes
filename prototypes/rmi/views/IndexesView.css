@@ -18,7 +18,6 @@
   border-radius: 16px;
   background: var(--rmi-purple-50);
   box-shadow: 0 0 18px rgb(0 0 0 / 3%);
-  align-self: flex-start;
 }
 
 /* 42px ring, 6px thick: a conic gradient swept to `--progress`, with the card's

@@ -5,8 +5,7 @@ import { Input } from '@components/Form/Form'
 import '@components/Form/Form.css'
 import { QUESTIONS_IN_ORDER, FACTORS } from '../domain'
 import { scoreAnswers, topThreeFactors, readingGoalFor, recommendationsFor } from '../scoring'
-import { STUDENTS } from '../data'
-import { GENRES_BY_FACTOR } from '../genres'
+import { STUDENTS, responseFor } from '../data'
 import { asset } from '../assets'
 import './SurveyFlow.css'
 
@@ -89,6 +88,19 @@ export function SurveyFlow({ onRestart }) {
     }
   }
 
+  /* Prototype only — the real survey has no way past its twenty questions.
+     It fills in the reader's own answers from the index they actually sat, so
+     the reveal matches what the educator's report shows for them rather than
+     being a second, made-up reading of the same student. */
+  function skipQuiz() {
+    const who = student ?? DEMO_STUDENT
+    const response = responseFor('fall', who.id)
+    if (!response) return
+    setCode(who.accessCode)
+    setAnswers(response.answers)
+    setStep('reveal')
+  }
+
   function leaveCheckpoint() {
     setIndex((i) => i + 1)
     setStep('question')
@@ -152,6 +164,9 @@ export function SurveyFlow({ onRestart }) {
             >
               Use {DEMO_STUDENT.name}&rsquo;s code ({DEMO_STUDENT.accessCode})
             </button>
+            <button type="button" className="rmi-survey-skip" onClick={skipQuiz}>
+              Skip the survey — prototype only
+            </button>
           </form>
         </section>
       )}
@@ -202,6 +217,10 @@ export function SurveyFlow({ onRestart }) {
           <Button variant="primary" size="lg" disabled={choice == null} onClick={submitAnswer}>
             Continue
           </Button>
+
+          <button type="button" className="rmi-survey-skip" onClick={skipQuiz}>
+            Skip the survey — prototype only
+          </button>
         </section>
       )}
 
@@ -247,37 +266,6 @@ function Checkpoint({ checkpoint, onContinue }) {
         Continue
       </Button>
     </section>
-  )
-}
-
-/**
- * The genres that suit each type the reader just came out as.
- *
- * Names only. The toolkit pairs every genre with a reason, but those are
- * written *about* the reader for a teacher — "appeals to their love of grand
- * leadership" — so they belong on the report, not here. What a reader wants is
- * the shelf to go to.
- */
-function GenresToTry({ top }) {
-  const types = top.filter((f) => GENRES_BY_FACTOR[f.name])
-  if (types.length === 0) return null
-
-  return (
-    <>
-      <h3 className="rmi-motivation-subhead">Genres to Try:</h3>
-      <div className="rmi-genres-reader">
-        {types.map((factor) => (
-          <div key={factor.name} className="rmi-genres-reader-type">
-            <span className="rmi-genres-reader-name">{FACTORS[factor.name].student_name}</span>
-            <ul className="rmi-genres-reader-list">
-              {GENRES_BY_FACTOR[factor.name].map((genre) => (
-                <li key={genre.name}>{genre.name}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </>
   )
 }
 
@@ -346,8 +334,6 @@ function MotivationType({ answers, student, onRestart }) {
           ),
         )}
       </div>
-
-      <GenresToTry top={top} />
 
       <h3 className="rmi-motivation-subhead">Set a Reading Goal</h3>
       <div className="rmi-motivation-goal">
