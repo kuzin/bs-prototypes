@@ -37,6 +37,7 @@ export {
   ListFooter,
 } from './Loading/Loading'
 export { ProfileRow } from './ProfileRow/ProfileRow'
+export { ProfileBar } from './ProfileBar/ProfileBar'
 export * from './SheetHeader/SheetHeader'
 export * from './ActionsModal/ActionsModal'
 export * from './SelectSheet/SelectSheet'

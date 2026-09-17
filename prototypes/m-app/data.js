@@ -90,6 +90,19 @@ export const EARNED_BADGES = [
   { id: 'eb6', name: 'Marathon', earned: true, art: 'linear-gradient(135deg,#0F7280,#19BFD5)' },
 ]
 
+/**
+ * The readers on this account, for the header's Switch Readers sheet.
+ *
+ * An account holds several readers — that is the shape a public-library account has, and it is
+ * why the avatar opens a switcher rather than a profile page. A school account is one reader to
+ * one login, and the sheet has its own fork for that: drop the second entry here and it renders
+ * the single-reader state the app draws.
+ */
+export const PROFILES = [
+  { id: 'p1', name: 'Maya Chen' },
+  { id: 'p2', name: 'Leo Chen' },
+]
+
 // ── Log tab ───────────────────────────────────────────────────────────────
 /**
  * The Reading Log is a month of weeks of days. `weeks` are newest-first; days inside a week are

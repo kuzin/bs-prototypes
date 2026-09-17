@@ -1,0 +1,29 @@
+/* `ProfileBar.styles` — barItems: a 60pt row, centred, with the icons ahead of the avatar. */
+.m-pbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 60px;
+}
+
+/* `styles.icon` — 22pt square with 20pt to its right, which is what spaces the row: the avatar
+   has no margin of its own and sits against the header's own gutter. */
+.m-pbar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-right: 20px;
+  padding: 0;
+  color: var(--m-grey-dark-1);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.m-pbar-icon img {
+  width: 22px;
+  height: 22px;
+}

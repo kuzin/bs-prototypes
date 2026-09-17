@@ -50,6 +50,18 @@
   text-align: center;
 }
 
+/* DIVERGENCE — the app left-aligns its section headings, here and on every other tab.
+ * Centred on this screen only, because this screen is a column of centred things: the
+ * persona card centres its art and its copy, the goal card centres Benny and its number,
+ * and a heading hard against the left gutter over a centred card read as a caption for
+ * the card's left edge rather than a title for the whole of it.
+ *
+ * Scoped to `.m-rmi` rather than changed on `.m-section-head`, which four other screens
+ * share and which are left-aligned over left-aligned content. */
+.m-rmi .m-section-head {
+  text-align: center;
+}
+
 /* ── MotivationTypes ─────────────────────────────────────────────────────── */
 .m-rmi-types {
   display: flex;

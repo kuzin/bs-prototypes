@@ -18,9 +18,13 @@
  *
  * Flush keeps the type and the bar and throws away the container: full-bleed, no radius, no
  * shadow, and the same 1pt greyLight2 rule the week headers use, so it closes the same way every
- * other band on that page closes. */
+ * other band on that page closes.
+ *
+ * One gutter on all four sides. It was 20/24 top to bottom, which read as the bar sitting high in
+ * its band, and the asymmetry answered nothing: the band has no second row for the extra to
+ * belong to. Being the gutter also means the type starts where the row titles below it start. */
 .m-dgb.is-flush {
-  padding: 20px var(--m-gutter) 24px;
+  padding: var(--m-gutter);
   margin: 0;
   border-radius: 0;
   box-shadow: none;

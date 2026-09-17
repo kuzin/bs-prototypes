@@ -17,6 +17,39 @@ import './Badges.css'
  * the badges one, which the Home strip uses. That looks like a mistake in the app, but it is what
  * ships.
  */
+/**
+ * The month a badge was earned, from `earnedOn` ("September 12, 2026"). Taken off the string
+ * rather than through `Date`, which would need a timezone to answer a question that has nothing
+ * to do with one.
+ */
+function monthOf(earnedOn) {
+  return earnedOn ? earnedOn.replace(/\s+\d+,/, '') : null
+}
+
+/**
+ * DIVERGENCE — earned badges grouped by month, the way All Titles groups books and Book Talks
+ * groups chats.
+ *
+ * The app ships one flat list. Two of the three lists on this tab already break by month, and a
+ * badge is the same kind of thing they are: a dated event in a reader's year. Ungrouped, a run of
+ * sixteen rows gave no sense of when any of it happened, and "Completed on 8/9/26" in a row's own
+ * subtitle is not something you can scan for.
+ *
+ * The badges arrive newest-first and stay that way — the section breaks fall where the month
+ * changes, so nothing is re-sorted. A badge with no date (a repeatable one, counted rather than
+ * dated) keeps its place and its section renders without a heading rather than inventing one.
+ */
+function byMonth(badges) {
+  const sections = []
+  for (const badge of badges) {
+    const month = monthOf(badge.earnedOn)
+    const last = sections[sections.length - 1]
+    if (last && last.month === month) last.badges.push(badge)
+    else sections.push({ month, badges: [badge] })
+  }
+  return sections
+}
+
 /** `BadgeType` in `types/api/enums.ts`, given readable labels. */
 const TYPE_LABELS = {
   completion: 'Completion',
@@ -68,8 +101,18 @@ export function Badges({ badges, onOpenBadge }) {
       {types.length > 1 && <FilterBar label={active.label} onPress={() => setPickerOpen(true)} />}
 
       <div className="m-badges-list">
-        {shown.map((b) => (
-          <Badge key={b.id} {...b} onPress={() => onOpenBadge?.(b)} />
+        {byMonth(shown).map((section) => (
+          <section key={section.month ?? 'undated'}>
+            {section.month && (
+              <div className="m-badges-section-head">
+                <h3 className="m-section-head m-badges-section">{section.month}</h3>
+                <div className="m-badges-divider" />
+              </div>
+            )}
+            {section.badges.map((b) => (
+              <Badge key={b.id} {...b} onPress={() => onOpenBadge?.(b)} />
+            ))}
+          </section>
         ))}
       </div>
 
