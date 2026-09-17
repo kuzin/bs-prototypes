@@ -447,6 +447,79 @@
   }
 }
 
+/* ── Title recommendations ─────────────────────────────────────────────── */
+.rmi-titles {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.rmi-titles-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rmi-titles-lede {
+  margin: -8px 0 16px;
+  font-size: var(--text-cell);
+  color: var(--c-gray-750);
+}
+
+/* Five across at full width; the covers set the column, so a narrower report
+   drops to four, three, two rather than shrinking the jackets. */
+.rmi-titles-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 20px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rmi-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rmi-title .bkcov {
+  margin-bottom: 8px;
+}
+
+.rmi-title-name {
+  font-size: var(--text-label);
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--c-text-dark);
+}
+
+.rmi-title-author {
+  font-size: var(--text-tag);
+  color: var(--c-gray-750);
+}
+
+/* Which genre found it — the link back to the motivation type, without which
+   this is just a shelf of books someone picked. */
+.rmi-title-genre {
+  margin-top: 6px;
+  align-self: flex-start;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--c-gray-150);
+  font-size: var(--text-micro);
+  font-weight: 700;
+  color: var(--c-gray-750);
+}
+
+@media (max-width: 720px) {
+  .rmi-titles-head {
+    flex-direction: column;
+  }
+}
+
 /* ── Factor table ──────────────────────────────────────────────────────── */
 /* The shared <Table>; what's local is the rank/description cell and the bar. */
 .rmi-factors-table {

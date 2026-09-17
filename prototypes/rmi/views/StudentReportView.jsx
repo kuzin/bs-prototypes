@@ -10,6 +10,7 @@ import {
   ReadingGoalAndActions,
   TopMotivationTypes,
   GenreRecommendations,
+  TitleRecommendations,
   FactorTable,
 } from '../components/ReportBlocks'
 import {
@@ -19,7 +20,8 @@ import {
   percentChange,
   ALL_FACTORS,
 } from '../scoring'
-import { responseFor, studentById } from '../data'
+import { responseFor, studentById, EDUCATOR } from '../data'
+import { bandForGrades } from '../titles'
 import { formatAnalysedAt } from '../format'
 import './StudentReportView.css'
 
@@ -113,6 +115,7 @@ export function StudentReportView({
             />
             <TopMotivationTypes scores={response.scores} />
             <GenreRecommendations scores={response.scores} />
+            <TitleRecommendations scores={response.scores} band={bandForGrades(EDUCATOR.grades)} />
             <FactorTable scores={response.scores} deltas={factorDeltas} />
           </>
         ) : (

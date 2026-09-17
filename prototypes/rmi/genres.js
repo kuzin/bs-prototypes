@@ -148,3 +148,50 @@ export const GENRES_BY_FACTOR = {
     },
   ],
 }
+
+/**
+ * What each toolkit genre means in the book catalogue's own vocabulary.
+ *
+ * The toolkit names shelves the way a librarian talks — "Epic Fantasy",
+ * "Hi-Lo Books (High Interest, Low Readability)" — while a catalogue record
+ * carries flatter tags. This is the join between them, and it's what makes the
+ * genre recommendations *drive* the title recommendations rather than sit
+ * beside them: a motivation type has three genres, each genre covers some tags,
+ * and a title that carries one of those tags is a candidate for that type.
+ *
+ * In the product this is the "RMI Type association" the doc asks JRC to add to
+ * Book Contexts. Deriving it from genre here means a catalogue of 55 books
+ * needs no new metadata to demonstrate the mechanism.
+ */
+export const BOOK_TAGS_BY_GENRE = {
+  'Epic Fantasy': ['Fantasy', 'Adventure'],
+  'Historical Fiction': ['Historical'],
+  'Biographies of Leaders': ['Memoir', 'Nonfiction'],
+  'Dystopian/Sci-Fi': ['Dystopian', 'Sci-Fi'],
+  'Survival/Adventure': ['Survival', 'Adventure'],
+  'Realistic Fiction (Complex Themes)': ['Realistic Fiction'],
+  'Mystery/Whodunit': ['Mystery'],
+  'Puzzle/Interactive Books': ['Mystery', 'Adventure'],
+  'Narrative Non-Fiction': ['Nonfiction', 'Science'],
+  'Graphic Novels & Manga': ['Graphic Novel'],
+  'Series/Franchise Books': ['Fantasy', 'Adventure'],
+  'Media Tie-ins': ['Graphic Novel', 'Fantasy'],
+  'Social Issues/Realistic Fiction': ['Realistic Fiction', 'Current Events'],
+  'Animal Rescue/Nature Books': ['Animals'],
+  'Historical Fiction (Civil Rights)': ['Historical'],
+  'Short Story Collections': ['Humor', 'Realistic Fiction'],
+  'Hi-Lo Books (High Interest, Low Readability)': ['Graphic Novel', 'Humor'],
+  'Graphic Novels': ['Graphic Novel'],
+  'Trending/New Releases': ['Fantasy', 'Realistic Fiction'],
+  'Books with Movie/TV Adaptations': ['Fantasy', 'Sci-Fi'],
+  'School/Social Dynamics Fiction': ['Realistic Fiction', 'Humor'],
+  'Informational Texts/Encyclopedias': ['Nonfiction', 'Science'],
+  'STEM Deep-Dives': ['Science', 'Sci-Fi'],
+  'Highly Accurate Historical Fiction': ['Historical'],
+  'Friendship/School Stories': ['Realistic Fiction'],
+  'Humor/Diary-Format Books': ['Humor'],
+  'Lighthearted Contemporary Fiction': ['Realistic Fiction', 'Humor'],
+  'Sports Fiction': ['Sports'],
+  'Tournament/Competition Books': ['Sports', 'Adventure'],
+  'Biographies of Athletes/Innovators': ['Memoir', 'Nonfiction', 'Sports'],
+}

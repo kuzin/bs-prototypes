@@ -18,6 +18,7 @@ export const EDUCATOR = {
   slug: 'malvarez-4b',
   plan: 'Classroom',
   indexesLimit: 4, // "Create up to four indexes each school year."
+  grades: [3, 5], // the classroom's grade band; titles are filtered to it
   studentsLimit: 40, // the roster's "N students out of M students added." notice
 }
 

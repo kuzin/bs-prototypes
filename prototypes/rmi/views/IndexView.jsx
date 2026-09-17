@@ -11,11 +11,13 @@ import {
   BennySays,
   ReadingGoalAndActions,
   GenreRecommendations,
+  TitleRecommendations,
   FactorTable,
   FactorIcon,
 } from '../components/ReportBlocks'
 import { summaryFor, recommendationsFor, readingGoalFor, topThreeFactors } from '../scoring'
-import { studentById, SURVEY_URL } from '../data'
+import { studentById, SURVEY_URL, EDUCATOR } from '../data'
+import { bandForGrades } from '../titles'
 import { formatLongRange, formatAnalysedAt, fractionCollected } from '../format'
 import './IndexView.css'
 
@@ -143,6 +145,11 @@ function SummaryTab({ index, scored }) {
         recommendations={recommendations}
       />
       <GenreRecommendations scores={index.scores} subject="class" />
+      <TitleRecommendations
+        scores={index.scores}
+        band={bandForGrades(EDUCATOR.grades)}
+        subject="class"
+      />
       <FactorTable scores={index.scores} />
     </>
   )

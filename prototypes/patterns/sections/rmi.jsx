@@ -6,9 +6,11 @@ import {
   FactorIcon,
   TopMotivationTypes,
   GenreRecommendations,
+  TitleRecommendations,
 } from '../../rmi/components/ReportBlocks'
 import { ALL_FACTORS, recommendationsFor, readingGoalFor, summaryFor } from '../../rmi/scoring'
-import { INDEXES } from '../../rmi/data'
+import { INDEXES, EDUCATOR } from '../../rmi/data'
+import { bandForGrades } from '../../rmi/titles'
 import { FACTORS } from '../../rmi/domain'
 import { useState } from 'react'
 import { SearchBar } from '../../rmi/components/SearchBar'
@@ -216,6 +218,40 @@ export const rmiSections = [
         </Variant>
         <Variant label="A class">
           <GenreRecommendations scores={FALL.scores} subject="class" />
+        </Variant>
+      </div>
+    ),
+  },
+  {
+    group: 'rmi',
+    id: 'rmi-titles',
+    name: 'TitleRecommendations',
+    usage: `import { TitleRecommendations } from './components/ReportBlocks'
+
+<TitleRecommendations
+  scores={response.scores}
+  band={bandForGrades(EDUCATOR.grades)}
+/>`,
+    desc: (
+      <>
+        Five books, chosen by the reader&rsquo;s motivation types &mdash; the thing the genre
+        mapping exists for. A librarian doesn&rsquo;t want &ldquo;try mystery&rdquo;, they want five
+        titles they can pull off the shelf. Every one is reachable from a type: type &rarr; the
+        toolkit&rsquo;s three genres for it &rarr; the catalogue tags those genres cover &rarr; the
+        title. Each card says which genre found it, so the recommendation explains itself.
+        <br />
+        <br />
+        The five span the three types rather than emptying the strongest first, and{' '}
+        <strong>Refresh</strong> pages through the rest instead of reshuffling the same five.{' '}
+        <code>band</code> is the reading-age window &mdash; the grade half of the metadata the doc
+        asks JRC to add to Book Contexts. Titles come from the Book Discovery catalogue, so the
+        jackets are real.
+      </>
+    ),
+    render: () => (
+      <div className="rmi-report">
+        <Variant label="One reader — press Refresh for the next five">
+          <TitleRecommendations scores={READER.scores} band={bandForGrades(EDUCATOR.grades)} />
         </Variant>
       </div>
     ),

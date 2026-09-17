@@ -1,11 +1,17 @@
+import { useState } from 'react'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { Icon } from '@components/Icon/Icon'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { Table } from '@components/Table/Table'
+import { BookCover } from '@components/BookCover/BookCover'
+import { Button } from '@components/Button/Button'
+import '@components/BookCover/BookCover.css'
+import '@components/Button/Button.css'
 import '@components/BennyBubble/BennyBubble.css'
 import '@components/Table/Table.css'
 import { FACTORS, MOTIVATION_OF } from '../domain'
 import { GENRES_BY_FACTOR } from '../genres'
+import { titleRecommendations, hasMoreTitles } from '../titles'
 import { rankedFactors, topThreeFactors } from '../scoring'
 import { asset } from '../assets'
 import './ReportBlocks.css'
@@ -310,6 +316,67 @@ export function GenreRecommendations({ scores, subject = 'reader' }) {
           )
         })}
       </div>
+    </section>
+  )
+}
+
+// ── Title recommendations ────────────────────────────────────────────────
+/**
+ * Five books, chosen by the reader's motivation types.
+ *
+ * This is the thing the genre mapping exists for. A librarian doesn't want
+ * "try mystery" — they want five titles they can pull off the shelf. Every one
+ * here is reachable from a motivation type: type → the toolkit's genres for it
+ * → the catalogue tags those genres cover → the title. Each card says which
+ * genre found it, so the recommendation explains itself and a librarian can
+ * defend it to a reader.
+ *
+ * Five span the three types rather than emptying the strongest one first, and
+ * Refresh pages through the rest instead of reshuffling the same five. The doc
+ * asks for exactly that, question marks and all: "Display 5? Titles and allow
+ * admin to refresh and fetch new titles?"
+ *
+ * The doc also filters on grade, which is the other half of the metadata it
+ * asks JRC to add to Book Contexts; `band` is the reading-age window to keep
+ * titles inside.
+ */
+export function TitleRecommendations({ scores, band, subject = 'reader' }) {
+  const [page, setPage] = useState(0)
+  const top = topThreeFactors(scores).filter((f) => GENRES_BY_FACTOR[f.name])
+
+  const picks = titleRecommendations(top, { band, page })
+  if (picks.length === 0) return null
+
+  const more = hasMoreTitles(top, { band })
+
+  return (
+    <section className="rmi-titles">
+      <header className="rmi-titles-head">
+        <div>
+          <h3 className="rmi-block-title">Title Recommendations</h3>
+          <p className="rmi-titles-lede">
+            Picked from the genres that suit {subject === 'class' ? 'this class' : 'this reader'}.
+            Review them before sharing.
+          </p>
+        </div>
+
+        {more && (
+          <Button variant="secondary" size="md" onClick={() => setPage((n) => n + 1)}>
+            Refresh
+          </Button>
+        )}
+      </header>
+
+      <ul className="rmi-titles-list">
+        {picks.map(({ book, genre }) => (
+          <li key={book.id} className="rmi-title">
+            <BookCover book={book} size="md" />
+            <span className="rmi-title-name">{book.title}</span>
+            <span className="rmi-title-author">{book.author}</span>
+            <span className="rmi-title-genre">{genre}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }
