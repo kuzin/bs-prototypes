@@ -186,6 +186,8 @@ export function App() {
   const [profileId, setProfileId] = useSticky('profile', PROFILES[0].id)
   const [switchReadersOpen, setSwitchReadersOpen] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  /* The streak card's dismissal, which the app keeps per profile in `streakComponentClosed`. */
+  const [streakClosed, setStreakClosed] = useSticky('streakClosed', false)
   const [showLogSearch, setShowLogSearch] = useState(false)
 
   /* What the Log tab's search searches: every title the reader has logged, flattened out of the
@@ -197,6 +199,18 @@ export function App() {
   const [logTab, setLogTab] = useSticky('logTab', LOG_TABS[0].id)
   const [discoverTab, setDiscoverTab] = useSticky('discoverTab', DISCOVER_TABS[0].id)
   const [communityTab, setCommunityTab] = useSticky('communityTab', 'microsite')
+
+  /**
+   * Home is a set of doors and everything behind them is on another tab, so a jump has to set the
+   * bottom tab AND the top tab under it — which is exactly the shape of the app's own
+   * `navigate('logTab', { screen: 'logTabs', params: { screen: 'theLog', params: { screen: … } } })`.
+   */
+  function goTo(nextTab, subTab) {
+    setTab(nextTab)
+    if (!subTab) return
+    if (nextTab === 'log') setLogTab(subTab)
+    if (nextTab === 'discover') setDiscoverTab(subTab)
+  }
 
   const d = DEVICES[device] ?? DEVICES['iphone-16-pro']
 
@@ -407,7 +421,7 @@ export function App() {
               <BookListDashboard
                 list={{ ...BOOK_LIST_DETAIL, ...openList }}
                 onClose={() => setOpenList(null)}
-                onOpenBook={() => {}}
+                onOpenBook={setOpenBook}
               />
             ) : null
           }
@@ -471,7 +485,17 @@ export function App() {
             )
           }
         >
-          {tab === 'home' && <HomeScreen flags={flags} />}
+          {tab === 'home' && (
+            <HomeScreen
+              flags={flags}
+              onGoTo={goTo}
+              onOpenBook={setOpenBook}
+              onOpenBadge={setOpenBadge}
+              onOpenReview={setOpenReview}
+              streakClosed={streakClosed}
+              onCloseStreak={() => setStreakClosed(true)}
+            />
+          )}
           {tab === 'log' && (
             <LogScreen
               tab={logTab}

@@ -89,3 +89,9 @@
   text-align: left;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
+
+/* Home.styles `spacing` — what the streak card leaves behind when it is closed. The app keeps the
+   24 rather than letting the sections above and below collapse together. */
+.m-home-streak-gap {
+  height: 24px;
+}

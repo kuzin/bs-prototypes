@@ -111,7 +111,7 @@ export const PROFILES = [
  * A session that finished a book is `completed`, which is what switches its colours from blue to
  * coral.
  */
-export const READING_LOG = {
+const SEPTEMBER = {
   month: 'September 2026',
   // The log's own banner uses the staticTitle variant.
   goal: { goalMinutes: 20, totalMinutes: 13 },
@@ -202,6 +202,71 @@ export const READING_LOG = {
     },
   ],
 }
+
+/**
+ * The month before, so the log's ‹ › actually page. `isCurrentMonth` is what disables the forward
+ * arrow, so only the newest month carries it — you cannot log into next week.
+ *
+ * Thinner than September on purpose: a reader's older months are usually a few sessions rather
+ * than a full grid, and a log that looks identical whichever month you are in tells you nothing
+ * about the reader.
+ */
+const AUGUST = {
+  month: 'August 2026',
+  goal: { goalMinutes: 20, totalMinutes: 20 },
+  isCurrentMonth: false,
+  weeks: [
+    {
+      range: 'Aug 23 - Aug 29',
+      /* Oldest first, like September's — the view reverses a week so the newest day is on top. */
+      days: [
+        {
+          day: 25,
+          weekday: 'Tue',
+          goalMet: true,
+          streak: 2,
+          sessions: [
+            {
+              id: 'a2',
+              title: 'Amulet: The Stonekeeper',
+              author: 'Kazu Kibuishi',
+              minutes: 21,
+              pages: 33,
+              completed: true,
+            },
+          ],
+        },
+        {
+          day: 27,
+          weekday: 'Thu',
+          goalMet: true,
+          streak: 3,
+          sessions: [
+            { id: 'a1', title: 'Smile', author: 'Raina Telgemeier', minutes: 26, pages: 40 },
+          ],
+        },
+      ],
+    },
+    {
+      range: 'Aug 9 - Aug 15',
+      days: [
+        {
+          day: 11,
+          weekday: 'Tue',
+          goalMet: false,
+          streak: 0,
+          sessions: [{ id: 'a3', title: 'Dog Man', author: 'Dav Pilkey', minutes: 12, pages: 22 }],
+        },
+      ],
+    },
+  ],
+}
+
+/** Newest first, which is the direction ‹ walks. */
+export const READING_LOG_MONTHS = [SEPTEMBER, AUGUST]
+
+/** The month the log opens on. */
+export const READING_LOG = SEPTEMBER
 
 export const ALL_TITLES = [
   {

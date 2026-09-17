@@ -80,6 +80,7 @@ export function ReadingLog({
   onPrevMonth,
   onNextMonth,
   isCurrentMonth,
+  isOldestMonth = false,
   goal,
   // `reading_goals_enabled` on the microsite plus the reader actually having a goal. It decides
   // the banner AND the per-day star — without a goal there is nothing for the star to report,
@@ -110,6 +111,7 @@ export function ReadingLog({
         onPrev={onPrevMonth}
         onNext={onNextMonth}
         disableNext={isCurrentMonth}
+        disablePrev={isOldestMonth}
         label={`Reading logs for ${month}`}
       />
 
