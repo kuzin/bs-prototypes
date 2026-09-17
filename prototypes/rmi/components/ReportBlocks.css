@@ -1,0 +1,455 @@
+/* The report body. Values are the standalone app's own
+   (`pages/_index_summary.scss`), whose palette variables are listed beside the
+   rules that use them. Its teal600 is our --c-teal exactly (#0CA7BC); the
+   lighter teals and the whole purple ramp are RMI's own, so they're declared
+   here rather than pretending to be design-system tokens. */
+
+.rmi-report {
+  --rmi-teal-50: #cdfaff;
+  --rmi-teal-100: #b4f7ff;
+  --rmi-teal-200: #84eefc;
+  --rmi-teal-600: var(--c-teal); /* #0CA7BC */
+  --rmi-teal-800: #017382;
+  --rmi-purple-50: #f9d8ff;
+  --rmi-purple-100: #f7caff;
+  --rmi-purple-200: #f0a6ff;
+  --rmi-purple-600: #c849e5;
+  --rmi-purple-800: #901faa;
+  --rmi-yellow-0: #fff6e6;
+  --rmi-yellow-200: #ffe091;
+}
+
+/* ── Score cards ───────────────────────────────────────────────────────── */
+.rmi-score-cards {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.rmi-score-card {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.rmi-score-card-inner {
+  padding: 20px 40px 20px 20px;
+  border-radius: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex: 1;
+}
+
+/* The outer two cards each point a triangle at the overall card between them. */
+.rmi-score-card--intrinsic::after,
+.rmi-score-card--extrinsic::before {
+  content: '';
+  position: relative;
+  width: 0;
+  height: 0;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+}
+.rmi-score-card--intrinsic::after {
+  border-left: 15px solid var(--rmi-teal-50);
+}
+.rmi-score-card--extrinsic::before {
+  border-right: 15px solid var(--rmi-purple-50);
+}
+
+.rmi-score-card--intrinsic {
+  --rmi-track: var(--rmi-teal-200);
+}
+.rmi-score-card--intrinsic .rmi-score-card-inner {
+  background: var(--rmi-teal-50);
+}
+.rmi-score-card--intrinsic .rmi-score-card-total {
+  color: var(--rmi-teal-800);
+}
+
+.rmi-score-card--extrinsic {
+  --rmi-track: var(--rmi-purple-200);
+}
+.rmi-score-card--extrinsic .rmi-score-card-inner {
+  background: var(--rmi-purple-50);
+}
+.rmi-score-card--extrinsic .rmi-score-card-total {
+  color: var(--rmi-purple-800);
+}
+
+.rmi-score-card--overall {
+  --rmi-track: var(--c-gray-250);
+}
+.rmi-score-card--overall .rmi-score-card-inner {
+  background: #fff;
+}
+.rmi-score-card--overall .rmi-score-card-total {
+  color: var(--c-gray-700);
+}
+
+.rmi-score-card-chart {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+}
+
+.rmi-gauge {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.rmi-score-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rmi-score-card-numbers {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.rmi-score-card-score {
+  font-size: var(--text-head);
+  font-weight: 800;
+  color: var(--c-text-dark);
+  line-height: 1.1;
+}
+
+.rmi-score-card-total {
+  font-size: var(--text-cell);
+  font-weight: 700;
+}
+
+.rmi-score-card-description {
+  font-size: var(--text-label);
+  color: var(--c-gray-750);
+}
+
+/* ── Deltas (only when comparing against another index) ────────────────── */
+.rmi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  margin-left: 6px;
+  font-size: var(--text-tag);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.rmi-delta--increase {
+  color: var(--c-green-ink);
+}
+.rmi-delta--decrease {
+  color: var(--c-red-ink);
+}
+.rmi-delta--no-change {
+  color: var(--c-gray-600);
+}
+
+/* ── Benny says ────────────────────────────────────────────────────────── */
+.rmi-benny-says {
+  margin-bottom: 20px;
+}
+
+.rmi-block-title,
+.rmi-benny-says-title {
+  margin: 0 0 10px;
+  font-size: var(--text-subhead);
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+
+.rmi-benny-says-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.rmi-benny-says-image {
+  width: 84px;
+  flex-shrink: 0;
+}
+
+.rmi-benny-says-content {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  padding-top: 14px;
+}
+
+/* The bubble's tail, pointing back at Benny. */
+.rmi-benny-says-triangle {
+  width: 0;
+  height: 0;
+  margin-top: 16px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 14px solid #fff;
+  flex-shrink: 0;
+}
+
+.rmi-benny-says-bubble-wrap {
+  flex: 1;
+  min-width: 0;
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px 20px;
+}
+
+.rmi-benny-says-bubble {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: var(--c-text);
+}
+
+.rmi-benny-says-last-run {
+  display: block;
+  margin-top: 8px;
+  font-size: var(--text-micro);
+  color: var(--c-gray-600);
+}
+
+/* ── Factor icon ───────────────────────────────────────────────────────── */
+.rmi-factor-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+/* The drawings are masks painted in `currentColor`, so each axis sets both its
+   ground and its ink — teal600 on teal100, purple600 on purple100. */
+.rmi-factor-icon--intrinsic {
+  background: var(--rmi-teal-100);
+  color: var(--rmi-teal-600);
+}
+.rmi-factor-icon--extrinsic {
+  background: var(--rmi-purple-100);
+  color: var(--rmi-purple-600);
+}
+.rmi-factor-icon--unknown {
+  background: var(--c-gray-300);
+  color: var(--c-gray-750);
+}
+/* The drawings are 18px inside a 28px square. */
+.rmi-factor-icon svg,
+.rmi-factor-icon img {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Reading goal + recommended actions ────────────────────────────────── */
+.rmi-actions-goals {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+  align-items: start;
+}
+
+.rmi-reading-goals-content {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.rmi-reading-goals-number {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--c-teal-ink);
+}
+
+.rmi-reading-goals-text {
+  font-size: var(--text-label);
+  font-weight: 700;
+  color: var(--c-gray-750);
+}
+
+.rmi-rec-actions-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: #fff;
+  border-radius: 16px;
+}
+
+.rmi-rec-actions-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  font-size: var(--text-cell);
+  line-height: 1.45;
+  color: var(--c-text);
+}
+.rmi-rec-actions-item + .rmi-rec-actions-item {
+  border-top: 1px solid var(--c-gray-200);
+}
+
+/* ── Factor table ──────────────────────────────────────────────────────── */
+.rmi-factors-table {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.rmi-factors-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rmi-factors-table th {
+  text-align: left;
+  padding: 14px 20px;
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: var(--c-gray-750);
+  border-bottom: 1px solid var(--c-gray-200);
+  white-space: nowrap;
+}
+
+.rmi-factors-score-col {
+  width: 300px;
+}
+
+.rmi-factors-table td {
+  padding: 12px 20px;
+  border-top: 1px solid var(--c-gray-200);
+  vertical-align: middle;
+}
+.rmi-factors-table tbody tr:first-child td {
+  border-top: none;
+}
+
+/* The top three motivators are tinted — the point of the table. */
+.rmi-factors-table tr.rmi-factors-top td {
+  background: var(--rmi-yellow-0);
+  border-top-color: var(--rmi-yellow-200);
+}
+.rmi-factors-table tr.rmi-factors-top + tr:not(.rmi-factors-top) td {
+  border-top-color: var(--rmi-yellow-200);
+}
+
+.rmi-table-factors {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rmi-table-factors-number {
+  font-weight: 800;
+  min-width: 22px;
+  color: var(--c-gray-750);
+}
+
+.rmi-table-factors-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.rmi-table-factors-name {
+  font-size: var(--text-cell);
+  font-weight: 700;
+  color: var(--c-text-dark);
+}
+
+.rmi-table-factors-description {
+  font-size: var(--text-tag);
+  color: var(--c-gray-600);
+}
+
+.rmi-factor-score {
+  display: flex;
+  align-items: center;
+}
+
+.rmi-factor-bar {
+  width: 150px;
+  height: 10px;
+  position: relative;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.rmi-factor-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: var(--c-gray-300);
+  border-radius: 6px;
+  position: absolute;
+  top: 2px;
+}
+
+.rmi-factor-bar-total {
+  height: 10px;
+  background: #4591ef; /* blue400 */
+  border-radius: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.rmi-factor-score-number {
+  font-size: var(--text-cell);
+  font-weight: 700;
+  color: var(--c-text-dark);
+  min-width: 26px;
+}
+
+/* ── Narrow ────────────────────────────────────────────────────────────── */
+@media (max-width: 1050px) {
+  .rmi-score-cards {
+    flex-direction: column;
+  }
+  .rmi-score-card {
+    flex-direction: column;
+    width: 100%;
+  }
+  .rmi-score-card-inner {
+    width: 100%;
+    padding-right: 20px;
+  }
+  .rmi-score-card--intrinsic::after {
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 15px solid var(--rmi-teal-50);
+    border-bottom: none;
+  }
+  .rmi-score-card--extrinsic::before {
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid var(--rmi-purple-50);
+    border-top: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .rmi-actions-goals {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rmi-benny-says-image {
+    width: 60px;
+  }
+  .rmi-factors-score-col {
+    width: auto;
+  }
+  .rmi-factor-bar {
+    width: 90px;
+  }
+  .rmi-table-factors-description {
+    display: none;
+  }
+}

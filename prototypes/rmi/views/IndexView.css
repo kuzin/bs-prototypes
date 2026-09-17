@@ -1,0 +1,74 @@
+/* One index period: the header's tag strip, then whichever tab body. */
+
+/* `.index-tags` — the two facts the educator needs while the survey is open:
+   how many have answered, and the URL to put on the board. */
+.rmi-index-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: -4px 0 18px;
+}
+
+.rmi-index-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 14px;
+  background: #fff;
+  border-radius: 999px;
+  font-size: var(--text-tag);
+  font-weight: 700;
+  color: var(--c-gray-750);
+}
+
+.rmi-index-tag-highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--c-teal-wash);
+  color: var(--c-teal-ink);
+  border-radius: 999px;
+  font-size: var(--text-tag);
+  font-weight: 800;
+}
+
+button.rmi-index-tag-copy {
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.13s ease;
+}
+button.rmi-index-tag-copy:hover {
+  background: #c3ecf3;
+}
+
+/* The report body sits on the page's grey; its blocks bring their own white. */
+.rmi-report {
+  padding-top: 20px;
+}
+
+/* ── Students tab ──────────────────────────────────────────────────────── */
+.rmi-students-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.rmi-top-motivators {
+  display: flex;
+  gap: 4px;
+}
+
+.rmi-access-code {
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.04em;
+  background: var(--c-gray-150);
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: var(--c-gray-800);
+}

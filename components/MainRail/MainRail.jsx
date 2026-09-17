@@ -17,8 +17,21 @@ import './MainRail.css'
  *   icons     24 x 24, Icons8 Plumpy duotone (see PlumpyIcon)
  *   bottom    announcement / help at a 44px pitch, then a 40px avatar
  *
+ * Beanstack's own eight destinations are the default. A product with its own
+ * rail — the standalone RMI app, whose rail is the same chrome with two
+ * destinations — passes `items` instead; everything else (overflow, the phone
+ * drawer, the active bar) works the same off whatever list it's given.
+ *
  * @param {string} active       id of the active section (preferred)
- * @param {number} activeIndex  legacy positional fallback (index into RAIL_ITEMS)
+ * @param {number} activeIndex  legacy positional fallback (index into `items`)
+ * @param {Array}  items        rail destinations; defaults to RAIL_ITEMS.
+ *                              `icon` is a PlumpyIcon name, or a node to render
+ *                              as-is for a product with its own glyphs.
+ * @param {boolean} whatsNew    show the What's New target (bottom strip and
+ *                              drawer row); defaults on only for the Beanstack
+ *                              rail, since it's a Beanstack destination.
+ * @param {Function} onAvatarClick  makes the avatar a button — for a product
+ *                              whose rail opens an account menu.
  */
 
 // The rail order exactly as the Figma frame lists it.
@@ -80,9 +93,18 @@ export const RAIL_SECTIONS = {
 // Height one rail item occupies: 52px target + 7px margin top and bottom.
 const ITEM_PITCH = 66
 
+/** `icon` is a PlumpyIcon name, or an already-built node for a product that
+    ships its own rail glyphs. */
+function RailGlyph({ icon }) {
+  return typeof icon === 'string' ? <PlumpyIcon name={icon} size={24} /> : icon
+}
+
 export function MainRail({
   active,
   activeIndex = 0,
+  items = RAIL_ITEMS,
+  whatsNew,
+  onAvatarClick,
   className = '',
   initials = 'EG',
   drawer = false,
@@ -92,7 +114,7 @@ export function MainRail({
   activeSectionItem,
   onSelectSectionItem,
 }) {
-  const activeId = active ?? RAIL_ITEMS[activeIndex]?.id
+  const activeId = active ?? items[activeIndex]?.id
   // Which drawer row is expanded. One at a time — the list is long enough that
   // two open groups push the rest off a phone screen.
   const [openId, setOpenId] = useState(null)
@@ -104,7 +126,7 @@ export function MainRail({
   // the nav, keep what fits, and put the rest behind the trigger.
   const navRef = useRef(null)
   const overflowRef = useRef(null)
-  const [visibleCount, setVisibleCount] = useState(RAIL_ITEMS.length)
+  const [visibleCount, setVisibleCount] = useState(items.length)
   const [open, setOpen] = useState(false)
 
   // ── Edge detection ────────────────────────────────────────────────────
@@ -152,8 +174,8 @@ export function MainRail({
     const available = nav.clientHeight
     let fits = Math.max(0, Math.floor(available / ITEM_PITCH))
     // If anything is left over, one slot has to hold the trigger itself.
-    if (fits < RAIL_ITEMS.length) fits = Math.max(0, fits - 1)
-    setVisibleCount(Math.min(RAIL_ITEMS.length, fits))
+    if (fits < items.length) fits = Math.max(0, fits - 1)
+    setVisibleCount(Math.min(items.length, fits))
   }, [])
 
   useLayoutEffect(() => {
@@ -180,8 +202,8 @@ export function MainRail({
     }
   }, [open])
 
-  const shown = RAIL_ITEMS.slice(0, visibleCount)
-  const overflow = RAIL_ITEMS.slice(visibleCount)
+  const shown = items.slice(0, visibleCount)
+  const overflow = items.slice(visibleCount)
   // Keep the active section reachable: if it got pushed into the overflow, the
   // trigger carries the active styling.
   const activeInOverflow = overflow.some((i) => i.id === activeId)
@@ -224,7 +246,7 @@ export function MainRail({
         </div>
 
         <nav className="main-rail-drawer-nav">
-          {RAIL_ITEMS.map((item) => {
+          {items.map((item) => {
             // A row expands in place when there are pages to show under it.
             // The section this prototype is actually in shows its own wired
             // nav — those rows navigate. Every other section shows the
@@ -245,7 +267,7 @@ export function MainRail({
                   aria-current={item.id === activeId ? 'page' : undefined}
                   aria-expanded={expandable ? open : undefined}
                 >
-                  <PlumpyIcon name={item.icon} size={24} />
+                  <RailGlyph icon={item.icon} />
                   <span className="main-rail-drawer-label">{item.label}</span>
                   {expandable && (
                     <span className="main-rail-drawer-fwd" aria-hidden="true">
@@ -280,11 +302,14 @@ export function MainRail({
           })}
 
           {/* The bottom strip is hidden at this width, so its one destination
-              that isn't a duplicate of the header's help link joins the list. */}
-          <button type="button" className="main-rail-drawer-row">
-            <PlumpyIcon name="announcement" size={24} />
-            <span className="main-rail-drawer-label">What&apos;s New</span>
-          </button>
+              that isn't a duplicate of the header's help link joins the list.
+              It's a Beanstack destination, so it rides with the default rail. */}
+          {(whatsNew ?? items === RAIL_ITEMS) && (
+            <button type="button" className="main-rail-drawer-row">
+              <PlumpyIcon name="announcement" size={24} />
+              <span className="main-rail-drawer-label">What&apos;s New</span>
+            </button>
+          )}
         </nav>
       </div>
     )
@@ -310,8 +335,9 @@ export function MainRail({
             title={item.label}
             aria-label={item.label}
             aria-current={item.id === activeId ? 'page' : undefined}
+            onClick={() => onSelect?.(item)}
           >
-            <PlumpyIcon name={item.icon} size={24} />
+            <RailGlyph icon={item.icon} />
           </button>
         ))}
 
@@ -347,9 +373,12 @@ export function MainRail({
                         className={`main-rail-overflow-item${
                           item.id === activeId ? ' main-rail-overflow-item--active' : ''
                         }`}
-                        onClick={() => setOpen(false)}
+                        onClick={() => {
+                          setOpen(false)
+                          onSelect?.(item)
+                        }}
                       >
-                        <PlumpyIcon name={item.icon} size={24} />
+                        <RailGlyph icon={item.icon} />
                         <span>{item.label}</span>
                       </button>
                     </li>
@@ -362,18 +391,33 @@ export function MainRail({
       </nav>
 
       <div className="main-rail-bottom">
-        <button
-          type="button"
-          className="main-rail-icon-btn"
-          title="What's New"
-          aria-label="What's New"
-        >
-          <PlumpyIcon name="announcement" size={24} />
-        </button>
+        {(whatsNew ?? items === RAIL_ITEMS) && (
+          <button
+            type="button"
+            className="main-rail-icon-btn"
+            title="What's New"
+            aria-label="What's New"
+          >
+            <PlumpyIcon name="announcement" size={24} />
+          </button>
+        )}
         <button type="button" className="main-rail-icon-btn" title="Support" aria-label="Support">
           <PlumpyIcon name="help" size={24} />
         </button>
-        <div className="main-rail-avatar">{initials}</div>
+        {onAvatarClick ? (
+          <button
+            type="button"
+            className="main-rail-avatar"
+            title="Account"
+            aria-label="Open account menu"
+            aria-haspopup="menu"
+            onClick={onAvatarClick}
+          >
+            {initials}
+          </button>
+        ) : (
+          <div className="main-rail-avatar">{initials}</div>
+        )}
       </div>
     </div>
   )

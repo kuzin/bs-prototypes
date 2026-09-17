@@ -1,0 +1,117 @@
+import { PageHeader } from '@components/PageHeader/PageHeader'
+import { Button } from '@components/Button/Button'
+import { BackBar } from '@components/BackBar/BackBar'
+import { Select } from '@components/Form/Form'
+import '@components/Form/Form.css'
+import { EmptyState } from '@components/Primitives/Primitives'
+import {
+  ScoreCards,
+  BennySays,
+  ReadingGoalAndActions,
+  FactorTable,
+} from '../components/ReportBlocks'
+import {
+  summaryFor,
+  recommendationsFor,
+  readingGoalFor,
+  percentChange,
+  ALL_FACTORS,
+} from '../scoring'
+import { INDEXES, responseFor, studentById } from '../data'
+import { formatAnalysedAt } from '../format'
+import './StudentReportView.css'
+
+/**
+ * `classroom/survey_responses/show` — one reader inside one index.
+ *
+ * The distinctive part is the filter bar: pick another index to compare
+ * against and every score grows a ± against that period, which is how an
+ * educator sees whether a reader moved between the fall and the winter.
+ */
+export function StudentReportView({ indexId, studentId, comparisonId, onComparison, onBack }) {
+  const student = studentById(studentId)
+  const index = INDEXES.find((i) => i.id === indexId)
+  const response = responseFor(indexId, studentId)
+
+  const comparison = comparisonId ? responseFor(comparisonId, studentId) : null
+
+  // Every index except this one, and only those this reader actually sat.
+  const options = INDEXES.filter(
+    (i) => i.id !== indexId && i.responses.some((r) => r.studentId === studentId),
+  )
+
+  const deltas = {}
+  if (comparison) {
+    deltas.intrinsic = percentChange(response.scores.intrinsic, comparison.scores.intrinsic)
+    deltas.extrinsic = percentChange(response.scores.extrinsic, comparison.scores.extrinsic)
+    deltas.overall = percentChange(response.scores.overall, comparison.scores.overall)
+  }
+
+  const factorDeltas = {}
+  if (comparison) {
+    for (const f of ALL_FACTORS) {
+      factorDeltas[f] = percentChange(response.scores.factors[f], comparison.scores.factors[f])
+    }
+  }
+
+  const firstName = student.name.split(' ')[0]
+
+  return (
+    <>
+      <BackBar label="Back to Index" onClick={onBack} />
+
+      <PageHeader
+        title={student.name}
+        actions={
+          <Button variant="primary" size="md">
+            Download
+          </Button>
+        }
+      />
+
+      <div className="rmi-filter-bar">
+        <Select value={indexId} disabled onChange={() => {}} className="rmi-filter-survey">
+          <option value={indexId}>{index.name}</option>
+        </Select>
+
+        <label className="rmi-filter-field">
+          <span>Compare against:</span>
+          <Select value={comparisonId ?? ''} onChange={(e) => onComparison(e.target.value || null)}>
+            <option value="">Select a survey to compare against</option>
+            {options.map((i) => (
+              <option key={i.id} value={i.id}>
+                {i.name}
+              </option>
+            ))}
+          </Select>
+        </label>
+      </div>
+
+      <div className="rmi-report">
+        {response ? (
+          <>
+            <ScoreCards scores={response.scores} deltas={deltas} />
+            <BennySays
+              summary={summaryFor(response.scores, { subject: firstName })}
+              analysedAt={formatAnalysedAt(index.analysedAt)}
+            />
+            <ReadingGoalAndActions
+              goal={readingGoalFor(response.scores)}
+              recommendations={recommendationsFor(response.scores, {
+                kind: 'reader_internal',
+                seed: student.name,
+              })}
+            />
+            <FactorTable scores={response.scores} deltas={factorDeltas} />
+          </>
+        ) : (
+          <EmptyState
+            variant="dashed"
+            title="No data collected."
+            description={`${firstName} hasn't completed this index yet.`}
+          />
+        )}
+      </div>
+    </>
+  )
+}

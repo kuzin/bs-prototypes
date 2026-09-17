@@ -153,43 +153,56 @@
   text-align: right;
 }
 
-.tbl-pg-btn {
+/* `.pagy` — the app's own pager: a right-aligned run of 32px rounded targets,
+   the current page filled, gaps standing in for elided runs. */
+.tbl-pagy {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.tbl-pg-btn,
+.tbl-pg-num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid var(--c-gray-200);
-  background: #fff;
-  color: var(--c-gray-750);
-  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  padding: 5px 10px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 700;
   line-height: 1;
+  color: var(--c-gray-750);
   cursor: pointer;
-  transition:
-    background 0.1s,
-    border-color 0.1s;
+  transition: background-color 0.13s ease;
 }
-.tbl-pg-btn:hover:not(:disabled) {
-  background: var(--c-gray-100);
-  border-color: var(--c-border-strong);
+
+.tbl-pg-btn:hover:not(:disabled),
+.tbl-pg-num:hover:not([aria-current]) {
+  background: var(--c-blue-wash);
 }
+
 .tbl-pg-btn:disabled {
-  opacity: 0.35;
+  color: var(--c-gray-500);
   cursor: default;
 }
 
-.tbl-pg-info {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--c-gray-750);
-  margin: 0 8px;
-  min-width: 48px;
-  text-align: center;
+.tbl-pg-num[aria-current] {
+  background: var(--c-blue);
+  color: #fff;
+  cursor: default;
 }
-.tbl-pg-sep {
-  color: var(--c-gray-350);
+
+.tbl-pg-gap {
+  min-width: 18px;
+  text-align: center;
+  color: var(--c-gray-500);
+  font-size: var(--text-label);
 }
 
 /* `hideHeader` — the row goes, but the cells keep laying the columns out, so

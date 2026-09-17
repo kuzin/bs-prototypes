@@ -1,0 +1,434 @@
+/* The reader-facing survey — `layouts/survey.html.erb` and
+   `pages/_survey.scss` / `_survey_intro.scss` / `_motivation_type.scss`.
+   Full-bleed and centred: no rail, no page header, one thing at a time. */
+
+/* Fills whatever the root gives it (`.rmi-root` is the 100vh column), rather
+   than claiming a viewport of its own — with the preview bar above, a second
+   100vh would push the first question below the fold. */
+.rmi-survey-layout {
+  position: relative;
+  width: 100%;
+  padding: 56px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+}
+
+/* 8px bar across the top, filling to question N of 20. */
+.rmi-survey-progress {
+  height: 8px;
+  background: var(--c-blue);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--question-number, 1) / 20 * 100%);
+  transition: width 0.25s ease;
+}
+
+.rmi-survey-heading {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--c-text-dark);
+}
+
+.rmi-survey-lede {
+  margin: 8px 0 0;
+  font-size: var(--text-modal);
+  color: var(--c-gray-750);
+}
+
+.rmi-center {
+  text-align: center;
+}
+
+/* ── Intro ─────────────────────────────────────────────────────────────── */
+.rmi-survey-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  max-width: 560px;
+}
+
+.rmi-survey-intro-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.rmi-survey-intro-image {
+  width: 132px;
+  flex-shrink: 0;
+}
+
+.rmi-survey-intro-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 320px;
+}
+.rmi-survey-intro-form .inp-wrap,
+.rmi-survey-intro-form input {
+  width: 100%;
+  text-align: center;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+/* A prototype-only shortcut so the survey can be walked without the handout. */
+.rmi-survey-hint {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: var(--text-tag);
+  color: var(--c-gray-600);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.rmi-survey-hint:hover {
+  color: var(--c-blue);
+}
+
+/* ── Question ──────────────────────────────────────────────────────────── */
+.rmi-survey-question {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.rmi-survey-question-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.rmi-survey-question-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+  max-width: 600px;
+  text-align: center;
+  color: var(--c-gray-900);
+}
+
+.rmi-survey-read-aloud {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-size: var(--text-modal);
+  font-weight: 500;
+  color: var(--c-blue);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+.rmi-survey-read-aloud[aria-pressed='true'] {
+  color: var(--c-gray-600);
+}
+
+.rmi-survey-answers {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 200px));
+  justify-content: center;
+  width: 100%;
+}
+
+.rmi-survey-answer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  background: var(--c-gray-150);
+  border: 3px solid var(--c-gray-150);
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    background 0.13s ease,
+    border-color 0.13s ease;
+}
+.rmi-survey-answer:hover {
+  background: var(--c-gray-250);
+  border-color: var(--c-gray-250);
+}
+.rmi-survey-answer.is-checked {
+  background: #fff;
+  border-color: var(--c-green);
+}
+.rmi-survey-answer:has(input:focus-visible) {
+  outline: 2px solid #4591ef;
+  outline-offset: 2px;
+}
+
+/* The chosen answer gets a green triangle folded into its top-right corner. */
+.rmi-survey-answer-check {
+  background: var(--c-green);
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  display: none;
+  align-items: flex-start;
+  justify-content: flex-end;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  color: #fff;
+}
+.rmi-survey-answer.is-checked .rmi-survey-answer-check {
+  display: flex;
+}
+.rmi-survey-answer-check svg {
+  margin: 2px 3px 0 0;
+}
+
+.rmi-survey-answer input {
+  position: absolute;
+  clip: rect(1px, 1px, 1px, 1px);
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+}
+
+.rmi-survey-answer-image {
+  width: 56px;
+  height: 56px;
+}
+
+.rmi-survey-answer-label {
+  font-size: var(--text-label);
+  line-height: 1.25;
+  color: var(--c-gray-800);
+  font-weight: 800;
+  text-align: center;
+}
+
+/* ── Checkpoints + completion ──────────────────────────────────────────── */
+.rmi-survey-checkpoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.rmi-survey-checkpoint-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.rmi-survey-checkpoint-image {
+  max-width: 420px;
+  width: 100%;
+}
+
+/* ── Motivation type reveal ────────────────────────────────────────────── */
+.rmi-motivation-summary {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.rmi-motivation-types {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.rmi-motivation-type-wrap {
+  grid-column: span 2;
+  position: relative;
+}
+
+.rmi-motivation-type {
+  padding: 32px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.rmi-motivation-type-image {
+  width: 110px;
+  margin-bottom: 16px;
+}
+.rmi-motivation-type--large .rmi-motivation-type-image {
+  width: 120px;
+}
+
+.rmi-motivation-type-title {
+  margin: 0 0 4px;
+  font-size: var(--text-modal);
+  font-weight: 800;
+  text-align: center;
+  color: var(--c-text-dark);
+}
+
+.rmi-motivation-type-text {
+  margin: 0;
+  font-size: var(--text-body);
+  text-align: center;
+  line-height: 1.4;
+  color: var(--c-text);
+}
+
+/* Each persona has its own ground (lib/_colors.scss). */
+.rmi-motivation-type--the-lion {
+  background: #fde9ce;
+}
+.rmi-motivation-type--the-climber {
+  background: #f3e3d8;
+}
+.rmi-motivation-type--the-detective {
+  background: #f2f8d3;
+}
+.rmi-motivation-type--the-fan {
+  background: #d4f2f7;
+}
+.rmi-motivation-type--the-guardian {
+  background: #f0dbdb;
+}
+.rmi-motivation-type--the-closer {
+  background: #fae2d1;
+}
+.rmi-motivation-type--the-star {
+  background: #d3f3f8;
+}
+.rmi-motivation-type--the-scholar {
+  background: #f8d4d3;
+}
+.rmi-motivation-type--the-butterfly {
+  background: #e9eedd;
+}
+.rmi-motivation-type--the-champion {
+  background: #feeecd;
+}
+.rmi-motivation-type--the-mystery {
+  background: #fdd2ce;
+}
+
+.rmi-motivation-stars {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56px;
+  pointer-events: none;
+}
+.rmi-motivation-stars--left {
+  left: -36px;
+}
+.rmi-motivation-stars--right {
+  right: -36px;
+}
+
+.rmi-motivation-subhead {
+  margin: 0;
+  font-size: var(--text-subhead);
+  font-weight: 800;
+  text-align: center;
+  color: var(--c-text-dark);
+}
+
+.rmi-motivation-goal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.rmi-motivation-goal-image {
+  width: 72px;
+}
+
+.rmi-motivation-goal-minutes {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--c-teal-ink);
+}
+
+.rmi-motivation-goal-label {
+  font-size: var(--text-modal);
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+
+.rmi-motivation-recs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.rmi-motivation-recs li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: var(--text-body);
+  line-height: 1.45;
+  color: var(--c-text);
+}
+
+.rmi-motivation-recs-icon {
+  color: var(--c-yellow);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Narrow ────────────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .rmi-survey-answers {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 600px) {
+  .rmi-survey-intro-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .rmi-motivation-stars {
+    display: none;
+  }
+}
+
+@media (max-width: 450px) {
+  .rmi-motivation-types {
+    grid-template-columns: 1fr;
+  }
+  .rmi-motivation-type-wrap {
+    grid-column: span 1;
+  }
+  .rmi-survey-heading {
+    font-size: 26px;
+  }
+  .rmi-survey-question-title {
+    font-size: 23px;
+  }
+}

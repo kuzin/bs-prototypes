@@ -96,8 +96,12 @@
     align-items: flex-start;
     text-align: left;
   }
+  /* Wrapping matters once the actions own the row: three buttons (Edit Index /
+     Print Access Codes / Download) are wider than a 375px screen, and without
+     it they run off the side rather than stacking. */
   .page-header__actions {
     flex: 0 0 100%;
+    flex-wrap: wrap;
     justify-content: flex-start;
     align-self: flex-start;
     margin-top: 16px;

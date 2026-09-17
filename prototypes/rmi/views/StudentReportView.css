@@ -1,0 +1,49 @@
+/* `classroom/survey_responses/show` — the filter bar above one reader's report.
+   `.filter-bar` in the app: a white strip carrying the index selector and the
+   comparison selector side by side. */
+
+.rmi-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 20px;
+  margin-bottom: 4px;
+}
+
+.rmi-filter-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rmi-filter-field > span {
+  font-size: var(--text-label);
+  font-weight: 700;
+  color: var(--c-gray-750);
+  white-space: nowrap;
+}
+
+.rmi-filter-field .sel-wrap,
+.rmi-filter-survey {
+  min-width: 232px;
+}
+
+@media (max-width: 860px) {
+  .rmi-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .rmi-filter-field {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .rmi-filter-field .sel-wrap,
+  .rmi-filter-survey {
+    width: 100%;
+    min-width: 0;
+  }
+}

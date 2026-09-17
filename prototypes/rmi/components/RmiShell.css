@@ -1,0 +1,172 @@
+/* Frame around the shared <MainRail>. The rail's own look is MainRail.css —
+   nothing here restyles it; this is the column it sits in, the phone topbar,
+   and the account menu the standalone product hangs off its avatar. */
+
+.rmi-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--c-gray-100);
+}
+
+/* MainRail brings its own 80px width and white ground; what the standalone app
+   adds is that the rail is sticky for the viewport's height (the way its
+   `.sidebar` is), so long report pages scroll under it.
+
+   The prototype's preview bar sits above the shell, so the rail is the
+   viewport minus that bar — PreviewBar publishes its height for exactly this.
+   Without it the bottom strip's avatar falls below the fold. */
+.rmi-rail {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: calc(100vh - var(--preview-bar-h, 0px));
+  border-right: 1px solid var(--c-gray-200);
+}
+
+.rmi-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Same measure and gutters as every other admin surface here
+   (AppShell.css → --admin-content-max / --admin-gutter). */
+.rmi-page {
+  flex: 1;
+  width: 100%;
+  padding: var(--admin-pad-top)
+    max(var(--admin-gutter), calc((100% - var(--admin-content-max)) / 2)) var(--admin-pad-bottom);
+}
+
+.rmi-footer {
+  padding: 20px max(var(--admin-gutter), calc((100% - var(--admin-content-max)) / 2)) 28px;
+  color: var(--c-gray-600);
+  font-size: var(--text-tag);
+}
+
+/* ── Account menu ────────────────────────────────────────────────────────
+   `.dropdown-items-list`: a white rounded panel beside the avatar, growing up
+   from the bottom of the rail. Fixed, so the one copy serves the rail's avatar
+   and the topbar's. */
+.rmi-menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.rmi-account-menu {
+  position: fixed;
+  bottom: 12px;
+  left: 86px; /* clear of the 80px rail */
+  z-index: 41;
+  min-width: 212px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
+  text-align: left;
+}
+
+.rmi-account-menu-head {
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid var(--c-gray-200);
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rmi-account-menu-head strong {
+  font-size: var(--text-label);
+  color: var(--c-text-dark);
+}
+.rmi-account-menu-head span {
+  font-size: var(--text-micro);
+  color: var(--c-gray-600);
+}
+
+.rmi-account-menu button {
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  font: inherit;
+  font-size: var(--text-label);
+  color: var(--c-text);
+  text-align: left;
+  cursor: pointer;
+}
+.rmi-account-menu button:hover {
+  background: var(--c-gray-100);
+}
+
+/* ── Phone ───────────────────────────────────────────────────────────────
+   Below 700px the rail is replaced by a topbar and reached as a drawer —
+   the same tier Sidebar uses, and the same <MainRail drawer> it opens. */
+.rmi-topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #fff;
+  border-bottom: 1px solid var(--c-gray-200);
+  position: sticky;
+  top: 0;
+  z-index: 25;
+}
+
+.rmi-topbar-toggle {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  border-radius: 100%;
+  color: var(--c-gray-900);
+}
+.rmi-topbar-toggle:hover {
+  background: var(--c-gray-150);
+}
+
+.rmi-topbar-logo {
+  width: 21px;
+  height: 28px;
+  fill: var(--c-accent);
+}
+
+.rmi-topbar-avatar {
+  margin: 0;
+}
+
+/* MainRail's drawer positions itself (fixed, full width, z-index 998); the only
+   thing it can't know is that the prototype's preview bar is above it. */
+.rmi-rail-drawer {
+  top: var(--preview-bar-h, 0px);
+  height: calc(100vh - var(--preview-bar-h, 0px));
+}
+
+@media (max-width: 700px) {
+  .rmi-shell {
+    flex-direction: column;
+  }
+  .rmi-rail {
+    display: none;
+  }
+  .rmi-topbar {
+    display: flex;
+  }
+  /* The menu hangs off the topbar's avatar instead of the rail's. */
+  .rmi-account-menu {
+    top: 60px;
+    right: 12px;
+    bottom: auto;
+    left: auto;
+  }
+}

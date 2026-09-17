@@ -15,6 +15,34 @@ import '@components/Table/Table.css'
  *   pageSize={5}
  * />
  */
+const GAP = Symbol('gap')
+
+/**
+ * The page numbers to show, as pagy's `series` builds them: the first page, the
+ * last page, and a window around the current one, with a gap standing in for
+ * each run that's elided. Short tables list every page instead.
+ *
+ *   page 0 of 9   → 1 2 3 … 9
+ *   page 4 of 9   → 1 … 4 5 6 … 9
+ */
+function pageSeries(page, totalPages, window = 1) {
+  if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i)
+
+  const wanted = new Set([0, totalPages - 1])
+  for (let p = page - window; p <= page + window; p++) {
+    if (p >= 0 && p < totalPages) wanted.add(p)
+  }
+
+  const out = []
+  let prev = null
+  for (const p of [...wanted].sort((a, b) => a - b)) {
+    if (prev !== null && p - prev > 1) out.push(GAP)
+    out.push(p)
+    prev = p
+  }
+  return out
+}
+
 export function Table({
   columns,
   rows,
@@ -93,7 +121,7 @@ export function Table({
 
   const hasPagination = pageSize && totalPages > 1
   const paginationControls = hasPagination ? (
-    <>
+    <nav className="tbl-pagy" aria-label="Pagination">
       <button
         className="tbl-pg-btn"
         onClick={() => setPage((p) => p - 1)}
@@ -102,9 +130,23 @@ export function Table({
       >
         ‹
       </button>
-      <span className="tbl-pg-info">
-        {page + 1} <span className="tbl-pg-sep">/</span> {totalPages}
-      </span>
+      {pageSeries(page, totalPages).map((p, i) =>
+        p === GAP ? (
+          <span key={`gap-${i}`} className="tbl-pg-gap" aria-hidden="true">
+            …
+          </span>
+        ) : (
+          <button
+            key={p}
+            className="tbl-pg-num"
+            onClick={() => setPage(p)}
+            aria-current={p === page ? 'page' : undefined}
+            aria-label={`Page ${p + 1}`}
+          >
+            {p + 1}
+          </button>
+        ),
+      )}
       <button
         className="tbl-pg-btn"
         onClick={() => setPage((p) => p + 1)}
@@ -113,7 +155,7 @@ export function Table({
       >
         ›
       </button>
-    </>
+    </nav>
   ) : null
 
   const tableEl = (

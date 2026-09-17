@@ -1,0 +1,49 @@
+/* Base for the standalone RMI app. The chrome, the report blocks and the
+   survey each bring their own CSS; what's here is the page ground. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--c-gray-100);
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+.rmi-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.rmi-root > .rmi-shell,
+.rmi-root > .rmi-survey-layout {
+  flex: 1;
+}
