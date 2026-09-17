@@ -176,12 +176,17 @@
 }
 
 /* ── Factor icon ───────────────────────────────────────────────────────── */
-/* `.factor-icon`: a 24px rounded square. The drawings are masks painted in
-   `currentColor`, so each axis sets both its ground and its ink — teal600 on
-   teal100, purple600 on purple100. */
+/* `.factor-icon`: a rounded square, tinted by axis. The drawings are masks
+   painted in `currentColor`, so each axis sets both its ground and its ink —
+   teal600 on teal100, purple600 on purple100.
+
+   The app's is 24px because its table cell is a single line. Ours carries the
+   factor's definition under its name, so the square grows to stand against a
+   two-line block rather than floating beside it. `--rmi-factor-box` lets the
+   one-line uses — the recommendation rows, the Top Motivators cell — keep 24. */
 .rmi-factor-icon {
-  width: 24px;
-  height: 24px;
+  width: var(--rmi-factor-box, 32px);
+  height: var(--rmi-factor-box, 32px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -203,8 +208,15 @@
 .rmi-factor-icon svg,
 .rmi-factor-icon img,
 .rmi-factor-icon .bsi {
-  width: 16px !important;
-  height: 16px !important;
+  width: var(--rmi-factor-glyph, 20px) !important;
+  height: var(--rmi-factor-glyph, 20px) !important;
+}
+
+/* One-line contexts keep the app's 24px square. */
+.rmi-rec-actions-item,
+.rmi-top-motivators {
+  --rmi-factor-box: 24px;
+  --rmi-factor-glyph: 16px;
 }
 
 /* ── Reading goal + recommended actions ────────────────────────────────── */
