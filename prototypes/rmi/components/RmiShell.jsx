@@ -20,15 +20,25 @@ import './RmiShell.css'
  * subscription rather than a school's admin login.
  */
 
-// `icons/two-tone/rmi.svg` and `people.svg`, the app's own rail glyphs. They
-// carry their own fill, so they're passed as nodes rather than PlumpyIcon names.
+/**
+ * The index glyph is the product's own logo with the blob dropped — just the
+ * three bars, in `currentColor` so the rail's active state tints it. Paths are
+ * the logo's own (`rmi-logo.svg`), which is why it reads as the same mark at
+ * 24px as the one in the box above it.
+ */
+function IndexBars() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M16.0663 10.1004C15.2708 10.1004 14.6263 10.7606 14.6263 11.5754L14.6263 15.214C14.6263 16.0288 15.2708 16.6891 16.0663 16.6891C16.8617 16.6891 17.5063 16.0288 17.5063 15.214L17.5063 11.5754C17.5063 10.7606 16.8617 10.1004 16.0663 10.1004ZM7.93376 7.41551C7.13831 7.41551 6.49377 8.07574 6.49377 8.89054L6.49378 15.214C6.49378 16.0288 7.13832 16.6891 7.93377 16.6891C8.72922 16.6891 9.37375 16.0288 9.37375 15.214L9.37374 8.89054C9.37374 8.07574 8.72921 7.41551 7.93376 7.41551ZM12.0462 11.969C11.2508 11.969 10.6063 12.6292 10.6063 13.444V15.214C10.6063 16.0288 11.2508 16.6891 12.0462 16.6891C12.8417 16.6891 13.4862 16.0288 13.4862 15.214V13.444C13.4862 12.6292 12.8417 11.969 12.0462 11.969Z" />
+    </svg>
+  )
+}
+
 const NAV = [
+  { id: 'indexes', label: 'Motivation Index', icon: <IndexBars /> },
   {
-    id: 'indexes',
-    label: 'Motivation Index',
-    icon: <img src={asset('nav/rmi.svg')} alt="" width={24} height={24} />,
-  },
-  {
+    // `icons/two-tone/people.svg` — carries its own fill, so it's a node rather
+    // than a PlumpyIcon name.
     id: 'readers',
     label: 'Readers',
     icon: <img src={asset('nav/people.svg')} alt="" width={24} height={24} />,
@@ -117,9 +127,14 @@ export function RmiShell({ section, onNavigate, educator, children }) {
         >
           <Icon name="menu" size={18} stroke={2} />
         </button>
-        <svg className="rmi-topbar-logo" viewBox="0 0 24 32" aria-hidden="true">
-          <path d="M8.626 6.934c0 0-2.765-3.301-6.174-0.407-4.015 3.409-3.504 10.254 8.248 25.171 0.291 0.369 0.852 0.442 0.7-0.313-0.431-2.133-0.614-6.205 3.594-10.001 5.274-4.759 11.544-12.716 7.525-18.394-4.052-5.724-11.834-2.273-13.892 3.944z" />
-        </svg>
+        <button
+          type="button"
+          className="rmi-rail-logo"
+          aria-label="Reading Motivation Index"
+          onClick={() => onNavigate('indexes')}
+        >
+          <img src={asset('rmi-logo.svg')} alt="" width={30} height={30} />
+        </button>
         <AccountMenu educator={educator} placement="bottom-end" />
       </div>
 
@@ -133,6 +148,17 @@ export function RmiShell({ section, onNavigate, educator, children }) {
         initials={educator.initials}
         whatsNew={false}
         avatar={<AccountMenu educator={educator} placement="right-end" />}
+        logo={
+          <button
+            type="button"
+            className="rmi-rail-logo"
+            aria-label="Reading Motivation Index"
+            title="Reading Motivation Index"
+            onClick={() => onNavigate('indexes')}
+          >
+            <img src={asset('rmi-logo.svg')} alt="" width={36} height={36} />
+          </button>
+        }
       />
 
       {isPhone && drawerOpen && (

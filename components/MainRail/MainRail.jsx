@@ -35,6 +35,8 @@ import './MainRail.css'
  * @param {ReactNode} avatar    replaces the avatar outright, for a product that
  *                              needs to own the element — anchoring a <Flyout>
  *                              to it, say. Takes precedence over onAvatarClick.
+ * @param {ReactNode} logo      replaces the heart in the rail's top box, for a
+ *                              product with its own mark and its own home.
  */
 
 // The rail order exactly as the Figma frame lists it.
@@ -109,6 +111,7 @@ export function MainRail({
   whatsNew,
   onAvatarClick,
   avatar,
+  logo,
   className = '',
   initials = 'EG',
   drawer = false,
@@ -322,12 +325,14 @@ export function MainRail({
   return (
     <div className={`main-rail ${className}`.trim()}>
       <div className="main-rail-top">
-        <a href="/bs-prototypes/" className="main-rail-logo-link" aria-label="Prototypes">
-          {/* The app's `bs-heart` symbol, filled with the accent color. */}
-          <svg className="main-rail-logo" viewBox="0 0 24 32" aria-hidden="true">
-            <path d="M8.626 6.934c0 0-2.765-3.301-6.174-0.407-4.015 3.409-3.504 10.254 8.248 25.171 0.291 0.369 0.852 0.442 0.7-0.313-0.431-2.133-0.614-6.205 3.594-10.001 5.274-4.759 11.544-12.716 7.525-18.394-4.052-5.724-11.834-2.273-13.892 3.944z" />
-          </svg>
-        </a>
+        {logo ?? (
+          <a href="/bs-prototypes/" className="main-rail-logo-link" aria-label="Prototypes">
+            {/* The app's `bs-heart` symbol, filled with the accent color. */}
+            <svg className="main-rail-logo" viewBox="0 0 24 32" aria-hidden="true">
+              <path d="M8.626 6.934c0 0-2.765-3.301-6.174-0.407-4.015 3.409-3.504 10.254 8.248 25.171 0.291 0.369 0.852 0.442 0.7-0.313-0.431-2.133-0.614-6.205 3.594-10.001 5.274-4.759 11.544-12.716 7.525-18.394-4.052-5.724-11.834-2.273-13.892 3.944z" />
+            </svg>
+          </a>
+        )}
       </div>
 
       <nav className="main-rail-nav" ref={navRef}>

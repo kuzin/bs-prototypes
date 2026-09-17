@@ -63,8 +63,15 @@
   font-size: var(--text-tag);
 }
 
-/* The account menu is a shared <Flyout>; all that's local is the identity line
-   above its items. */
+/* The account menu is a shared <Flyout>. Two things are local: the identity
+   line above its items, and where the panel sits. `right-end` hangs it from the
+   bottom of the *wrapper*, which includes the avatar's 20px margin — so it
+   overhangs the rail's end. Pulling it back by that margin lands the panel's
+   bottom edge on the avatar's. */
+.rmi-shell .flyout-pop--right-end {
+  bottom: 20px;
+}
+
 .rmi-account-head {
   padding: 8px 12px 10px;
   border-bottom: 1px solid var(--c-gray-200);
@@ -113,10 +120,22 @@
   background: var(--c-gray-150);
 }
 
-.rmi-topbar-logo {
-  width: 21px;
-  height: 28px;
-  fill: var(--c-accent);
+/* The product's own mark, in the rail's logo box and in the phone topbar. It
+   goes to the first destination rather than out of the app. */
+.rmi-rail-logo {
+  display: block;
+  padding: 0;
+  border: none;
+  background: none;
+  line-height: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+.rmi-rail-logo:hover {
+  transform: scale(1.08);
+}
+.rmi-rail-logo img {
+  display: block;
 }
 
 .rmi-topbar .main-rail-avatar {
