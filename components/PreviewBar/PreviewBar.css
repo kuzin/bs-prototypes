@@ -16,11 +16,13 @@
      --preview-bar-h is published so a prototype can size a full-height shell
      below the bar (`height: calc(100vh - var(--preview-bar-h) - …)`) or stick a
      header under it, instead of hard-coding a pixel guess. */
-  /* Small on purpose. This is the reviewer's chrome sitting on top of the
-     screen under review, and it was reading as part of the product — a 33px
-     pill in 14px bold is the size of the app's own tabs. It steps down a rung
-     so the eye goes past it to the page. */
-  --pvb-pill-h: 26px;
+  /* A rung below the product, not two. This is the reviewer's chrome sitting
+     on top of the screen under review, so it shouldn't read as one of the
+     app's own tab bars (33px pill, 14px bold) — but it still has to be
+     legible. Everything in here sits on the type ladder: the title at
+     --text-label, the view pills at --text-tag, the quiet text at
+     --text-micro. No fractional sizes; the ladder has none. */
+  --pvb-pill-h: 28px;
   --pvb-tray-h: calc(var(--pvb-pill-h) + 6px); /* + the tray's 3px padding */
   --preview-bar-h: calc(var(--pvb-tray-h) + 14px); /* + the bar's 7px padding */
 }
@@ -80,12 +82,12 @@ html:has(.pvb) {
   outline-offset: 1px;
 }
 .pvb-title {
-  font-size: 13px;
+  font-size: var(--text-label);
   font-weight: 800;
   white-space: nowrap;
 }
 .pvb-subtitle {
-  font-size: 11px;
+  font-size: var(--text-micro);
   color: var(--c-gray-500);
   white-space: nowrap;
 }
@@ -114,8 +116,8 @@ html:has(.pvb) {
   gap: 5px;
   align-items: center;
   height: var(--pvb-pill-h);
-  padding: 0 9px;
-  font-size: 12px;
+  padding: 0 10px;
+  font-size: var(--text-tag);
   font-weight: 700;
   color: var(--c-gray-400);
   white-space: nowrap;
@@ -165,7 +167,7 @@ html:has(.pvb) {
   height: var(--pvb-tray-h);
   padding: 0 10px;
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--text-tag);
   font-weight: 700;
   color: var(--c-gray-400);
   background: transparent;
@@ -217,9 +219,6 @@ html:has(.pvb) {
   .pvb-subtitle {
     display: none;
   }
-  .pvb-title {
-    font-size: 14px;
-  }
   /* The strip goes and the dropdown takes the row. */
   .pvb-views {
     display: none;
@@ -259,7 +258,7 @@ html:has(.pvb) {
   align-items: center;
   padding: 6px 11px;
   font: inherit;
-  font-size: 12.5px;
+  font-size: var(--text-tag);
   font-weight: 700;
   color: var(--c-gray-400);
   cursor: pointer;
@@ -274,7 +273,7 @@ html:has(.pvb) {
 }
 .pvb-cog-count {
   padding: 1px 7px;
-  font-size: 11.5px;
+  font-size: var(--text-micro);
   color: var(--c-gray-900);
   background: #fff;
   border-radius: 999px;
@@ -298,7 +297,7 @@ html:has(.pvb) {
   z-index: 1;
   padding: 8px 10px 6px;
   background: #fff;
-  font-size: 11.5px;
+  font-size: var(--text-micro);
   font-weight: 800;
   color: var(--c-text-light);
   text-transform: uppercase;
@@ -315,7 +314,7 @@ html:has(.pvb) {
 }
 .pvb-panel-section {
   padding: 2px 10px 4px;
-  font-size: 11px;
+  font-size: var(--text-micro);
   font-weight: 800;
   color: var(--c-gray-600);
   text-transform: uppercase;
@@ -339,12 +338,12 @@ html:has(.pvb) {
   min-width: 0;
 }
 .pvb-panel-label {
-  font-size: 13.5px;
+  font-size: var(--text-label);
   font-weight: 700;
   color: var(--c-text);
 }
 .pvb-panel-hint {
-  font-size: 12px;
+  font-size: var(--text-micro);
   color: var(--c-text-light);
 }
 
