@@ -302,20 +302,24 @@
   flex-direction: column;
 }
 
+/* `.table-factors__name` carries a weight and nothing else — the size is the
+   cell's own 15px, and so is the description's. The weight is the whole
+   hierarchy between them. */
 .rmi-table-factors-name {
   font-size: var(--text-cell);
-  font-weight: 700;
-  color: var(--c-text-dark);
+  font-weight: 800;
+  color: var(--c-gray-800);
 }
 
 .rmi-table-factors-description {
-  font-size: var(--text-tag);
-  color: var(--c-gray-600);
+  font-size: var(--text-cell);
+  color: var(--c-gray-750);
 }
 
 .rmi-factor-score {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 12px;
 }
 

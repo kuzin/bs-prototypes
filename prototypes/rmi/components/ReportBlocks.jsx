@@ -240,6 +240,7 @@ export function FactorTable({ scores, deltas = {}, scoreLabel = 'Motivation Scor
       key: 'score',
       label: scoreLabel,
       width: 300,
+      align: 'right',
       render: (score, row) => (
         <div className="rmi-factor-score">
           <div className="rmi-factor-bar">

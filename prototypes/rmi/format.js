@@ -38,11 +38,19 @@ export function formatAnalysedAt(iso) {
   return `${MONTHS[m - 1]} ${d} at ${h}:${String(min).padStart(2, '0')} ${meridiem}`
 }
 
+/** `percentage_completion` — scored responses over the roster, to 2 decimals. */
 export function percentComplete(index) {
-  return Math.round((index.responses.length / index.totalStudents) * 100)
+  if (index.totalStudents === 0) return 0
+  const pct = (index.responses.length / index.totalStudents) * 100
+  return Math.round(pct * 100) / 100
 }
 
-/** "21 of 24" — the "Results collected" tag in the index header. */
+/**
+ * `fraction_collected` — "21/24" for the "Results collected" tag. The helper
+ * returns a bare 0 before anyone has answered, not "0/24".
+ */
 export function fractionCollected(index) {
-  return `${index.responses.length} of ${index.totalStudents}`
+  const collected = index.responses.length
+  if (index.totalStudents === 0 || collected === 0) return '0'
+  return `${collected}/${index.totalStudents}`
 }
