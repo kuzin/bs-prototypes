@@ -201,7 +201,7 @@ export const rmiSections = [
     usage: `import { GenreRecommendations } from './components/ReportBlocks'
 
 <GenreRecommendations scores={response.scores} />
-<GenreRecommendations scores={index.scores} subject="class" />`,
+<GenreRecommendations scores={response.scores} action={<Button>View Recommendations</Button>} />`,
     desc: (
       <>
         The three genres of the reader&rsquo;s <em>strongest</em> motivation type, from the RMI
@@ -222,6 +222,16 @@ export const rmiSections = [
       <div className="rmi-report">
         <Variant label="One reader">
           <GenreRecommendations scores={READER.scores} />
+        </Variant>
+        <Variant label="With the way into the lists">
+          <GenreRecommendations
+            scores={READER.scores}
+            action={
+              <Button variant="secondary" size="md">
+                View Recommendations
+              </Button>
+            }
+          />
         </Variant>
       </div>
     ),
@@ -266,7 +276,7 @@ export const rmiSections = [
     name: 'BookLists',
     usage: `import { BookLists } from './components/ReportBlocks'
 
-<BookLists factor="grades" band={band} forReader="Amara" />`,
+<BookLists factor="grades" band={band} />`,
     desc: (
       <>
         A reader&rsquo;s three book lists &mdash; the three genres of their <em>strongest</em>{' '}
@@ -285,7 +295,7 @@ export const rmiSections = [
     render: () => (
       <div className="rmi-report">
         <Variant label="The Scholar — a reader whose top type is grades">
-          <BookLists factor="grades" band={bandForGrades(EDUCATOR.grades)} forReader="Amara" />
+          <BookLists factor="grades" band={bandForGrades(EDUCATOR.grades)} />
         </Variant>
       </div>
     ),
@@ -296,7 +306,8 @@ export const rmiSections = [
     name: 'ClassBookList',
     usage: `import { ClassBookList } from './components/ReportBlocks'
 
-<ClassBookList responses={index.responses} band={band} />`,
+<ClassBookList responses={index.responses} band={band} />
+<ClassBookList responses={index.responses} band={band} top={25} />`,
     desc: (
       <>
         The whole class&rsquo;s list &mdash; every book any reader here is being recommended,

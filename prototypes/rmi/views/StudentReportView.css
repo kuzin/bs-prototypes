@@ -14,15 +14,16 @@
   background: #fff;
 }
 
-/* Takes the remaining width; the select inside stays its own size. */
+/* Takes the remaining width, and fills it — the control names which index the
+   report is of, so a short box with a long white gap after it read as a field
+   waiting for something else to sit beside it. */
 .rmi-filter-survey {
   flex: 1;
   min-width: 0;
 }
 .rmi-filter-survey.sel-wrap {
-  display: inline-flex;
+  display: flex;
   width: auto;
-  max-width: 280px;
 }
 
 .rmi-filter-field {

@@ -18,6 +18,7 @@
   --rmi-purple-200: #f0a6ff;
   --rmi-purple-600: #c849e5;
   --rmi-purple-800: #901faa;
+  --rmi-blue-600: #196dd5;
   --rmi-yellow-0: #fff6e6;
   --rmi-yellow-200: #ffe091;
 }
@@ -355,43 +356,26 @@
   margin-bottom: 20px;
 }
 
+/* The title and its lede on the left, the way into the lists on the right. */
+.rmi-genres-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
 .rmi-genres-lede {
-  margin: -8px 0 16px;
+  margin: -8px 0 0;
   font-size: var(--text-cell);
   color: var(--c-gray-750);
 }
 
-.rmi-genre-type {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px;
-  border-radius: 10px;
-  background: var(--c-gray-150);
-}
-
-.rmi-genre-type-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.rmi-genre-type-portrait {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  display: block;
-}
-
-.rmi-genre-type-name {
-  font-size: var(--text-cell);
-  font-weight: 800;
-  color: var(--c-gray-800);
-}
-
-/* One column per genre, so the three read as parallel shelves rather than one
-   list you have to keep your place in. They were columns per motivation type
-   until the block narrowed to the strongest type alone. */
+/* One card per genre, so the three read as three shelves rather than one list
+   you have to keep your place in. They were columns inside a single grey block
+   until the block narrowed to the strongest motivation type alone, at which
+   point the block was only a border around three things that stand alone. */
 .rmi-genre-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -411,6 +395,43 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--shelf-ground, var(--c-gray-150));
+}
+
+/* ── Three shelves, three colours ──────────────────────────────────────────
+   A type's three genres are the same three in the same order wherever they
+   appear — on the summary as recommendations, on the Book List tab as lists —
+   so the colour is the position, not the genre. Second shelf is the purple
+   one on both screens, which is what makes them read as the same three things
+   rather than two unrelated sets of cards. The ramps are the product's own:
+   intrinsic teal, extrinsic purple, and the app's action blue for the third. */
+.rmi-shelf-1 {
+  --shelf-ink: var(--rmi-teal-800);
+  --shelf-ground: var(--rmi-teal-50);
+}
+.rmi-shelf-2 {
+  --shelf-ink: var(--rmi-purple-800);
+  --shelf-ground: var(--rmi-purple-50);
+}
+.rmi-shelf-3 {
+  --shelf-ink: var(--rmi-blue-600);
+  --shelf-ground: color-mix(in srgb, var(--rmi-blue-600) 14%, #fff);
+}
+
+/* The glyph that tells a shelf apart at a glance — thirty genre names is a
+   wall of text, and the three a reader is pointed at have to be read fast. */
+.rmi-genre-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--shelf-ink, var(--rmi-teal-800));
 }
 
 .rmi-genre-name {
@@ -541,16 +562,34 @@
   color: var(--c-gray-750);
 }
 
-/* One rail per genre. The gap is wider than a rail's own padding so two lists
-   read as two shelves rather than one long scroll. */
+/* A reader's lists are a stack of cards, not one card with three runs in it:
+   a single card made them read as one long scroll you lose your place in. */
 .rmi-booklist-groups {
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 20px;
+}
+
+/* Each list is its own card on the page's grey, the way every other block on
+   a report is — three shelves is three things to act on. */
+.rmi-booklist-group {
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
 }
 
 .rmi-booklist-group-head {
-  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+/* On a white list card the tint moves to the disc, so the shelf keeps its
+   colour without the card shouting it. */
+.rmi-booklist-group-head .rmi-genre-icon {
+  margin-bottom: 0;
+  background: var(--shelf-ground, var(--c-gray-150));
 }
 
 .rmi-booklist-group-name {
@@ -588,31 +627,16 @@
   min-width: 0;
 }
 
-.rmi-rollup-title {
-  margin-top: 8px;
-  font-size: var(--text-tag);
-  font-weight: 800;
-  line-height: 1.25;
-  color: var(--c-text-dark);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.rmi-rollup-author {
-  margin-top: 2px;
-  font-size: var(--text-micro);
-  color: var(--c-gray-750);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* The tooltip's own wrapper is the jacket's box, so it has to fill the cell
+   rather than shrink-wrap the way a span does. */
+.rmi-rollup-hit {
+  display: block;
 }
 
 /* How many of the room this one copy would serve. */
 .rmi-rollup-count {
   align-self: flex-start;
-  margin-top: 6px;
+  margin-top: 8px;
   padding: 2px 8px;
   border-radius: 999px;
   background: var(--rmi-purple-50);

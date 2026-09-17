@@ -195,3 +195,45 @@ export const BOOK_TAGS_BY_GENRE = {
   'Tournament/Competition Books': ['Sports', 'Adventure'],
   'Biographies of Athletes/Innovators': ['Memoir', 'Nonfiction', 'Sports'],
 }
+
+/**
+ * A glyph per genre, from the shared `<Icon>` registry.
+ *
+ * Thirty shelf names is a wall of text, and the three a reader is pointed at
+ * have to be told apart at a glance — the icon is what makes a genre card read
+ * as a shelf rather than as a paragraph with a bold first line. Literal where a
+ * genre has an obvious object (a sword, a trophy, a gamepad), and the nearest
+ * honest stand-in where it doesn't.
+ */
+export const GENRE_ICONS = {
+  'Epic Fantasy': 'sword',
+  'Historical Fiction': 'building-castle',
+  'Biographies of Leaders': 'crown',
+  'Dystopian/Sci-Fi': 'rocket',
+  'Survival/Adventure': 'mountain',
+  'Realistic Fiction (Complex Themes)': 'heart-handshake',
+  'Mystery/Whodunit': 'fingerprint',
+  'Puzzle/Interactive Books': 'puzzle',
+  'Narrative Non-Fiction': 'news',
+  'Graphic Novels & Manga': 'messages',
+  'Series/Franchise Books': 'books',
+  'Media Tie-ins': 'device-gamepad',
+  'Social Issues/Realistic Fiction': 'users',
+  'Animal Rescue/Nature Books': 'paw',
+  'Historical Fiction (Civil Rights)': 'flag',
+  'Short Story Collections': 'file-text',
+  'Hi-Lo Books (High Interest, Low Readability)': 'bolt',
+  'Graphic Novels': 'layout-grid',
+  'Trending/New Releases': 'trending-up',
+  'Books with Movie/TV Adaptations': 'movie',
+  'School/Social Dynamics Fiction': 'school',
+  'Informational Texts/Encyclopedias': 'book-2',
+  'STEM Deep-Dives': 'flask',
+  'Highly Accurate Historical Fiction': 'hourglass',
+  'Friendship/School Stories': 'friends',
+  'Humor/Diary-Format Books': 'mood-happy',
+  'Lighthearted Contemporary Fiction': 'sun',
+  'Sports Fiction': 'ball-basketball',
+  'Tournament/Competition Books': 'trophy',
+  'Biographies of Athletes/Innovators': 'medal',
+}

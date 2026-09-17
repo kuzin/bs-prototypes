@@ -2,14 +2,13 @@ import { useState } from 'react'
 import { PageHeader } from '@components/PageHeader/PageHeader'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
+import { Flyout, FlyoutMenu, FlyoutMenuItem } from '@components/Flyout/Flyout'
+import '@components/Flyout/Flyout.css'
 import { Table } from '@components/Table/Table'
 import { SearchBar } from '../components/SearchBar'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
-import { Select } from '@components/Form/Form'
-import '@components/Form/Form.css'
 import {
-  BookLists,
   ClassBookList,
   ScoreCards,
   BennySays,
@@ -29,6 +28,12 @@ import './IndexView.css'
  * partial, which is why the header and tab strip live here and the two tabs
  * are just bodies.
  */
+const ACTIONS = [
+  { label: 'Edit Index', icon: 'pencil' },
+  { label: 'Print Access Codes', icon: 'printer' },
+  { label: 'Download', icon: 'download' },
+]
+
 export function IndexView({ index, tab, onTab, onOpenStudent }) {
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -64,15 +69,7 @@ export function IndexView({ index, tab, onTab, onOpenStudent }) {
                   <Icon name={searchOpen ? 'x' : 'search'} size={18} />
                 </Button>
               )}
-              <Button variant="secondary" size="md">
-                Edit Index
-              </Button>
-              <Button variant="primary" size="md">
-                Print Access Codes
-              </Button>
-              <Button variant="primary" size="md">
-                Download
-              </Button>
+              <ActionsMenu />
             </div>
 
             <div className="rmi-index-tags">
@@ -127,6 +124,45 @@ export function IndexView({ index, tab, onTab, onOpenStudent }) {
   )
 }
 
+/**
+ * `Actions` — the header's three buttons behind one control.
+ *
+ * Three buttons of near-equal weight is three decisions to make before reading
+ * the report, and two of them were primary, which made the page look like it
+ * wanted something. One trigger says the page has actions without arguing about
+ * which one matters; the search toggle stays out of it because it acts on the
+ * table below rather than on the index.
+ */
+function ActionsMenu() {
+  return (
+    <Flyout
+      placement="bottom-end"
+      trigger={({ toggle, open }) => (
+        <Button
+          variant="primary"
+          size="md"
+          iconRight={<Icon name="chevron-down" size={15} stroke={2.4} />}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          onClick={toggle}
+        >
+          Actions
+        </Button>
+      )}
+    >
+      {({ close }) => (
+        <FlyoutMenu>
+          {ACTIONS.map(({ label, icon }) => (
+            <FlyoutMenuItem key={label} icon={<Icon name={icon} size={17} />} onClick={close}>
+              {label}
+            </FlyoutMenuItem>
+          ))}
+        </FlyoutMenu>
+      )}
+    </Flyout>
+  )
+}
+
 function SummaryTab({ index, scored }) {
   if (!scored) {
     return (
@@ -158,43 +194,15 @@ function SummaryTab({ index, scored }) {
  * `Book List` — what to pull off the shelf for this class.
  *
  * Its own tab rather than a block on the summary: it's the one part of a report
- * you act on somewhere else — at the shelves, or in a purchase order — so it
- * wants the whole width and a way to narrow to the reader in front of you.
+ * you act on somewhere else, at the shelves or in a purchase order, so it wants
+ * the whole width.
+ *
+ * No reader filter. One reader's lists are their own report's Book List tab,
+ * which is where you'd be if you wanted them — narrowing a class pull list to
+ * one child answers a question nobody asks standing at the shelves.
  */
 function BooksTab({ index }) {
-  const [readerId, setReaderId] = useState('all')
-
-  const band = bandForGrades(EDUCATOR.grades)
-  const reader = readerId === 'all' ? null : studentById(readerId)
-  const response = reader ? index.responses.find((r) => r.studentId === reader.id) : null
-
-  const filter = (
-    <label className="rmi-booklist-filter">
-      <span>Reader</span>
-      <Select value={readerId} onChange={(e) => setReaderId(e.target.value)}>
-        <option value="all">All readers</option>
-        {index.responses.map((r) => (
-          <option key={r.studentId} value={r.studentId}>
-            {studentById(r.studentId).name}
-          </option>
-        ))}
-      </Select>
-    </label>
-  )
-
-  /* Narrowed to one reader it becomes their own three lists — their top type's
-     three genres — because that is what this class's copy of the list is made
-     of, and it's what you'd hand them. */
-  return response ? (
-    <BookLists
-      factor={topThreeFactors(response.scores)[0].name}
-      band={band}
-      forReader={reader.name.split(' ')[0]}
-      action={filter}
-    />
-  ) : (
-    <ClassBookList responses={index.responses} band={band} action={filter} />
-  )
+  return <ClassBookList responses={index.responses} band={bandForGrades(EDUCATOR.grades)} />
 }
 
 function StudentsTab({ index, query, onQuery, searchOpen, onCloseSearch, onOpenStudent }) {

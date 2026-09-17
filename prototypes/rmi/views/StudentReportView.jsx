@@ -86,7 +86,7 @@ export function StudentReportView({
         title={student.name}
         actions={
           <Button variant="primary" size="md">
-            Download
+            Download Report
           </Button>
         }
       />
@@ -149,7 +149,14 @@ export function StudentReportView({
               })}
             />
             <TopMotivationTypes scores={response.scores} />
-            <GenreRecommendations scores={response.scores} />
+            <GenreRecommendations
+              scores={response.scores}
+              action={
+                <Button variant="secondary" size="md" onClick={() => onTab('books')}>
+                  View Recommendations
+                </Button>
+              }
+            />
             <FactorTable scores={response.scores} deltas={factorDeltas} />
           </>
         )}
