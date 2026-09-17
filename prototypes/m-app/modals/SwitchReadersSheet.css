@@ -1,0 +1,109 @@
+/* ProfilesModalStyles — the backdrop is its own layer at 50% black, and the sheet is absolutely
+   pinned to the bottom rather than laid out, so it sits over the tab bar. */
+.m-swr {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.m-swr-backdrop {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  cursor: pointer;
+  background: rgb(0 0 0 / 50%);
+  border: 0;
+}
+
+/* `subcontainer` — 17pt top corners, capped at 55% of the device height. */
+.m-swr-sheet {
+  position: relative;
+  max-height: 55%;
+  display: flex;
+  flex-direction: column;
+  background: var(--m-white);
+  border-radius: 17px 17px 0 0;
+  animation: m-swr-in 0.22s ease-out;
+}
+
+@keyframes m-swr-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* `sectionTop` — 66pt, a hairline under it, and the title centred on the SHEET: Cancel is
+   positioned rather than laid out, so the title doesn't centre on the space beside it. */
+.m-swr-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  height: 66px;
+  border-bottom: 1px solid var(--m-border-grey);
+}
+
+.m-swr-title {
+  padding: 0 10px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: -0.4px;
+  color: var(--m-grey-dark-1);
+}
+
+.m-swr-cancel {
+  position: absolute;
+  left: 20px;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.16px;
+  color: var(--m-accent);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.m-swr-list {
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+/* The current reader's row carries the rule; with nobody to switch to it carries neither the
+   rule nor the check. */
+.m-swr-current {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--m-border-grey);
+}
+.m-swr-current.is-only {
+  border-bottom: 0;
+}
+
+.m-swr-check {
+  display: inline-flex;
+  flex: none;
+}
+
+.m-swr-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  text-align: left;
+}
+.m-swr-row:active {
+  background: var(--m-grey-light-3);
+}

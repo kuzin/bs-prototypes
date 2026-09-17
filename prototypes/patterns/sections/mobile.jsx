@@ -9,6 +9,7 @@
  * handoff glossary: an engineer seeing `TextPill` here can find `src/components/shared/TextPill.tsx`.
  */
 import {
+  ProfileBar,
   PhoneFrame,
   Header,
   TabBar,
@@ -468,6 +469,54 @@ color: var(--m-green-dark);`,
                 WrapUpCard, ChallengeCard.
               </Text>
             </Card>
+          </div>
+        </MVariant>
+      </>
+    ),
+  },
+  {
+    group: 'm-content',
+    id: 'm-profile-bar',
+    name: 'ProfileBar',
+    desc: (
+      <>
+        <code>src/components/ProfileBar.tsx</code> &mdash; everything on the right of a root header,
+        and not just an avatar. The app puts up to four controls here and gates each one: a{' '}
+        <strong>switch-account</strong> icon for a reader linked to a second site, a{' '}
+        <strong>search</strong> icon the Log tab alone passes <code>logSearch</code> for,{' '}
+        <strong>settings</strong> on every root, and the <strong>avatar</strong>, which opens the
+        Profiles modal &mdash; a reader switcher, not a link to a profile page.
+        <br />
+        <br />A control renders only when it is handed a handler. The app&rsquo;s gates are
+        conditions on state we don&rsquo;t model; here the condition is whether there is anywhere
+        for the control to go, which keeps a dead icon out of a header whose whole job is to be
+        pressed.
+      </>
+    ),
+    usage: `import { ProfileBar } from '@mobile/components'
+
+<ProfileBar name="Maya Chen" onProfile={open} />
+<ProfileBar name="Maya Chen" onSearch={search} onSettings={settings} onProfile={open} />`,
+    render: () => (
+      <>
+        <MVariant label="a root header — avatar only, which is all this prototype can reach">
+          <div
+            style={{ background: '#fff', padding: 12, display: 'flex', justifyContent: 'flex-end' }}
+          >
+            <ProfileBar name="Maya Chen" onProfile={() => {}} />
+          </div>
+        </MVariant>
+        <MVariant label="the Log tab, with everywhere to go">
+          <div
+            style={{ background: '#fff', padding: 12, display: 'flex', justifyContent: 'flex-end' }}
+          >
+            <ProfileBar
+              name="Maya Chen"
+              onSwitchAccount={() => {}}
+              onSearch={() => {}}
+              onSettings={() => {}}
+              onProfile={() => {}}
+            />
           </div>
         </MVariant>
       </>

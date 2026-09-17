@@ -7,7 +7,7 @@ import {
   TabBar,
   TabBarV2,
   PlusMenu,
-  ProfileRow,
+  ProfileBar,
 } from '@mobile/components'
 import { ACCENT_PRESETS, DEFAULT_ACCENT } from '@mobile/accent'
 import { HomeScreen } from './HomeScreen'
@@ -16,6 +16,7 @@ import { BadgeDetail } from './screens/log/BadgeDetail'
 import { AchievementDetail } from './screens/log/AchievementDetail'
 import { BookDetail } from './screens/log/BookDetail'
 import { BookListDashboard } from './screens/discover/BookListDashboard'
+import { SwitchReadersSheet } from './modals/SwitchReadersSheet'
 import { TitleOptionsModal } from './modals/TitleOptionsModal'
 import { ReviewOptionsModal } from './modals/ReviewOptionsModal'
 import { ReviewDetails } from './screens/log/ReviewDetails'
@@ -23,7 +24,7 @@ import { LogScreen, LOG_TABS } from './screens/LogScreen'
 import { DiscoverScreen, DISCOVER_TABS } from './screens/DiscoverScreen'
 import { CommunityScreen } from './screens/CommunityScreen'
 import { TABS, PLUS_ACTIONS } from './tabs'
-import { BENNY_CHAT, BADGE_DETAIL, BOOK_DETAIL, BOOK_LIST_DETAIL } from './data'
+import { BENNY_CHAT, BADGE_DETAIL, BOOK_DETAIL, BOOK_LIST_DETAIL, PROFILES } from './data'
 
 /**
  * Sticky view state, so a hot reload does not throw away which tab you were on.
@@ -170,6 +171,12 @@ export function App() {
       document.removeEventListener('keydown', onKey)
     }
   }, [settingsOpen, setSettingsOpen])
+
+  /* Which reader the app is being used as. The header's avatar switches between them, so it is
+     app-wide state rather than the header's own. */
+  const [profileId, setProfileId] = useSticky('profile', PROFILES[0].id)
+  const [switchReadersOpen, setSwitchReadersOpen] = useState(false)
+  const profile = PROFILES.find((p) => p.id === profileId) ?? PROFILES[0]
 
   // Each tab keeps its own top-tab position, the way a stack navigator would.
   const [logTab, setLogTab] = useSticky('logTab', LOG_TABS[0].id)
@@ -327,7 +334,9 @@ export function App() {
             <Header
               variant="root"
               title={TITLES[tab]}
-              right={<ProfileRow name="Maya Chen" size="small" onPress={() => {}} />}
+              right={
+                <ProfileBar name={profile.name} onProfile={() => setSwitchReadersOpen(true)} />
+              }
             />
           }
           overlay={
@@ -378,6 +387,13 @@ export function App() {
                 open={Boolean(reviewOptions)}
                 review={reviewOptions}
                 onClose={() => setReviewOptions(null)}
+              />
+              <SwitchReadersSheet
+                open={switchReadersOpen}
+                profiles={PROFILES}
+                currentId={profileId}
+                onSelect={setProfileId}
+                onClose={() => setSwitchReadersOpen(false)}
               />
             </>
           }
