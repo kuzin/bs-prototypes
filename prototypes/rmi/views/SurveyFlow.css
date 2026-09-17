@@ -5,11 +5,15 @@
 /* Fills whatever the root gives it (`.rmi-root` is the 100vh column), rather
    than claiming a viewport of its own — with the preview bar above, a second
    100vh would push the first question below the fold. */
+/* The app's is `margin: 56px auto` over `padding: 0 24px`, which works because
+   its survey body is white. Ours sits in the prototype shell, whose ground is
+   the admin grey — a margin there shows through as a band above and below the
+   screen. Same 56px, taken as padding so the white is the layout's own, plus
+   room at the foot for the prototype nav. */
 .rmi-survey-layout {
   position: relative;
   width: 100%;
-  margin: 56px auto;
-  padding: 0 24px;
+  padding: 56px 24px calc(56px + var(--chrome-bottom, 0px));
   display: flex;
   flex-direction: column;
   justify-content: center;
