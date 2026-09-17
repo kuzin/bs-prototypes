@@ -313,13 +313,20 @@
   margin-bottom: 20px;
 }
 
+/* With only a portrait and a name left, three full-width bars would be mostly
+   empty. They sit side by side instead, each taking a third. */
 .rmi-top-types-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* The Mystery is on its own — it doesn't share the row with anything. */
+.rmi-top-types-list:has(> :only-child) {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .rmi-top-type {
@@ -347,22 +354,12 @@
   display: block;
 }
 
-.rmi-top-type-text {
-  display: flex;
-  flex-direction: column;
+.rmi-top-type-name {
   flex: 1;
   min-width: 0;
-}
-
-.rmi-top-type-name {
   font-size: var(--text-cell);
   font-weight: 800;
   color: var(--c-gray-800);
-}
-
-.rmi-top-type-desc {
-  font-size: var(--text-cell);
-  color: var(--c-gray-750);
 }
 
 /* ── Factor table ──────────────────────────────────────────────────────── */
