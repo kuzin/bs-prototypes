@@ -145,6 +145,34 @@ export const INDEXES = INDEX_DEFS.map((def) => {
 
 export const INDEX_BY_ID = Object.fromEntries(INDEXES.map((i) => [i.id, i]))
 
+/**
+ * A freshly created index period. It has no responses yet, so no scores — which
+ * is the state the summary's "No data collected." empty case is for.
+ */
+export function makeIndex({ name, startDate, endDate }) {
+  return {
+    id: `ix${Date.now()}`,
+    name,
+    startDate,
+    endDate,
+    responses: [],
+    scores: null,
+    totalStudents: STUDENTS.length,
+    analysedAt: null,
+  }
+}
+
+/**
+ * `SurveyRequest`'s overlap validation: a creator cannot have two index periods
+ * whose date ranges overlap, partially or one inside the other. Returns the
+ * clashing period, or null.
+ */
+export function overlappingIndex(indexes, { id, startDate, endDate }) {
+  return (
+    indexes.find((i) => i.id !== id && startDate <= i.endDate && endDate >= i.startDate) ?? null
+  )
+}
+
 export function responseFor(indexId, studentId) {
   return INDEX_BY_ID[indexId]?.responses.find((r) => r.studentId === studentId) ?? null
 }

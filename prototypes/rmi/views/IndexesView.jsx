@@ -4,7 +4,8 @@ import { Banner, EmptyState } from '@components/Primitives/Primitives'
 import { Table } from '@components/Table/Table'
 import { Icon } from '@components/Icon/Icon'
 import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
-import { EDUCATOR, INDEXES } from '../data'
+import { useState } from 'react'
+import { ConfirmModal } from '../components/ConfirmModal'
 import { formatRange, percentComplete } from '../format'
 import './IndexesView.css'
 
@@ -35,12 +36,22 @@ function IndexCount({ used, limit }) {
   )
 }
 
-export function IndexesView({ onOpenIndex, onNewIndex }) {
-  const rows = INDEXES.map((ix) => ({
+export function IndexesView({
+  indexes,
+  limit,
+  onOpenIndex,
+  onNewIndex,
+  onEditIndex,
+  onDeleteIndex,
+}) {
+  const [confirm, setConfirm] = useState(null)
+
+  const rows = indexes.map((ix) => ({
     id: ix.id,
     name: ix.name,
     dates: formatRange(ix.startDate, ix.endDate),
     completion: percentComplete(ix),
+    index: ix,
   }))
 
   const columns = [
@@ -59,18 +70,28 @@ export function IndexesView({ onOpenIndex, onNewIndex }) {
       key: 'id',
       label: '',
       align: 'right',
-      render: (id) => (
+      render: (id, row) => (
         <div className="rmi-row-actions">
-          <button type="button" title="Edit" aria-label="Edit index">
+          <button
+            type="button"
+            title="Edit"
+            aria-label={`Edit ${row.name}`}
+            onClick={() => onEditIndex(row.index)}
+          >
             <PlumpyIcon name="pencil" size={20} />
           </button>
-          <button type="button" title="Delete" aria-label="Delete index">
+          <button
+            type="button"
+            title="Delete"
+            aria-label={`Delete ${row.name}`}
+            onClick={() => setConfirm(row.index)}
+          >
             <PlumpyIcon name="trash" size={20} />
           </button>
           <button
             type="button"
             title="View"
-            aria-label="View index"
+            aria-label={`View ${row.name}`}
             onClick={() => onOpenIndex(id)}
           >
             <PlumpyIcon name="view" size={20} />
@@ -100,7 +121,7 @@ export function IndexesView({ onOpenIndex, onNewIndex }) {
       />
 
       <div className="rmi-banners">
-        <IndexCount used={INDEXES.length} limit={EDUCATOR.indexesLimit} />
+        <IndexCount used={indexes.length} limit={limit} />
 
         <Banner level="info" icon={<Icon name="info" size={22} />}>
           Beanstack&rsquo;s Reading Motivation Index&trade; (RMI) builds on work conducted by the
@@ -118,7 +139,7 @@ export function IndexesView({ onOpenIndex, onNewIndex }) {
         <EmptyState
           variant="dashed"
           title="No Indexes Created"
-          description="Click New Index to get started. Create up to four indexes each school year."
+          description={`Click New Index to get started. Create up to ${limit} indexes each school year.`}
           action={
             <Button variant="primary" size="md" onClick={onNewIndex}>
               New Index
@@ -126,6 +147,17 @@ export function IndexesView({ onOpenIndex, onNewIndex }) {
           }
         />
       )}
+
+      <ConfirmModal
+        open={!!confirm}
+        onClose={() => setConfirm(null)}
+        title={`Delete ${confirm?.name ?? ''}`}
+        confirmLabel="Delete"
+        onConfirm={() => onDeleteIndex(confirm.id)}
+      >
+        Are you sure you want to delete this index? This will delete every response collected during
+        it.
+      </ConfirmModal>
     </>
   )
 }

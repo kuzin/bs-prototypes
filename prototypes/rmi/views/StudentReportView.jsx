@@ -17,7 +17,7 @@ import {
   percentChange,
   ALL_FACTORS,
 } from '../scoring'
-import { INDEXES, responseFor, studentById } from '../data'
+import { responseFor, studentById } from '../data'
 import { formatAnalysedAt } from '../format'
 import './StudentReportView.css'
 
@@ -28,15 +28,22 @@ import './StudentReportView.css'
  * against and every score grows a ± against that period, which is how an
  * educator sees whether a reader moved between the fall and the winter.
  */
-export function StudentReportView({ indexId, studentId, comparisonId, onComparison, onBack }) {
+export function StudentReportView({
+  index,
+  indexes,
+  studentId,
+  comparisonId,
+  onComparison,
+  onBack,
+}) {
   const student = studentById(studentId)
-  const index = INDEXES.find((i) => i.id === indexId)
+  const indexId = index.id
   const response = responseFor(indexId, studentId)
 
   const comparison = comparisonId ? responseFor(comparisonId, studentId) : null
 
   // Every index except this one, and only those this reader actually sat.
-  const options = INDEXES.filter(
+  const options = indexes.filter(
     (i) => i.id !== indexId && i.responses.some((r) => r.studentId === studentId),
   )
 

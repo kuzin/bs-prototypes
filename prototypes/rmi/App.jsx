@@ -1,13 +1,15 @@
+import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 import { useStickyState } from '@components/useStickyState/useStickyState'
 import { RmiShell } from './components/RmiShell'
 import { IndexesView } from './views/IndexesView'
+import { IndexFormView } from './views/IndexFormView'
 import { IndexView } from './views/IndexView'
 import { StudentReportView } from './views/StudentReportView'
 import { ReadersView } from './views/ReadersView'
 import { SurveyFlow } from './views/SurveyFlow'
-import { EDUCATOR, INDEX_BY_ID, INDEXES } from './data'
+import { EDUCATOR, INDEXES, makeIndex } from './data'
 import './index.css'
 
 /**
@@ -44,7 +46,12 @@ export function App() {
   const [studentId, setStudentId] = useStickyState('rmi:student', null)
   const [comparisonId, setComparisonId] = useStickyState('rmi:comparison', null)
 
-  const index = indexId ? INDEX_BY_ID[indexId] : null
+  // The index periods are editable, so they're state rather than the module's
+  // list. `editing` is the form's subject: an index to change, or `'new'`.
+  const [indexes, setIndexes] = useState(INDEXES)
+  const [editing, setEditing] = useState(null)
+
+  const index = indexId ? (indexes.find((i) => i.id === indexId) ?? null) : null
 
   function openIndex(id) {
     setIndexId(id)
@@ -61,15 +68,42 @@ export function App() {
     setSection(next)
     setIndexId(null)
     setStudentId(null)
+    setEditing(null)
+  }
+
+  function saveIndex({ id, name, startDate, endDate }) {
+    if (id) {
+      setIndexes((list) => list.map((i) => (i.id === id ? { ...i, name, startDate, endDate } : i)))
+    } else {
+      const created = makeIndex({ name, startDate, endDate })
+      setIndexes((list) => [...list, created])
+    }
+    setEditing(null)
+  }
+
+  function deleteIndex(id) {
+    setIndexes((list) => list.filter((i) => i.id !== id))
+    if (indexId === id) setIndexId(null)
   }
 
   let body
   if (section === 'readers') {
     body = <ReadersView />
+  } else if (editing) {
+    body = (
+      <IndexFormView
+        index={editing === 'new' ? null : editing}
+        indexes={indexes}
+        limit={EDUCATOR.indexesLimit}
+        onSave={saveIndex}
+        onCancel={() => setEditing(null)}
+      />
+    )
   } else if (studentId && index) {
     body = (
       <StudentReportView
-        indexId={index.id}
+        index={index}
+        indexes={indexes}
         studentId={studentId}
         comparisonId={comparisonId}
         onComparison={setComparisonId}
@@ -79,7 +113,16 @@ export function App() {
   } else if (index) {
     body = <IndexView index={index} tab={tab} onTab={setTab} onOpenStudent={openStudent} />
   } else {
-    body = <IndexesView onOpenIndex={openIndex} onNewIndex={() => openIndex(INDEXES[0].id)} />
+    body = (
+      <IndexesView
+        indexes={indexes}
+        limit={EDUCATOR.indexesLimit}
+        onOpenIndex={openIndex}
+        onNewIndex={() => setEditing('new')}
+        onEditIndex={setEditing}
+        onDeleteIndex={deleteIndex}
+      />
+    )
   }
 
   return (

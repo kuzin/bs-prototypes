@@ -1,0 +1,19 @@
+/* `classroom/survey_requests/_form` — the Settings chunk and its buttons. The
+   `.form-chunk`, `.field-group` and `.page-buttons` rules are shared with the
+   roster's form; see ReadersView.css. */
+
+.rmi-form-errors {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* The name runs the width of a sentence; the dates sit side by side under it. */
+.rmi-index-name {
+  max-width: 480px;
+}
+
+.rmi-form-chunk-body .rmi-field-group {
+  align-items: flex-start;
+}

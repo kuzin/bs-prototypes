@@ -4,54 +4,6 @@
   margin-bottom: 20px;
 }
 
-/* `.form-chunk` — a bordered panel with a tinted header strip. The roster uses
-   one to hold the add form and the table together. */
-.rmi-form-chunk {
-  border: 1px solid var(--c-gray-250);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.rmi-form-chunk-head {
-  padding: 12px 20px;
-  background: var(--c-gray-0);
-  border-bottom: 1px solid var(--c-gray-250);
-}
-
-.rmi-form-chunk-title {
-  margin: 0;
-  font-size: var(--text-body);
-  font-weight: 800;
-  color: var(--c-text-dark);
-}
-
-.rmi-form-chunk-body {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px 20px 30px;
-  background: #fff;
-}
-
-/* `.field-group`: the field and its button on one baseline. */
-.rmi-field-group {
-  display: flex;
-  gap: 20px;
-  align-items: flex-end;
-}
-
-.rmi-add-field {
-  flex: 1;
-  max-width: 420px;
-}
-
-/* `.page-buttons` — the pair under a form page. */
-.rmi-page-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-}
-
 /* The access code is a copy target: the app copies the reader's survey link. */
 button.rmi-access-code {
   display: inline-flex;

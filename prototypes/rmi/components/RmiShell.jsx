@@ -20,29 +20,12 @@ import './RmiShell.css'
  * subscription rather than a school's admin login.
  */
 
-/**
- * The index glyph is the product's own logo with the blob dropped — just the
- * three bars, in `currentColor` so the rail's active state tints it. Paths are
- * the logo's own (`rmi-logo.svg`), which is why it reads as the same mark at
- * 24px as the one in the box above it.
- */
-function IndexBars() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M16.0663 10.1004C15.2708 10.1004 14.6263 10.7606 14.6263 11.5754L14.6263 15.214C14.6263 16.0288 15.2708 16.6891 16.0663 16.6891C16.8617 16.6891 17.5063 16.0288 17.5063 15.214L17.5063 11.5754C17.5063 10.7606 16.8617 10.1004 16.0663 10.1004ZM7.93376 7.41551C7.13831 7.41551 6.49377 8.07574 6.49377 8.89054L6.49378 15.214C6.49378 16.0288 7.13832 16.6891 7.93377 16.6891C8.72922 16.6891 9.37375 16.0288 9.37375 15.214L9.37374 8.89054C9.37374 8.07574 8.72921 7.41551 7.93376 7.41551ZM12.0462 11.969C11.2508 11.969 10.6063 12.6292 10.6063 13.444V15.214C10.6063 16.0288 11.2508 16.6891 12.0462 16.6891C12.8417 16.6891 13.4862 16.0288 13.4862 15.214V13.444C13.4862 12.6292 12.8417 11.969 12.0462 11.969Z" />
-    </svg>
-  )
-}
-
+// Plumpy names rather than nodes: MainRail renders them itself, and a glyph in
+// `currentColor` takes the active pill's tint — the app's two-tone files carry
+// their own fill and would sit dead next to one that doesn't.
 const NAV = [
-  { id: 'indexes', label: 'Motivation Index', icon: <IndexBars /> },
-  {
-    // `icons/two-tone/people.svg` — carries its own fill, so it's a node rather
-    // than a PlumpyIcon name.
-    id: 'readers',
-    label: 'Readers',
-    icon: <img src={asset('nav/people.svg')} alt="" width={24} height={24} />,
-  },
+  { id: 'indexes', label: 'Motivation Index', icon: 'insights' },
+  { id: 'readers', label: 'Readers', icon: 'people' },
 ]
 
 const ACCOUNT_ITEMS = ['Billing & Invoices', 'Edit Account', 'Sign Out']
