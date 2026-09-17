@@ -1,0 +1,95 @@
+/* Settings.tsx — a white screen, 20 either side, 28 of air under the header and 50 at the foot. */
+.m-set {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-set-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 28px 20px 50px;
+}
+.m-set-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* `leftItemContainer` — 16 above and below, so a row is 48 of tile plus 32 of air. */
+.m-set-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 16px 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  text-align: left;
+}
+.m-set-row:active {
+  opacity: 0.6;
+}
+
+/* `imageItemContainer` — 48pt at radius 20, which is a rounded square rather than a disc. The
+   colour is the row's own and is declared per row in the source. */
+.m-set-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 20px;
+}
+
+.m-set-title {
+  flex: 1;
+  min-width: 0;
+  margin-left: 16px;
+  font-weight: 400;
+  color: var(--m-c-secondary);
+}
+
+/* `disclosure_indicator` at its own 16×28 — wider than it is tall, which is the asset. */
+.m-set-chevron {
+  flex: none;
+  width: 28px;
+  height: 16px;
+  object-fit: contain;
+}
+
+/* `renderSeparatorSections` — inset 100 from the right, so the rule stops short of the chevron
+   rather than running under it. */
+.m-set-rule {
+  display: block;
+  height: 1px;
+  margin-right: 100px;
+  background: var(--m-c-border);
+}
+
+/* `signOutButton` — 40 above, 57 below, and the app's `lightestGray` ground with black text
+   rather than the tenant colour: signing out is not the thing the screen wants you to do. */
+.m-set-signout {
+  margin: 40px 0 57px;
+}
+
+.m-set-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.m-set-logo {
+  width: 50.54px;
+  height: 55.57px;
+  object-fit: contain;
+}
+
+.m-set-version {
+  padding-top: 16px;
+  font-size: 14px;
+  color: var(--m-c-dove-gray);
+}

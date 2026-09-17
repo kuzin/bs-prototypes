@@ -16,6 +16,8 @@ import { BadgeDetail } from './screens/log/BadgeDetail'
 import { AchievementDetail } from './screens/log/AchievementDetail'
 import { BookDetail } from './screens/log/BookDetail'
 import { BookListDashboard } from './screens/discover/BookListDashboard'
+import { Settings } from './screens/Settings'
+import { LogSearch } from './screens/LogSearch'
 import { SwitchReadersSheet } from './modals/SwitchReadersSheet'
 import { TitleOptionsModal } from './modals/TitleOptionsModal'
 import { ReviewOptionsModal } from './modals/ReviewOptionsModal'
@@ -24,7 +26,14 @@ import { LogScreen, LOG_TABS } from './screens/LogScreen'
 import { DiscoverScreen, DISCOVER_TABS } from './screens/DiscoverScreen'
 import { CommunityScreen } from './screens/CommunityScreen'
 import { TABS, PLUS_ACTIONS } from './tabs'
-import { BENNY_CHAT, BADGE_DETAIL, BOOK_DETAIL, BOOK_LIST_DETAIL, PROFILES } from './data'
+import {
+  BENNY_CHAT,
+  BADGE_DETAIL,
+  BOOK_DETAIL,
+  BOOK_LIST_DETAIL,
+  PROFILES,
+  ALL_TITLES_SECTIONS,
+} from './data'
 
 /**
  * Sticky view state, so a hot reload does not throw away which tab you were on.
@@ -176,6 +185,12 @@ export function App() {
      app-wide state rather than the header's own. */
   const [profileId, setProfileId] = useSticky('profile', PROFILES[0].id)
   const [switchReadersOpen, setSwitchReadersOpen] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [showLogSearch, setShowLogSearch] = useState(false)
+
+  /* What the Log tab's search searches: every title the reader has logged, flattened out of the
+     month sections All Titles reads them in. */
+  const loggedTitles = ALL_TITLES_SECTIONS.flatMap((section) => section.books)
   const profile = PROFILES.find((p) => p.id === profileId) ?? PROFILES[0]
 
   // Each tab keeps its own top-tab position, the way a stack navigator would.
@@ -335,12 +350,27 @@ export function App() {
               variant="root"
               title={TITLES[tab]}
               right={
-                <ProfileBar name={profile.name} onProfile={() => setSwitchReadersOpen(true)} />
+                <ProfileBar
+                  name={profile.name}
+                  /* `logSearch` is passed by the Log navigator alone — the other three roots
+                     have no log to search. */
+                  onSearch={tab === 'log' ? () => setShowLogSearch(true) : undefined}
+                  onSettings={() => setShowSettings(true)}
+                  onProfile={() => setSwitchReadersOpen(true)}
+                />
               }
             />
           }
           overlay={
-            openReview ? (
+            showSettings ? (
+              <Settings onBack={() => setShowSettings(false)} />
+            ) : showLogSearch ? (
+              <LogSearch
+                titles={loggedTitles}
+                onOpenBook={setOpenBook}
+                onClose={() => setShowLogSearch(false)}
+              />
+            ) : openReview ? (
               <ReviewDetails
                 review={openReview}
                 profile="Maya Chen"

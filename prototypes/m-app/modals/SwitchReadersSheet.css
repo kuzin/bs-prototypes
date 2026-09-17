@@ -75,35 +75,87 @@
   padding-bottom: 20px;
 }
 
-/* The current reader's row carries the rule; with nobody to switch to it carries neither the
-   rule nor the check. */
-.m-swr-current {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--m-border-grey);
-}
-.m-swr-current.is-only {
-  border-bottom: 0;
-}
-
-.m-swr-check {
-  display: inline-flex;
-  flex: none;
-}
-
+/* ── The readers ─────────────────────────────────────────────────────────── */
+/* ProfileListItem — 70pt, ruled between rows and not after the last. Every reader gets this row,
+   including the one you are: the check on the right is what marks them. */
 .m-swr-row {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 16px 20px;
+  height: 70px;
+  padding: 0 0 0 20px;
   cursor: pointer;
   background: none;
   border: 0;
+  border-bottom: 1px solid var(--m-border-grey);
   text-align: left;
+}
+.m-swr-row.is-last {
+  border-bottom: 0;
 }
 .m-swr-row:active {
   background: var(--m-grey-light-3);
+}
+
+/* The app's non-large avatar: 45pt at radius 22.5, 15 to the right of it. */
+.m-swr-avatar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  margin-right: 15px;
+  border-radius: 22.5px;
+  background: var(--m-red-light);
+  color: var(--m-orange-dark);
+  font-size: 15px;
+  font-weight: 800;
+}
+.m-swr-avatar > img {
+  width: 100%;
+  height: 100%;
+  border-radius: 22.5px;
+  object-fit: cover;
+}
+
+/* `profileFirstNameText`. */
+.m-swr-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: -0.29px;
+  color: var(--m-c-eerie-black);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The radio. Filled green with a check for the reader you are; an empty ring for the ones you
+   are not — which is the half that makes the list read as a choice.
+   DIVERGENCE — the ring is `gainsboroWhite`, the colour this sheet rules its own rows with,
+   rather than the app's `galleryGrey`. At #ececec on white the ring is there and nobody can see
+   it, which is the same as not drawing it. */
+.m-swr-mark {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-right: 20px;
+  border-radius: 13px;
+  background: var(--m-white);
+  border: 1px solid var(--m-border-grey);
+}
+.m-swr-mark.is-on {
+  background: var(--m-green);
+  border-color: var(--m-green);
+}
+
+.m-swr-check {
+  width: 11px;
+  height: 8px;
+  object-fit: contain;
 }

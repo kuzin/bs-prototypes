@@ -1,0 +1,97 @@
+.m-lsr {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+/* `searchBarContainer` — 20 either side, 12 above and below, the field and Cancel on one row. */
+.m-lsr-bar {
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+}
+
+/* SearchBar.styles.container — 48pt at radius 16 on `lightestGray`, 16 of padding either side and
+   a 16 gap between the glyph, the input and the clear. `searchBarContainerStyle` gives the field
+   80% of the row and Cancel takes the rest. */
+.m-lsr-field {
+  display: flex;
+  flex: 0 1 80%;
+  align-items: center;
+  gap: 16px;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: var(--m-c-lightest-gray);
+}
+
+.m-lsr-glyph {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.m-lsr-input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 16px;
+  color: var(--m-grey-dark-1);
+  background: none;
+  border: 0;
+  outline: none;
+}
+.m-lsr-input::placeholder {
+  color: #ccc;
+}
+
+.m-lsr-clear-slot {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+}
+
+.m-lsr-clear {
+  display: flex;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.m-lsr-clear-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+/* `cancelText` — 14/bold in the tenant colour. */
+.m-lsr-cancel {
+  flex: none;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--m-accent);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.m-lsr-results {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.m-lsr-results::-webkit-scrollbar {
+  display: none;
+}
