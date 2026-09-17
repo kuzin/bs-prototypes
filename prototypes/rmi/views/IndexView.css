@@ -85,3 +85,21 @@ button.rmi-index-tag-copy:hover {
   border-radius: 6px;
   color: var(--c-gray-800);
 }
+
+/* The Book List tab's reader filter, in the block's own header row. */
+.rmi-booklist-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rmi-booklist-filter > span {
+  font-size: var(--text-label);
+  font-weight: 700;
+  color: var(--c-gray-750);
+  white-space: nowrap;
+}
+
+.rmi-booklist-filter .sel-wrap {
+  min-width: 200px;
+}

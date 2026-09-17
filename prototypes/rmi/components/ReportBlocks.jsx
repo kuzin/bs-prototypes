@@ -4,14 +4,16 @@ import { Icon } from '@components/Icon/Icon'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { Table } from '@components/Table/Table'
 import { BookCover } from '@components/BookCover/BookCover'
+import { BookRail } from './BookRail'
 import { Button } from '@components/Button/Button'
+import { EmptyState } from '@components/Primitives/Primitives'
 import '@components/BookCover/BookCover.css'
 import '@components/Button/Button.css'
 import '@components/BennyBubble/BennyBubble.css'
 import '@components/Table/Table.css'
 import { FACTORS, MOTIVATION_OF } from '../domain'
 import { GENRES_BY_FACTOR } from '../genres'
-import { titleRecommendations, hasMoreTitles } from '../titles'
+import { titleRecommendations, hasMoreTitles, readerBookLists, classRollup } from '../titles'
 import { rankedFactors, topThreeFactors } from '../scoring'
 import { asset } from '../assets'
 import './ReportBlocks.css'
@@ -189,11 +191,12 @@ export function FactorIcon({ factor }) {
 export function ReadingGoalAndActions({ goal, recommendations }) {
   return (
     <div className="rmi-actions-goals">
+      {/* No heading: the figure and its label say it in three words, where the
+          heading said it in three more and pushed the figure off centre. */}
       <section className="rmi-reading-goals">
-        <h3 className="rmi-block-title rmi-block-title--center">Recommended Reading Goals</h3>
         <div className="rmi-reading-goals-content">
           <span className="rmi-reading-goals-number">{goal}</span>
-          <span className="rmi-reading-goals-text">Minutes Daily</span>
+          <span className="rmi-reading-goals-text">Daily Minute Goal</span>
         </div>
       </section>
 
@@ -374,6 +377,118 @@ export function TitleRecommendations({ scores, band, subject = 'reader' }) {
             <span className="rmi-title-name">{book.title}</span>
             <span className="rmi-title-author">{book.author}</span>
             <span className="rmi-title-genre">{genre}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+// ── Book lists ───────────────────────────────────────────────────────────
+/**
+ * A reader's three lists — the three genres of their strongest motivation type.
+ *
+ * One type, three genres, three rails. The toolkit gives a type three genres
+ * precisely so a reader has somewhere to go next without leaving what motivates
+ * them: a Scholar gets the three Scholar shelves. Each rail leads with the
+ * toolkit's own reason that genre suits the type, because a list of twelve
+ * books is an instruction and the reason is what makes it a recommendation.
+ */
+export function BookLists({ factor, band, forReader, action }) {
+  const lists = readerBookLists(factor, { band })
+  const def = FACTORS[factor]
+  const slug = def.student_name.toLowerCase().replace(/\s+/g, '-')
+  const titles = lists.reduce((n, l) => n + l.books.length, 0)
+  const who = forReader ?? def.student_name
+
+  return (
+    <section className="rmi-booklist">
+      <header className="rmi-booklist-head">
+        <div className="rmi-booklist-who">
+          <img
+            className="rmi-booklist-portrait"
+            src={asset(`factors/${slug}.png`)}
+            alt=""
+            width={44}
+            height={44}
+          />
+          <div>
+            <h3 className="rmi-block-title">Books for {who}</h3>
+            <p className="rmi-booklist-lede">
+              {lists.length > 0
+                ? `${titles} titles across the three genres that suit ${def.student_name}.`
+                : `${who} came out as ${def.student_name}.`}
+            </p>
+          </div>
+        </div>
+        {action}
+      </header>
+
+      {/* The Mystery is the one type with no genres: it isn't a reading taste,
+          it's the absence of a clear one, so there is nothing to recommend
+          against. The head stays, so whatever picked this reader can pick
+          another one. */}
+      {lists.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title="No book lists yet."
+          description="No motivator stood out, so there are no genres to build a list from. A second index will usually settle it."
+        />
+      ) : (
+        <div className="rmi-booklist-groups">
+          {lists.map(({ genre, why, books }) => (
+            <section key={genre} className="rmi-booklist-group">
+              <header className="rmi-booklist-group-head">
+                <h4 className="rmi-booklist-group-name">{genre}</h4>
+                <p className="rmi-booklist-group-why">{why}</p>
+              </header>
+              <BookRail books={books} />
+            </section>
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
+/**
+ * The whole class's list — every book any reader here is being recommended,
+ * counted and ordered by how many of them it serves.
+ *
+ * Not the class's own three lists: a class doesn't have a motivation type, and
+ * averaging twenty-four readers into one describes nobody. So this is the union
+ * of what those readers are actually shown — a pull list, where the count is
+ * what says whether to pull one copy or four.
+ *
+ * A grid of jackets rather than a list of rows: at this length a row apiece is
+ * a page nobody reaches the end of, and what you do with a pull list is scan it.
+ */
+export function ClassBookList({ responses, band, action }) {
+  const rollup = classRollup(responses, (scores) => topThreeFactors(scores)[0].name, { band })
+  if (rollup.length === 0) return null
+
+  return (
+    <section className="rmi-booklist">
+      <header className="rmi-booklist-head">
+        <div>
+          <h3 className="rmi-block-title">Class Book List</h3>
+          <p className="rmi-booklist-lede">
+            {rollup.length} titles across {responses.length} readers, most-wanted first. Review them
+            before sharing.
+          </p>
+        </div>
+        {action}
+      </header>
+
+      <ul className="rmi-rollup">
+        {rollup.map(({ book, readers }) => (
+          <li key={book.id} className="rmi-rollup-cell">
+            <BookCover book={book} size="fill" />
+            <span className="rmi-rollup-title">{book.title}</span>
+            <span className="rmi-rollup-author">{book.author}</span>
+            <span className="rmi-rollup-count">
+              {readers} {readers === 1 ? 'reader' : 'readers'}
+            </span>
           </li>
         ))}
       </ul>

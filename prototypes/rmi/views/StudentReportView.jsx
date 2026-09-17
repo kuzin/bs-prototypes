@@ -10,7 +10,7 @@ import {
   ReadingGoalAndActions,
   TopMotivationTypes,
   GenreRecommendations,
-  TitleRecommendations,
+  BookLists,
   FactorTable,
 } from '../components/ReportBlocks'
 import {
@@ -19,6 +19,7 @@ import {
   readingGoalFor,
   percentChange,
   ALL_FACTORS,
+  topThreeFactors,
 } from '../scoring'
 import { responseFor, studentById, EDUCATOR } from '../data'
 import { bandForGrades } from '../titles'
@@ -115,7 +116,11 @@ export function StudentReportView({
             />
             <TopMotivationTypes scores={response.scores} />
             <GenreRecommendations scores={response.scores} />
-            <TitleRecommendations scores={response.scores} band={bandForGrades(EDUCATOR.grades)} />
+            <BookLists
+              factor={topThreeFactors(response.scores)[0].name}
+              band={bandForGrades(EDUCATOR.grades)}
+              forReader={firstName}
+            />
             <FactorTable scores={response.scores} deltas={factorDeltas} />
           </>
         ) : (

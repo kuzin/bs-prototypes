@@ -6,12 +6,14 @@ import { Table } from '@components/Table/Table'
 import { SearchBar } from '../components/SearchBar'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
+import { Select } from '@components/Form/Form'
+import '@components/Form/Form.css'
 import {
+  BookLists,
+  ClassBookList,
   ScoreCards,
   BennySays,
   ReadingGoalAndActions,
-  GenreRecommendations,
-  TitleRecommendations,
   FactorTable,
   FactorIcon,
 } from '../components/ReportBlocks'
@@ -101,12 +103,15 @@ export function IndexView({ index, tab, onTab, onOpenStudent }) {
         items={[
           { id: 'summary', label: 'Summary' },
           { id: 'students', label: 'Students' },
+          { id: 'books', label: 'Book List' },
         ]}
       />
 
       <div className="rmi-report">
         {tab === 'summary' ? (
           <SummaryTab index={index} scored={scored} />
+        ) : tab === 'books' ? (
+          <BooksTab index={index} />
         ) : (
           <StudentsTab
             index={index}
@@ -144,14 +149,51 @@ function SummaryTab({ index, scored }) {
         goal={readingGoalFor(index.scores)}
         recommendations={recommendations}
       />
-      <GenreRecommendations scores={index.scores} subject="class" />
-      <TitleRecommendations
-        scores={index.scores}
-        band={bandForGrades(EDUCATOR.grades)}
-        subject="class"
-      />
       <FactorTable scores={index.scores} />
     </>
+  )
+}
+
+/**
+ * `Book List` — what to pull off the shelf for this class.
+ *
+ * Its own tab rather than a block on the summary: it's the one part of a report
+ * you act on somewhere else — at the shelves, or in a purchase order — so it
+ * wants the whole width and a way to narrow to the reader in front of you.
+ */
+function BooksTab({ index }) {
+  const [readerId, setReaderId] = useState('all')
+
+  const band = bandForGrades(EDUCATOR.grades)
+  const reader = readerId === 'all' ? null : studentById(readerId)
+  const response = reader ? index.responses.find((r) => r.studentId === reader.id) : null
+
+  const filter = (
+    <label className="rmi-booklist-filter">
+      <span>Reader</span>
+      <Select value={readerId} onChange={(e) => setReaderId(e.target.value)}>
+        <option value="all">All readers</option>
+        {index.responses.map((r) => (
+          <option key={r.studentId} value={r.studentId}>
+            {studentById(r.studentId).name}
+          </option>
+        ))}
+      </Select>
+    </label>
+  )
+
+  /* Narrowed to one reader it becomes their own three lists — their top type's
+     three genres — because that is what this class's copy of the list is made
+     of, and it's what you'd hand them. */
+  return response ? (
+    <BookLists
+      factor={topThreeFactors(response.scores)[0].name}
+      band={band}
+      forReader={reader.name.split(' ')[0]}
+      action={filter}
+    />
+  ) : (
+    <ClassBookList responses={index.responses} band={band} action={filter} />
   )
 }
 

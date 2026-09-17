@@ -7,6 +7,8 @@ import {
   TopMotivationTypes,
   GenreRecommendations,
   TitleRecommendations,
+  BookLists,
+  ClassBookList,
 } from '../../rmi/components/ReportBlocks'
 import { ALL_FACTORS, recommendationsFor, readingGoalFor, summaryFor } from '../../rmi/scoring'
 import { INDEXES, EDUCATOR } from '../../rmi/data'
@@ -216,9 +218,6 @@ export const rmiSections = [
         <Variant label="One reader">
           <GenreRecommendations scores={READER.scores} />
         </Variant>
-        <Variant label="A class">
-          <GenreRecommendations scores={FALL.scores} subject="class" />
-        </Variant>
       </div>
     ),
   },
@@ -252,6 +251,63 @@ export const rmiSections = [
       <div className="rmi-report">
         <Variant label="One reader — press Refresh for the next five">
           <TitleRecommendations scores={READER.scores} band={bandForGrades(EDUCATOR.grades)} />
+        </Variant>
+      </div>
+    ),
+  },
+  {
+    group: 'rmi',
+    id: 'rmi-booklist',
+    name: 'BookLists',
+    usage: `import { BookLists } from './components/ReportBlocks'
+
+<BookLists factor="grades" band={band} forReader="Amara" />`,
+    desc: (
+      <>
+        A reader&rsquo;s three book lists &mdash; the three genres of their <em>strongest</em>{' '}
+        motivation type, twelve titles apiece, each rail a shelf you look along. One type, not
+        three: the toolkit gives a type three genres precisely so a reader has somewhere to go next
+        without leaving what motivates them, so a Scholar gets the three Scholar shelves rather than
+        three unrelated ones.
+        <br />
+        <br />
+        Each rail leads with the toolkit&rsquo;s own reason that genre suits the type &mdash; a list
+        of twelve books is an instruction, and the reason is what makes it a recommendation. A title
+        sits in exactly one of the three: the genres under a type overlap, and nobody working down
+        three lists wants to meet the same book twice.
+      </>
+    ),
+    render: () => (
+      <div className="rmi-report">
+        <Variant label="The Scholar — a reader whose top type is grades">
+          <BookLists factor="grades" band={bandForGrades(EDUCATOR.grades)} forReader="Amara" />
+        </Variant>
+      </div>
+    ),
+  },
+  {
+    group: 'rmi',
+    id: 'rmi-class-booklist',
+    name: 'ClassBookList',
+    usage: `import { ClassBookList } from './components/ReportBlocks'
+
+<ClassBookList responses={index.responses} band={band} />`,
+    desc: (
+      <>
+        The whole class&rsquo;s list &mdash; every book any reader here is being recommended,
+        counted and ordered by how many of them it serves. Not the class&rsquo;s own three lists: a
+        class doesn&rsquo;t have a motivation type, and averaging twenty-four readers into one
+        describes nobody. So it&rsquo;s the union of what those readers are <em>actually</em> shown,
+        and the count is what says whether to pull one copy or four.
+        <br />
+        <br />A grid of jackets rather than a list of rows: at three hundred titles a row apiece is
+        a page nobody reaches the end of, and what you do with a pull list is scan it.
+      </>
+    ),
+    render: () => (
+      <div className="rmi-report">
+        <Variant label="A whole class">
+          <ClassBookList responses={FALL.responses} band={bandForGrades(EDUCATOR.grades)} />
         </Variant>
       </div>
     ),

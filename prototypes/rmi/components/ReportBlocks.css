@@ -170,10 +170,6 @@
   line-height: 1.25;
   color: var(--c-gray-800);
 }
-.rmi-block-title--center {
-  text-align: center;
-  margin-bottom: 0;
-}
 
 /* ── Factor icon ───────────────────────────────────────────────────────── */
 /* `.factor-icon`: a rounded square, tinted by axis. The drawings are masks
@@ -229,13 +225,10 @@
   margin-bottom: 20px;
 }
 
-/* The card stretches to whatever the actions beside it need, so the figure has
-   to sit on the card's own centre line — not on the centre of the space left
-   under the title, which is where it lands if the title takes part in the
-   centring. The title is pinned to the top instead, and `min-height` keeps the
-   figure clear of it on the shortest card. */
+/* The card stretches to whatever the actions beside it need, and the figure
+   sits on its centre line. Nothing else is in here, so the centring is the
+   card's own — no title to work around. */
 .rmi-reading-goals {
-  position: relative;
   grid-column: span 2;
   background: #fff;
   padding: 20px;
@@ -244,14 +237,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 160px;
-}
-
-.rmi-reading-goals > .rmi-block-title--center {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
 }
 
 .rmi-reading-goals-content {
@@ -518,6 +503,121 @@
   .rmi-titles-head {
     flex-direction: column;
   }
+}
+
+/* ── Book lists ────────────────────────────────────────────────────────── */
+.rmi-booklist {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.rmi-booklist-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* The type's portrait beside the heading — the same art the reader was shown
+   when they were told which type they are. */
+.rmi-booklist-who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.rmi-booklist-portrait {
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.rmi-booklist-lede {
+  margin: 2px 0 0;
+  font-size: var(--text-cell);
+  color: var(--c-gray-750);
+}
+
+/* One rail per genre. The gap is wider than a rail's own padding so two lists
+   read as two shelves rather than one long scroll. */
+.rmi-booklist-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.rmi-booklist-group-head {
+  margin-bottom: 6px;
+}
+
+.rmi-booklist-group-name {
+  margin: 0;
+  font-size: var(--text-head);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+
+/* The toolkit's own reason this genre suits the type — what turns a list of
+   twelve books into a recommendation. */
+.rmi-booklist-group-why {
+  margin: 2px 0 0;
+  font-size: var(--text-tag);
+  line-height: 1.45;
+  color: var(--c-gray-750);
+}
+
+/* ── The class's pull list ─────────────────────────────────────────────── */
+/* A grid of jackets: at three hundred titles a row apiece is a page nobody
+   reaches the end of, and what you do with a pull list is scan it. */
+.rmi-rollup {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 20px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rmi-rollup-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rmi-rollup-title {
+  margin-top: 8px;
+  font-size: var(--text-tag);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rmi-rollup-author {
+  margin-top: 2px;
+  font-size: var(--text-micro);
+  color: var(--c-gray-750);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* How many of the room this one copy would serve. */
+.rmi-rollup-count {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--rmi-purple-50);
+  font-size: var(--text-micro);
+  font-weight: 700;
+  color: var(--rmi-purple-800);
 }
 
 /* ── Factor table ──────────────────────────────────────────────────────── */
