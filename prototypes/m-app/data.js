@@ -113,26 +113,19 @@ export const EARNED_BADGES = [
 ]
 
 /**
- * The readers on this account, for the header's Switch Readers sheet.
+ * The accounts signed in on this device — `authentication.accounts` — and the readers under each.
  *
- * An account holds several readers — that is the shape a public-library account has, and it is
- * why the avatar opens a switcher rather than a profile page. A school account is one reader to
- * one login, and the sheet has its own fork for that: drop the second entry here and it renders
- * the single-reader state the app draws.
- */
-export const PROFILES = [
-  { id: 'p1', name: 'Maya Chen' },
-  { id: 'p2', name: 'Leo Chen' },
-]
-
-/**
- * The accounts signed in on this device — `authentication.accounts`, which Settings > Account
- * lists.
+ * The model is two levels and both are plural: **an account is a login at one Beanstack site, and
+ * an account holds several readers.** Every school and every library runs its own site with its
+ * own challenges and branding, so a family commonly has a login at their school's and another at
+ * their public library's; the app signs in to each and reads under one at a time. Inside whichever
+ * account is current, the header avatar swaps between that account's readers.
  *
- * Beanstack is not one site: every school and every library runs its own, with its own challenges
- * and its own branding, and a family commonly belongs to both. The app holds a signed-in account
- * per site and reads under one of them at a time, which is why this is a list rather than a
- * profile, and why exactly one entry carries `current`.
+ * So the same child is two profiles, one per site — Maya is registered at both — and Ada is only
+ * at the public library, which is what makes the second level visible rather than theoretical.
+ *
+ * A school account is the degenerate case: one login to one reader. `readers.length === 1` is what
+ * the app's single-reader forks key on, and dropping an account here to one entry renders them.
  */
 export const ACCOUNTS = [
   {
@@ -140,8 +133,195 @@ export const ACCOUNTS = [
     libraryName: 'Lakeside Elementary Library',
     holder: 'Grace Chen',
     current: true,
+    readers: [
+      { id: 'p1', name: 'Maya Chen' },
+      { id: 'p2', name: 'Leo Chen' },
+    ],
   },
-  { id: 'a2', libraryName: 'Riverside Public Library', holder: 'Grace Chen' },
+  {
+    id: 'a2',
+    libraryName: 'Riverside Public Library',
+    holder: 'Grace Chen',
+    readers: [
+      { id: 'p3', name: 'Maya Chen' },
+      { id: 'p4', name: 'Leo Chen' },
+      { id: 'p5', name: 'Ada Chen' },
+    ],
+  },
+]
+
+/** The account being read under, and its readers — what the switcher and Settings both work from. */
+export const CURRENT_ACCOUNT = ACCOUNTS.find((a) => a.current) ?? ACCOUNTS[0]
+export const PROFILES = CURRENT_ACCOUNT.readers
+
+/**
+ * `registration_fields.sections` — what Edit Account and Edit Reader render.
+ *
+ * These forms are not authored. The server builds them per microsite and the screen renders
+ * whatever arrives, so every label, type and placeholder below is lifted from the definitions in
+ * `MicrositeRegistrationFieldsConcern` rather than written: "Jessie" and "Jones" really are the
+ * first/last-name placeholders, a phone really does read 555-867-5309, and a birthdate really is a
+ * date-picker whose empty state is the literal string YYYY-MM-DD.
+ *
+ * Which SECTION a field lands in is a setting, not a constant, and the rule is worth knowing: a
+ * field you can log in with lives in `sign_in_info`, and the same field lives in `contact_info`
+ * when you cannot. `allow_login_by_email` / `_username` / `_phone_number` / `_library_card_number`
+ * each subtract their field from whichever section it does not belong to. This account is modelled
+ * on the common library setup — log in by username — so Username sits under sign-in and Email and
+ * Phone sit under contact.
+ *
+ * Section titles are stored raw because the app rewrites one of them at render: `sign_in_info` is
+ * "Create An Account" everywhere, and the editors alone swap it for "Your Account" — reasonably,
+ * since you are not creating anything.
+ */
+export const ACCOUNT_FIELD_SECTIONS = [
+  {
+    name: 'sign_in_info',
+    title: 'Create An Account',
+    fields: [
+      {
+        name: 'username',
+        label: 'Username',
+        type: 'text',
+        placeholder: 'Pick a Username',
+        required: true,
+        value: 'gracechen',
+      },
+      {
+        name: 'password',
+        label: 'Password',
+        type: 'password',
+        placeholder: 'Password',
+        required: true,
+        value: '',
+      },
+    ],
+  },
+  {
+    name: 'personal_info',
+    title: 'Personal Information',
+    fields: [
+      {
+        name: 'first_name',
+        label: 'First Name',
+        type: 'text',
+        placeholder: 'Jessie',
+        value: 'Grace',
+      },
+      {
+        name: 'last_name',
+        label: 'Last Name',
+        type: 'text',
+        placeholder: 'Jones',
+        required: true,
+        value: 'Chen',
+      },
+    ],
+  },
+  {
+    name: 'contact_info',
+    title: 'Contact Information',
+    fields: [
+      {
+        name: 'email',
+        label: 'Email',
+        type: 'email',
+        placeholder: 'reader@email.com',
+        value: 'grace.chen@example.com',
+      },
+      {
+        name: 'phone_number',
+        label: 'Phone Number',
+        type: 'phone',
+        placeholder: '555-867-5309',
+        value: '555-0142',
+      },
+      { name: 'zipcode', label: 'ZIP Code', type: 'numeric', placeholder: '', value: '97214' },
+    ],
+  },
+]
+
+export const READER_FIELD_SECTIONS = [
+  {
+    name: 'personal_info',
+    title: 'Personal Information',
+    fields: [
+      {
+        name: 'first_name',
+        label: 'First Name',
+        type: 'text',
+        placeholder: 'Jessie',
+        required: true,
+        value: 'Maya',
+      },
+      { name: 'last_name', label: 'Last Name', type: 'text', placeholder: 'Jones', value: 'Chen' },
+      { name: 'birthdate', label: 'Birthdate', type: 'date-picker', value: '2016-04-12' },
+    ],
+  },
+  {
+    name: 'school_info',
+    title: 'School Information',
+    fields: [
+      {
+        name: 'grade_level_id',
+        label: 'Grade',
+        type: 'select',
+        placeholder: 'Select One',
+        value: '4',
+        options: [
+          { value: 'K', name: 'Kindergarten' },
+          { value: '1', name: '1st Grade' },
+          { value: '2', name: '2nd Grade' },
+          { value: '3', name: '3rd Grade' },
+          { value: '4', name: '4th Grade' },
+          { value: '5', name: '5th Grade' },
+        ],
+      },
+      {
+        name: 'teacher_id',
+        label: 'Teacher',
+        type: 'select',
+        placeholder: 'Select One',
+        value: 't2',
+        options: [
+          { value: 't1', name: 'Ms. Alvarez' },
+          { value: 't2', name: 'Mr. Okafor' },
+          { value: 't3', name: 'Mrs. Lindqvist' },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'library_info',
+    title: 'Library Information',
+    fields: [
+      {
+        name: 'library_branch_id',
+        label: 'Branch',
+        type: 'select',
+        placeholder: 'Select One',
+        value: 'b1',
+        options: [
+          { value: 'b1', name: 'Lakeside Elementary Library' },
+          { value: 'b2', name: 'Riverside Public Library' },
+        ],
+      },
+      {
+        name: 'library_card_number',
+        label: 'Library Card Number',
+        type: 'text',
+        placeholder: "Add the reader's library card number",
+        value: '',
+      },
+    ],
+  },
+  {
+    name: 'recommendation_info',
+    title: 'Should this reader receive a book recommendation each week?',
+    fields: [
+      { name: 'send_recommendations', label: 'Send recommendations', type: 'bool', value: true },
+    ],
+  },
 ]
 
 // ── Log tab ───────────────────────────────────────────────────────────────

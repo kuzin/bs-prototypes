@@ -60,6 +60,20 @@
   background: var(--m-accent-pressed);
 }
 
+/* The destructive CTA — `GeneralButton` with `color={brandColors.red}` and white text, which is
+   what Delete Account and Remove Link are. It is the app's own red rather than the tenant accent:
+   a microsite may theme itself any colour, and a delete must not come out looking like the
+   primary action on a red-branded site. */
+.m-btn-danger {
+  background: var(--m-red);
+  color: var(--m-white);
+}
+
+.m-btn-danger:hover:not(:disabled),
+.m-btn-danger:active:not(:disabled) {
+  background: var(--m-red-dark);
+}
+
 .m-btn-grey {
   background: var(--m-grey-light-3);
   color: var(--m-grey-dark-2);

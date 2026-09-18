@@ -38,6 +38,7 @@ export {
 } from './Loading/Loading'
 export { ProfileRow } from './ProfileRow/ProfileRow'
 export { ProfileBar } from './ProfileBar/ProfileBar'
+export { FormField } from './FormField/FormField'
 export { TextField } from './TextField/TextField'
 export { ToggleSwitch } from './ToggleSwitch/ToggleSwitch'
 export * from './SheetHeader/SheetHeader'

@@ -1,0 +1,158 @@
+.m-ff {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* `getLabel` — 20 above, 14 below, smallTitle in blackFont. */
+.m-ff-label {
+  margin: 20px 0 14px;
+}
+
+/* The 3pt underline. White by default and NOT a mistake: `inputBottomLineColor` initialises to
+   literal 'white', and with `renderActiveState={false}` — which both settings forms pass — the
+   setter that would change it is a no-op. It reserves 3pt under every field and draws nothing.
+   Only the flows that opt in get a coloured line, and then only while focused. */
+.m-ff-line {
+  border-bottom: 3px solid var(--m-white);
+}
+.m-ff-line.is-active {
+  border-bottom-color: var(--m-accent);
+}
+.m-ff-line.is-error {
+  border-bottom-color: var(--m-c-red-error);
+}
+
+/* `inputFontSize` is 16 in both settings forms — the component's own default is 20, which is the
+   signup flow's. */
+.m-ff-input {
+  display: block;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 16px;
+  color: var(--m-c-secondary);
+  text-align: left;
+}
+.m-ff-input:focus {
+  outline: none;
+}
+.m-ff-input.is-error {
+  color: var(--m-c-red-error);
+}
+.m-ff-input::placeholder,
+.m-ff-input.is-placeholder {
+  color: var(--m-c-ashes-gray);
+}
+
+.m-ff-select {
+  display: flex;
+  align-items: center;
+}
+.m-ff-select .m-ff-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* `dropdown_arrow` at 20 with 3 to its right. */
+.m-ff-arrow {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0 3px 14px 0;
+  align-self: center;
+}
+
+.m-ff-date {
+  cursor: pointer;
+  margin-top: 14px;
+}
+
+/* `boolRowContainer` — the label and the switch on one line, the switch hugging the right with 10
+   to spare. */
+.m-ff-bool {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.m-ff-bool .m-ff-label {
+  flex: 1 1 auto;
+}
+/* RN's platform `<Switch>`, which on iOS is a UISwitch — NOT the app's own `CustomToggleSwitch`
+   that [[ToggleSwitch]] models. Two different controls: this one is the system's, at UIKit's
+   51×31 with a 27pt knob and the system green, and it is what a `bool` field renders. Reaching
+   for ToggleSwitch here would put the app's switch somewhere the app does not use it. */
+.m-ff-switch {
+  flex: none;
+  appearance: none;
+  position: relative;
+  width: 51px;
+  height: 31px;
+  margin: 0 10px 0 0;
+  border-radius: 16px;
+  background: #e9e9ea;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.m-ff-switch:checked {
+  background: #34c759;
+}
+
+.m-ff-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: var(--m-white);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    0 1px 1px rgba(0, 0, 0, 0.16);
+  transition: transform 150ms ease;
+}
+
+.m-ff-switch:checked::after {
+  transform: translateX(20px);
+}
+
+.m-ff-error {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  margin: 10px 0 5px;
+}
+
+.m-ff-bang {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--m-c-red-error);
+  color: var(--m-white);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.m-ff-error-text {
+  flex: 1 1 auto;
+  margin-left: 11px;
+  color: var(--m-c-red-error);
+}
+
+/* `renderError`'s empty branch is a 4pt spacer rather than nothing, so a field keeps its height
+   whether or not it is in error. */
+.m-ff-spacer {
+  width: 100%;
+  margin-bottom: 4px;
+}

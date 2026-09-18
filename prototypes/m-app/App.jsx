@@ -36,6 +36,8 @@ import {
   BOOK_LIST_DETAIL,
   PROFILES,
   ACCOUNTS,
+  ACCOUNT_FIELD_SECTIONS,
+  READER_FIELD_SECTIONS,
   ALL_TITLES_SECTIONS,
 } from './data'
 
@@ -410,6 +412,8 @@ export function App() {
               <Settings
                 accounts={ACCOUNTS}
                 profiles={PROFILES}
+                accountFields={ACCOUNT_FIELD_SECTIONS}
+                readerFields={READER_FIELD_SECTIONS}
                 onBack={() => setShowSettings(false)}
               />
             ) : showLogSearch ? (

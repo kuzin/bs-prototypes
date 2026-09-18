@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Header, Img, Alert, PressableButton } from '@mobile/components'
 import { Accounts } from './settings/Accounts'
 import { Readers } from './settings/Readers'
+import { EditAccount } from './settings/EditAccount'
+import { EditReader } from './settings/EditReader'
 import { WebScreen } from './settings/WebScreen'
 import './Settings.css'
 
@@ -33,13 +35,43 @@ const ROWS = [
   { title: 'About', icon: 'about_icon_green', color: '#DBF2E7', middle: false, view: 'about' },
 ]
 
-export function Settings({ accounts = [], profiles = [], onBack, onSignOut }) {
+export function Settings({
+  accounts = [],
+  profiles = [],
+  accountFields = [],
+  readerFields = [],
+  onBack,
+  onSignOut,
+}) {
   const [confirming, setConfirming] = useState(false)
   const [pushed, setPushed] = useState(null)
+  // One more level down: an account or a reader being edited. Each editor is a push ON TOP of the
+  // list that opened it, so backing out lands on the list rather than on Settings.
+  const [editing, setEditing] = useState(null)
   const back = () => setPushed(null)
+  const backToList = () => setEditing(null)
 
-  if (pushed === 'libraryStack') return <Accounts accounts={accounts} onBack={back} />
-  if (pushed === 'readersStack') return <Readers profiles={profiles} onBack={back} />
+  if (editing?.kind === 'account')
+    return <EditAccount account={editing.account} sections={accountFields} onBack={backToList} />
+  if (editing?.kind === 'reader')
+    return <EditReader reader={editing.reader} sections={readerFields} onBack={backToList} />
+
+  if (pushed === 'libraryStack')
+    return (
+      <Accounts
+        accounts={accounts}
+        onOpenAccount={(account) => setEditing({ kind: 'account', account })}
+        onBack={back}
+      />
+    )
+  if (pushed === 'readersStack')
+    return (
+      <Readers
+        profiles={profiles}
+        onOpenReader={(reader) => setEditing({ kind: 'reader', reader })}
+        onBack={back}
+      />
+    )
   if (pushed === 'help' || pushed === 'about') return <WebScreen screen={pushed} onBack={back} />
 
   return (

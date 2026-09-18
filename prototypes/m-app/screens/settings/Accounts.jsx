@@ -16,12 +16,13 @@ import './Accounts.css'
  * library name over the holder's at 16 from the tile, a 24pt arrow, and a hairline under every
  * row including the last.
  *
- * DIVERGENCE — tapping an account goes nowhere. `editAccount` is a form built at runtime from
- * `registration_fields.sections` off the API, so its fields are not in the source to copy; an
- * invented one would be a guess wearing a spec's clothes. The arrow stays, because there is
- * somewhere to go.
+ * Tapping an account opens `editAccount`. The form it renders is server-driven — the microsite
+ * sends `registration_fields.sections` — but the field catalogue itself is in bs-product's
+ * `MicrositeRegistrationFieldsConcern`, labels and placeholders included, so the form is copied
+ * rather than guessed. A `school` client gets no editing at all: tapping another account there
+ * signs it out instead, and tapping your own does nothing.
  */
-export function Accounts({ accounts, onBack }) {
+export function Accounts({ accounts, onOpenAccount, onBack }) {
   return (
     <div className="m-acc">
       <Header variant="stack" title="Accounts" onBack={onBack} />
@@ -32,7 +33,7 @@ export function Accounts({ accounts, onBack }) {
 
         {accounts.map((account) => (
           <div key={account.id}>
-            <button type="button" className="m-acc-row">
+            <button type="button" className="m-acc-row" onClick={() => onOpenAccount?.(account)}>
               <span className="m-acc-tile">
                 <Img name="account_icon" size={22} />
                 {/* `dot` — 15pt of greenHaze ringed in 2pt of white, hung off the tile's

@@ -1,11 +1,12 @@
-/* The screen's ground is `formGrayBackground`; the SECTIONS are white. That is what the banding
-   between them is — the ground showing through, not a drawn divider. */
+/* Laid out like Accounts — white, 20 either side — rather than the app's form-grey SectionList.
+   A deliberate divergence: the two screens are siblings in Settings and were reading as unrelated
+   surfaces. See the note on the component. */
 .m-rdr {
   display: flex;
   flex-direction: column;
   flex: 1 1 0%;
   min-height: 0;
-  background: var(--m-c-form-gray-background);
+  background: var(--m-white);
 }
 
 .m-rdr-scroll {
@@ -13,72 +14,63 @@
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: none;
+  padding: 0 20px;
 }
 .m-rdr-scroll::-webkit-scrollbar {
   display: none;
 }
 
-/* `renderSectionHeader` is a 15pt band of the ground plus a hairline, and `renderSectionFooter`
-   is the hairline alone — so a section is ruled top and bottom with 15 of grey above it. */
-.m-rdr-section {
-  background: var(--m-white);
-  border-top: 1px solid var(--m-c-table-separator);
-  border-bottom: 1px solid var(--m-c-table-separator);
-  margin-top: 15px;
+.m-rdr-heading {
+  margin: 20px 0;
 }
 
-/* `ProfileListItem` — 70pt, stretched, with the row's own control at the far end. */
+.m-rdr-rule {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: var(--m-c-table-separator);
+  transform: scaleY(0.5);
+}
+
+/* `ProfileListItem` keeps its 70pt. Accounts' rows are 80 (a 48 tile with 16 either side), so the
+   two lists are close without being forced to the same number — the reader row is the app's. */
 .m-rdr-row {
   display: flex;
   align-items: center;
   width: 100%;
   height: 70px;
-  padding: 0 0 0 20px;
+  padding: 0;
   cursor: pointer;
   background: none;
   border: 0;
   text-align: left;
 }
 .m-rdr-row:active {
-  background: var(--m-grey-light-3);
+  opacity: 0.6;
 }
 
-/* `renderSeparatorOnlyText` — hairline in `border`, inset 15 from the left. Between rows only:
-   the section's own edges are already ruled, and doubling them reads as a heavier line. */
-.m-rdr-sep {
-  display: block;
-  height: 1px;
-  margin-left: 15px;
-  background: var(--m-c-border);
-  transform: scaleY(0.5);
-}
-
-/* `disclosure_indicator` at 28×16 with 16 of padding to the right of it. */
-.m-rdr-chevron {
+/* `new_arrow_right` at 24, the arrow Accounts uses — not the 28×16 `disclosure_indicator` the app
+   puts on this list. Part of matching the sibling screen. */
+.m-rdr-arrow {
   flex: none;
-  width: 28px;
-  height: 16px;
-  margin-right: 16px;
+  width: 24px;
+  height: 24px;
 }
 
-/* `listItemContainer` — 44 tall, its contents pushed apart, 16 either side. */
-.m-rdr-add {
+/* The Add row borrows Accounts' neutral tile so the two screens end the same way. */
+.m-rdr-tile {
   display: flex;
+  flex: none;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 44px;
-  padding: 0 0 0 16px;
-  cursor: pointer;
-  background: none;
-  border: 0;
-  text-align: left;
-}
-.m-rdr-add:active {
-  background: var(--m-grey-light-3);
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-right: 12px;
+  border-radius: 50%;
+  background: var(--m-c-form-gray-background);
 }
 
-.m-rdr-add-text {
+.m-rdr-add {
   color: var(--m-c-secondary);
   font-weight: 400;
 }

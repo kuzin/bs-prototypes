@@ -26,6 +26,7 @@ import {
   Card,
   EmptyState,
   ProfileRow,
+  FormField,
   SheetHeader,
   ActionsModal,
   Alert,
@@ -126,6 +127,73 @@ function Dot() {
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.9" />
     </svg>
+  )
+}
+
+function FormFieldDemo() {
+  const [values, setValues] = useState({
+    first_name: 'Maya',
+    grade_level_id: '4',
+    birthdate: '2016-04-12',
+    send_recommendations: true,
+    email: 'not-an-email',
+  })
+  const set = (name, value) => setValues((v) => ({ ...v, [name]: value }))
+  return (
+    <>
+      <MVariant label="text — label above, and a 3pt underline that draws nothing">
+        <FormField
+          name="first_name"
+          label="First Name"
+          placeholder="Jessie"
+          value={values.first_name}
+          onChange={set}
+        />
+      </MVariant>
+      <MVariant label="select — the app's own dropdown_arrow at 20">
+        <FormField
+          name="grade_level_id"
+          label="Grade"
+          type="select"
+          placeholder="Select One"
+          value={values.grade_level_id}
+          onChange={set}
+          options={[
+            { value: '4', name: '4th Grade' },
+            { value: '5', name: '5th Grade' },
+          ]}
+        />
+      </MVariant>
+      <MVariant label="date-picker — a button, not an input; unset it reads YYYY-MM-DD">
+        <FormField
+          name="birthdate"
+          label="Birthdate"
+          type="date-picker"
+          value={values.birthdate}
+          onChange={set}
+        />
+      </MVariant>
+      <MVariant label="bool — the one type laid out as a row">
+        <FormField
+          name="send_recommendations"
+          label="Send a book recommendation each week"
+          type="bool"
+          value={values.send_recommendations}
+          onChange={set}
+        />
+      </MVariant>
+      <MVariant label="error — an 18pt disc and a bang, and the value turns red too">
+        <FormField
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="reader@email.com"
+          value={values.email}
+          onChange={set}
+          error="Email is not a valid address."
+        />
+      </MVariant>
+    </>
   )
 }
 
@@ -546,6 +614,32 @@ color: var(--m-green-dark);`,
 <TextField label="Title" value={title} onChange={setTitle} />
 <TextField label="Pages" value={pages} onChange={setPages} inputMode="numeric" small />`,
     render: () => <TextFieldDemo />,
+  },
+  {
+    group: 'm-content',
+    id: 'm-form-field',
+    name: 'FormField',
+    desc: (
+      <>
+        <code>components/listItems/MaterialFormFieldItem.tsx</code> &mdash; the field every
+        registration and settings form is built from, and the third distinct input in this system.
+        It exists because those forms are <strong>not authored</strong>: the server sends{' '}
+        <code>registration_fields.sections</code> and the screen renders whatever arrives, so the
+        component is a switch over <code>field_type</code> rather than a layout.
+        <br />
+        <br />
+        The 3pt underline is white and stays white. <code>inputBottomLineColor</code> starts at the
+        literal string <code>white</code> and only moves on focus &mdash; and both settings editors
+        pass <code>renderActiveState={'{false}'}</code>, which makes that setter a no-op. It
+        reserves 3pt and draws nothing; the full-width hairline between rows is what actually
+        separates the fields.
+      </>
+    ),
+    usage: `import { FormField } from '@mobile/components'
+
+<FormField name="first_name" label="First Name" placeholder="Jessie" value={value} onChange={set} />
+<FormField name="grade_level_id" label="Grade" type="select" options={options} value={value} onChange={set} />`,
+    render: () => <FormFieldDemo />,
   },
   {
     group: 'm-content',

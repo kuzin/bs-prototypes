@@ -1,0 +1,56 @@
+/* The shell both editors share — a header, a scrolling form, a pinned Save. */
+.m-edf {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-edf-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  background: var(--m-white);
+}
+.m-edf-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* `renderSectionHeader` — 12pt in grayish, 16 either side, 48 above. Not a title style: it is
+   smaller than the field labels under it, which is what makes it read as a divider with a name. */
+.m-edf-section {
+  margin: 48px 16px 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--m-c-grayish);
+}
+
+/* `renderFullScreenSeparator` — edge to edge, no inset. */
+.m-edf-rule {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: var(--m-c-border);
+  transform: scaleY(0.5);
+}
+
+/* Every field sits in `marginHorizontal: 16`, which is why the rules between them run wider than
+   the fields do. */
+.m-edf-field {
+  margin: 0 16px;
+}
+
+.m-edf-save {
+  flex: none;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  background: var(--m-white);
+}
+
+/* `Delete Account` — the same 16-radius button in `brandColors.red`, but INSIDE the scroll, under
+   the last field. Destructive and reachable, without sitting next to Save. */
+.m-edf-delete {
+  padding: 16px 20px;
+}
