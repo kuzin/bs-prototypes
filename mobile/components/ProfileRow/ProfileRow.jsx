@@ -10,6 +10,13 @@ import './ProfileRow.css'
  * `showOnlyInitials` is the app's own prop, not a size of ours: it swaps to `initialsContainer`
  * (40pt, against the 32 of the default `emptyBarContent`) and recolours the text to
  * `colors.secondary` rather than orangeDark. The review row is the caller that uses it.
+ *
+ * `layout` is the source's `showProfileName` fork, which is two different components wearing one
+ * name. `chip` stacks a name UNDER the avatar and clamps it, which is the grid form — Community's
+ * friends, a header avatar. `list` is `barContent`: a 45pt avatar with 15 to its right and the
+ * name beside it at 16, taking the rest of the row. Every reader LIST in the app is the second
+ * one — Readers, Choose Readers, Switch Readers — so it is a layout rather than a caller's
+ * styling.
  */
 const initialsOf = (name = '') =>
   name
@@ -24,6 +31,7 @@ export function ProfileRow({
   name,
   imgURL,
   size = 'medium',
+  layout = 'chip',
   showName = false,
   showOnlyInitials = false,
   linked = false,
@@ -33,7 +41,7 @@ export function ProfileRow({
   const As = onPress ? 'button' : 'div'
   return (
     <As
-      className={`m-profile m-profile-${size}${showOnlyInitials ? ' m-profile-initials-only' : ''} ${className}`}
+      className={`m-profile m-profile-${layout} m-profile-${size}${showOnlyInitials ? ' m-profile-initials-only' : ''} ${className}`}
       onClick={onPress}
       {...(onPress ? { type: 'button' } : null)}
     >

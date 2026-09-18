@@ -35,6 +35,7 @@ import {
   BOOK_DETAIL,
   BOOK_LIST_DETAIL,
   PROFILES,
+  ACCOUNTS,
   ALL_TITLES_SECTIONS,
 } from './data'
 
@@ -406,7 +407,11 @@ export function App() {
           overlayVariant={showSettings ? 'card' : 'sheet'}
           overlay={
             showSettings ? (
-              <Settings onBack={() => setShowSettings(false)} />
+              <Settings
+                accounts={ACCOUNTS}
+                profiles={PROFILES}
+                onBack={() => setShowSettings(false)}
+              />
             ) : showLogSearch ? (
               <LogSearch
                 titles={loggedTitles}

@@ -125,6 +125,25 @@ export const PROFILES = [
   { id: 'p2', name: 'Leo Chen' },
 ]
 
+/**
+ * The accounts signed in on this device — `authentication.accounts`, which Settings > Account
+ * lists.
+ *
+ * Beanstack is not one site: every school and every library runs its own, with its own challenges
+ * and its own branding, and a family commonly belongs to both. The app holds a signed-in account
+ * per site and reads under one of them at a time, which is why this is a list rather than a
+ * profile, and why exactly one entry carries `current`.
+ */
+export const ACCOUNTS = [
+  {
+    id: 'a1',
+    libraryName: 'Lakeside Elementary Library',
+    holder: 'Grace Chen',
+    current: true,
+  },
+  { id: 'a2', libraryName: 'Riverside Public Library', holder: 'Grace Chen' },
+]
+
 // ── Log tab ───────────────────────────────────────────────────────────────
 /**
  * The Reading Log is a month of weeks of days. `weeks` are newest-first; days inside a week are

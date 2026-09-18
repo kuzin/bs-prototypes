@@ -625,11 +625,19 @@ color: var(--m-green-dark);`,
         <code>src/components/ProfileRow.tsx</code>. The initials fallback is not a grey circle — the
         app paints it <code>redLight</code> with <code>orangeDark</code> text. The link badge marks
         a tandem reader.
+        <br />
+        <br />
+        <code>layout</code> is the source&rsquo;s <code>showProfileName</code> fork, which is really
+        two components under one name. <code>chip</code> stacks a clamped name under the avatar —
+        the grid form. <code>list</code> is <code>barContent</code>: a 45pt avatar with 15 to its
+        right and the name beside it at 16, taking the rest of the row. Every reader LIST in the app
+        is the second one, so <code>size</code> does not apply to it.
       </>
     ),
     usage: `import { ProfileRow } from '@mobile/components'
 
-<ProfileRow name="Theo Chen" size="medium" showName linked />`,
+<ProfileRow name="Theo Chen" size="medium" showName linked />
+<ProfileRow name="Theo Chen" layout="list" showName />`,
     render: () => (
       <>
         <MVariant label="the three sizes">
@@ -641,6 +649,16 @@ color: var(--m-green-dark);`,
         </MVariant>
         <MVariant label="linked — the badge marks a tandem reader">
           <ProfileRow name="Theo Chen" size="medium" showName linked />
+        </MVariant>
+        <MVariant label="layout=list — the 70pt row every reader list is built from">
+          <div style={{ width: 320, background: 'var(--m-white)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', height: 70, paddingLeft: 20 }}>
+              <ProfileRow layout="list" name="Maya Chen" showName />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', height: 70, paddingLeft: 20 }}>
+              <ProfileRow layout="list" name="Leo Chen" showName />
+            </div>
+          </div>
         </MVariant>
       </>
     ),

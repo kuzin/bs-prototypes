@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { Header, Img, Alert, PressableButton } from '@mobile/components'
+import { Accounts } from './settings/Accounts'
+import { Readers } from './settings/Readers'
+import { WebScreen } from './settings/WebScreen'
 import './Settings.css'
 
 /**
@@ -16,19 +19,28 @@ import './Settings.css'
  * Log Out confirms through `Alert.alert` with `{ cancelable: false }` — no backdrop dismissal,
  * the buttons are the only way out — and the copy is the app's.
  *
- * DIVERGENCE — the rows go nowhere. Each is a stack of its own in the app (`libraryStack`,
- * `readersStack`, `help`, `about`), which is four more screens than this prototype has; they keep
- * their chevrons because the chevron is what says there is somewhere to go.
+ * Each row pushes a screen of its own, and `view` is the app's own route name for it. Two of the
+ * four are not native screens at all — Help and About are single `<WebView>`s — which is the sort
+ * of thing only the source tells you.
+ *
+ * The pushed screen replaces this one in place rather than going through App: these live in the
+ * settings stack, so back belongs here.
  */
 const ROWS = [
-  { title: 'Account', icon: 'account_icon', color: '#FCE0D6', middle: true },
-  { title: 'Readers', icon: 'readers_icon', color: '#DDF6F9', middle: true },
-  { title: 'Help', icon: 'help_icon', color: '#FFECC8', middle: true },
-  { title: 'About', icon: 'about_icon_green', color: '#DBF2E7', middle: false },
+  { title: 'Account', icon: 'account_icon', color: '#FCE0D6', middle: true, view: 'libraryStack' },
+  { title: 'Readers', icon: 'readers_icon', color: '#DDF6F9', middle: true, view: 'readersStack' },
+  { title: 'Help', icon: 'help_icon', color: '#FFECC8', middle: true, view: 'help' },
+  { title: 'About', icon: 'about_icon_green', color: '#DBF2E7', middle: false, view: 'about' },
 ]
 
-export function Settings({ onBack, onSignOut }) {
+export function Settings({ accounts = [], profiles = [], onBack, onSignOut }) {
   const [confirming, setConfirming] = useState(false)
+  const [pushed, setPushed] = useState(null)
+  const back = () => setPushed(null)
+
+  if (pushed === 'libraryStack') return <Accounts accounts={accounts} onBack={back} />
+  if (pushed === 'readersStack') return <Readers profiles={profiles} onBack={back} />
+  if (pushed === 'help' || pushed === 'about') return <WebScreen screen={pushed} onBack={back} />
 
   return (
     <div className="m-set">
@@ -38,7 +50,7 @@ export function Settings({ onBack, onSignOut }) {
         <div className="m-set-list">
           {ROWS.map((row) => (
             <div key={row.title} className="m-set-item">
-              <button type="button" className="m-set-row">
+              <button type="button" className="m-set-row" onClick={() => setPushed(row.view)}>
                 <span className="m-set-tile" style={{ background: row.color }}>
                   <Img name={row.icon} size={22} />
                 </span>

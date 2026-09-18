@@ -1,0 +1,32 @@
+.m-web {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+/* `style={{ flex: 1 }}` on both the WebView and About's wrapping View — the web page takes
+   everything the header leaves. */
+.m-web-body {
+  position: relative;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-web-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.m-web-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--m-white);
+}

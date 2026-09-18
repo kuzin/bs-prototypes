@@ -61,12 +61,18 @@
   object-fit: contain;
 }
 
-/* `renderSeparatorSections` — inset 100 from the right, so the rule stops short of the chevron
-   rather than running under it. */
+/* `renderSeparatorSections` — 10 in from each side of the 20-padded content box, so the rule runs
+   from 30 to 363 on a 393pt screen and passes UNDER the chevron.
+
+   The `marginRight: 100` on the separator's container is a red herring, and reading it as the
+   inset is what cut this rule 90pt short. The container is 100 narrower, but the rule inside it
+   is given an explicit `width: Dimensions.get('window').width - 60` — 333 — and in Yoga a child
+   with a fixed width overflows its parent rather than being clipped by it. The 100 changes
+   nothing about what is painted. */
 .m-set-rule {
   display: block;
   height: 1px;
-  margin-right: 100px;
+  margin: 0 10px;
   background: var(--m-c-border);
 }
 
