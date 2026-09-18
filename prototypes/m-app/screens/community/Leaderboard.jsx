@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Img, ProfileRow, PressableButton, SelectSheet } from '@mobile/components'
+import { Img, FriendAvatar, PressableButton, SelectSheet, EmptyStateView } from '@mobile/components'
 import './Leaderboard.css'
 
 /**
@@ -64,12 +64,47 @@ function TypeTabs({ types, active, onChange, testLabel }) {
   )
 }
 
+/**
+ * `LeaderboardsEmpty` — and it is two different empties. On the friends board it is a prompt with
+ * a button, because the reason it is empty is fixable by you. On grade and school it is a
+ * statement, because it is not.
+ */
+function Empty({ scope, addOrInvite, onlyUnconfirmed, onAdd }) {
+  if (scope !== 'friends') {
+    return (
+      <EmptyStateView
+        source="leaderboards_empty"
+        boldText={
+          scope === 'grade' ? 'There are no grades to show.' : 'There are no schools to show.'
+        }
+      />
+    )
+  }
+  return (
+    <div className="m-lb-empty">
+      <EmptyStateView
+        source="leaderboards_empty"
+        boldText={
+          onlyUnconfirmed
+            ? 'Waiting for invitations to be accepted.'
+            : `${addOrInvite} friends to see their rankings!`
+        }
+      />
+      <PressableButton buttonText={`${addOrInvite} Friends`} onButtonPress={onAdd} />
+    </div>
+  )
+}
+
 export function Leaderboard({
   scopes = [],
   logTypes = [],
   data = {},
   youId,
   youName,
+  serviceType = 'School',
+  hasFriends = true,
+  onlyUnconfirmed = false,
+  onAddFriend,
   allowAvatars = true,
 }) {
   const [scope, setScope] = useState(scopes[0] ?? 'friends')
@@ -88,60 +123,89 @@ export function Leaderboard({
       ? [...ranked, { id: youId, name: youName, ranking: ranked.length + 1, logValue: 0 }]
       : ranked
 
+  const addOrInvite = serviceType === 'Library' ? 'Add' : 'Invite'
+  // `waitingForFriends` — the friends board has nothing to rank, which is a different thing from
+  // a board that ranked nobody this week.
+  const waitingForFriends = scope === 'friends' && (!hasFriends || onlyUnconfirmed)
+
   return (
     <div className="m-lb">
       <TypeTabs types={scopes} active={scope} onChange={setScope} testLabel="Leaderboard type" />
 
-      <div className="m-lb-header">
-        <div className="m-lb-header-row">
-          <div>
-            {/* "Logged" on its own, or "<the only tab> logged" when there is nothing to switch
-                between — the header absorbs the label the tabs would have carried. */}
-            <p className="m-lb-logged">
-              {logTypes.length === 1 ? `${LABEL(logTypes[0])} logged` : 'Logged'}
-            </p>
-            <p className="m-lb-range">{dateRange === 'week' ? 'This Week' : 'This Month'}</p>
-            <p className="m-lb-since">
-              <Img name="clock" className="m-lb-clock" />
-              <span>{dateRange === 'week' ? 'Since Monday' : 'Since the 1st'}</span>
-            </p>
-          </div>
-          <button type="button" className="m-lb-change" onClick={() => setPickingRange(true)}>
-            Change
-          </button>
-        </div>
-
-        <TypeTabs
-          types={logTypes}
-          active={logType}
-          onChange={setLogType}
-          testLabel="What is counted"
+      {waitingForFriends ? (
+        <Empty
+          scope={scope}
+          addOrInvite={addOrInvite}
+          onlyUnconfirmed={onlyUnconfirmed}
+          onAdd={onAddFriend}
         />
-      </div>
+      ) : (
+        <>
+          <div className="m-lb-header">
+            <div className="m-lb-header-row">
+              <div>
+                {/* "Logged" on its own, or "<the only tab> logged" when there is nothing to switch
+                between — the header absorbs the label the tabs would have carried. */}
+                <p className="m-lb-logged">
+                  {logTypes.length === 1 ? `${LABEL(logTypes[0])} logged` : 'Logged'}
+                </p>
+                <p className="m-lb-range">{dateRange === 'week' ? 'This Week' : 'This Month'}</p>
+                <p className="m-lb-since">
+                  <Img name="clock" className="m-lb-clock" />
+                  <span>{dateRange === 'week' ? 'Since Monday' : 'Since the 1st'}</span>
+                </p>
+              </div>
+              <button type="button" className="m-lb-change" onClick={() => setPickingRange(true)}>
+                Change
+              </button>
+            </div>
 
-      <div className="m-lb-list">
-        {rows.map((row) => {
-          const isYou = row.id === youId
-          const name = row.name ?? `${row.firstName} ${row.lastName}`
-          const tappable = scope === 'friends' && !isYou
-          const Row = tappable ? 'button' : 'div'
-          return (
-            <Row key={row.id} {...(tappable ? { type: 'button' } : null)} className="m-lb-item">
-              <span className="m-lb-left">
-                <Rank ranking={row.ranking} />
-                {showAvatar && <ProfileRow name={name} size="medium" />}
-                <span className={`m-lb-name${isYou ? ' is-you' : ''}`}>
-                  {name}
-                  {isYou && ' (You)'}
-                </span>
-              </span>
-              <span className="m-lb-value">{row.logValue}</span>
-            </Row>
-          )
-        })}
-      </div>
+            <TypeTabs
+              types={logTypes}
+              active={logType}
+              onChange={setLogType}
+              testLabel="What is counted"
+            />
+          </div>
 
-      <div className="m-lb-foot" />
+          <div className="m-lb-list">
+            {/* `LeaderboardNoData` — the board exists, this window is just empty. */}
+            {rows.length === 0 && (
+              <EmptyStateView
+                source="stats_empty_state"
+                boldText="There's no data for this time period."
+              />
+            )}
+            {rows.map((row) => {
+              const isYou = row.id === youId
+              const name = row.name ?? `${row.firstName} ${row.lastName}`
+              const tappable = scope === 'friends' && !isYou
+              const Row = tappable ? 'button' : 'div'
+              return (
+                <Row key={row.id} {...(tappable ? { type: 'button' } : null)} className="m-lb-item">
+                  <span className="m-lb-left">
+                    <Rank ranking={row.ranking} />
+                    {showAvatar && (
+                      <FriendAvatar
+                        id={row.id}
+                        firstName={row.firstName ?? name}
+                        lastName={row.lastName ?? ''}
+                      />
+                    )}
+                    <span className={`m-lb-name${isYou ? ' is-you' : ''}`}>
+                      {name}
+                      {isYou && ' (You)'}
+                    </span>
+                  </span>
+                  <span className="m-lb-value">{row.logValue}</span>
+                </Row>
+              )
+            })}
+          </div>
+
+          <div className="m-lb-foot" />
+        </>
+      )}
 
       {/* `DateRangeModal` — two options, and each states its own boundary rather than leaving you
           to work out when "this week" started. */}

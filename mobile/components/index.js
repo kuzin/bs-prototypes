@@ -36,6 +36,7 @@ export {
   RefreshControl,
   ListFooter,
 } from './Loading/Loading'
+export { FriendAvatar } from './FriendAvatar/FriendAvatar'
 export { ProfileRow } from './ProfileRow/ProfileRow'
 export { ProgressBar } from './ProgressBar/ProgressBar'
 export { ProfileBar } from './ProfileBar/ProfileBar'
@@ -52,3 +53,4 @@ export * from '../svg.generated'
 export { checkFidelity, reportFidelity } from '../fidelity'
 export { IMAGES, IMAGE_NAMES, BENNY_REACTIONS } from '../images.generated'
 export { accentVars, ACCENT_PRESETS, DEFAULT_ACCENT, darken, lightness, mix } from '../accent'
+export { friendColor, friendColorKey } from '../friendColor'

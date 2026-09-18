@@ -1,4 +1,4 @@
-import { Img, ProfileRow, EmptyStateView, StreakFire } from '@mobile/components'
+import { Img, FriendAvatar, EmptyStateView, StreakFire, PressableButton } from '@mobile/components'
 import './Friends.css'
 
 /**
@@ -32,7 +32,7 @@ function Friend({ friend, onOpen, onOptions }) {
         className="m-fr-press"
       >
         <span className="m-fr-name-area">
-          <ProfileRow name={`${firstName} ${lastName}`} size="medium" />
+          <FriendAvatar id={friend.id} firstName={firstName} lastName={lastName} />
           <span className="m-fr-text">
             <span className="m-fr-name">{firstName}</span>
             {!confirmed && <span className="m-fr-pending">Pending Invite</span>}
@@ -72,13 +72,20 @@ export function Friends({
   const addOrInvite = serviceType === 'Library' ? 'Add Friend' : 'Invite Friend'
   const confirmed = friends.filter((f) => f.confirmed).length
 
+  /* `EmptyFriendList` — its copy is built from the same add/invite fork, and it carries the
+     button rather than leaving you to find the header that is not there. */
   if (friends.length === 0) {
     return (
-      <EmptyStateView
-        source="my_badges_empty_state"
-        boldText="No Friends Yet"
-        middleText="Add a friend to see what they are reading and how your streaks compare."
-      />
+      <div className="m-fr-empty">
+        <EmptyStateView
+          source="no_friends"
+          boldText={`${addOrInvite.split(' ')[0]} some friends to join you!`}
+        />
+        <PressableButton
+          buttonText={`${addOrInvite.split(' ')[0]} Friends`}
+          onButtonPress={onAddFriend}
+        />
+      </div>
     )
   }
 

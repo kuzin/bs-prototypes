@@ -19,6 +19,8 @@ import { BookListDashboard } from './screens/discover/BookListDashboard'
 import { Settings } from './screens/Settings'
 import { LogSearch } from './screens/LogSearch'
 import { EventModal } from './screens/community/EventModal'
+import { FriendDetail } from './screens/community/FriendDetail'
+import { FriendRequests } from './screens/community/FriendRequests'
 import { ReadingSession } from './screens/log/ReadingSession'
 import { EditReadingSession } from './screens/log/EditReadingSession'
 import { EditTitle } from './screens/log/EditTitle'
@@ -37,6 +39,9 @@ import {
   BOOK_LIST_DETAIL,
   PROFILES,
   ACCOUNTS,
+  FRIENDS,
+  FRIEND_REQUEST_LIST,
+  FRIEND_DETAILS,
   ACCOUNT_FIELD_SECTIONS,
   READER_FIELD_SECTIONS,
   ALL_TITLES_SECTIONS,
@@ -195,6 +200,12 @@ export function App() {
   const [showSettings, setShowSettings] = useState(false)
   /* The streak card's dismissal, which the app keeps per profile in `streakComponentClosed`. */
   const [openEvent, setOpenEvent] = useState(null)
+  // The community stack. `friendDetail` is a presented modal and `friendRequestList` is a push,
+  // so both live up here with the other pushed screens rather than inside the tab.
+  const [friends, setFriends] = useState(FRIENDS)
+  const [friendRequests, setFriendRequests] = useState(FRIEND_REQUEST_LIST)
+  const [openFriend, setOpenFriend] = useState(null)
+  const [showFriendRequests, setShowFriendRequests] = useState(false)
   const [streakClosed, setStreakClosed] = useSticky('streakClosed', false)
   const [showLogSearch, setShowLogSearch] = useState(false)
   /* A session opened from the book panel. The panel stays mounted underneath — in the app this is
@@ -408,9 +419,21 @@ export function App() {
              the whole navigator with no scale-back and no peeking edge: somewhere the app went,
              rather than something laid over it. Search keeps the presented card, which is what a
              screen you open, use once and dismiss should feel like. */
-          overlayVariant={showSettings ? 'card' : 'sheet'}
+          overlayVariant={showSettings || showFriendRequests ? 'card' : 'sheet'}
           overlay={
-            openEvent ? (
+            openFriend ? (
+              <FriendDetail friend={openFriend} onClose={() => setOpenFriend(null)} />
+            ) : showFriendRequests ? (
+              <FriendRequests
+                requests={friendRequests}
+                onBack={() => setShowFriendRequests(false)}
+                onAccept={(r) => {
+                  setFriendRequests((l) => l.filter((x) => x.id !== r.id))
+                  setFriends((l) => [...l, { ...r, streak: null, confirmed: true }])
+                }}
+                onDecline={(r) => setFriendRequests((l) => l.filter((x) => x.id !== r.id))}
+              />
+            ) : openEvent ? (
               <EventModal event={openEvent} onClose={() => setOpenEvent(null)} />
             ) : showSettings ? (
               <Settings
@@ -630,7 +653,12 @@ export function App() {
               flags={flags}
               profileId={profileId}
               profileName={profile.name}
+              friends={friends}
+              requests={friendRequests}
+              onRemoveFriend={(f) => setFriends((l) => l.filter((x) => x.id !== f.id))}
               onOpenEvent={setOpenEvent}
+              onOpenFriend={(f) => setOpenFriend(FRIEND_DETAILS[f.id] ?? f)}
+              onReviewRequests={() => setShowFriendRequests(true)}
             />
           )}
         </PhoneFrame>

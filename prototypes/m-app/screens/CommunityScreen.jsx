@@ -1,10 +1,9 @@
-import { TopTabs } from '@mobile/components'
+import { useState } from 'react'
+import { TopTabs, ActionsModal, SelectSheet, Alert } from '@mobile/components'
 import { Microsite } from './community/Microsite'
 import { Friends } from './community/Friends'
 import { Leaderboard } from './community/Leaderboard'
 import {
-  FRIENDS,
-  FRIEND_REQUESTS,
   LEADERBOARDS,
   LEADERBOARD_SCOPES,
   LEADERBOARD_LOG_TYPES,
@@ -34,12 +33,26 @@ export function CommunityScreen({
   flags = {},
   profileId,
   profileName,
+  friends = [],
+  requests = [],
+  onRemoveFriend,
   onOpenEvent,
   onOpenFriend,
-  onFriendOptions,
+  onReviewRequests,
 }) {
   // Every Community tab is conditional — the navigator renders null when none qualify.
   const tabs = communityTabs(serviceType).filter((t) => flags[t.id])
+
+  // The two screens BEHIND this tab — a friend's page and the request list — are not rendered
+  // here. `friendDetail` is `presentation: 'modal'` and `friendRequestList` is a push on the
+  // community stack, so both cover the tab bar and the root header; they are the frame's overlay,
+  // and App owns them the way it owns every other pushed screen.
+  const [optionsFor, setOptionsFor] = useState(null)
+  const [confirmRemove, setConfirmRemove] = useState(null)
+  const [addingFriend, setAddingFriend] = useState(false)
+
+  const confirmed = friends.filter((f) => f.confirmed)
+
   return (
     <>
       <TopTabs tabs={tabs} active={tab} onChange={onTab} />
@@ -59,11 +72,13 @@ export function CommunityScreen({
         )}
         {tab === 'friends' && (
           <Friends
-            friends={FRIENDS}
-            requests={FRIEND_REQUESTS}
+            friends={friends}
+            requests={requests.length}
             serviceType={serviceType}
             onOpenFriend={onOpenFriend}
-            onOptions={onFriendOptions}
+            onOptions={setOptionsFor}
+            onAddFriend={() => setAddingFriend(true)}
+            onReviewRequests={onReviewRequests}
           />
         )}
         {tab === 'leaderboards' && (
@@ -73,9 +88,65 @@ export function CommunityScreen({
             data={LEADERBOARDS}
             youId={profileId}
             youName={profileName}
+            serviceType={serviceType}
+            hasFriends={confirmed.length > 0}
+            onlyUnconfirmed={friends.length > 0 && confirmed.length === 0}
+            onAddFriend={() => setAddingFriend(true)}
           />
         )}
       </div>
+
+      {/* `RemoveFriendModal` is two steps on purpose: an options sheet, then a confirmation. The
+          same pair withdraws an invite that has not been accepted.
+
+          `ActionsModal` calls `onClose()` BEFORE the row's `onPress`, so reading `optionsFor`
+          inside the handler gets null — the friend has already been cleared by the time the row
+          fires. The target is captured into the closure instead. */}
+      <ActionsModal
+        open={Boolean(optionsFor)}
+        title={optionsFor ? `${optionsFor.firstName} ${optionsFor.lastName}` : ''}
+        onClose={() => setOptionsFor(null)}
+        options={
+          optionsFor
+            ? [
+                {
+                  title: optionsFor.confirmed ? 'Remove Friend' : 'Withdraw Invite',
+                  destructive: true,
+                  onPress: () => setConfirmRemove(optionsFor),
+                },
+              ]
+            : []
+        }
+      />
+
+      <Alert
+        open={Boolean(confirmRemove)}
+        title={confirmRemove?.confirmed ? 'Remove Friend' : 'Withdraw Invite'}
+        message={`Are you sure you would like to remove ${confirmRemove?.firstName ?? ''}?`}
+        buttons={[
+          { text: 'Cancel', style: 'cancel', onPress: () => setConfirmRemove(null) },
+          {
+            text: 'Remove',
+            onPress: () => {
+              onRemoveFriend?.(confirmRemove)
+              setConfirmRemove(null)
+            },
+          },
+        ]}
+      />
+
+      {/* `AddFriendsModal` — a LIBRARY reader gets this sheet, because adding someone at a public
+          library means exchanging a code rather than searching a roster you are both on. A school
+          reader gets a search screen instead. */}
+      <SelectSheet
+        open={addingFriend}
+        items={[
+          { id: 'share', label: 'Share Your Friend Code' },
+          { id: 'enter', label: 'Enter a Friend Code' },
+        ]}
+        onSelect={() => setAddingFriend(false)}
+        onClose={() => setAddingFriend(false)}
+      />
     </>
   )
 }

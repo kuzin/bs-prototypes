@@ -1,0 +1,25 @@
+/* `initialArea` — 46 at radius 23, with the initials at 14/800. */
+.m-fav {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.19px;
+  line-height: 17px;
+}
+
+/* `avatar` — 40, six smaller than the initials disc. Not an oversight in the source: the photo
+   fills its circle edge to edge while initials need air around them. */
+.m-fav-photo {
+  display: block;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}

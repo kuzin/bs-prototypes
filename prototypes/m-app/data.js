@@ -862,6 +862,89 @@ export const FRIENDS = [
 
 export const FRIEND_REQUESTS = 3
 
+/** The pending requests behind that card — `useFriendRequests`. */
+export const FRIEND_REQUEST_LIST = [
+  { id: 'rq1', firstName: 'Nina', lastName: 'Okonkwo' },
+  { id: 'rq2', firstName: 'Theo', lastName: 'Bergman' },
+  { id: 'rq3', firstName: 'Ivy', lastName: 'Ramos' },
+]
+
+/**
+ * `useFriendsDetails` — a friend's own page.
+ *
+ * `displayLoggedBooksToFriends` is a privacy setting rather than a feature flag: it decides
+ * whether the Reading Log tab exists at all, so a friend can be on your list and still not show
+ * you what they read. Priya has it off, which is what makes the third tab conditional visible
+ * here rather than theoretical.
+ *
+ * `stats` omits a key entirely when the site does not count it — the source checks
+ * `hasOwnProperty` rather than for a value, so a missing `books` is a block that is not drawn,
+ * not a zero.
+ */
+export const FRIEND_DETAILS = {
+  fr1: {
+    id: 'fr1',
+    firstName: 'Jordan',
+    lastName: 'Park',
+    displayLoggedBooksToFriends: true,
+    badges: [
+      { id: 'b1', art: 'linear-gradient(135deg,#0F7280,#19BFD5)' },
+      { id: 'b2', art: 'linear-gradient(135deg,#826022,#FFBC42)' },
+      { id: 'b3', art: 'linear-gradient(135deg,#7A2E8E,#C158D6)' },
+    ],
+    achievements: [{ id: 'a1', art: 'linear-gradient(135deg,#1B7F4B,#43C37A)' }],
+    stats: { currentStreak: 8, longestStreak: 21, minutes: 1640, books: 14 },
+    challenges: [
+      { id: 'c1', title: 'Summer Reading 2026', subtitle: '14 of 20 books' },
+      { id: 'c2', title: 'Newbery Winners', subtitle: '3 of 10 books' },
+    ],
+    titles: [
+      {
+        id: 't1',
+        title: 'The Wild Robot',
+        author: 'Peter Brown',
+        cover: 'linear-gradient(160deg,#2F8F83,#1C5C57)',
+      },
+      {
+        id: 't2',
+        title: 'New Kid',
+        author: 'Jerry Craft',
+        cover: 'linear-gradient(160deg,#C4553E,#8E2F22)',
+      },
+    ],
+  },
+  fr2: {
+    id: 'fr2',
+    firstName: 'Priya',
+    lastName: 'Shah',
+    /* Off — so her page has two tabs, not three. */
+    displayLoggedBooksToFriends: false,
+    badges: [],
+    achievements: [],
+    stats: { currentStreak: null, longestStreak: 12, minutes: 1880 },
+    challenges: [],
+    titles: [],
+  },
+  fr3: {
+    id: 'fr3',
+    firstName: 'Sam',
+    lastName: 'Okafor',
+    displayLoggedBooksToFriends: true,
+    badges: [{ id: 'b4', art: 'linear-gradient(135deg,#B3472F,#F2703F)' }],
+    achievements: [],
+    stats: { currentStreak: 15, longestStreak: 15, minutes: 1120, books: 6 },
+    challenges: [{ id: 'c3', title: 'Summer Reading 2026', subtitle: '6 of 20 books' }],
+    titles: [
+      {
+        id: 't3',
+        title: 'Amari and the Night Brothers',
+        author: 'B. B. Alston',
+        cover: 'linear-gradient(160deg,#5B3FA8,#2E1E63)',
+      },
+    ],
+  },
+}
+
 /**
  * `useLeaderboard(profileId, logType, dateRange, leaderboardType)` — four axes, and the screen
  * shows three of them as controls.
