@@ -831,18 +831,32 @@ export const COMMUNITY_GOAL = {
 /**
  * `micrositeSponsors`. `sponsor_position` is the sort key — the API does not send them in order.
  *
- * PLACEHOLDER — a sponsor logo is tenant-uploaded art served from a URL, so there is nothing to
- * copy and nothing to invent: putting real organisations here would be fabricating who sponsors
- * this school. The grey Beanstack mark stands in for each slot, which reads as a placeholder
- * rather than as a brand.
+ * A sponsor logo is tenant-uploaded art served from a URL, so there is no asset to copy. These
+ * four are the real brand files already vendored in `public/<partner>` — Scholastic, Epic!, Sora
+ * and OverDrive, reading companies that genuinely work with school and library programmes. Real
+ * marks are what make the block worth looking at: they disagree with each other in a way four
+ * hand-drawn lockups never will.
  */
 export const SPONSORS = {
   sponsor_header: 'This year’s reading challenge is made possible by',
   sponsors: [
-    { id: 's1', sponsor_position: 1, placeholder: true },
-    { id: 's2', sponsor_position: 2, placeholder: true },
-    { id: 's3', sponsor_position: 3, placeholder: true },
+    { id: 's1', sponsor_position: 2, mark: 'epic' },
+    { id: 's2', sponsor_position: 1, mark: 'scholastic' },
+    { id: 's3', sponsor_position: 4, mark: 'overdrive' },
+    { id: 's4', sponsor_position: 3, mark: 'sora' },
   ],
+}
+
+/**
+ * `funnel_page_image` — the one panel the microsite screen draws that nothing else does. A
+ * site-uploaded banner for the programme currently running, sized to its own aspect ratio over a
+ * `blueLight` backdrop.
+ *
+ * PLACEHOLDER, same as the sponsors: tenant art with no source to copy.
+ */
+export const FUNNEL_IMAGE = {
+  title: 'Summer Reading 2026',
+  subtitle: 'Read anything. Log everything.',
 }
 
 /**

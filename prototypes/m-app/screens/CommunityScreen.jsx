@@ -9,6 +9,7 @@ import {
   LEADERBOARD_LOG_TYPES,
   COMMUNITY_GOAL,
   SPONSORS,
+  FUNNEL_IMAGE,
   EVENTS,
 } from '../data'
 import './Screens.css'
@@ -83,6 +84,7 @@ export function CommunityScreen({
         {tab === 'microsite' && (
           <Microsite
             name="Lakeside Elementary Library"
+            funnel={FUNNEL_IMAGE}
             goal={COMMUNITY_GOAL}
             events={EVENTS}
             sponsors={SPONSORS}
