@@ -27,6 +27,7 @@ import {
   EmptyState,
   ProfileRow,
   FriendAvatar,
+  ConfirmDialog,
   ProgressBar,
   FormField,
   SheetHeader,
@@ -129,6 +130,25 @@ function Dot() {
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.9" />
     </svg>
+  )
+}
+
+function ConfirmDialogDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <MVariant label="the confirm is a button, the cancel is text — not two equal answers">
+      <div style={{ position: 'relative', minHeight: open ? 300 : 0 }}>
+        <PressableButton buttonText="Show dialog" onButtonPress={() => setOpen(true)} />
+        <ConfirmDialog
+          open={open}
+          title="Are you sure?"
+          text="When you refresh your friend code, your previous code will no longer work."
+          confirmText="Accept"
+          onConfirm={() => setOpen(false)}
+          onClose={() => setOpen(false)}
+        />
+      </div>
+    </MVariant>
   )
 }
 
@@ -1055,6 +1075,29 @@ color: var(--m-green-dark);`,
   },
 
   // ── Overlays ───────────────────────────────────────────────────────────
+  {
+    group: 'm-overlays',
+    id: 'm-confirm-dialog',
+    name: 'ConfirmDialog',
+    desc: (
+      <>
+        <code>friendsAndLeaderboards/components/modals/ConfirmationModal.tsx</code> &mdash; the
+        app&rsquo;s own dialog, and not <a href="#/m-overlays/m-alert">Alert</a>. The OS alert is
+        iOS drawing two equal buttons; this one makes the confirm a full-width branded button and
+        the cancel small text under it.
+        <br />
+        <br />
+        That difference is the use: the app reaches for this when it is{' '}
+        <strong>asking permission</strong> rather than warning you &mdash; a privacy notice before a
+        friend can see your log, a friend code you are about to invalidate. 16 radius, 20 either
+        side, fades in, and the backdrop dismisses.
+      </>
+    ),
+    usage: `import { ConfirmDialog } from '@mobile/components'
+
+<ConfirmDialog open={open} title="Privacy Notice" text={notice} confirmText="Accept" onConfirm={accept} onClose={close} />`,
+    render: () => <ConfirmDialogDemo />,
+  },
   {
     group: 'm-overlays',
     id: 'm-actions-modal',
