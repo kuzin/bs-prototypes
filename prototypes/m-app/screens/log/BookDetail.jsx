@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Img, PressableButton, SheetHeader, EmptyStateView } from '@mobile/components'
-import { longDate, duration, pagesRead } from './ReadingSession'
+import { pagesRead } from './ReadingSession'
 import './BookDetail.css'
 
 /**
