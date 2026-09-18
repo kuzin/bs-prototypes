@@ -26,6 +26,7 @@ import {
   Card,
   EmptyState,
   ProfileRow,
+  ProgressBar,
   FormField,
   SheetHeader,
   ActionsModal,
@@ -712,6 +713,41 @@ color: var(--m-green-dark);`,
               onSettings={() => {}}
               onProfile={() => {}}
             />
+          </div>
+        </MVariant>
+      </>
+    ),
+  },
+  {
+    group: 'm-content',
+    id: 'm-progress-bar',
+    name: 'ProgressBar',
+    desc: (
+      <>
+        <code>components/shared/ProgressBar</code> &mdash; the community goal&rsquo;s bar, and not
+        the same thing as the daily goal&rsquo;s.{' '}
+        <a href="#/m-app-chrome/m-daily-goal-banner">DailyGoalBanner</a> caps its track with a 32pt
+        star that fills when the goal is met; this one caps it with a 30pt disc of the tenant
+        colour, ringed in 5pt of white around a 10pt white dot. Two bars, two statements: one is a
+        reward, this one is a position.
+        <br />
+        <br />
+        The knob pulls back 15 &mdash; half its width &mdash; so it <strong>centres</strong> on the
+        bar&rsquo;s end rather than starting there, which is what keeps it on the line at 0% and at
+        100%. The fill also carries a flat band of its own colour lightened to 91%, 4 down with no
+        blur.
+      </>
+    ),
+    usage: `import { ProgressBar } from '@mobile/components'
+
+<ProgressBar progress={60} />`,
+    render: () => (
+      <>
+        <MVariant label="the knob centres on the end, at either extreme">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, width: 300 }}>
+            <ProgressBar progress={0} />
+            <ProgressBar progress={60} />
+            <ProgressBar progress={100} />
           </div>
         </MVariant>
       </>
