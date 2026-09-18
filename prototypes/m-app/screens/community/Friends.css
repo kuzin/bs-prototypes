@@ -1,0 +1,162 @@
+.m-fr {
+  display: flex;
+  flex-direction: column;
+}
+
+/* `FriendRequestNotificationCard` — the one row above the list, and the only one with a ground. */
+.m-fr-requests {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 20px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--m-accent-wash);
+  cursor: pointer;
+  text-align: left;
+}
+
+.m-fr-requests-count {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 12px;
+  background: var(--m-red);
+  color: var(--m-white);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.m-fr-requests-text {
+  flex: 1 1 auto;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-grey-dark-1);
+}
+
+.m-fr-requests-chevron {
+  flex: none;
+  width: 28px;
+  height: 16px;
+}
+
+/* `listHeader` — the count on the left, the add/invite action on the right in the tenant colour. */
+.m-fr-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 8px;
+}
+
+.m-fr-count {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-grey-dark-1);
+}
+
+.m-fr-add {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-accent);
+}
+
+/* `friendItem` — 76 tall, space-between. The row and the dots are separate press targets, so the
+   dots are a sibling of the pressable rather than inside it. */
+.m-fr-row {
+  display: flex;
+  align-items: center;
+  height: 76px;
+}
+
+.m-fr-press {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+button.m-fr-press {
+  cursor: pointer;
+}
+button.m-fr-press:active {
+  background: var(--m-grey-light-3);
+}
+
+/* `friendNameArea` — 18 in from the edge, which is 2 less than the 20 the rest of the tab uses. */
+.m-fr-name-area {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-left: 18px;
+}
+
+/* `textArea` — 10 from the avatar, not the 15 a ProfileRow list row uses. */
+.m-fr-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  min-width: 0;
+  padding-left: 10px;
+}
+
+/* 18pt, and the FIRST name only — a friends list is people you know. */
+.m-fr-name {
+  font-size: 18px;
+  color: var(--m-c-mine-black);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-fr-pending {
+  font-size: 12px;
+  color: var(--m-grey-dark-3);
+}
+
+/* `flameView` — the flame and the number 10 apart, pushed to the end of the pressable. */
+.m-fr-flame {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--m-red);
+}
+
+.m-fr-streak {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-red);
+}
+
+/* `additionalInfoArea` — a 70pt square with 18 of padding on the right, so the dots have a real
+   target rather than being a 24pt glyph at the screen's edge. */
+.m-fr-dots {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: flex-end;
+  width: 70px;
+  height: 70px;
+  padding-right: 18px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.m-fr-dots-img {
+  width: 24px;
+  height: 24px;
+}

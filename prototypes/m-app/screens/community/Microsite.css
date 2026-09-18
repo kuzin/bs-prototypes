@@ -1,0 +1,159 @@
+.m-ms {
+  display: flex;
+  flex-direction: column;
+}
+
+/* `container` — 20 either side, everything centred. */
+.m-ms-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 20px;
+}
+
+/* `logo` is 40% of the container and the image inside it is 80 tall, contained — so a wide mark
+   and a square one both sit in the same band. */
+.m-ms-logo {
+  width: 40%;
+  height: 80px;
+  margin-top: 36px;
+  object-fit: contain;
+}
+
+/* `text` — the site's name at 18/800, centred, and clamped to HALF the width so a long one wraps
+   to two short lines instead of running the full measure. */
+.m-ms-name {
+  width: 50%;
+  margin: 20px 0;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.m-ms-rule {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: var(--m-c-border);
+  transform: scaleY(0.5);
+}
+
+/* `goalContainer` — 19 either side, 37 down from the rule. */
+.m-ms-goal {
+  padding: 0 19px;
+  margin-top: 37px;
+}
+
+.m-ms-goal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.m-ms-goal-heading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 28px;
+  letter-spacing: 0.29px;
+  color: var(--m-black, #000);
+}
+
+.m-ms-days {
+  display: flex;
+  align-items: center;
+}
+
+.m-ms-clock {
+  width: 18px;
+  height: 18px;
+  margin-right: 5px;
+}
+
+.m-ms-days-text {
+  font-size: 12px;
+  line-height: 28px;
+  letter-spacing: 0.19px;
+  font-weight: 500;
+  color: var(--m-c-bajo-gray, var(--m-grey-dark-3));
+}
+
+/* One line, two sizes. The count is 27/900; everything after the slash drops to 20/700 in
+   chevronGray, so what you HAVE reads louder than what you need. */
+.m-ms-tally {
+  margin: 0 0 20px;
+  font-size: 27px;
+  font-weight: 900;
+  line-height: 28px;
+  letter-spacing: 0.43px;
+}
+
+.m-ms-goal-rest {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  letter-spacing: 0.43px;
+  color: var(--m-c-chevron-gray, var(--m-grey-dark-3));
+}
+
+.m-ms-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* `progressBarContainer` — 85%, which is what leaves the percentage its own column. */
+.m-ms-bar {
+  display: flex;
+  width: 85%;
+}
+
+.m-ms-percent {
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 17px;
+}
+
+/* `upcomingText` / `sponsor_header` — both sit on the 20 gutter the rest of the tab uses. */
+.m-ms-upcoming {
+  margin: 32px 20px 12px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.m-ms-events {
+  margin-bottom: 8px;
+}
+
+.m-ms-sponsors {
+  margin-top: 32px;
+}
+
+.m-ms-sponsor-head {
+  margin: 0 20px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+}
+
+.m-ms-sponsor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90px;
+  border-radius: 12px;
+  background: var(--m-grey-light-3);
+}
+
+.m-ms-sponsor-img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  opacity: 0.55;
+}
+
+/* `scrollViewContent` — 100 of clearance for the tab bar and the FAB. */
+.m-ms-foot {
+  height: 100px;
+}

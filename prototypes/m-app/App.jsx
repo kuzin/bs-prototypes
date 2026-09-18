@@ -18,6 +18,7 @@ import { BookDetail } from './screens/log/BookDetail'
 import { BookListDashboard } from './screens/discover/BookListDashboard'
 import { Settings } from './screens/Settings'
 import { LogSearch } from './screens/LogSearch'
+import { EventModal } from './screens/community/EventModal'
 import { ReadingSession } from './screens/log/ReadingSession'
 import { EditReadingSession } from './screens/log/EditReadingSession'
 import { EditTitle } from './screens/log/EditTitle'
@@ -193,6 +194,7 @@ export function App() {
   const [switchReadersOpen, setSwitchReadersOpen] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   /* The streak card's dismissal, which the app keeps per profile in `streakComponentClosed`. */
+  const [openEvent, setOpenEvent] = useState(null)
   const [streakClosed, setStreakClosed] = useSticky('streakClosed', false)
   const [showLogSearch, setShowLogSearch] = useState(false)
   /* A session opened from the book panel. The panel stays mounted underneath — in the app this is
@@ -408,7 +410,9 @@ export function App() {
              screen you open, use once and dismiss should feel like. */
           overlayVariant={showSettings ? 'card' : 'sheet'}
           overlay={
-            showSettings ? (
+            openEvent ? (
+              <EventModal event={openEvent} onClose={() => setOpenEvent(null)} />
+            ) : showSettings ? (
               <Settings
                 accounts={ACCOUNTS}
                 profiles={PROFILES}
@@ -611,6 +615,7 @@ export function App() {
           )}
           {tab === 'discover' && (
             <DiscoverScreen
+              onOpenEvent={setOpenEvent}
               tab={discoverTab}
               onTab={setDiscoverTab}
               flags={flags}
@@ -623,6 +628,9 @@ export function App() {
               onTab={setCommunityTab}
               serviceType="School"
               flags={flags}
+              profileId={profileId}
+              profileName={profile.name}
+              onOpenEvent={setOpenEvent}
             />
           )}
         </PhoneFrame>

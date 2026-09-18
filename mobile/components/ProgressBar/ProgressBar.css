@@ -1,0 +1,58 @@
+/* `container` — the track and the fill are stacked, not nested, so the fill can carry the knob
+   past the track's rounded end. */
+.m-pbar-progress {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+}
+
+/* `goalBar` — 8pt at radius 12 in greyLight1. */
+.m-pbar-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 12px;
+  background: var(--m-grey-light-1);
+}
+
+.m-pbar-fill-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* The shadow is the bar's own colour lightened to 91%, 4 down with NO blur — a flat band under
+   the bar rather than a glow. `currentColor` cannot express that, so the fallback is a token. */
+.m-pbar-fill {
+  height: 8px;
+  border-radius: 12px;
+  background: var(--m-accent);
+  box-shadow: 0 4px 0 0 var(--m-accent-wash);
+}
+
+/* `progressCircle` — 30pt, 5pt white ring, pulled back half its width so it centres on the end. */
+.m-pbar-knob {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-left: -15px;
+  border: 5px solid var(--m-white);
+  border-radius: 40px;
+  background: var(--m-accent);
+  box-sizing: border-box;
+}
+
+.m-pbar-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 20px;
+  background: var(--m-white);
+}

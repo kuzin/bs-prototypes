@@ -1,0 +1,48 @@
+.m-evm {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-evm-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0 20px 100px;
+}
+.m-evm-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* The title is the one section with no heading over it. */
+.m-evm-title {
+  margin: 8px 0 24px;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 28px;
+}
+
+.m-evm-section {
+  margin-bottom: 20px;
+}
+
+.m-evm-heading {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--m-grey-dark-3);
+}
+
+.m-evm-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--m-c-secondary);
+}
+
+.m-evm-text.is-url {
+  color: var(--m-accent);
+}

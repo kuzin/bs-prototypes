@@ -24,7 +24,7 @@ export const DISCOVER_TABS = [
   { id: 'events', label: 'Events' },
 ]
 
-export function DiscoverScreen({ tab, onTab, flags = {}, onOpenList }) {
+export function DiscoverScreen({ tab, onTab, flags = {}, onOpenList, onOpenEvent }) {
   const visible = DISCOVER_TABS.filter((t) => !GATED.includes(t.id) || flags[t.id])
   return (
     <>
@@ -51,7 +51,7 @@ export function DiscoverScreen({ tab, onTab, flags = {}, onOpenList }) {
             />
           ))}
         {tab === 'book_lists' && <BookLists lists={BOOK_LISTS} onOpenList={onOpenList} />}
-        {tab === 'events' && <Events events={EVENTS} />}
+        {tab === 'events' && <Events events={EVENTS} onOpenEvent={onOpenEvent} />}
         {/* The same component the Log tab uses — `<Reviews type="discover" />` in the real
             navigator, which adds the author's name and the profile circle. */}
         {tab === 'reviews_discover' && (

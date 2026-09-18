@@ -1,0 +1,156 @@
+.m-lb {
+  display: flex;
+  flex-direction: column;
+}
+
+/* `LeaderboardTypeTabs` — a horizontal scroller of pills. The same component draws the scope row
+   at the top and the log-type row inside the header, which is why the styling is one rule. */
+.m-lb-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 12px 20px;
+}
+.m-lb-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.m-lb-tab {
+  flex: none;
+}
+
+.m-lb-header {
+  padding-top: 4px;
+}
+
+.m-lb-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.m-lb-logged {
+  margin: 0;
+  font-size: 14px;
+  color: var(--m-grey-dark-3);
+}
+
+/* The date range is the loudest thing in the header — it is the qualifier that changes what every
+   number below it means. */
+.m-lb-range {
+  margin: 2px 0 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 28px;
+  color: var(--m-grey-dark-1);
+}
+
+.m-lb-since {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--m-grey-dark-3);
+}
+
+.m-lb-clock {
+  width: 14px;
+  height: 14px;
+}
+
+.m-lb-change {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-accent);
+}
+
+.m-lb-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* `leaderboardItem` — 70 tall, stretched, 20 either side, with the left group 16 apart. */
+.m-lb-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 70px;
+  padding: 0 20px;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+button.m-lb-item {
+  cursor: pointer;
+}
+button.m-lb-item:active {
+  background: var(--m-grey-light-3);
+}
+
+.m-lb-item + .m-lb-item {
+  border-top: 1px solid var(--m-c-border);
+}
+
+.m-lb-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* Top three get a medal; everyone else gets the number. Both occupy the same 28pt column, so the
+   avatars below the podium stay in line with the ones on it. */
+.m-lb-medal {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.m-lb-rank {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-grey-dark-3);
+}
+
+.m-lb-name {
+  min-width: 0;
+  font-size: 16px;
+  line-height: 21px;
+  letter-spacing: -0.29px;
+  color: var(--m-c-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* `currentReader` — weight alone marks you, not a colour or a ground. */
+.m-lb-name.is-you {
+  font-weight: 700;
+}
+
+.m-lb-value {
+  flex: none;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  letter-spacing: -0.29px;
+  color: var(--m-c-secondary);
+}
+
+.m-lb-foot {
+  height: 100px;
+}

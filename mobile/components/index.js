@@ -37,6 +37,7 @@ export {
   ListFooter,
 } from './Loading/Loading'
 export { ProfileRow } from './ProfileRow/ProfileRow'
+export { ProgressBar } from './ProgressBar/ProgressBar'
 export { ProfileBar } from './ProfileBar/ProfileBar'
 export { FormField } from './FormField/FormField'
 export { TextField } from './TextField/TextField'

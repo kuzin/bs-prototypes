@@ -1,5 +1,17 @@
-import { TopTabs, Text, TextPill, ProfileRow, PressableButton } from '@mobile/components'
-import { FRIENDS, LEADERBOARD, SITE_FEED } from '../data'
+import { TopTabs } from '@mobile/components'
+import { Microsite } from './community/Microsite'
+import { Friends } from './community/Friends'
+import { Leaderboard } from './community/Leaderboard'
+import {
+  FRIENDS,
+  FRIEND_REQUESTS,
+  LEADERBOARDS,
+  LEADERBOARD_SCOPES,
+  LEADERBOARD_LOG_TYPES,
+  COMMUNITY_GOAL,
+  SPONSORS,
+  EVENTS,
+} from '../data'
 import './Screens.css'
 
 /**
@@ -15,93 +27,54 @@ export const communityTabs = (serviceType = 'School') => [
   { id: 'leaderboards', label: 'Leaderboard' },
 ]
 
-function Microsite() {
-  return (
-    <div className="m-scr">
-      <div className="m-scr-hero">
-        <Text role="detailPageTitle" as="p">
-          Lincoln Middle School
-        </Text>
-        <Text role="subHeading" as="p">
-          428 readers · 1,204,551 minutes this year
-        </Text>
-      </div>
-      {SITE_FEED.map((f) => (
-        <div key={f.id} className="m-scr-row">
-          <ProfileRow name={f.name} size="medium" />
-          <div className="m-flex m-col m-scr-rowmeta">
-            <Text role="bodySmall" as="p">
-              <strong>{f.name}</strong> {f.action}
-            </Text>
-            <Text role="subHeading" as="p">
-              {f.when}
-            </Text>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function Friends() {
-  return (
-    <div className="m-scr">
-      <div className="m-scr-requests">
-        <Text role="titleSmall" as="p">
-          3 friend requests
-        </Text>
-        <PressableButton size="small" buttonText="Review" />
-      </div>
-      {FRIENDS.map((f) => (
-        <div key={f.id} className="m-scr-row">
-          <ProfileRow name={f.name} size="medium" />
-          <div className="m-flex m-col m-scr-rowmeta">
-            <Text role="itemTitle" as="p">
-              {f.name}
-            </Text>
-            <Text role="bodySmaller" as="p">
-              {f.minutes} minutes this month
-            </Text>
-          </div>
-          {f.streak > 0 && <TextPill tone="orange" text={`${f.streak}d`} />}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function Leaderboard() {
-  return (
-    <div className="m-scr">
-      {LEADERBOARD.map((r, i) => (
-        <div key={r.id} className={`m-scr-row${r.isYou ? ' is-you' : ''}`}>
-          <span className="m-scr-rank">{i + 1}</span>
-          <ProfileRow name={r.name} size="medium" />
-          <div className="m-flex m-col m-scr-rowmeta">
-            <Text role="itemTitle" as="p">
-              {r.name}
-              {r.isYou && ' (you)'}
-            </Text>
-            <Text role="bodySmaller" as="p">
-              {r.minutes} minutes
-            </Text>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-export function CommunityScreen({ tab, onTab, serviceType = 'School', flags = {} }) {
+export function CommunityScreen({
+  tab,
+  onTab,
+  serviceType = 'School',
+  flags = {},
+  profileId,
+  profileName,
+  onOpenEvent,
+  onOpenFriend,
+  onFriendOptions,
+}) {
   // Every Community tab is conditional — the navigator renders null when none qualify.
   const tabs = communityTabs(serviceType).filter((t) => flags[t.id])
   return (
     <>
       <TopTabs tabs={tabs} active={tab} onChange={onTab} />
-      <div className="m-scroll">
-        {tab === 'microsite' && <Microsite />}
-        {tab === 'friends' && <Friends />}
-        {tab === 'leaderboards' && <Leaderboard />}
+      {/* Keyed by tab so each one gets its OWN scroll container. A material top-tab navigator
+          gives every tab a separate scene, so scrolling to the bottom of My School and switching
+          to Leaderboard lands you at the top of a fresh list — sharing one scroller instead
+          dropped you into the middle of the next tab. */}
+      <div className="m-scroll" key={tab}>
+        {tab === 'microsite' && (
+          <Microsite
+            name="Lakeside Elementary Library"
+            goal={COMMUNITY_GOAL}
+            events={EVENTS}
+            sponsors={SPONSORS}
+            onOpenEvent={onOpenEvent}
+          />
+        )}
+        {tab === 'friends' && (
+          <Friends
+            friends={FRIENDS}
+            requests={FRIEND_REQUESTS}
+            serviceType={serviceType}
+            onOpenFriend={onOpenFriend}
+            onOptions={onFriendOptions}
+          />
+        )}
+        {tab === 'leaderboards' && (
+          <Leaderboard
+            scopes={LEADERBOARD_SCOPES}
+            logTypes={LEADERBOARD_LOG_TYPES}
+            data={LEADERBOARDS}
+            youId={profileId}
+            youName={profileName}
+          />
+        )}
       </div>
     </>
   )

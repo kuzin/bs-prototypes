@@ -812,25 +812,114 @@ export const EVENTS = [
 ]
 
 // ── Community tab ─────────────────────────────────────────────────────────
-export const SITE_FEED = [
-  { id: 'f1', name: 'Jordan P.', action: 'earned the Night Owl badge', when: '10 minutes ago' },
-  { id: 'f2', name: 'Priya S.', action: 'finished New Kid', when: '1 hour ago' },
-  { id: 'f3', name: 'Ms. Abbott', action: 'added 4 books to Newbery Winners', when: 'Yesterday' },
-]
+/**
+ * `useMicrositeScreenData` — everything the My School / My Library tab draws. It is the SITE's
+ * page, not a social one: a logo, a community goal, what is coming up, and who paid for it.
+ *
+ * `percent_completed` arrives as a string with the sign on it, and `goal_type` is singular — the
+ * screen pluralises it itself, which is why "minute" is stored rather than "minutes".
+ */
+export const COMMUNITY_GOAL = {
+  remaining_days: 24,
+  show_remaining_days: true,
+  goal: 2000000,
+  goal_type: 'minute',
+  tally: 1204551,
+  percent_completed: '60%',
+}
 
+/**
+ * `micrositeSponsors`. `sponsor_position` is the sort key — the API does not send them in order.
+ *
+ * PLACEHOLDER — a sponsor logo is tenant-uploaded art served from a URL, so there is nothing to
+ * copy and nothing to invent: putting real organisations here would be fabricating who sponsors
+ * this school. The grey Beanstack mark stands in for each slot, which reads as a placeholder
+ * rather than as a brand.
+ */
+export const SPONSORS = {
+  sponsor_header: 'This year’s reading challenge is made possible by',
+  sponsors: [
+    { id: 's1', sponsor_position: 1, placeholder: true },
+    { id: 's2', sponsor_position: 2, placeholder: true },
+    { id: 's3', sponsor_position: 3, placeholder: true },
+  ],
+}
+
+/**
+ * The friends on this reader's list — `useFriendsList`.
+ *
+ * A row carries a name, a streak and whether the invite is `confirmed`; there is no minutes
+ * figure on it, which is worth stating because an unconfirmed friend has no readable activity at
+ * all. `current_streak` is null rather than 0 when there is no streak, and null is what hides the
+ * flame.
+ */
 export const FRIENDS = [
-  { id: 'fr1', name: 'Jordan Park', minutes: 620, streak: 8 },
-  { id: 'fr2', name: 'Priya Shah', minutes: 540, streak: 0 },
-  { id: 'fr3', name: 'Sam Okafor', minutes: 410, streak: 15 },
+  { id: 'fr1', firstName: 'Jordan', lastName: 'Park', streak: 8, confirmed: true },
+  { id: 'fr2', firstName: 'Priya', lastName: 'Shah', streak: null, confirmed: true },
+  { id: 'fr3', firstName: 'Sam', lastName: 'Okafor', streak: 15, confirmed: true },
+  { id: 'fr4', firstName: 'Alex', lastName: 'Rivera', streak: null, confirmed: false },
 ]
 
-export const LEADERBOARD = [
-  { id: 'lb1', name: 'Priya Shah', minutes: '1,880' },
-  { id: 'lb2', name: 'Jordan Park', minutes: '1,640' },
-  { id: 'lb3', name: 'Maya Chen', minutes: '1,240', isYou: true },
-  { id: 'lb4', name: 'Sam Okafor', minutes: '1,120' },
-  { id: 'lb5', name: 'Alex Rivera', minutes: '980' },
-]
+export const FRIEND_REQUESTS = 3
+
+/**
+ * `useLeaderboard(profileId, logType, dateRange, leaderboardType)` — four axes, and the screen
+ * shows three of them as controls.
+ *
+ * `leaderboard_types` is the SCOPE you are ranked within (your friends, your grade, your school),
+ * and `leaderboard_tabs` is WHAT is being counted. They are different tab rows rendered by the
+ * same component, which is easy to read as one thing in the source.
+ *
+ * `ranking` is the server's, not the row's index: it is what decides a medal, and ties mean it
+ * does not always march 1, 2, 3.
+ */
+export const LEADERBOARD_SCOPES = ['friends', 'grade', 'school']
+export const LEADERBOARD_LOG_TYPES = ['minutes', 'books']
+
+export const LEADERBOARDS = {
+  friends: {
+    minutes: [
+      { id: 'lb1', ranking: 1, firstName: 'Priya', lastName: 'Shah', logValue: '1,880' },
+      { id: 'lb2', ranking: 2, firstName: 'Jordan', lastName: 'Park', logValue: '1,640' },
+      { id: 'p1', ranking: 3, firstName: 'Maya', lastName: 'Chen', logValue: '1,240' },
+      { id: 'lb4', ranking: 4, firstName: 'Sam', lastName: 'Okafor', logValue: '1,120' },
+      { id: 'lb5', ranking: 5, firstName: 'Alex', lastName: 'Rivera', logValue: '980' },
+    ],
+    books: [
+      { id: 'lb2', ranking: 1, firstName: 'Jordan', lastName: 'Park', logValue: '14' },
+      { id: 'p1', ranking: 2, firstName: 'Maya', lastName: 'Chen', logValue: '11' },
+      { id: 'lb1', ranking: 3, firstName: 'Priya', lastName: 'Shah', logValue: '9' },
+      { id: 'lb4', ranking: 4, firstName: 'Sam', lastName: 'Okafor', logValue: '6' },
+    ],
+  },
+  /* Grade and school rows carry a `name` instead of a first/last pair — they are not people. */
+  grade: {
+    minutes: [
+      { id: 'g5', ranking: 1, name: '5th Grade', logValue: '48,210' },
+      { id: 'g4', ranking: 2, name: '4th Grade', logValue: '44,905' },
+      { id: 'g3', ranking: 3, name: '3rd Grade', logValue: '39,140' },
+      { id: 'g2', ranking: 4, name: '2nd Grade', logValue: '28,660' },
+    ],
+    books: [
+      { id: 'g4', ranking: 1, name: '4th Grade', logValue: '612' },
+      { id: 'g5', ranking: 2, name: '5th Grade', logValue: '584' },
+      { id: 'g3', ranking: 3, name: '3rd Grade', logValue: '470' },
+      { id: 'g2', ranking: 4, name: '2nd Grade', logValue: '331' },
+    ],
+  },
+  school: {
+    minutes: [
+      { id: 'm2', ranking: 1, name: 'Northside Elementary', logValue: '204,880' },
+      { id: 'm1', ranking: 2, name: 'Lakeside Elementary', logValue: '196,410' },
+      { id: 'm3', ranking: 3, name: 'Riverbend Elementary', logValue: '158,220' },
+    ],
+    books: [
+      { id: 'm1', ranking: 1, name: 'Lakeside Elementary', logValue: '2,431' },
+      { id: 'm2', ranking: 2, name: 'Northside Elementary', logValue: '2,190' },
+      { id: 'm3', ranking: 3, name: 'Riverbend Elementary', logValue: '1,604' },
+    ],
+  },
+}
 
 // ── Feature-gated Home sections ───────────────────────────────────────────
 
