@@ -81,6 +81,22 @@ export function Keyboard({ onDismiss }) {
       if (key === 'delete') return backspace()
       if (key === 'numbers' || key === 'symbols' || key === 'letters') return setLayout(key)
 
+      // Return SUBMITS. On device the key is `returnKeyType` and pressing it fires
+      // `onSubmitEditing` — which is how a search screen searches and a code screen accepts. A
+      // newline typed into a single-line field is not that: the browser drops it and the screen
+      // never hears anything, so the only way to submit was a hardware keyboard the phone does
+      // not have. A textarea still gets its newline, because there return really is a line break.
+      if (key === '\n') {
+        const el = field()
+        if (!el) return
+        if (el instanceof HTMLTextAreaElement) return insert('\n')
+        el.dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true }),
+        )
+        el.form?.requestSubmit?.()
+        return
+      }
+
       insert(layout === 'letters' && (shift || caps) ? key.toUpperCase() : key)
       // A one-shot shift clears after the letter it capitalised; caps lock does not.
       if (shift && !caps) setShift(false)

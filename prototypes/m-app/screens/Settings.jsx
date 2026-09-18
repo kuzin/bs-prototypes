@@ -38,6 +38,7 @@ const ROWS = [
 export function Settings({
   accounts = [],
   profiles = [],
+  serviceType = 'School',
   accountFields = [],
   readerFields = [],
   onBack,
@@ -68,6 +69,7 @@ export function Settings({
     return (
       <Readers
         profiles={profiles}
+        serviceType={serviceType}
         onOpenReader={(reader) => setEditing({ kind: 'reader', reader })}
         onBack={back}
       />

@@ -862,6 +862,20 @@ export const FRIENDS = [
 
 export const FRIEND_REQUESTS = 3
 
+/**
+ * The roster `friendSearch` searches — every reader at this site.
+ *
+ * A school has one of these and a library does not, which is the whole reason the two add-a-friend
+ * flows differ: you can look someone up here, but a public library cannot show you its patrons.
+ */
+export const SITE_ROSTER = [
+  { id: 'sr1', firstName: 'Ellie', lastName: 'Novak' },
+  { id: 'sr2', firstName: 'Marcus', lastName: 'Webb' },
+  { id: 'sr3', firstName: 'Nadia', lastName: 'Haddad' },
+  { id: 'sr4', firstName: 'Owen', lastName: 'Fitzgerald' },
+  { id: 'sr5', firstName: 'Ruby', lastName: 'Nakamura' },
+]
+
 /** The pending requests behind that card — `useFriendRequests`. */
 export const FRIEND_REQUEST_LIST = [
   { id: 'rq1', firstName: 'Nina', lastName: 'Okonkwo' },

@@ -1,0 +1,157 @@
+.m-fs {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+/* `searchArea` — the field and the two controls on one row, with a shadow strip under it rather
+   than a border. */
+.m-fs-search {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 12px;
+  box-shadow: 0 3px 13px rgba(0, 0, 0, 0.05);
+}
+
+.m-fs-field {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  background: var(--m-grey-light-3);
+}
+
+.m-fs-input {
+  width: 100%;
+  border: 0;
+  background: none;
+  outline: none;
+  font: inherit;
+  font-size: 16px;
+  color: var(--m-c-mine-black);
+}
+
+.m-fs-input::placeholder {
+  color: var(--m-c-ashes-gray);
+}
+
+.m-fs-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+}
+
+.m-fs-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+/* The glyph fades rather than unmounting — the row keeps its shape as you type. */
+.m-fs-clear-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.25;
+  transition: opacity 120ms ease;
+}
+.m-fs-clear-icon.is-on {
+  opacity: 1;
+}
+
+.m-fs-cancel {
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--m-accent);
+}
+
+.m-fs-body {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.m-fs-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* The pre-search state is a prompt, not artwork: the screen explaining what it is for. */
+.m-fs-initial {
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.m-fs-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--m-grey-dark-1);
+}
+
+.m-fs-sub {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 21px;
+  color: var(--m-grey-dark-3);
+}
+
+.m-fs-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 18px;
+  border: 0;
+  border-bottom: 1px solid var(--m-c-border);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.m-fs-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 18px;
+  color: var(--m-c-mine-black);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* One selection at a time — Send Invite takes a single reader, so this is a radio, not a check. */
+.m-fs-radio {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 13px;
+  border: 1px solid var(--m-border-grey);
+  background: var(--m-white);
+}
+
+.m-fs-row.is-selected .m-fs-radio {
+  border-color: var(--m-c-green-haze);
+  background: var(--m-c-green-haze);
+  box-shadow: inset 0 0 0 4px var(--m-white);
+}
+
+.m-fs-foot {
+  flex: none;
+  padding: 16px 20px 24px;
+}

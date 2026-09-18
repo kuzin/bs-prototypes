@@ -36,6 +36,7 @@ export {
   RefreshControl,
   ListFooter,
 } from './Loading/Loading'
+export { ConfirmDialog } from './ConfirmDialog/ConfirmDialog'
 export { FriendAvatar } from './FriendAvatar/FriendAvatar'
 export { ProfileRow } from './ProfileRow/ProfileRow'
 export { ProgressBar } from './ProgressBar/ProgressBar'

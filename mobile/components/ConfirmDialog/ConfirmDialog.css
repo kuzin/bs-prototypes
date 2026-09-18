@@ -1,0 +1,66 @@
+.m-cd {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  animation: m-cd-fade 180ms ease;
+}
+
+@keyframes m-cd-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* `backdropOpacity: 0.5` over black, and pressing it closes. */
+.m-cd-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+/* `modalView` — 16 radius, 24 either side, 32 above and 16 below. */
+.m-cd-box {
+  position: relative;
+  width: 100%;
+  padding: 32px 24px 16px;
+  border-radius: 16px;
+  background: var(--m-white);
+}
+
+.m-cd-title {
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* 16/500 in dimGray at a 23 line, with 32 under it — the copy is usually a paragraph, and this is
+   the rare place the app sets a line height rather than letting one fall out. */
+.m-cd-text {
+  margin: 0 0 32px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 23px;
+  text-align: center;
+  color: var(--m-c-dim-gray);
+}
+
+/* `cancelButton` — 14/bold in greyDark3, centred under the confirm, 36 tall. Deliberately not a
+   button: the two answers are not equal weight. */
+.m-cd-cancel {
+  display: block;
+  height: 36px;
+  margin: 16px auto 0;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 700;
+  color: var(--m-grey-dark-3);
+}

@@ -39,9 +39,17 @@ export function CommunityScreen({
   onOpenEvent,
   onOpenFriend,
   onReviewRequests,
+  onShareCode,
+  onEnterCode,
+  onFriendSearch,
 }) {
-  // Every Community tab is conditional — the navigator renders null when none qualify.
-  const tabs = communityTabs(serviceType).filter((t) => flags[t.id])
+  /* Every Community tab is conditional, and the three conditions are not the same shape:
+     `microsite` is hidden only for CORPORATE, `friends` is a plain flag, and `leaderboards` is a
+     flag OR a school — a school gets them whether or not the site turned them on. The navigator
+     renders null when none qualify. */
+  const tabs = communityTabs(serviceType).filter((t) =>
+    t.id === 'leaderboards' ? flags.leaderboards || serviceType === 'School' : flags[t.id],
+  )
 
   // The two screens BEHIND this tab — a friend's page and the request list — are not rendered
   // here. `friendDetail` is `presentation: 'modal'` and `friendRequestList` is a push on the
@@ -52,6 +60,10 @@ export function CommunityScreen({
   const [addingFriend, setAddingFriend] = useState(false)
 
   const confirmed = friends.filter((f) => f.confirmed)
+
+  /* `showFriendSearchScreen` — a LIBRARY opens the code sheet, because it has no roster to look
+     anyone up in. Everyone else pushes the search screen. Same button, two different problems. */
+  const addFriend = () => (serviceType === 'Library' ? setAddingFriend(true) : onFriendSearch?.())
 
   return (
     <>
@@ -77,7 +89,7 @@ export function CommunityScreen({
             serviceType={serviceType}
             onOpenFriend={onOpenFriend}
             onOptions={setOptionsFor}
-            onAddFriend={() => setAddingFriend(true)}
+            onAddFriend={addFriend}
             onReviewRequests={onReviewRequests}
           />
         )}
@@ -91,7 +103,7 @@ export function CommunityScreen({
             serviceType={serviceType}
             hasFriends={confirmed.length > 0}
             onlyUnconfirmed={friends.length > 0 && confirmed.length === 0}
-            onAddFriend={() => setAddingFriend(true)}
+            onAddFriend={addFriend}
           />
         )}
       </div>
@@ -144,7 +156,11 @@ export function CommunityScreen({
           { id: 'share', label: 'Share Your Friend Code' },
           { id: 'enter', label: 'Enter a Friend Code' },
         ]}
-        onSelect={() => setAddingFriend(false)}
+        onSelect={(id) => {
+          setAddingFriend(false)
+          if (id === 'share') onShareCode?.()
+          else onEnterCode?.()
+        }}
         onClose={() => setAddingFriend(false)}
       />
     </>

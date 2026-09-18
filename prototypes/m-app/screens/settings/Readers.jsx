@@ -7,8 +7,8 @@ import './Readers.css'
  * readers, and the header avatar only ever swaps between the ones shown here.
  *
  * `clientServiceType === 'school'` returns the reader list ALONE, with no Add A Reader: a school
- * account is one login to one reader, so there is nobody to add. This account is the library
- * shape, so it gets both.
+ * account is one login to one reader, so there is nobody to add. The site type is a prototype
+ * control, so both shapes are reachable.
  *
  * DIVERGENCE — laid out like Accounts, on a design call. The app puts this list on the form grey
  * with `SectionList` banding and separates Add A Reader into a section of its own; here it is one
@@ -17,7 +17,7 @@ import './Readers.css'
  * the rows are still `ProfileListItem` at 70pt, and Add A Reader is still its own row rather than
  * a button.
  */
-export function Readers({ profiles, onOpenReader, onBack }) {
+export function Readers({ profiles, serviceType = 'School', onOpenReader, onBack }) {
   return (
     <div className="m-rdr">
       <Header variant="stack" title="Readers" onBack={onBack} />
@@ -37,14 +37,21 @@ export function Readers({ profiles, onOpenReader, onBack }) {
         ))}
 
         {/* `showReaderProfileCreation` — it fetches the registration fields, then pushes
-            `addReader`. That is the reader signup form, a flow of its own. */}
-        <button type="button" className="m-rdr-row">
-          <span className="m-rdr-tile">
-            <Img name="add_icon" size={22} />
-          </span>
-          <span className="m-t-secondary-title m-rdr-add">Add A Reader</span>
-        </button>
-        <span className="m-rdr-rule" />
+            `addReader`. That is the reader signup form, a flow of its own.
+
+            A SCHOOL does not get this row at all: one login is one reader, so there is nobody to
+            add. `getSections` returns the reader list alone. */}
+        {serviceType !== 'School' && (
+          <>
+            <button type="button" className="m-rdr-row">
+              <span className="m-rdr-tile">
+                <Img name="add_icon" size={22} />
+              </span>
+              <span className="m-t-secondary-title m-rdr-add">Add A Reader</span>
+            </button>
+            <span className="m-rdr-rule" />
+          </>
+        )}
       </div>
     </div>
   )

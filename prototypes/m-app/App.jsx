@@ -21,6 +21,8 @@ import { LogSearch } from './screens/LogSearch'
 import { EventModal } from './screens/community/EventModal'
 import { FriendDetail } from './screens/community/FriendDetail'
 import { FriendRequests } from './screens/community/FriendRequests'
+import { ShareCode, EnterFriendCode } from './screens/community/FriendCode'
+import { FriendSearch } from './screens/community/FriendSearch'
 import { ReadingSession } from './screens/log/ReadingSession'
 import { EditReadingSession } from './screens/log/EditReadingSession'
 import { EditTitle } from './screens/log/EditTitle'
@@ -42,6 +44,7 @@ import {
   FRIENDS,
   FRIEND_REQUEST_LIST,
   FRIEND_DETAILS,
+  SITE_ROSTER,
   ACCOUNT_FIELD_SECTIONS,
   READER_FIELD_SECTIONS,
   ALL_TITLES_SECTIONS,
@@ -145,6 +148,17 @@ export function App() {
   // storage key carries a version because the default moved to `floating` — a sticky value under
   // the old key would have pinned everyone to the old default and hidden the change.
   const [barStyle, setBarStyle] = useSticky('barStyle2', 'floating')
+  /**
+   * `microsite.clientServiceType` — and it forks more of the app than its name suggests.
+   *
+   * Community reads it three times: the first tab is labelled `My ${Capitalize(type)}`, the
+   * Leaderboard tab appears for a SCHOOL whether or not `displayLeaderboards` is on, and adding a
+   * friend takes an entirely different route. A school roster is a closed list both readers are
+   * already on, so you search it and send an invite; a library has no such list and no way to
+   * know two patrons know each other, so they exchange a code out of band. Settings forks on it
+   * too — a school account is one login to one reader, so it has no Add A Reader.
+   */
+  const [serviceType, setServiceType] = useSticky('serviceType', 'School')
   const [accent, setAccent] = useSticky('accent', DEFAULT_ACCENT)
   const [tab, setTab] = useSticky('tab', 'home')
   const [plusOpen, setPlusOpen] = useState(false)
@@ -206,6 +220,10 @@ export function App() {
   const [friendRequests, setFriendRequests] = useState(FRIEND_REQUEST_LIST)
   const [openFriend, setOpenFriend] = useState(null)
   const [showFriendRequests, setShowFriendRequests] = useState(false)
+  const [codeScreen, setCodeScreen] = useState(null)
+  /* The code belongs to the READER, not the device — switching readers has to change it, or the
+     screen is telling you to share somebody else's. Seeded from the name so it is stable. */
+  const [codeSuffix, setCodeSuffix] = useState('7F3K')
   const [streakClosed, setStreakClosed] = useSticky('streakClosed', false)
   const [showLogSearch, setShowLogSearch] = useState(false)
   /* A session opened from the book panel. The panel stays mounted underneath — in the app this is
@@ -309,6 +327,15 @@ export function App() {
                 <option value="compact">Goal · compact</option>
                 <option value="flush">Goal · flush</option>
                 <option value="card">Goal · card</option>
+              </select>
+
+              <select
+                aria-label="Site type"
+                value={serviceType}
+                onChange={(e) => setServiceType(e.target.value)}
+              >
+                <option value="School">Site · school</option>
+                <option value="Library">Site · library</option>
               </select>
 
               <select
@@ -419,9 +446,28 @@ export function App() {
              the whole navigator with no scale-back and no peeking edge: somewhere the app went,
              rather than something laid over it. Search keeps the presented card, which is what a
              screen you open, use once and dismiss should feel like. */
-          overlayVariant={showSettings || showFriendRequests ? 'card' : 'sheet'}
+          overlayVariant={showSettings || showFriendRequests || codeScreen ? 'card' : 'sheet'}
           overlay={
-            openFriend ? (
+            codeScreen === 'share' ? (
+              <ShareCode
+                profile={profile}
+                code={`${(profile.name.split(' ')[0] ?? 'CODE').toUpperCase()}-${codeSuffix}`}
+                onRefresh={() =>
+                  setCodeSuffix(Math.random().toString(36).slice(2, 6).toUpperCase())
+                }
+                onBack={() => setCodeScreen(null)}
+              />
+            ) : codeScreen === 'search' ? (
+              <FriendSearch
+                roster={SITE_ROSTER}
+                onInvite={(r) =>
+                  setFriends((l) => [...l, { ...r, streak: null, confirmed: false }])
+                }
+                onBack={() => setCodeScreen(null)}
+              />
+            ) : codeScreen === 'enter' ? (
+              <EnterFriendCode onAdd={() => false} onBack={() => setCodeScreen(null)} />
+            ) : openFriend ? (
               <FriendDetail friend={openFriend} onClose={() => setOpenFriend(null)} />
             ) : showFriendRequests ? (
               <FriendRequests
@@ -439,6 +485,7 @@ export function App() {
               <Settings
                 accounts={ACCOUNTS}
                 profiles={PROFILES}
+                serviceType={serviceType}
                 accountFields={ACCOUNT_FIELD_SECTIONS}
                 readerFields={READER_FIELD_SECTIONS}
                 onBack={() => setShowSettings(false)}
@@ -649,7 +696,7 @@ export function App() {
             <CommunityScreen
               tab={communityTab}
               onTab={setCommunityTab}
-              serviceType="School"
+              serviceType={serviceType}
               flags={flags}
               profileId={profileId}
               profileName={profile.name}
@@ -659,6 +706,9 @@ export function App() {
               onOpenEvent={setOpenEvent}
               onOpenFriend={(f) => setOpenFriend(FRIEND_DETAILS[f.id] ?? f)}
               onReviewRequests={() => setShowFriendRequests(true)}
+              onShareCode={() => setCodeScreen('share')}
+              onEnterCode={() => setCodeScreen('enter')}
+              onFriendSearch={() => setCodeScreen('search')}
             />
           )}
         </PhoneFrame>
