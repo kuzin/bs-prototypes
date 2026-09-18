@@ -18,14 +18,25 @@
   display: none;
 }
 
-/* The book editor's rhythm — boxes 12 apart with 20 either side — rather than edge-to-edge rules.
-   A box carries its own edges, so the hairlines that made the Material fields legible are noise
-   around it. */
+/* The book editor's rhythm — boxes 12 apart with 20 either side — rather than a rule between every
+   field. A box carries its own edges, so the hairlines that made the Material fields legible are
+   noise between them.
+
+   BETWEEN SECTIONS is the other case, and there the rule earns its place: a section break is a
+   change of subject, and 20pt of air alone left the last box of one group and the title of the
+   next reading as one run. `renderFullScreenSeparator`, so it goes edge to edge rather than
+   inset to the fields. */
 .m-edf-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 0 20px 24px;
+}
+
+/* Between, not above the first — the header carries its own border, and stacking a second line
+   under it reads as one heavy rule rather than two deliberate ones. */
+.m-edf-group + .m-edf-group {
+  border-top: 1px solid var(--m-c-border);
 }
 
 /* `secondaryTitle`, one rung under the page heading on Accounts and Readers — three section
