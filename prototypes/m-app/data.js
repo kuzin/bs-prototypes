@@ -969,6 +969,11 @@ export const FRIEND_DETAILS = {
  *
  * `ranking` is the server's, not the row's index: it is what decides a medal, and ties mean it
  * does not always march 1, 2, 3.
+ *
+ * A friend's row id here is their PROFILE id — the same one the friends list uses. That is not
+ * bookkeeping: the avatar colour is hashed from `id-first-last`, so giving the same person a
+ * different id on this screen would give them a different colour on it, and the whole point of
+ * deriving the colour is that a friend looks like themselves wherever they appear.
  */
 export const LEADERBOARD_SCOPES = ['friends', 'grade', 'school']
 export const LEADERBOARD_LOG_TYPES = ['minutes', 'books']
@@ -976,17 +981,17 @@ export const LEADERBOARD_LOG_TYPES = ['minutes', 'books']
 export const LEADERBOARDS = {
   friends: {
     minutes: [
-      { id: 'lb1', ranking: 1, firstName: 'Priya', lastName: 'Shah', logValue: '1,880' },
-      { id: 'lb2', ranking: 2, firstName: 'Jordan', lastName: 'Park', logValue: '1,640' },
+      { id: 'fr2', ranking: 1, firstName: 'Priya', lastName: 'Shah', logValue: '1,880' },
+      { id: 'fr1', ranking: 2, firstName: 'Jordan', lastName: 'Park', logValue: '1,640' },
       { id: 'p1', ranking: 3, firstName: 'Maya', lastName: 'Chen', logValue: '1,240' },
-      { id: 'lb4', ranking: 4, firstName: 'Sam', lastName: 'Okafor', logValue: '1,120' },
-      { id: 'lb5', ranking: 5, firstName: 'Alex', lastName: 'Rivera', logValue: '980' },
+      { id: 'fr3', ranking: 4, firstName: 'Sam', lastName: 'Okafor', logValue: '1,120' },
+      { id: 'fr4', ranking: 5, firstName: 'Alex', lastName: 'Rivera', logValue: '980' },
     ],
     books: [
-      { id: 'lb2', ranking: 1, firstName: 'Jordan', lastName: 'Park', logValue: '14' },
+      { id: 'fr1', ranking: 1, firstName: 'Jordan', lastName: 'Park', logValue: '14' },
       { id: 'p1', ranking: 2, firstName: 'Maya', lastName: 'Chen', logValue: '11' },
-      { id: 'lb1', ranking: 3, firstName: 'Priya', lastName: 'Shah', logValue: '9' },
-      { id: 'lb4', ranking: 4, firstName: 'Sam', lastName: 'Okafor', logValue: '6' },
+      { id: 'fr2', ranking: 3, firstName: 'Priya', lastName: 'Shah', logValue: '9' },
+      { id: 'fr3', ranking: 4, firstName: 'Sam', lastName: 'Okafor', logValue: '6' },
     ],
   },
   /* Grade and school rows carry a `name` instead of a first/last pair — they are not people. */

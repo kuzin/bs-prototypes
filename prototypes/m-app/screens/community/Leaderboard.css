@@ -154,3 +154,16 @@ button.m-lb-item:active {
 .m-lb-foot {
   height: 100px;
 }
+
+/* The friends board's empty state carries a button, so it centres like the Friends tab's rather
+   than sitting flush left under the artwork. */
+.m-lb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px 40px;
+}
+
+.m-lb-empty > button {
+  width: auto;
+}
