@@ -141,7 +141,7 @@ function FormFieldDemo() {
   const set = (name, value) => setValues((v) => ({ ...v, [name]: value }))
   return (
     <>
-      <MVariant label="text — label above, and a 3pt underline that draws nothing">
+      <MVariant label="text — TextField's box, with the label notching the border">
         <FormField
           name="first_name"
           label="First Name"
@@ -150,7 +150,7 @@ function FormFieldDemo() {
           onChange={set}
         />
       </MVariant>
-      <MVariant label="select — the app's own dropdown_arrow at 20">
+      <MVariant label="select — in the same box, with the app's own dropdown_arrow">
         <FormField
           name="grade_level_id"
           label="Grade"
@@ -173,7 +173,7 @@ function FormFieldDemo() {
           onChange={set}
         />
       </MVariant>
-      <MVariant label="bool — the one type laid out as a row">
+      <MVariant label="bool — a ruled row and the platform switch, not a box">
         <FormField
           name="send_recommendations"
           label="Send a book recommendation each week"
@@ -182,7 +182,7 @@ function FormFieldDemo() {
           onChange={set}
         />
       </MVariant>
-      <MVariant label="error — an 18pt disc and a bang, and the value turns red too">
+      <MVariant label="error — the stroke holds the error colour whether or not it is focused">
         <FormField
           name="email"
           label="Email"
@@ -621,18 +621,25 @@ color: var(--m-green-dark);`,
     name: 'FormField',
     desc: (
       <>
-        <code>components/listItems/MaterialFormFieldItem.tsx</code> &mdash; the field every
-        registration and settings form is built from, and the third distinct input in this system.
-        It exists because those forms are <strong>not authored</strong>: the server sends{' '}
-        <code>registration_fields.sections</code> and the screen renders whatever arrives, so the
-        component is a switch over <code>field_type</code> rather than a layout.
+        A field in a server-driven form &mdash;{' '}
+        <code>components/listItems/MaterialFormFieldItem.tsx</code>. The behaviour is the
+        app&rsquo;s and is the reason it exists: registration and settings forms are{' '}
+        <strong>not authored</strong>. The server sends <code>registration_fields.sections</code>{' '}
+        and the screen renders whatever arrives, so this is a switch over <code>field_type</code>,
+        not a layout.
         <br />
         <br />
-        The 3pt underline is white and stays white. <code>inputBottomLineColor</code> starts at the
-        literal string <code>white</code> and only moves on focus &mdash; and both settings editors
-        pass <code>renderActiveState={'{false}'}</code>, which makes that setter a no-op. It
-        reserves 3pt and draws nothing; the full-width hairline between rows is what actually
-        separates the fields.
+        The chrome is deliberately <strong>not</strong> the app&rsquo;s. MaterialFormFieldItem is
+        the oldest input in the codebase &mdash; a label above a bare line of text, over a 3pt
+        underline set to the literal string <code>white</code> that never changes, because both
+        editors pass <code>renderActiveState={'{false}'}</code>. It reserves 3pt, draws nothing, and
+        leaves a hairline to do the separating. Beside the book editor&rsquo;s boxes it reads as a
+        different product, so the box here is <a href="#/m-content/m-text-field">TextField</a>
+        &rsquo;s &mdash; a select and a date sit in that same box rather than redrawing one.
+        <br />
+        <br />
+        <code>bool</code> keeps its own shape: a ruled row with the platform UISwitch, which is what
+        the book editor&rsquo;s Track Progress is one screen over.
       </>
     ),
     usage: `import { FormField } from '@mobile/components'

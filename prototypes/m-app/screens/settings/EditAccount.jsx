@@ -13,9 +13,6 @@ import './EditForm.css'
  * Delete Account sits INSIDE the scroll under the last field, while Save is pinned outside it.
  * Both are hidden for a `school` client, because a school account is issued by the school and is
  * not the reader's to delete.
- *
- * A hairline runs above every section header here. Edit Reader does not draw that one — the two
- * files genuinely differ, and it is not worth flattening.
  */
 export function EditAccount({ account, sections, onBack }) {
   const [confirming, setConfirming] = useState(false)
@@ -26,7 +23,6 @@ export function EditAccount({ account, sections, onBack }) {
 
       <EditForm
         sections={sections}
-        ruleAboveSections
         onSave={onBack}
         footer={
           <div className="m-edf-delete">

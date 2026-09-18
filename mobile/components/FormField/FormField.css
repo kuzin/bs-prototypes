@@ -1,99 +1,73 @@
 .m-ff {
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
-/* `getLabel` — 20 above, 14 below, smallTitle in blackFont. */
-.m-ff-label {
-  margin: 20px 0 14px;
+/* An errored box keeps the error colour whether or not it is focused — the app's `borderCheck`,
+   which exists so a form that failed validation still shows which field failed after you tab
+   away from it. */
+.m-ff-box.is-error,
+.m-ff-box.is-error.is-focused {
+  border-color: var(--m-c-red-error);
 }
-
-/* The 3pt underline. White by default and NOT a mistake: `inputBottomLineColor` initialises to
-   literal 'white', and with `renderActiveState={false}` — which both settings forms pass — the
-   setter that would change it is a no-op. It reserves 3pt under every field and draws nothing.
-   Only the flows that opt in get a coloured line, and then only while focused. */
-.m-ff-line {
-  border-bottom: 3px solid var(--m-white);
-}
-.m-ff-line.is-active {
-  border-bottom-color: var(--m-accent);
-}
-.m-ff-line.is-error {
-  border-bottom-color: var(--m-c-red-error);
-}
-
-/* `inputFontSize` is 16 in both settings forms — the component's own default is 20, which is the
-   signup flow's. */
-.m-ff-input {
-  display: block;
-  width: 100%;
-  margin-bottom: 14px;
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  font-size: 16px;
-  color: var(--m-c-secondary);
-  text-align: left;
-}
-.m-ff-input:focus {
-  outline: none;
-}
-.m-ff-input.is-error {
+.m-ff-box.is-error .m-tf-input {
   color: var(--m-c-red-error);
 }
-.m-ff-input::placeholder,
-.m-ff-input.is-placeholder {
-  color: var(--m-c-ashes-gray);
-}
 
+/* A select fills the box like the input does; the arrow is the app's own asset rather than the
+   platform's, which is the one part of a native select that never matches anything around it. */
 .m-ff-select {
-  display: flex;
-  align-items: center;
-}
-.m-ff-select .m-ff-input {
-  flex: 1 1 auto;
-  min-width: 0;
   appearance: none;
   cursor: pointer;
 }
 
-/* `dropdown_arrow` at 20 with 3 to its right. */
+.m-ff-select.is-placeholder,
+.m-ff-date.is-placeholder {
+  color: var(--m-border-grey);
+}
+
 .m-ff-arrow {
   flex: none;
   width: 20px;
   height: 20px;
-  margin: 0 3px 14px 0;
-  align-self: center;
+  margin-right: 16px;
+  pointer-events: none;
 }
 
 .m-ff-date {
+  text-align: left;
   cursor: pointer;
-  margin-top: 14px;
 }
 
-/* `boolRowContainer` — the label and the switch on one line, the switch hugging the right with 10
-   to spare. */
+/* `boolRowContainer` — the label takes the row and the switch hugs the end. Ruled off above like
+   the book editor's Track Progress, because a switch changes what the form asks rather than
+   answering one of its questions. */
 .m-ff-bool {
-  flex-direction: row;
-  justify-content: space-between;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--m-c-border);
 }
-.m-ff-bool .m-ff-label {
+
+.m-ff-bool-label {
   flex: 1 1 auto;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--m-grey-dark-1);
 }
+
 /* RN's platform `<Switch>`, which on iOS is a UISwitch — NOT the app's own `CustomToggleSwitch`
    that [[ToggleSwitch]] models. Two different controls: this one is the system's, at UIKit's
-   51×31 with a 27pt knob and the system green, and it is what a `bool` field renders. Reaching
-   for ToggleSwitch here would put the app's switch somewhere the app does not use it. */
+   51×31 with a 27pt knob and the system green, and it is what a `bool` field renders. */
 .m-ff-switch {
   flex: none;
   appearance: none;
   position: relative;
   width: 51px;
   height: 31px;
-  margin: 0 10px 0 0;
+  margin: 0;
   border-radius: 16px;
   background: #e9e9ea;
   cursor: pointer;
@@ -127,7 +101,7 @@
   display: flex;
   align-items: flex-start;
   width: 100%;
-  margin: 10px 0 5px;
+  margin: 10px 0 0;
 }
 
 .m-ff-bang {
@@ -148,11 +122,4 @@
   flex: 1 1 auto;
   margin-left: 11px;
   color: var(--m-c-red-error);
-}
-
-/* `renderError`'s empty branch is a 4pt spacer rather than nothing, so a field keeps its height
-   whether or not it is in error. */
-.m-ff-spacer {
-  width: 100%;
-  margin-bottom: 4px;
 }

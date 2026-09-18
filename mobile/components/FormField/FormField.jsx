@@ -1,31 +1,32 @@
-import { useState } from 'react'
 import { Img } from '../Img/Img'
+import { TextField } from '../TextField/TextField'
 import './FormField.css'
 
 /**
- * `components/listItems/MaterialFormFieldItem.tsx` — the field every registration and settings
- * form is built from, and the third distinct input in this system. [[TextField]] is the app's
- * floating-label box (the book editor); the reading-session editor stacks its own titled rows;
- * this one is the Material-style field the API drives.
+ * A field in a server-driven form — `components/listItems/MaterialFormFieldItem.tsx`.
  *
- * It exists because these forms are NOT hand-authored. The server sends
- * `registration_fields.sections`, each field carrying a label, a type, a placeholder, a required
- * flag and its options, and the screen renders whatever arrives. So the component is a switch over
- * `field_type` rather than a layout — and the types are the app's own list: text, numeric, phone,
- * email, password, bool, select, date-picker.
+ * The BEHAVIOUR is the app's, and it is the whole reason this component exists: registration and
+ * settings forms are not authored. The server sends `registration_fields.sections`, each field
+ * carrying a label, a type, a placeholder, a required flag and its options, and the screen renders
+ * whatever arrives. So this is a switch over `field_type` rather than a layout, and the types are
+ * the app's own list: text, numeric, phone, email, password, bool, select, date-picker.
  *
- * The 3pt underline is the part worth knowing about. It is `inputBottomLineColor`, which starts at
- * literal `'white'` and only changes on focus — and both settings forms pass
- * `renderActiveState={false}`, which makes that state setter a no-op. So in Edit Account and Edit
- * Reader the line is permanently white: it reserves 3pt and draws nothing, and what actually
- * separates the fields is the full-width hairline between rows. Reading the stylesheet alone would
- * have produced a visible 3pt rule under every input.
+ * The CHROME is deliberately NOT the app's. `MaterialFormFieldItem` is the oldest input in the
+ * codebase — a label above a bare line of text, over a 3pt underline that is set to the literal
+ * string `'white'` and, because both settings editors pass `renderActiveState={false}`, never
+ * changes from it. So it reserves 3pt, draws nothing, and the only thing separating one field from
+ * the next is a full-width hairline. It is a Material pattern from before the app had
+ * [[TextField]], and beside the book editor's floating-label boxes it reads as a different
+ * product.
  *
- * `renderActiveState` is kept as the opt-in it is in the source — the signup flow does use it, and
- * there the line takes the tenant accent on focus and `redError` when the field is wrong.
+ * So the box here is TextField's, on a design call: same 56pt at radius 10, same 2pt stroke, same
+ * label notching the border. A select and a date sit in that same box rather than redrawing one —
+ * a picker that has to invent its own chrome to stand beside a text field is how a form drifts.
+ *
+ * `bool` keeps its own shape, because it is not a value in the form so much as a question: a ruled
+ * row with the label on the left and the platform switch on the right, which is what the book
+ * editor's Track Progress does one screen over.
  */
-const PLACEHOLDER_DATE = 'YYYY-MM-DD'
-
 export function FormField({
   label,
   type = 'text',
@@ -35,18 +36,15 @@ export function FormField({
   required = false,
   options = [],
   error,
-  renderActiveState = false,
   onChange,
 }) {
-  const [focused, setFocused] = useState(false)
   const set = (v) => onChange?.(name, v === '' ? null : v)
 
-  // `bool` is the one type that is not a column: the label takes the row and the switch sits at
-  // its end.
   if (type === 'bool') {
     return (
-      <div className="m-ff m-ff-bool">
-        <span className="m-t-small-title m-t-black-font m-ff-label">{label}</span>
+      <div className="m-ff-bool">
+        <span className="m-ff-bool-label">{label}</span>
+        {/* RN's platform `<Switch>` — a UISwitch, not the app's own CustomToggleSwitch. */}
         <input
           type="checkbox"
           className="m-ff-switch"
@@ -58,83 +56,74 @@ export function FormField({
     )
   }
 
-  const lineState = !renderActiveState || !focused ? '' : error ? ' is-error' : ' is-active'
+  const control =
+    type === 'select' ? (
+      <TextField label={label} value={value} alwaysRaised className="m-ff-box">
+        <select
+          className={`m-tf-input m-ff-select${value == null || value === '' ? ' is-placeholder' : ''}`}
+          value={value ?? ''}
+          aria-label={label}
+          onChange={(e) => set(e.target.value)}
+        >
+          <option value="">{placeholder}</option>
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.name}
+            </option>
+          ))}
+        </select>
+        <Img name="dropdown_arrow" className="m-ff-arrow" />
+      </TextField>
+    ) : type === 'date-picker' ? (
+      /* A Pressable in the app, opening `DatePickerModal` — so a button here, not an input.
+         Unset it reads the literal `YYYY-MM-DD`; set, it is `MMMM DD, YYYY`. */
+      <TextField label={label} value={value} alwaysRaised className="m-ff-box">
+        <button
+          type="button"
+          className={`m-tf-input m-ff-date${value ? '' : ' is-placeholder'}`}
+          onClick={() => set(value ? '' : '2016-04-12')}
+        >
+          {value
+            ? new Date(`${value}T00:00:00`).toLocaleDateString('en-US', {
+                month: 'long',
+                day: '2-digit',
+                year: 'numeric',
+              })
+            : 'YYYY-MM-DD'}
+        </button>
+      </TextField>
+    ) : (
+      <TextField
+        label={label}
+        value={value ?? ''}
+        placeholder={placeholder}
+        type={type === 'password' ? 'password' : 'text'}
+        inputMode={type === 'numeric' ? 'numeric' : type === 'phone' ? 'tel' : undefined}
+        required={required}
+        className={`m-ff-box${error ? ' is-error' : ''}`}
+        /* The app strips spaces from exactly these four as you type, because each is a credential
+           the server matches literally. */
+        onChange={(v) =>
+          set(
+            ['username', 'library_card_number', 'phone_number', 'email'].includes(name)
+              ? v.replace(/ /g, '')
+              : v,
+          )
+        }
+      />
+    )
 
   return (
     <div className="m-ff">
-      {/* Required or not, the label is the same type at the same 20/14 rhythm — the source's two
-          branches differ only in the wrapper, not in what is drawn. */}
-      <span className="m-t-small-title m-t-black-font m-ff-label">{label}</span>
-
-      <div className={`m-ff-line${lineState}`}>
-        {type === 'select' ? (
-          <div className="m-ff-select">
-            <select
-              className={`m-ff-input${value == null || value === '' ? ' is-placeholder' : ''}`}
-              value={value ?? ''}
-              aria-label={`${name} field`}
-              onChange={(e) => set(e.target.value)}
-            >
-              <option value="">{placeholder}</option>
-              {options.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
-            <Img name="dropdown_arrow" className="m-ff-arrow" />
-          </div>
-        ) : type === 'date-picker' ? (
-          /* A Pressable, not an input — it opens `DatePickerModal`. Unset it reads the literal
-             placeholder `YYYY-MM-DD` in ashesGray; set, it is `MMMM DD, YYYY` in secondary. */
-          <button
-            type="button"
-            className={`m-ff-input m-ff-date${value ? '' : ' is-placeholder'}`}
-            onClick={() => set(value ? '' : '2016-04-12')}
-          >
-            {value
-              ? new Date(`${value}T00:00:00`).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: '2-digit',
-                  year: 'numeric',
-                })
-              : PLACEHOLDER_DATE}
-          </button>
-        ) : (
-          <input
-            className={`m-ff-input${error ? ' is-error' : ''}`}
-            type={type === 'password' ? 'password' : 'text'}
-            inputMode={type === 'numeric' ? 'numeric' : type === 'phone' ? 'tel' : undefined}
-            value={value ?? ''}
-            placeholder={placeholder}
-            required={required}
-            aria-label={`${name} field`}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            /* The app strips spaces from exactly these four as you type, because each is a
-               credential the server matches literally. */
-            onChange={(e) =>
-              set(
-                ['username', 'library_card_number', 'phone_number', 'email'].includes(name)
-                  ? e.target.value.replace(/ /g, '')
-                  : e.target.value,
-              )
-            }
-          />
-        )}
-      </div>
-
-      {/* An 18pt red disc with a bold white bang, then the message. With no error the source still
-          renders a 4pt spacer, so a field does not move when one appears. */}
-      {error ? (
+      {control}
+      {/* `renderError` — an 18pt red disc with a bold white bang, then the message. */}
+      {error && (
         <div className="m-ff-error">
           <span className="m-ff-bang" aria-hidden="true">
             !
           </span>
           <span className="m-t-paragraph-small m-ff-error-text">{error}</span>
         </div>
-      ) : (
-        <div className="m-ff-spacer" />
       )}
     </div>
   )

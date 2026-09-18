@@ -18,35 +18,31 @@
   display: none;
 }
 
-/* `renderSectionHeader` — 12pt in grayish, 16 either side, 48 above. Not a title style: it is
-   smaller than the field labels under it, which is what makes it read as a divider with a name. */
+/* The book editor's rhythm — boxes 12 apart with 20 either side — rather than edge-to-edge rules.
+   A box carries its own edges, so the hairlines that made the Material fields legible are noise
+   around it. */
+.m-edf-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 20px 24px;
+}
+
+/* `secondaryTitle`, one rung under the page heading on Accounts and Readers — three section
+   titles at that 20 would compete with the fields they organise. 20 above, and 8 below that the
+   group's own 12pt gap takes to 20. */
 .m-edf-section {
-  margin: 48px 16px 0;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--m-c-grayish);
+  margin: 20px 0 8px;
 }
 
-/* `renderFullScreenSeparator` — edge to edge, no inset. */
-.m-edf-rule {
-  display: block;
-  height: 1px;
-  width: 100%;
-  background: var(--m-c-border);
-  transform: scaleY(0.5);
-}
-
-/* Every field sits in `marginHorizontal: 16`, which is why the rules between them run wider than
-   the fields do. */
-.m-edf-field {
-  margin: 0 16px;
-}
-
+/* Pinned outside the scroll, and ruled off it the way the book editor's foot is — so Save reads
+   as the screen's action rather than as the thing after the last field. */
 .m-edf-save {
   flex: none;
   padding: 16px 20px;
   margin-bottom: 20px;
   background: var(--m-white);
+  border-top: 1px solid var(--m-c-border);
 }
 
 /* `Delete Account` — the same 16-radius button in `brandColors.red`, but INSIDE the scroll, under

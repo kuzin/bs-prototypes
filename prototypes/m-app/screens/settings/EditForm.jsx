@@ -7,23 +7,30 @@ import './EditForm.css'
  * same `MaterialFormFieldItem` list through the same `generateSectionsListStructure`, differing
  * only in what surrounds it.
  *
- * Section headers are the app's: the title UPPERCASED at 12 in `grayish`, 16 either side, and
- * **48 of air above** — a gap big enough that it reads as a break rather than a heading. The one
- * exception is baked into the screen: `sign_in_info` arrives titled "Create An Account" and both
- * editors swap it for "Your Account", since you are not creating anything here.
+ * Section headers are `secondaryTitle`, 16/700 — one rung under the 20pt heading Accounts and
+ * Readers carry. They are on the ladder those pages use rather than in the app's 12pt grayish
+ * CAPS, which belong to the Material fields they used to head and read as a caption for the first
+ * box rather than a title for the group. But they are not that 20 either: a page has one heading
+ * and this screen has three of them, and at 20 three titles compete with the fields they are
+ * meant to be organising.
+ *
+ * The one rename is kept — `sign_in_info` arrives titled "Create An Account" and both editors swap
+ * it for "Your Account", since you are not creating anything here.
  *
  * Save is enabled only when a value differs from what arrived. The source computes that with
  * `areFieldsValuesEqual` over the defaults map, and it is the reason the button is the screen's
  * only state: an untouched form cannot be submitted.
  *
- * DIVERGENCE — the two screens rule their fields differently and both are kept. Edit Account puts
- * a hairline above every section header AND between fields; Edit Reader puts one only between
- * fields within a section. Neither is obviously right, but they are what the two files do.
+ * DIVERGENCE — the fields are boxed rather than ruled. `MaterialFormFieldItem` separates one field
+ * from the next with a full-width hairline, because a bare line of text over an invisible underline
+ * has nothing else to tell you where it ends. A box already says that, so the rules come out and
+ * the group takes the book editor's rhythm instead: 12 between boxes, 20 either side. The 48pt gap
+ * above a section header goes with them — it was buying separation the boxes now provide.
  */
 const titleFor = (section) =>
-  section.title === 'Create An Account' ? 'Your Account' : section.title.toUpperCase()
+  section.title === 'Create An Account' ? 'Your Account' : section.title
 
-export function EditForm({ sections, ruleAboveSections = false, footer, onSave }) {
+export function EditForm({ sections, footer, onSave }) {
   const defaults = useMemo(() => {
     const out = {}
     sections.forEach((s) => s.fields.forEach((f) => (out[f.name] = f.value ?? null)))
@@ -39,21 +46,10 @@ export function EditForm({ sections, ruleAboveSections = false, footer, onSave }
     <>
       <div className="m-edf-scroll">
         {sections.map((section) => (
-          <div key={section.name}>
-            {ruleAboveSections && <span className="m-edf-rule" />}
-            <h3 className="m-edf-section">{titleFor(section)}</h3>
-            {section.fields.map((field, i) => (
-              <div key={field.name}>
-                {i > 0 && <span className="m-edf-rule" />}
-                <div className="m-edf-field">
-                  <FormField
-                    {...field}
-                    value={values[field.name]}
-                    onChange={change}
-                    renderActiveState={false}
-                  />
-                </div>
-              </div>
+          <div key={section.name} className="m-edf-group">
+            <h3 className="m-t-secondary-title m-edf-section">{titleFor(section)}</h3>
+            {section.fields.map((field) => (
+              <FormField key={field.name} {...field} value={values[field.name]} onChange={change} />
             ))}
           </div>
         ))}
