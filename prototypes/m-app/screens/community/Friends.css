@@ -160,3 +160,59 @@ button.m-fr-press:active {
   width: 24px;
   height: 24px;
 }
+
+.m-fr-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px 40px;
+}
+
+.m-fr-empty > button {
+  width: auto;
+}
+
+/* `AddFriendsNotification` — 40 down, 20 either side, on `blueLight` at radius 10 with 16 of
+   padding. A one-time announcement rather than a description of the empty list, which is why it
+   is dismissible and the empty state under it is not. */
+.m-fr-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  align-self: stretch;
+  margin-top: 40px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--m-blue-light, var(--m-accent-wash));
+}
+
+.m-fr-notice-text {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: -0.22px;
+  color: var(--m-grey-dark-2);
+}
+
+/* The close sits on its own tinted square rather than floating on the card. */
+.m-fr-notice-close {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(180, 219, 225, 0.19);
+  cursor: pointer;
+}
+
+.m-fr-notice-icon {
+  width: 16px;
+  height: 16px;
+}

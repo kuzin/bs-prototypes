@@ -137,8 +137,28 @@ function Challenges({ friend }) {
   )
 }
 
-function ReadingLog({ friend }) {
+/**
+ * `FriendDetailReadingLog` — RECENT titles, not the log. The full thing is its own screen behind
+ * the text button, which is the only place a friend's log paginates and refreshes.
+ *
+ * `isSelf` hides that button: your own full log is the Log tab, and a second way in would be a
+ * second answer to the same question.
+ */
+function ReadingLog({ friend, onFullLog }) {
   const titles = friend.titles ?? []
+
+  if (titles.length === 0) {
+    return (
+      <div className="m-fd-pane">
+        <EmptyStateView
+          source="no_titles_empty_state"
+          boldText="No Titles To Show"
+          middleText="This reader hasn't logged any titles yet."
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="m-fd-pane">
       {titles.map((t) => (
@@ -152,11 +172,14 @@ function ReadingLog({ friend }) {
           </span>
         </div>
       ))}
+      <button type="button" className="m-fd-fulllog" onClick={() => onFullLog?.(friend)}>
+        View Full Reading Log
+      </button>
     </div>
   )
 }
 
-export function FriendDetail({ friend, displayAchievements = true, onClose }) {
+export function FriendDetail({ friend, displayAchievements = true, onFullLog, onClose }) {
   const color = friendColor(
     friendColorKey({ id: friend.id, firstName: friend.firstName, lastName: friend.lastName }),
   )
@@ -197,7 +220,7 @@ export function FriendDetail({ friend, displayAchievements = true, onClose }) {
           <Overview friend={friend} displayAchievements={displayAchievements} />
         )}
         {tab === 'challenges' && <Challenges friend={friend} />}
-        {tab === 'log' && <ReadingLog friend={friend} />}
+        {tab === 'log' && <ReadingLog friend={friend} onFullLog={onFullLog} />}
         <div className="m-fd-foot" />
       </div>
     </div>

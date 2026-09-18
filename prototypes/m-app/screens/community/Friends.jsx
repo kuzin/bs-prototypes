@@ -64,6 +64,9 @@ export function Friends({
   friends = [],
   requests = 0,
   serviceType = 'School',
+  displayLeaderboards = true,
+  showNewNotice = true,
+  onDismissNotice,
   onOpenFriend,
   onOptions,
   onAddFriend,
@@ -73,10 +76,31 @@ export function Friends({
   const confirmed = friends.filter((f) => f.confirmed).length
 
   /* `EmptyFriendList` — its copy is built from the same add/invite fork, and it carries the
-     button rather than leaving you to find the header that is not there. */
+     button rather than leaving you to find the header that is not there.
+
+     `AddFriendsNotification` sits ABOVE it and is dismissible: a one-time "NEW!" announcing the
+     feature, not a description of the empty state. Its copy changes with `displayLeaderboards`,
+     because on a site without them the only reason to add a friend is to see what they read. */
   if (friends.length === 0) {
     return (
       <div className="m-fr-empty">
+        {showNewNotice && (
+          <div className="m-fr-notice">
+            <p className="m-fr-notice-text">
+              {displayLeaderboards
+                ? 'NEW! Add your friends and compete in leaderboards.'
+                : 'NEW! Add your friends.'}
+            </p>
+            <button
+              type="button"
+              className="m-fr-notice-close"
+              aria-label="Dismiss"
+              onClick={onDismissNotice}
+            >
+              <Img name="close" className="m-fr-notice-icon" />
+            </button>
+          </div>
+        )}
         <EmptyStateView
           source="no_friends"
           boldText={`${addOrInvite.split(' ')[0]} some friends to join you!`}

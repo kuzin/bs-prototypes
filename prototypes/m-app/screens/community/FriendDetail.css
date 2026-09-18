@@ -203,3 +203,17 @@
 .m-fd-foot {
   height: 100px;
 }
+
+/* `TextButton` in the tenant colour — a link, not a button, because the list above it is already
+   the answer and this is the longer version of it. */
+.m-fd-fulllog {
+  display: block;
+  margin: 16px auto 0;
+  padding: 8px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-accent);
+}

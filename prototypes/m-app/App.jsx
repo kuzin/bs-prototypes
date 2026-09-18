@@ -23,6 +23,7 @@ import { FriendDetail } from './screens/community/FriendDetail'
 import { FriendRequests } from './screens/community/FriendRequests'
 import { ShareCode, EnterFriendCode } from './screens/community/FriendCode'
 import { FriendSearch } from './screens/community/FriendSearch'
+import { FriendFullLog } from './screens/community/FriendFullLog'
 import { ReadingSession } from './screens/log/ReadingSession'
 import { EditReadingSession } from './screens/log/EditReadingSession'
 import { EditTitle } from './screens/log/EditTitle'
@@ -219,6 +220,7 @@ export function App() {
   const [friends, setFriends] = useState(FRIENDS)
   const [friendRequests, setFriendRequests] = useState(FRIEND_REQUEST_LIST)
   const [openFriend, setOpenFriend] = useState(null)
+  const [fullLogFriend, setFullLogFriend] = useState(null)
   const [showFriendRequests, setShowFriendRequests] = useState(false)
   const [codeScreen, setCodeScreen] = useState(null)
   /* The code belongs to the READER, not the device — switching readers has to change it, or the
@@ -446,9 +448,17 @@ export function App() {
              the whole navigator with no scale-back and no peeking edge: somewhere the app went,
              rather than something laid over it. Search keeps the presented card, which is what a
              screen you open, use once and dismiss should feel like. */
-          overlayVariant={showSettings || showFriendRequests || codeScreen ? 'card' : 'sheet'}
+          overlayVariant={
+            showSettings || showFriendRequests || codeScreen || fullLogFriend ? 'card' : 'sheet'
+          }
           overlay={
-            codeScreen === 'share' ? (
+            fullLogFriend ? (
+              <FriendFullLog
+                friend={fullLogFriend}
+                titles={fullLogFriend.titles ?? []}
+                onBack={() => setFullLogFriend(null)}
+              />
+            ) : codeScreen === 'share' ? (
               <ShareCode
                 profile={profile}
                 code={`${(profile.name.split(' ')[0] ?? 'CODE').toUpperCase()}-${codeSuffix}`}
@@ -468,7 +478,11 @@ export function App() {
             ) : codeScreen === 'enter' ? (
               <EnterFriendCode onAdd={() => false} onBack={() => setCodeScreen(null)} />
             ) : openFriend ? (
-              <FriendDetail friend={openFriend} onClose={() => setOpenFriend(null)} />
+              <FriendDetail
+                friend={openFriend}
+                onFullLog={setFullLogFriend}
+                onClose={() => setOpenFriend(null)}
+              />
             ) : showFriendRequests ? (
               <FriendRequests
                 requests={friendRequests}

@@ -23,6 +23,7 @@ export function BookListItem({
   totalCompletions = 0,
   showProgressBar = false,
   isSearch = false,
+  disabled = false,
   onPress,
 }) {
   const showBar = showProgressBar && totalCompletions === 0 && percentageCompleted > 0
@@ -31,6 +32,9 @@ export function BookListItem({
     <button
       type="button"
       className={`m-bli${isSearch ? ' is-search' : ''}`}
+      /* `disabled` is the friend's-log case: the same row, inert. You can read what they logged
+         and you cannot open it, because there is no session of theirs for you to see. */
+      disabled={disabled}
       onClick={onPress}
       aria-label={`${title} Book${author ? ` by ${author}` : ''}. ${
         totalCompletions > 0 ? `Completed ${totalCompletions} times.` : ''

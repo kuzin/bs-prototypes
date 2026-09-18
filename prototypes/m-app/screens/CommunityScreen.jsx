@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { TopTabs, ActionsModal, SelectSheet, Alert } from '@mobile/components'
+import { TopTabs, ActionsModal, SelectSheet, Alert, RefreshControl } from '@mobile/components'
 import { Microsite } from './community/Microsite'
 import { Friends } from './community/Friends'
 import { Leaderboard } from './community/Leaderboard'
@@ -58,6 +58,13 @@ export function CommunityScreen({
   const [optionsFor, setOptionsFor] = useState(null)
   const [confirmRemove, setConfirmRemove] = useState(null)
   const [addingFriend, setAddingFriend] = useState(false)
+  const [noticeDismissed, setNoticeDismissed] = useState(false)
+  // All three tabs pull to refresh in the app, each refetching its own query.
+  const [refreshing, setRefreshing] = useState(false)
+  const refresh = () => {
+    setRefreshing(true)
+    setTimeout(() => setRefreshing(false), 1200)
+  }
 
   const confirmed = friends.filter((f) => f.confirmed)
 
@@ -72,7 +79,7 @@ export function CommunityScreen({
           gives every tab a separate scene, so scrolling to the bottom of My School and switching
           to Leaderboard lands you at the top of a fresh list — sharing one scroller instead
           dropped you into the middle of the next tab. */}
-      <div className="m-scroll" key={tab}>
+      <RefreshControl className="m-scroll" key={tab} refreshing={refreshing} onRefresh={refresh}>
         {tab === 'microsite' && (
           <Microsite
             name="Lakeside Elementary Library"
@@ -91,6 +98,9 @@ export function CommunityScreen({
             onOptions={setOptionsFor}
             onAddFriend={addFriend}
             onReviewRequests={onReviewRequests}
+            displayLeaderboards={flags.leaderboards || serviceType === 'School'}
+            showNewNotice={!noticeDismissed}
+            onDismissNotice={() => setNoticeDismissed(true)}
           />
         )}
         {tab === 'leaderboards' && (
@@ -106,7 +116,7 @@ export function CommunityScreen({
             onAddFriend={addFriend}
           />
         )}
-      </div>
+      </RefreshControl>
 
       {/* `RemoveFriendModal` is two steps on purpose: an options sheet, then a confirmation. The
           same pair withdraws an invite that has not been accepted.

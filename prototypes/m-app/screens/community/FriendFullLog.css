@@ -1,0 +1,27 @@
+.m-ffl {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-ffl-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.m-ffl-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* `paddingTop: 24` on the list — the search variant of the same screen uses 14, because it has a
+   heading above it to space from. */
+.m-ffl-list {
+  padding-top: 24px;
+}
+
+.m-ffl-foot {
+  height: 100px;
+}
