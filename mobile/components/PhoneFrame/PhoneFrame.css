@@ -278,10 +278,15 @@
   --m-safe-bottom: 0px;
 }
 
-/* Device chrome, like the status bar and the island — so it sits ABOVE the overlay layer. A sheet
- * and a pushed screen both run to `bottom: 0`, and at the old z-index of 5 either one buried the
- * indicator: the app appeared to go full-screen the moment you opened a book. Content is kept off
- * it by `--m-safe-bottom`, not by hiding it. */
+/* Device chrome, like the status bar and the island — so it sits above EVERY app layer, action
+ * sheets and alerts included. iOS composites the home indicator over all of them; nothing an app
+ * draws can hide it.
+ *
+ * Getting this wrong is not just a missing line. A bottom sheet pays
+ * `max(--m-safe-bottom, 16px)` at its foot to keep its last row clear of the indicator, so with
+ * the indicator hidden behind it that 34pt reads as an unexplained gap — and the tempting fix is
+ * to delete the padding, which would put the row under the indicator on a real device. At 210 the
+ * sheet (400) and the alert (500) both buried it. */
 .m-home-indicator {
   position: absolute;
   left: 50%;
@@ -293,7 +298,7 @@
   opacity: 0.85;
   transform: translateX(-50%);
   pointer-events: none;
-  z-index: 210;
+  z-index: 600;
 }
 
 /* A PUSHED screen rather than a presented one. It covers the whole navigator — no scale-back
