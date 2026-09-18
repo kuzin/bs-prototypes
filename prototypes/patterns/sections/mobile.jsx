@@ -26,6 +26,7 @@ import {
   Card,
   EmptyState,
   ProfileRow,
+  FriendAvatar,
   ProgressBar,
   FormField,
   SheetHeader,
@@ -716,6 +717,44 @@ color: var(--m-green-dark);`,
           </div>
         </MVariant>
       </>
+    ),
+  },
+  {
+    group: 'm-content',
+    id: 'm-friend-avatar',
+    name: 'FriendAvatar',
+    desc: (
+      <>
+        <code>friendsAndLeaderboards/components/FriendAvatar.jsx</code> &mdash; and deliberately{' '}
+        <strong>not</strong> <a href="#/m-content/m-profile-row">ProfileRow</a>&rsquo;s avatar.
+        ProfileRow paints every reader the same <code>redLight</code> disc because it is showing
+        YOUR readers, who are distinguished by name. A friends list and a leaderboard are full of
+        strangers.
+        <br />
+        <br />
+        So the colour is derived from the name. It is hashed to an integer, three bytes are read as
+        RGB, and only the <strong>hue</strong> survives &mdash; saturation and lightness are fixed
+        at 80/85 for the disc and 80/30 for the initials. The same person is the same colour on
+        every screen and every device, and no name can produce a muddy one.
+        <br />
+        <br />
+        The two states are different sizes, which is easy to miss: the initials disc is 46 and a
+        photo is 40.
+      </>
+    ),
+    usage: `import { FriendAvatar } from '@mobile/components'
+
+<FriendAvatar id="fr1" firstName="Jordan" lastName="Park" />`,
+    render: () => (
+      <MVariant label="one hue per name — hashed, so it never changes">
+        <div style={{ display: 'flex', gap: 12 }}>
+          <FriendAvatar id="fr1" firstName="Jordan" lastName="Park" />
+          <FriendAvatar id="fr2" firstName="Priya" lastName="Shah" />
+          <FriendAvatar id="fr3" firstName="Sam" lastName="Okafor" />
+          <FriendAvatar id="fr4" firstName="Alex" lastName="Rivera" />
+          <FriendAvatar id="rq1" firstName="Nina" lastName="Okonkwo" />
+        </div>
+      </MVariant>
     ),
   },
   {
