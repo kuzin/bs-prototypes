@@ -1,6 +1,9 @@
+/* 24 under the tab bar, the same inset My Library takes — the three tabs are one surface and a
+   different gap on each reads as a misalignment rather than as three screens. */
 .m-fr {
   display: flex;
   flex-direction: column;
+  padding-top: 24px;
 }
 
 /* `FriendRequestNotificationCard` — the one row above the list, and the only one with a ground. */
@@ -8,7 +11,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 12px 20px;
+  margin: 0 20px 12px;
   padding: 14px 16px;
   border: 0;
   border-radius: 12px;
@@ -45,18 +48,10 @@
   height: 16px;
 }
 
-/* `listHeader` — the count on the left, the add/invite action on the right in the tenant colour. */
-.m-fr-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px 8px;
-}
-
-.m-fr-count {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--m-grey-dark-1);
+/* `listHeader` — the count on the left, the add/invite action on the right. It takes its own 16
+   only when something precedes it; first in the list, the page's inset is already the gap. */
+.m-fr-requests + .m-fr-head {
+  margin-top: 16px;
 }
 
 .m-fr-add {
@@ -181,7 +176,7 @@ button.m-fr-press:active {
   justify-content: space-between;
   gap: 12px;
   align-self: stretch;
-  margin-top: 40px;
+  margin-top: 16px;
   padding: 16px;
   border-radius: 10px;
   background: var(--m-blue-light, var(--m-accent-wash));

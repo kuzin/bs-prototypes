@@ -1,32 +1,42 @@
 import { useState } from 'react'
-import { Img, FriendAvatar, PressableButton, SelectSheet, EmptyStateView } from '@mobile/components'
+import {
+  Img,
+  FriendAvatar,
+  FilterBar,
+  ToggleTabs,
+  PressableButton,
+  SelectSheet,
+  EmptyStateView,
+} from '@mobile/components'
+import './community.css'
 import './Leaderboard.css'
 
 /**
  * `friendsAndLeaderboards/components/leaderboard/leaderboards/Leaderboards.tsx`.
  *
- * Four axes, three of them on screen. `useLeaderboard(profileId, logType, dateRange,
- * leaderboardType)` — and the two tab rows are NOT the same question:
+ * Four axes, three of them on screen, and they are NOT the same question — which is the thing
+ * the source obscures by rendering both tab rows through one `LeaderboardTypeTabs`:
  *
- *   • `leaderboard_types` is the SCOPE you are ranked within — your friends, your grade, your
- *     school. Rows in the last two are not people; they carry a `name` instead of a first/last
- *     pair, and no avatar.
- *   • `leaderboard_tabs` is WHAT is counted — minutes, books. It lives inside the header, under
- *     the date range it qualifies.
+ *   • SCOPE (`leaderboard_types`) is who you are ranked against — your friends, your grade, your
+ *     school. It changes what a row IS: grade and school rows are not people, carry a `name`
+ *     rather than a first/last pair, and get no avatar.
+ *   • WHAT IS COUNTED (`leaderboard_tabs`) is minutes or books. It changes one column.
  *
- * Both rows render through the same `LeaderboardTypeTabs`, which is what makes them easy to read
- * as one control in the source. Either row hides itself when it has fewer than two options.
+ * DIVERGENCE — so they stop looking alike. Scope becomes a [[FilterBar]], the control this app
+ * already uses for "one value from a short list" and the one that can grow past three options
+ * without abbreviating them; what is counted becomes [[ToggleTabs]], the pill switch built for
+ * exactly two or three. Two rows of identical pills asked the reader to work out which row did
+ * what, and the answer was not in either of them.
  *
- * `ranking` comes from the server rather than from the row's index, and that matters: it is what
- * decides a medal, and ties mean it does not always march 1, 2, 3.
+ * `ranking` is the server's, not the row's index: it is what decides a medal, and ties mean it
+ * does not always march 1, 2, 3.
  *
- * A row is tappable only on the FRIENDS scope and only if it is not you — there is no page behind
- * a grade.
+ * A row is tappable only on the FRIENDS scope and only if it is not you — there is no page
+ * behind a grade.
  *
  * `leaderboardDataWithReader` is the detail that makes this screen kind: if you are not in the
- * list, you are APPENDED to it at `length + 1` with a log value of 0, rather than left off. You
- * always see yourself, even when you have logged nothing. It only happens when the list has
- * someone in it — a leaderboard of just you is an empty state, not a ranking.
+ * list, you are APPENDED at `length + 1` with a log value of 0 rather than left off. It only
+ * happens when the list has someone in it — a leaderboard of just you is an empty state.
  */
 const LABEL = (t) =>
   t
@@ -45,30 +55,8 @@ function Rank({ ranking }) {
   )
 }
 
-/** Reused for both tab rows, as in the source. Hidden when there is nothing to choose between. */
-function TypeTabs({ types, active, onChange, testLabel }) {
-  if (!types || types.length < 2) return null
-  return (
-    <div className="m-lb-tabs" role="tablist" aria-label={testLabel}>
-      {types.map((type) => (
-        <PressableButton
-          key={type}
-          size="small"
-          className="m-lb-tab"
-          type={active === type ? 'activeTab' : 'inactiveTab'}
-          buttonText={LABEL(type)}
-          onButtonPress={() => onChange(type)}
-        />
-      ))}
-    </div>
-  )
-}
-
-/**
- * `LeaderboardsEmpty` — and it is two different empties. On the friends board it is a prompt with
- * a button, because the reason it is empty is fixable by you. On grade and school it is a
- * statement, because it is not.
- */
+/** `LeaderboardsEmpty` — two different empties. The friends board gets a prompt and a button
+ *  because the reason it is empty is fixable by you; grade and school get a statement. */
 function Empty({ scope, addOrInvite, onlyUnconfirmed, onAdd }) {
   if (scope !== 'friends') {
     return (
@@ -110,6 +98,7 @@ export function Leaderboard({
   const [scope, setScope] = useState(scopes[0] ?? 'friends')
   const [logType, setLogType] = useState(logTypes[0] ?? 'minutes')
   const [dateRange, setDateRange] = useState('week')
+  const [pickingScope, setPickingScope] = useState(false)
   const [pickingRange, setPickingRange] = useState(false)
 
   const ranked = data[scope]?.[logType] ?? []
@@ -124,13 +113,22 @@ export function Leaderboard({
       : ranked
 
   const addOrInvite = serviceType === 'Library' ? 'Add' : 'Invite'
-  // `waitingForFriends` — the friends board has nothing to rank, which is a different thing from
-  // a board that ranked nobody this week.
   const waitingForFriends = scope === 'friends' && (!hasFriends || onlyUnconfirmed)
+
+  const SCOPE_LABEL = { friends: 'My Friends', grade: 'My Grade', school: 'My School' }
+  const rangeLabel = dateRange === 'week' ? 'This Week' : 'This Month'
+  const sinceLabel = dateRange === 'week' ? 'Since Monday' : 'Since the 1st'
 
   return (
     <div className="m-lb">
-      <TypeTabs types={scopes} active={scope} onChange={setScope} testLabel="Leaderboard type" />
+      {/* Scope: one value from a short list, so the control the app already uses for that. */}
+      {scopes.length > 1 && (
+        <FilterBar
+          className="m-lb-scope"
+          label={SCOPE_LABEL[scope] ?? LABEL(scope)}
+          onPress={() => setPickingScope(true)}
+        />
+      )}
 
       {waitingForFriends ? (
         <Empty
@@ -141,32 +139,35 @@ export function Leaderboard({
         />
       ) : (
         <>
-          <div className="m-lb-header">
-            <div className="m-lb-header-row">
-              <div>
-                {/* "Logged" on its own, or "<the only tab> logged" when there is nothing to switch
-                between — the header absorbs the label the tabs would have carried. */}
-                <p className="m-lb-logged">
-                  {logTypes.length === 1 ? `${LABEL(logTypes[0])} logged` : 'Logged'}
-                </p>
-                <p className="m-lb-range">{dateRange === 'week' ? 'This Week' : 'This Month'}</p>
-                <p className="m-lb-since">
-                  <Img name="clock" className="m-lb-clock" />
-                  <span>{dateRange === 'week' ? 'Since Monday' : 'Since the 1st'}</span>
-                </p>
-              </div>
-              <button type="button" className="m-lb-change" onClick={() => setPickingRange(true)}>
-                Change
-              </button>
-            </div>
-
-            <TypeTabs
-              types={logTypes}
-              active={logType}
-              onChange={setLogType}
-              testLabel="What is counted"
+          <header className="m-comm-label m-lb-label">
+            <h2 className="m-comm-label-text">{rangeLabel}</h2>
+            <PressableButton
+              size="small"
+              type="grey"
+              buttonText="Change"
+              onButtonPress={() => setPickingRange(true)}
             />
-          </div>
+          </header>
+
+          {/* The source's "Logged" line. With one log type it names it — "Minutes logged" —
+              because the switch below is hidden and nothing else would. */}
+          <p className="m-comm-sub">
+            <Img name="clock" className="m-comm-sub-icon" />
+            <span>
+              {logTypes.length === 1 ? `${LABEL(logTypes[0])} logged · ` : ''}
+              {sinceLabel}
+            </span>
+          </p>
+
+          {/* What is counted: two or three options, which is what the pill is built for. */}
+          {logTypes.length > 1 && (
+            <ToggleTabs
+              className="m-lb-types"
+              tabs={logTypes.map(LABEL)}
+              currentTab={LABEL(logType)}
+              setCurrentTab={(t) => setLogType(t.toLowerCase().replace(/ /g, '_'))}
+            />
+          )}
 
           <div className="m-lb-list">
             {/* `LeaderboardNoData` — the board exists, this window is just empty. */}
@@ -206,6 +207,17 @@ export function Leaderboard({
           <div className="m-lb-foot" />
         </>
       )}
+
+      <SelectSheet
+        open={pickingScope}
+        selectedId={scope}
+        items={scopes.map((id) => ({ id, label: SCOPE_LABEL[id] ?? LABEL(id) }))}
+        onSelect={(id) => {
+          setScope(id)
+          setPickingScope(false)
+        }}
+        onClose={() => setPickingScope(false)}
+      />
 
       {/* `DateRangeModal` — two options, and each states its own boundary rather than leaving you
           to work out when "this week" started. */}

@@ -29,16 +29,26 @@
 /* ── Month sections ──────────────────────────────────────────────────────── */
 /* The same header All Titles uses: it sticks, so it needs a white ground or rows would show
    through it as they scroll under, and it closes with a divider inset to the page gutter. */
+/* The 16 of air above the title lives on the CONTAINER, not the title.
+ *
+ * As a margin on the `h3` it collapsed straight through this box — the container has no padding
+ * or border to stop it — so the sticky element's own top edge was the text's top edge. Pinned,
+ * the month sat flush against the tab bar with nothing above it and no white ground behind that
+ * nothing, which reads as the header being clipped by the bar. Unpinned it looked right, because
+ * the collapsed margin still spaced it from whatever was above.
+ *
+ * Moved inside, the sticky box includes its own air and carries its white ground up with it. */
 .m-badges-section-head {
   position: sticky;
   top: 0;
   z-index: 2;
+  padding-top: 16px;
   background: var(--m-white);
 }
 
 .m-badges-section {
   letter-spacing: -0.3px;
-  margin: 16px 20px;
+  margin: 0 20px 16px;
 }
 
 .m-badges-divider {

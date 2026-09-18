@@ -1,4 +1,5 @@
 import { Img, FriendAvatar, EmptyStateView, StreakFire, PressableButton } from '@mobile/components'
+import './community.css'
 import './Friends.css'
 
 /**
@@ -126,14 +127,15 @@ export function Friends({
         </button>
       )}
 
-      <div className="m-fr-head">
-        <span className="m-fr-count">
+      {/* The same label every section on this tab uses: title left, action right. */}
+      <header className="m-comm-label m-fr-head">
+        <h2 className="m-comm-label-text">
           {confirmed} {confirmed === 1 ? 'Friend' : 'Friends'}
-        </span>
+        </h2>
         <button type="button" className="m-fr-add" onClick={onAddFriend}>
           {addOrInvite}
         </button>
-      </div>
+      </header>
 
       {friends.map((f) => (
         <Friend key={f.id} friend={f} onOpen={onOpenFriend} onOptions={onOptions} />

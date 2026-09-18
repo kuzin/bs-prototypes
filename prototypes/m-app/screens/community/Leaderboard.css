@@ -1,74 +1,32 @@
+/* 24 under the tab bar, matching My Library and Friends — but as a first-child margin, not page
+   padding, because the filter bar is the exception. */
 .m-lb {
   display: flex;
   flex-direction: column;
 }
 
-/* `LeaderboardTypeTabs` — a horizontal scroller of pills. The same component draws the scope row
-   at the top and the log-type row inside the header, which is why the styling is one rule. */
-.m-lb-tabs {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding: 12px 20px;
-}
-.m-lb-tabs::-webkit-scrollbar {
-  display: none;
+.m-lb > *:first-child {
+  margin-top: 24px;
 }
 
-.m-lb-tab {
-  flex: none;
+/* The filter bar is full-bleed and takes NO inset above it. The 24 every other tab starts with
+   is the gap between the tab bar and the first piece of CONTENT; a bar that runs edge to edge is
+   not content sitting on the page, it is the page's own top edge — floating it 24 down leaves a
+   white stripe that reads as a gap in the chrome rather than as breathing room. */
+.m-lb > .m-filterbar:first-child {
+  margin-top: 0;
+  margin-bottom: 20px;
 }
 
-.m-lb-header {
-  padding-top: 4px;
-}
-
-.m-lb-header-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 0 20px;
-}
-
-.m-lb-logged {
-  margin: 0;
-  font-size: 14px;
-  color: var(--m-grey-dark-3);
-}
-
-/* The date range is the loudest thing in the header — it is the qualifier that changes what every
-   number below it means. */
-.m-lb-range {
-  margin: 2px 0 0;
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 28px;
-  color: var(--m-grey-dark-1);
-}
-
-.m-lb-since {
-  display: flex;
+/* The label row keeps the shared treatment; Change is a real button, so the row aligns on the
+   button's box rather than on a text baseline. */
+.m-lb-label {
   align-items: center;
-  gap: 5px;
-  margin: 2px 0 0;
-  font-size: 12px;
-  color: var(--m-grey-dark-3);
 }
 
-.m-lb-clock {
-  width: 14px;
-  height: 14px;
-}
-
-.m-lb-change {
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--m-accent);
+/* `ToggleTabs` sits on the gutter like everything else on this tab. */
+.m-lb-types {
+  margin: 0 var(--m-gutter) 12px;
 }
 
 .m-lb-list {

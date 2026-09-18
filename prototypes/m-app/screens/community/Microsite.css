@@ -87,30 +87,10 @@
   opacity: 0.92;
 }
 
-/* ── One label treatment, for every section ───────────────────────────── */
-/* Outside the card and on the gutter, with anything qualifying it on the right of the same line.
-   A label inside a card belongs to the card; a label above it names the section — which only
-   becomes visible once the page has a ground the cards sit on. */
+/* The section wrapper; the label itself is the shared `.m-comm-label` in community.css. */
 .m-ms-section {
   display: flex;
   flex-direction: column;
-}
-
-.m-ms-label {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 0 var(--m-gutter) 8px;
-}
-
-.m-ms-label-text {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 24px;
-  letter-spacing: 0.29px;
-  color: var(--m-grey-dark-1);
 }
 
 .m-ms-days {
@@ -186,12 +166,9 @@
 }
 
 /* ── Sponsors ─────────────────────────────────────────────────────────── */
-/* The tenant's own sentence, demoted to a line under the label — it is copy, not a heading. */
+/* The tenant's own sentence, on the shared sub line — it is copy, not a heading. */
 .m-ms-sponsor-head {
-  margin: -4px var(--m-gutter) 12px;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--m-grey-dark-3);
+  display: block;
 }
 
 .m-ms-sponsor-list {

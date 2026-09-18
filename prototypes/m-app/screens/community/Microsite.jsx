@@ -1,6 +1,7 @@
 import { Img, ProgressBar, Carousel, Card } from '@mobile/components'
 import { EventCard } from '../discover/Events'
 import { SPONSOR_MARKS } from './sponsors'
+import './community.css'
 import './Microsite.css'
 
 /**
@@ -45,8 +46,8 @@ function Goal({ goal }) {
 
   return (
     <section className="m-ms-section">
-      <header className="m-ms-label">
-        <h2 className="m-ms-label-text">Our Goal</h2>
+      <header className="m-comm-label">
+        <h2 className="m-comm-label-text">Our Goal</h2>
         {showDays && (
           <span className="m-ms-days">
             <Img name="clock" className="m-ms-clock" />
@@ -108,8 +109,8 @@ export function Microsite({ name, funnel, goal, events = [], sponsors, onOpenEve
 
       {events.length > 0 && (
         <section className="m-ms-section">
-          <header className="m-ms-label">
-            <h2 className="m-ms-label-text">Upcoming Events</h2>
+          <header className="m-comm-label">
+            <h2 className="m-comm-label-text">Upcoming Events</h2>
           </header>
           {/* The carousel stays here: events are a set you browse, and the peeking next card is
               what says there are more. Sponsors are a set you read. */}
@@ -127,10 +128,10 @@ export function Microsite({ name, funnel, goal, events = [], sponsors, onOpenEve
 
       {ordered.length > 0 && (
         <section className="m-ms-section">
-          <header className="m-ms-label">
-            <h2 className="m-ms-label-text">Our Sponsors</h2>
+          <header className="m-comm-label">
+            <h2 className="m-comm-label-text">Our Sponsors</h2>
           </header>
-          <p className="m-ms-sponsor-head">{sponsors.sponsor_header}</p>
+          <p className="m-comm-sub m-ms-sponsor-head">{sponsors.sponsor_header}</p>
 
           <ul className="m-ms-sponsor-list">
             {ordered.map((s) => {
