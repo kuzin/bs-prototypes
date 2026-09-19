@@ -20,7 +20,14 @@ import './Leaderboard.css'
  *   • SCOPE (`leaderboard_types`) is who you are ranked against — your friends, your grade, your
  *     school. It changes what a row IS: grade and school rows are not people, carry a `name`
  *     rather than a first/last pair, and get no avatar.
- *   • WHAT IS COUNTED (`leaderboard_tabs`) is minutes or books. It changes one column.
+ *   • WHAT IS COUNTED (`leaderboard_tabs`) is minutes, books or — on the school board only —
+ *     participation rate. It changes one column, and the third option changes its units: it is
+ *     the one value the app renders as a percentage rather than a total, because ranking schools
+ *     by a total just ranks them by enrolment.
+ *
+ * The second list depends on the first, which is why `logTypes` is keyed by scope rather than
+ * flat: `leaderboard_tabs` arrives in each request's meta, so leaving the School board takes
+ * Participation Rate with it.
  *
  * DIVERGENCE — so they stop looking alike. Scope becomes a [[FilterBar]], the control this app
  * already uses for "one value from a short list" and the one that can grow past three options
@@ -87,7 +94,7 @@ function Empty({ scope, addOrInvite, onlyUnconfirmed, onAdd }) {
 
 export function Leaderboard({
   scopes = [],
-  logTypes = [],
+  logTypes = {},
   data = {},
   youId,
   youName,
@@ -99,12 +106,20 @@ export function Leaderboard({
   allowAvatars = true,
 }) {
   const [scope, setScope] = useState(scopes[0] ?? 'friends')
-  const [logType, setLogType] = useState(logTypes[0] ?? 'minutes')
+  const [logType, setLogType] = useState('minutes')
   const [dateRange, setDateRange] = useState('week')
   const [pickingScope, setPickingScope] = useState(false)
   const [pickingRange, setPickingRange] = useState(false)
 
-  const ranked = data[scope]?.[logType] ?? []
+  /* `leaderboard_tabs` comes back in each request's meta, so what you can count depends on what
+     you are ranking: only the school board offers participation rate. Switching scope therefore
+     has to be able to invalidate the current selection — go to School, pick Participation Rate,
+     go back to Friends, and there is no such tab to be on. Falling back to the first available
+     type is what the app does by simply rendering the tabs it was given. */
+  const scopeTypes = logTypes[scope] ?? []
+  const activeType = scopeTypes.includes(logType) ? logType : (scopeTypes[0] ?? 'minutes')
+
+  const ranked = data[scope]?.[activeType] ?? []
   // The avatar is a person's, so it is off for grade and school even when the site allows them.
   const showAvatar = allowAvatars && scope === 'friends'
 
@@ -153,7 +168,7 @@ export function Leaderboard({
                   sits under "This Week" and says "Since Monday": the glyph repeats what two words
                   of the label already established, and one that adds nothing still adds weight. */}
               <p className="m-comm-sub">
-                {logTypes.length === 1 ? `${LABEL(logTypes[0])} logged · ` : ''}
+                {scopeTypes.length === 1 ? `${LABEL(scopeTypes[0])} logged · ` : ''}
                 {sinceLabel}
               </p>
             </div>
@@ -166,11 +181,11 @@ export function Leaderboard({
           </header>
 
           {/* What is counted: two or three options, which is what the pill is built for. */}
-          {logTypes.length > 1 && (
+          {scopeTypes.length > 1 && (
             <ToggleTabs
               className="m-lb-types"
-              tabs={logTypes.map(LABEL)}
-              currentTab={LABEL(logType)}
+              tabs={scopeTypes.map(LABEL)}
+              currentTab={LABEL(activeType)}
               setCurrentTab={(t) => setLogType(t.toLowerCase().replace(/ /g, '_'))}
             />
           )}
@@ -208,7 +223,13 @@ export function Leaderboard({
                       {isYou && ' (You)'}
                     </span>
                   </span>
-                  <span className="m-lb-value">{row.logValue}</span>
+                  {/* The only value the app ever suffixes, and only on this one pairing —
+                      `displayLeaderboardValue` in `LeaderboardItem`. */}
+                  <span className="m-lb-value">
+                    {scope === 'school' && activeType === 'participation_rate'
+                      ? `${row.logValue}%`
+                      : row.logValue}
+                  </span>
                 </Row>
               )
             })}

@@ -82,7 +82,7 @@ function Overview({ friend, displayAchievements }) {
 
       {displayAchievements && (
         <>
-          <h2 className="m-fd-section">Achievements</h2>
+          <h2 className="m-fd-section">Latest Achievements</h2>
           {achievements.length > 0 ? (
             <div className="m-fd-badges">
               {achievements.map((a) => (
@@ -90,8 +90,10 @@ function Overview({ friend, displayAchievements }) {
               ))}
             </div>
           ) : (
+            /* `catStreak`, not the badges artwork — the two empties on this pane are drawn
+               differently on purpose, which is easy to lose when the copy is nearly the same. */
             <EmptyStateView
-              source="my_badges_empty_state"
+              source="catStreak"
               boldText="No Achievements To Show"
               middleText="This reader hasn't earned any achievements yet."
             />

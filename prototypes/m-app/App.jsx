@@ -472,6 +472,9 @@ export function App() {
             ) : codeScreen === 'search' ? (
               <FriendSearch
                 roster={SITE_ROSTER}
+                /* Gates the one-time privacy notice — `useFriendsList`'s
+                   `totalConfirmedFriends`, which counts the confirmed ones only. */
+                confirmedFriends={friends.filter((f) => f.confirmed).length}
                 onInvite={(r) =>
                   setFriends((l) => [...l, { ...r, streak: null, confirmed: false }])
                 }

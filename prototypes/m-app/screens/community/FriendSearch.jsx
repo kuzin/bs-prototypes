@@ -29,12 +29,13 @@ import './FriendSearch.css'
  *
  * The privacy notice is a different string here than on the code screen: "Anyone you ADD as a
  * friend" rather than "Anyone you SHARE your Friend Code with", because the act being consented
- * to is different.
+ * to is different. It also appears only ONCE — `totalConfirmedFriends === 0` gates it, so it is
+ * shown before your first friend and never again.
  */
 const PRIVACY_NOTICE =
   "Anyone you add as a friend can see parts of your reading log. Depending on your site's settings, these may include: books read, your challenges, and/or recent badges. When activated for your site, friends can also compete with you in leaderboards. You can remove a friend at any time."
 
-export function FriendSearch({ roster = [], onInvite, onBack }) {
+export function FriendSearch({ roster = [], confirmedFriends = 0, onInvite, onBack }) {
   const [term, setTerm] = useState('')
   const [submitted, setSubmitted] = useState(null)
   const [selected, setSelected] = useState(null)
@@ -51,6 +52,19 @@ export function FriendSearch({ roster = [], onInvite, onBack }) {
   const search = () => {
     setSelected(null)
     setSubmitted(term.trim())
+  }
+
+  /* `if (totalConfirmedFriends === 0) setPrivacyNoticeVisible(true) else inviteFriend(...)` — the
+     notice is shown ONCE, before your first friend, and never again. It is consent to the whole
+     arrangement rather than to this particular person, so re-asking on every invite would make it
+     a dialog to dismiss instead of something to read. */
+  const invite = () => {
+    if (confirmedFriends === 0) {
+      setNotice(true)
+      return
+    }
+    onInvite?.(roster.find((r) => r.id === selected))
+    setSent(true)
   }
 
   return (
@@ -129,7 +143,7 @@ export function FriendSearch({ roster = [], onInvite, onBack }) {
           fullWidth
           buttonText="Send Invite"
           disabled={selected === null}
-          onButtonPress={() => setNotice(true)}
+          onButtonPress={invite}
         />
       </div>
 

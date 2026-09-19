@@ -990,7 +990,21 @@ export const FRIEND_DETAILS = {
  * deriving the colour is that a friend looks like themselves wherever they appear.
  */
 export const LEADERBOARD_SCOPES = ['friends', 'grade', 'school']
-export const LEADERBOARD_LOG_TYPES = ['minutes', 'books']
+
+/**
+ * `leaderboard_tabs` — `'minutes' | 'books' | 'participation_rate'`, and it arrives in the meta of
+ * each request, so it is per SCOPE rather than global.
+ *
+ * Participation rate only exists on the school board, and it is the one figure here that is not a
+ * total: a school of 200 that reads a little beats a school of 800 that mostly does not, which is
+ * the whole reason to rank schools by it. `LeaderboardItem` is where that shows — it is the only
+ * value the app suffixes, and only on this pairing.
+ */
+export const LEADERBOARD_LOG_TYPES = {
+  friends: ['minutes', 'books'],
+  grade: ['minutes', 'books'],
+  school: ['minutes', 'books', 'participation_rate'],
+}
 
 export const LEADERBOARDS = {
   friends: {
@@ -1033,6 +1047,15 @@ export const LEADERBOARDS = {
       { id: 'm1', ranking: 1, name: 'Lakeside Elementary', logValue: '2,431' },
       { id: 'm2', ranking: 2, name: 'Northside Elementary', logValue: '2,190' },
       { id: 'm3', ranking: 3, name: 'Riverbend Elementary', logValue: '1,604' },
+    ],
+    /* The order is deliberately not the other two's: Riverbend logs the fewest minutes and the
+       fewest books of the three and still leads here, because a higher share of its readers log
+       at all. A participation board that ranked the same way as a totals board would not be
+       worth having. */
+    participation_rate: [
+      { id: 'm3', ranking: 1, name: 'Riverbend Elementary', logValue: 74 },
+      { id: 'm1', ranking: 2, name: 'Lakeside Elementary', logValue: 61 },
+      { id: 'm2', ranking: 3, name: 'Northside Elementary', logValue: 48 },
     ],
   },
 }

@@ -4,9 +4,15 @@ import './FriendRequests.css'
 /**
  * `FriendRequestList` + `FriendRequest` — behind the notification card on the Friends tab.
  *
- * Each row is a name and two answers. Accept is the filled button and Decline is plain text, so
- * the pair reads as a choice with a default rather than as two equal buttons — and declining
- * somebody should not be as easy to hit as accepting them.
+ * Each row is a name and two answers. Accept is the filled button in the tenant colour, which is
+ * the app's.
+ *
+ * DIVERGENCE — the app declines with a bare × glyph beside that button (`images.clear_icon`).
+ * Here it is the word. An unlabelled × next to a labelled Accept does not read as the other half
+ * of a pair; it reads as "dismiss this row", which is a different and much less consequential
+ * promise than refusing somebody. Keeping it as text also lets the two answers sit at obviously
+ * different weights — filled against plain — so declining is still not as easy to hit as
+ * accepting.
  *
  * The rows use the same per-friend colour as everywhere else, which is the point of deriving it
  * from a name: you recognise the person before you read the row.
@@ -17,8 +23,15 @@ export function FriendRequests({ requests = [], onAccept, onDecline, onBack }) {
       <Header variant="stack" title="Friend Requests" onBack={onBack} />
 
       <div className="m-frq-scroll">
+        {/* `EmptyFriendRequestList` — the sad cat, not the two-friends artwork. Its copy is the
+            app's, verbatim: an empty request list is a normal resting state, so it states the
+            fact twice rather than suggesting anything. */}
         {requests.length === 0 ? (
-          <EmptyStateView source="no_friends" boldText="No friend requests right now." />
+          <EmptyStateView
+            source="recent_titles_empty_state"
+            boldText="No New Requests"
+            middleText="You don't have any new friend requests."
+          />
         ) : (
           requests.map((r) => (
             <div key={r.id} className="m-frq-row">
