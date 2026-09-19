@@ -81,10 +81,15 @@
   transform: translateX(-50%);
 }
 
+/* The ground fades on the same curve and duration as the card's scale-back. Without the
+ * transition it flipped to black in one frame while the card took 320ms to shrink, so the
+ * background snapped and the card glided — two halves of one movement disagreeing, which reads
+ * as the modal jumping rather than presenting. */
 .m-frame-screen {
   position: relative;
   display: flex;
   flex-direction: column;
+  transition: background-color 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -132,9 +137,14 @@
  * Bottom-aligning it instead dropped the time and the glyphs ~18pt below the island they are
  * supposed to flank. On the SE there is no island and the same rule centres the text in its 20pt
  * bar, which is also correct. */
+/* Inverts on the same curve — the glyphs going white in one frame was the other half of the
+ * snap. */
 .m-statusbar {
   position: relative;
   z-index: 3;
+  transition:
+    color 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
   display: flex;
   flex: none;
   align-items: center;
