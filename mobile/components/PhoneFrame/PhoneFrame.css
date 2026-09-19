@@ -118,15 +118,15 @@
     border-radius var(--m-motion-present);
 }
 
-/* Scaled back, dropped and rounded — `forModalPresentationIOS`, computed per device in
- * PhoneFrame.jsx rather than eyeballed. On a 393×852 that is scale 0.949 and a 37.3pt drop.
+/* Scaled back and rounded — `forModalPresentationIOS`'s scale, computed per device in
+ * PhoneFrame.jsx. On a 393pt screen that is 0.949, which costs the card 10pt a side.
  *
- * It was scale 0.913 and no drop, which is wrong twice over: too far in (0.913 costs the card
- * 17pt a side where the spec costs 10) and shrinking in place. The DROP is what opens the gap at
- * the top of the screen; without it the card just gets smaller, which is why the whole thing
- * read as the background lurching rather than a card settling back. */
+ * NO translate: RN's 37.32 exists to undo a centre-origin scale on a full-screen card and land
+ * its top at the status bar. This stage already starts there and scales from `top center`, so
+ * its top is already correct — see the derivation in PhoneFrame.jsx. Adding the translate here
+ * pushed the card below the sheet and hid it entirely. */
 .m-frame-screen.has-sheet .m-frame-stage {
-  transform: translateY(var(--m-present-translate)) scale(var(--m-present-scale));
+  transform: scale(var(--m-present-scale));
   border-radius: 10px;
   overflow: hidden;
 }
@@ -256,8 +256,9 @@
  * presenting card's rounded edge peeking above it. */
 .m-frame-sheet {
   position: absolute;
-  /* 8pt below the presenting card's top edge, which is what leaves that edge visible. */
-  top: calc(var(--m-safe-top) + 8px);
+  /* `marginTop: statusBarHeight` then `translateY: topOffset` — so the sheet's top is the safe
+     inset plus 10, and the 10 is the sliver of card left showing above it. */
+  top: calc(var(--m-safe-top) + var(--m-present-peek, 10px));
   left: 0;
   right: 0;
   bottom: 0;

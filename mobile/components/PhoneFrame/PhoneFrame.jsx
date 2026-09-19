@@ -26,17 +26,28 @@ import './PhoneFrame.css'
  */
 /**
  * `forModalPresentationIOS` — React Navigation's own interpolator, which is what a
- * `presentation: 'modal'` screen on `@react-navigation/stack` actually runs. Its numbers are
- * derived per device rather than chosen, so they are computed here where the device is known:
+ * `presentation: 'modal'` screen on `@react-navigation/stack` actually runs:
  *
  *   topOffset   10 in portrait, 0 in landscape
- *   scale       1 - (topOffset * 2) / screenWidth
- *   translateY  statusBarHeight - topOffset * (screenHeight / screenWidth)
+ *   scale       1 - (topOffset * 2) / screenWidth        → 0.949 on a 393pt screen
+ *   translateY  statusBarHeight - topOffset * (h / w)    → 37.32pt
  *   radius      10
+ *   sheet       marginTop statusBarHeight, then translateY topOffset
  *
- * The translate is the half that is easy to miss. The presenting card does not shrink in place —
- * it moves DOWN as it scales, which is what opens the gap at the top and makes the sheet read as
- * something laid over a card rather than the screen simply getting smaller.
+ * TAKE THE SCALE, NOT THE TRANSLATE — the two live in different coordinate spaces.
+ *
+ * RN's card is the WHOLE screen, y 0 to 852, and RN scales from the CENTRE. So the scale alone
+ * drops its top by half the height it loses, (852 - 852×0.949)/2 = 21.68, and the 37.32 translate
+ * carries it the rest of the way: 21.68 + 37.32 = 59.00, exactly the status bar's height. The
+ * translate exists to undo a centre-origin scale and land the card under the status bar.
+ *
+ * Our stage already BEGINS at the status bar's bottom and scales from `top center`, so its top
+ * does not move at all — it is already where RN's two operations arrive. Applying the translate
+ * on top of that pushed the card to 96, below the sheet, and hid the thing the whole presentation
+ * exists to show.
+ *
+ * What is left is the sliver: RN's sheet sits at statusBarHeight + topOffset = 69, against a card
+ * top of 59, so 10pt of card shows above it. That 10 is `MODAL_TOP_OFFSET` again.
  */
 const MODAL_TOP_OFFSET = 10
 
@@ -300,10 +311,10 @@ export function PhoneFrame({
       '--m-screen-w': `${d.width}px`,
       '--m-screen-h': `${d.height}px`,
       '--m-screen-radius': `${d.radius ?? 41}px`,
-      // The presenting card's scale and drop, from `forModalPresentationIOS`. On a 393×852 that
-      // is 0.949 and 37.3pt — not the 0.913-and-stay-put this used to guess at.
+      // `forModalPresentationIOS`'s scale — the translate is absorbed by our origin, see above.
       '--m-present-scale': 1 - (MODAL_TOP_OFFSET * 2) / d.width,
-      '--m-present-translate': `${(d.top - MODAL_TOP_OFFSET * (d.height / d.width)).toFixed(2)}px`,
+      // The card's visible sliver above the sheet: RN's `topOffset`.
+      '--m-present-peek': `${MODAL_TOP_OFFSET}px`,
       '--m-bezel-x': `${d.bezel?.x ?? 3}px`,
       '--m-bezel-y': `${d.bezel?.y ?? 3}px`,
       '--m-island-w': `${d.island?.w ?? 0}px`,
