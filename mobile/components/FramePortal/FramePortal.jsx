@@ -20,17 +20,23 @@ import { createPortal } from 'react-dom'
  * from a mounted anchor rather than `document.querySelector`, because the Pattern Library puts
  * several frames on one page and a sheet must land in its own.
  *
- * Renders nothing on the first pass — the anchor has to exist before its ancestor can be found.
+ * Renders only the anchor on the first pass — it has to exist before its ancestor can be found.
  * A sheet is opened by an interaction, never on first paint, so nothing is visibly delayed.
+ *
+ * NO FRAME, NO PORTAL. Outside a `.m-frame-screen` the children render exactly where they were
+ * written. That is not a safety net, it is the Pattern Library's case: a showcase puts a sheet
+ * in a plain bordered box to show its anatomy, and there is no device around it. Portalling
+ * unconditionally made all four overlay showcases render nothing at all.
  */
 export function FramePortal({ children }) {
   const anchor = useRef(null)
-  const [host, setHost] = useState(null)
+  // `undefined` = not looked yet, an element = portal there, `null` = no frame, render in place.
+  const [host, setHost] = useState(undefined)
 
   useLayoutEffect(() => {
     setHost(anchor.current?.closest('.m-frame-screen') ?? null)
   }, [])
 
-  if (host) return createPortal(children, host)
-  return <span ref={anchor} hidden />
+  if (host === undefined) return <span ref={anchor} hidden />
+  return host ? createPortal(children, host) : children
 }
