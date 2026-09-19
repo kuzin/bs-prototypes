@@ -882,12 +882,16 @@ export const FRIEND_REQUESTS = 3
  * A school has one of these and a library does not, which is the whole reason the two add-a-friend
  * flows differ: you can look someone up here, but a public library cannot show you its patrons.
  */
+/* `grade_level_name` is on every row because `FoundFriend` renders it under the name, and the
+   two Novaks are the reason it has to: a roster search returns everyone who matches, and on a
+   list of names alone there is no way to tell which Ellie you are inviting. */
 export const SITE_ROSTER = [
-  { id: 'sr1', firstName: 'Ellie', lastName: 'Novak' },
-  { id: 'sr2', firstName: 'Marcus', lastName: 'Webb' },
-  { id: 'sr3', firstName: 'Nadia', lastName: 'Haddad' },
-  { id: 'sr4', firstName: 'Owen', lastName: 'Fitzgerald' },
-  { id: 'sr5', firstName: 'Ruby', lastName: 'Nakamura' },
+  { id: 'sr1', firstName: 'Ellie', lastName: 'Novak', grade: '4th Grade' },
+  { id: 'sr2', firstName: 'Marcus', lastName: 'Webb', grade: '5th Grade' },
+  { id: 'sr3', firstName: 'Nadia', lastName: 'Haddad', grade: '3rd Grade' },
+  { id: 'sr4', firstName: 'Owen', lastName: 'Fitzgerald', grade: '5th Grade' },
+  { id: 'sr5', firstName: 'Ruby', lastName: 'Nakamura', grade: '2nd Grade' },
+  { id: 'sr6', firstName: 'Ellie', lastName: 'Novak', grade: '2nd Grade' },
 ]
 
 /** The pending requests behind that card — `useFriendRequests`. */

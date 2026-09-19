@@ -29,16 +29,22 @@
   margin-bottom: 20px;
 }
 
+/* `subHeading` is `fontStyles.primaryTitle` — 20/700, the same rung as a section title, not the
+ * small grey caption it had been. These are the modal's own headings ("When", "Where"), and the
+ * app gives them real weight because the body under each one is a single line. */
 .m-evm-heading {
   margin: 0 0 4px;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 700;
-  color: var(--m-grey-dark-3);
+  color: var(--m-grey-dark-1);
 }
 
+/* `eventText` is `fontStyles.description` — 16/500/22. The 500 is the part that was missing; at
+ * 400 the body sat lighter than every other description in the app. */
 .m-evm-text {
   margin: 0;
   font-size: 16px;
+  font-weight: 500;
   line-height: 22px;
   color: var(--m-c-secondary);
 }

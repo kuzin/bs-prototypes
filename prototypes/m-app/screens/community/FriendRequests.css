@@ -28,7 +28,7 @@
 .m-frq-name {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 18px;
+  font-size: 16px;
   color: var(--m-c-mine-black);
   overflow: hidden;
   text-overflow: ellipsis;

@@ -122,16 +122,27 @@ export function FriendSearch({ roster = [], confirmedFriends = 0, onInvite, onBa
           />
         )}
 
+        {/* `FoundFriend` — name over `grade_level_name`. The grade is not decoration: a roster
+            of 600 has more than one Maya, and the only thing separating two rows with the same
+            name is which grade they are in.
+
+            Tapping a selected row CLEARS it —
+            `selected ? setSelectedFriend(null) : setSelectedFriend(friend)`. With a single
+            selection and no other way to undo one, a radio you cannot turn off leaves Send
+            Invite armed at whoever you last touched. */}
         {results.map((r) => (
           <button
             key={r.id}
             type="button"
             className={`m-fs-row${selected === r.id ? ' is-selected' : ''}`}
-            onClick={() => setSelected(r.id)}
+            onClick={() => setSelected((cur) => (cur === r.id ? null : r.id))}
           >
             <FriendAvatar id={r.id} firstName={r.firstName} lastName={r.lastName} />
-            <span className="m-fs-name">
-              {r.firstName} {r.lastName}
+            <span className="m-fs-text">
+              <span className="m-fs-name">
+                {r.firstName} {r.lastName}
+              </span>
+              {r.grade && <span className="m-fs-grade">{r.grade}</span>}
             </span>
             <span className="m-fs-radio" aria-hidden="true" />
           </button>
