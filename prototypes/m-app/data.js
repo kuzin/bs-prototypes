@@ -917,6 +917,103 @@ export const CHALLENGE_DETAILS = {
       },
     ],
   },
+  /* A BINGO challenge, and the point of having one in the fixtures is that the tab row it
+     produces is almost entirely different: `is_bingo_challenge` adds Bingo Card, its Completion
+     badge is headed "Bingo Badge" rather than "Completion Badge", and with no rewards, drawings
+     or certificates configured none of those tabs exist at all. Same screen, four tabs. */
+  c5: {
+    challenge_name: 'Winter Bingo',
+    challenge_dates: 'Nov 1, 2026 - Jan 31, 2027',
+    challenge_state: 'current',
+    bgColorToSet: '#E8ECFC',
+    banner: 'linear-gradient(120deg,#4C6FE8,#8E6BE8)',
+    challenge_description:
+      '<p>A five-by-five board of reading dares. Read a book with a <strong>blue cover</strong>, read somewhere you have never read before, read to a pet.</p><p>Any line across, down or diagonally wins a prize.</p>',
+    activities_only: false,
+    is_book_list_challenge: false,
+    is_bingo_challenge: true,
+    goals_challenges_total: 1,
+    goals_logging_total: 0,
+    goals_points_total: 0,
+    goals_reviews_total: 0,
+    goals_activities_total: 0,
+    rewards_total: 0,
+    drawings_total: 0,
+    certificates_total: 0,
+    challenge_log_total: 0,
+    earned_badges_total: 3,
+    goals_book_list_total: 0,
+    challenge_book_lists_total: 0,
+    goals_minutes_total: 0,
+    challenge_minutes_total: 0,
+    goals_pages_total: 0,
+    challenge_pages_total: 0,
+    challenge_reviews_total: 0,
+    challenge_events_total: 0,
+    goals_days_total: 0,
+    challenge_days_total: 0,
+    challenge_learning_moments_total: 0,
+    challenge_hours_total: 0,
+    challenge_videos_total: 0,
+    challenge_magazines_total: 0,
+    goals_books_total: 9,
+    challenge_books_total: 3,
+    challenge_picture_reviews_total: 0,
+    challenge_activites_total: 0,
+    challenge_rewards: 0,
+    challenge_tickets_total: 0,
+    challenge_certificates: 0,
+    log_types: ['book'],
+    has_activities: false,
+    /* `meta.card_state` and `meta.card_message` — the state picks the colour and the glyph,
+       the message is the server's own sentence. Anything that is not 'earned' or 'full' is the
+       yellow, shadowed, still-to-do treatment. */
+    bingoMeta: {
+      cardState: 'in_progress',
+      cardMessage: 'Complete any row, column or diagonal to get a bingo!',
+    },
+    /* NINE squares, so the board is 3 × 3 at 100pt. The count is the only thing that decides
+       both, which is why there is no grid setting anywhere.
+
+       `appropriateText` is an ARRAY, not a sentence, because an active square prints the number
+       over the unit — and an ACTIVITY square has no number, so it prints only the word. */
+    bingoBadges: [
+      {
+        id: 'bg1',
+        state: 'bingo',
+        appropriateText: ['1', 'BOOK'],
+        art: 'linear-gradient(140deg,#19BFD5,#0E8CA0)',
+      },
+      {
+        id: 'bg2',
+        state: 'bingo',
+        appropriateText: ['1', 'BOOK'],
+        art: 'linear-gradient(140deg,#F2A03D,#E8724B)',
+      },
+      {
+        id: 'bg3',
+        state: 'bingo',
+        appropriateText: ['1', 'BOOK'],
+        art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+      },
+      { id: 'bg4', state: 'active', appropriateText: ['2', 'BOOKS'] },
+      { id: 'bg5', state: 'active', appropriateText: ['1', 'BOOK'] },
+      { id: 'bg6', state: 'active', appropriateText: [null, 'ACTIVITY'] },
+      { id: 'bg7', state: 'unavailable', appropriateText: ['3', 'BOOKS'] },
+      { id: 'bg8', state: 'active', appropriateText: ['1', 'REVIEW'] },
+      { id: 'bg9', state: 'unavailable', appropriateText: ['5', 'BOOKS'] },
+    ],
+    badges: [
+      {
+        id: 'bgb1',
+        badge_type: 'Completion',
+        name: 'Blackout',
+        earnedText: 'Not yet earned',
+        art: 'linear-gradient(140deg,#4C6FE8,#8E6BE8)',
+        has_rewards: true,
+      },
+    ],
+  },
   c3: {
     challenge_name: 'Ms. Abbott’s Class Challenge',
     challenge_dates: 'Ongoing challenge',

@@ -10,6 +10,7 @@ import {
 import { ChallengeBadges } from './ChallengeBadges'
 import { ChallengeRewards, ChallengeCertificates, ChallengeTicketDrawings } from './ChallengePrizes'
 import { ChallengeLog } from './ChallengeLog'
+import { BingoBoard } from './BingoBoard'
 import './ChallengeDetail.css'
 
 /**
@@ -214,7 +215,15 @@ export function ChallengeDetail({ attributes, wordForDrawings = 'Drawings', onOp
           />
         )}
 
-        {/* Still real screens in the app and still to build: Reading List and the Bingo Card. They are tabs here because this challenge's totals put them here,
+        {active === 'Bingo Card' && (
+          <BingoBoard
+            badges={attributes.bingoBadges ?? []}
+            meta={attributes.bingoMeta}
+            onOpenBadge={onOpenBadge}
+          />
+        )}
+
+        {/* Still real in the app and still to build: the Reading List. They are tabs here because this challenge's totals put them here,
             not because they are placeholders. */}
         {![
           'Overview',
@@ -224,6 +233,7 @@ export function ChallengeDetail({ attributes, wordForDrawings = 'Drawings', onOp
           'Rewards',
           'Certificates',
           'Challenge Log',
+          'Bingo Card',
           `Ticket ${wordForDrawings}`,
         ].includes(active) && (
           <div className="m-chd-pending">
