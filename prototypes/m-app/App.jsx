@@ -517,6 +517,11 @@ export function App() {
                 attributes={openChallenge}
                 wordForDrawings={wordForDrawings}
                 onOpenBadge={setOpenBadge}
+                /* `goToSelectedBook` posts the book and opens the logging options; here it
+                   opens the book sheet the rest of the app already uses. */
+                onOpenBook={(b) =>
+                  setOpenBook({ ...BOOK_DETAIL, title: b.title, author: b.author })
+                }
                 onBack={() => setOpenChallenge(null)}
               />
             ) : fullLogFriend ? (

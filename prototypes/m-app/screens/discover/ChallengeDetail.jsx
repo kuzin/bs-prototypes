@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Img, TopTabs, EmptyStateView } from '@mobile/components'
+import { Img, TopTabs } from '@mobile/components'
 import {
   getCardOverviewData,
   isProgressItem,
@@ -11,6 +11,7 @@ import { ChallengeBadges } from './ChallengeBadges'
 import { ChallengeRewards, ChallengeCertificates, ChallengeTicketDrawings } from './ChallengePrizes'
 import { ChallengeLog } from './ChallengeLog'
 import { BingoBoard } from './BingoBoard'
+import { ChallengeReadingList } from './ChallengeReadingList'
 import './ChallengeDetail.css'
 
 /**
@@ -124,7 +125,13 @@ function Description({ html }) {
   )
 }
 
-export function ChallengeDetail({ attributes, wordForDrawings = 'Drawings', onOpenBadge, onBack }) {
+export function ChallengeDetail({
+  attributes,
+  wordForDrawings = 'Drawings',
+  onOpenBadge,
+  onOpenBook,
+  onBack,
+}) {
   const tabs = challengeTabsFor(attributes, wordForDrawings)
   const [tab, setTab] = useState('Overview')
   const active = tabs.includes(tab) ? tab : 'Overview'
@@ -223,26 +230,14 @@ export function ChallengeDetail({ attributes, wordForDrawings = 'Drawings', onOp
           />
         )}
 
-        {/* Still real in the app and still to build: the Reading List. They are tabs here because this challenge's totals put them here,
-            not because they are placeholders. */}
-        {![
-          'Overview',
-          'Description',
-          'Badges',
-          'Activities',
-          'Rewards',
-          'Certificates',
-          'Challenge Log',
-          'Bingo Card',
-          `Ticket ${wordForDrawings}`,
-        ].includes(active) && (
-          <div className="m-chd-pending">
-            <EmptyStateView
-              source="my_badges_empty_state"
-              boldText={`${active} is not built yet`}
-              middleText="The tab is real — it is here because this challenge's totals put it here."
-            />
-          </div>
+        {active === 'Reading List' && (
+          <ChallengeReadingList
+            books={attributes.bookList?.books ?? []}
+            numberOfBooks={attributes.bookList?.numberOfBooks}
+            requirementType={attributes.bookList?.requirementType}
+            minimumRequired={attributes.bookList?.minimumRequired}
+            onOpenBook={onOpenBook}
+          />
         )}
       </div>
     </div>
