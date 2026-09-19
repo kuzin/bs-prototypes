@@ -25,7 +25,7 @@
   /* MIN_SHEET_PADDING_BOTTOM 16 is a FLOOR, not an addition — a device with a home indicator pays
    * its inset instead, never both. */
   padding-bottom: max(var(--m-safe-bottom), 16px);
-  animation: m-am-up 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: m-am-up var(--m-motion-present);
 }
 
 @keyframes m-am-fade {

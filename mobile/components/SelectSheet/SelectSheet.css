@@ -30,7 +30,7 @@
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
   background: var(--m-white);
-  animation: m-ss-up 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: m-ss-up var(--m-motion-present);
 }
 
 @keyframes m-ss-fade {
