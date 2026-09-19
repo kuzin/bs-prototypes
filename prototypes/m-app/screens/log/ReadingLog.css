@@ -73,24 +73,10 @@
   color: var(--m-warm-grey);
 }
 
-/* WeekdayStyles.streakContainer — an orange pill under the date. */
+/* `WeekdayStyles.streakContainer` is now the shared [[StreakPill]] — the friends list draws the
+   same pill. All that is left here is where it sits under the date. */
 .m-rl-streak {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 4px;
   margin-top: 8px;
-  padding: 6px 10px;
-  border-radius: var(--m-radius-card);
-  background: var(--m-orange-light);
-}
-
-.m-rl-streak-num {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 16px;
-  letter-spacing: -0.25px;
-  color: var(--m-orange-dark);
 }
 
 .m-rl-sessions {

@@ -448,9 +448,11 @@ export function App() {
              the whole navigator with no scale-back and no peeking edge: somewhere the app went,
              rather than something laid over it. Search keeps the presented card, which is what a
              screen you open, use once and dismiss should feel like. */
-          overlayVariant={
-            showSettings || showFriendRequests || codeScreen || fullLogFriend ? 'card' : 'sheet'
-          }
+          /* `codeScreen` is NOT in this list: the two friend-code screens present as modals.
+             They are a detour rather than a destination — you open one, read or type a code, and
+             leave — and the sheet's peeking edge is what says the thing behind is still there. A
+             push implies you have gone somewhere and have to come back. */
+          overlayVariant={showSettings || showFriendRequests || fullLogFriend ? 'card' : 'sheet'}
           overlay={
             fullLogFriend ? (
               <FriendFullLog

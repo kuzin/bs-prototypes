@@ -116,6 +116,7 @@ export function CommunityScreen({
             hasFriends={confirmed.length > 0}
             onlyUnconfirmed={friends.length > 0 && confirmed.length === 0}
             onAddFriend={addFriend}
+            onOpenFriend={onOpenFriend}
           />
         )}
       </RefreshControl>

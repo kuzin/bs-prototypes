@@ -166,11 +166,6 @@
 }
 
 /* ── Sponsors ─────────────────────────────────────────────────────────── */
-/* The tenant's own sentence, on the shared sub line — it is copy, not a heading. */
-.m-ms-sponsor-head {
-  display: block;
-}
-
 .m-ms-sponsor-list {
   display: flex;
   flex-direction: column;

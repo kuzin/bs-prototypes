@@ -1,0 +1,21 @@
+/* `streakContainer` — 6/10 at the card radius on `orangeLight`. `align-items: flex-end` rather
+   than centre: the flame's art has its own bottom-heavy weight, and centring it leaves the
+   number sitting low against it. */
+.m-streakpill {
+  display: inline-flex;
+  flex: none;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: var(--m-radius-card);
+  background: var(--m-orange-light);
+}
+
+.m-streakpill-num {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: -0.25px;
+  color: var(--m-orange-dark);
+}

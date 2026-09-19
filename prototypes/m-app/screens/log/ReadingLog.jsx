@@ -1,4 +1,4 @@
-import { Img, StarGoalIcon, DailyGoalBanner, MonthHeader } from '@mobile/components'
+import { Img, StarGoalIcon, DailyGoalBanner, MonthHeader, StreakPill } from '@mobile/components'
 import './ReadingLog.css'
 
 /**
@@ -58,12 +58,8 @@ function Day({ day, weekday, hasGoal = true, goalMet, streak, sessions, onOpenBo
           )}
         </div>
         <span className="m-rl-dayname">{weekday}</span>
-        {streak > 0 && (
-          <span className="m-rl-streak">
-            <Img name="flame" size={16} />
-            <span className="m-rl-streak-num">{streak}</span>
-          </span>
-        )}
+        {/* The shared pill — this is where it came from, and the friends list draws it too. */}
+        <StreakPill streak={streak} className="m-rl-streak" />
       </div>
       <div className="m-rl-sessions">
         {sessions.map((s) => (

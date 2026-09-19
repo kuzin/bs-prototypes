@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  Header,
+  SheetHeader,
   Img,
   FriendAvatar,
   PressableButton,
@@ -25,6 +25,11 @@ import './FriendCode.css'
  *
  * Refreshing the code is destructive and says so. Entering one shows the privacy notice FIRST and
  * asks you to accept it, because adding a friend is what exposes your log to them.
+ *
+ * Both present as MODALS rather than pushes. They are a detour, not a destination: you open one,
+ * read or type a code, and leave — and the sheet's peeking edge keeps the friends list visible
+ * behind it, where a push would imply you had gone somewhere and had to find your way back. So
+ * the header is a `SheetHeader` with a dismiss chevron, not a stack header with a back arrow.
  */
 const SHARE_TEXT =
   'Share your code to start reading with friends. You can only add friends from your library.'
@@ -41,13 +46,20 @@ export function ShareCode({ profile, code, onRefresh, onBack }) {
 
   return (
     <div className="m-fc">
-      <Header
-        variant="stack"
-        title="Share Your Friend Code"
-        onBack={onBack}
+      <SheetHeader
+        center="Share Your Friend Code"
+        onClose={onBack}
         right={
-          <button type="button" className="m-fc-refresh" onClick={() => setConfirming(true)}>
-            Refresh
+          /* A glyph, not the source's "Refresh" text. The header's end slot is a glyph slot
+             everywhere else in this app — options dots, a search magnifier — and a word there
+             both breaks that and competes with the title for a 393pt bar. */
+          <button
+            type="button"
+            className="m-fc-refresh"
+            aria-label="Refresh your friend code"
+            onClick={() => setConfirming(true)}
+          >
+            <Img name="refreshIcon" size={20} tint="var(--m-accent)" />
           </button>
         }
       />
@@ -114,7 +126,7 @@ export function EnterFriendCode({ onAdd, onBack }) {
 
   return (
     <div className="m-fc">
-      <Header variant="stack" title="Enter a Friend Code" onBack={onBack} />
+      <SheetHeader center="Enter a Friend Code" onClose={onBack} />
 
       <div className="m-fc-scroll">
         <p className="m-fc-lede">{ENTER_TEXT}</p>

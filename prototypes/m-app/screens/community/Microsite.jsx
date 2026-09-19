@@ -129,9 +129,11 @@ export function Microsite({ name, funnel, goal, events = [], sponsors, onOpenEve
       {ordered.length > 0 && (
         <section className="m-ms-section">
           <header className="m-comm-label">
-            <h2 className="m-comm-label-text">Our Sponsors</h2>
+            <div className="m-comm-label-stack">
+              <h2 className="m-comm-label-text">Our Sponsors</h2>
+              <p className="m-comm-sub">{sponsors.sponsor_header}</p>
+            </div>
           </header>
-          <p className="m-comm-sub m-ms-sponsor-head">{sponsors.sponsor_header}</p>
 
           <ul className="m-ms-sponsor-list">
             {ordered.map((s) => {

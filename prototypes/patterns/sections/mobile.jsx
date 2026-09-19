@@ -29,6 +29,7 @@ import {
   FriendAvatar,
   ConfirmDialog,
   ProgressBar,
+  StreakPill,
   FormField,
   SheetHeader,
   ActionsModal,
@@ -773,6 +774,42 @@ color: var(--m-green-dark);`,
           <FriendAvatar id="fr3" firstName="Sam" lastName="Okafor" />
           <FriendAvatar id="fr4" firstName="Alex" lastName="Rivera" />
           <FriendAvatar id="rq1" firstName="Nina" lastName="Okonkwo" />
+        </div>
+      </MVariant>
+    ),
+  },
+  {
+    group: 'm-content',
+    id: 'm-streak-pill',
+    name: 'StreakPill',
+    desc: (
+      <>
+        <code>WeekdayStyles.streakContainer</code> &mdash; the flame and its count in an orange
+        pill.
+        <br />
+        <br />
+        The app has <strong>two</strong> streak treatments and they do not agree. The Reading
+        Log&rsquo;s day column uses this pill; the friends list uses bare flame art beside a red
+        bold number with no ground at all. Same fact, twice, in two colours &mdash; and the bare one
+        loses against a row that already has an avatar and a name competing for attention. So the
+        pill is the one, and both screens draw it: a streak is something you have earned rather than
+        a statistic, and a ground is what says so.
+        <br />
+        <br />
+        Renders nothing when there is no streak. The source distinguishes null from 0 and draws
+        neither &mdash; a reader with no streak has no pill, not a pill saying zero.
+      </>
+    ),
+    usage: `import { StreakPill } from '@mobile/components'
+
+<StreakPill streak={8} />`,
+    render: () => (
+      <MVariant label="nothing at all when the streak is null — not a zero">
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <StreakPill streak={1} />
+          <StreakPill streak={8} />
+          <StreakPill streak={128} />
+          <StreakPill streak={null} />
         </div>
       </MVariant>
     ),

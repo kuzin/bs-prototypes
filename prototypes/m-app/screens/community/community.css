@@ -10,12 +10,23 @@
  * The shape is title-left, action-right on one baseline, with an optional line of qualifying
  * copy under it. Everything that heads a section on this tab uses it.
  */
+/* Centred, not baseline-aligned. The action on the right sits against the whole heading — title
+   plus its sub-line — rather than against the title's baseline, so a two-line heading does not
+   leave the button riding high on the first line. */
 .m-comm-label {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   margin: 0 var(--m-gutter) 8px;
+}
+
+/* The heading's own column: the title and anything qualifying it, stacked, so the row has two
+   children whatever the heading turns out to be. */
+.m-comm-label-stack {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .m-comm-label-text {
@@ -28,19 +39,16 @@
 }
 
 /* The line under a label — the tenant's sponsor sentence, a date boundary, a count. Copy, not a
-   heading, so it sits in grey at the body size and hangs on the label's own margin. */
+   heading, so it sits in grey at the body size. */
 .m-comm-sub {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin: -4px var(--m-gutter) 12px;
+  margin: 0 var(--m-gutter) 12px;
   font-size: 14px;
   line-height: 20px;
   color: var(--m-grey-dark-3);
 }
 
-.m-comm-sub-icon {
-  width: 14px;
-  height: 14px;
-  flex: none;
+/* Inside the heading's column it is part of the heading, so it carries no gutter and no gap —
+   the leading between the two lines is the whole separation. */
+.m-comm-label-stack .m-comm-sub {
+  margin: 0;
 }

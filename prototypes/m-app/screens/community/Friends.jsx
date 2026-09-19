@@ -1,4 +1,4 @@
-import { Img, FriendAvatar, EmptyStateView, StreakFire, PressableButton } from '@mobile/components'
+import { Img, FriendAvatar, EmptyStateView, StreakPill, PressableButton } from '@mobile/components'
 import './community.css'
 import './Friends.css'
 
@@ -40,13 +40,12 @@ function Friend({ friend, onOpen, onOptions }) {
           </span>
         </span>
 
-        {/* `Streak` renders NOTHING when the streak is null — not a zero, not a dash. */}
-        {streak != null && (
-          <span className="m-fr-flame">
-            <StreakFire width={12} height={18} />
-            <span className="m-fr-streak">{streak}</span>
-          </span>
-        )}
+        {/* DIVERGENCE — the Reading Log's pill rather than this row's own bare flame and red
+            number. Same fact drawn two ways in the app; the bare one loses against a row that
+            already has an avatar and a name competing for it, and a streak is a thing you have
+            earned rather than a statistic. Renders nothing when the streak is null — not a zero,
+            not a dash. */}
+        <StreakPill streak={streak} />
       </Row>
 
       <button

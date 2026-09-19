@@ -64,12 +64,21 @@
   color: var(--m-accent);
 }
 
-/* `friendItem` — 76 tall, space-between. The row and the dots are separate press targets, so the
-   dots are a sibling of the pressable rather than inside it. */
+/* `friendItem` — 76 tall, space-between.
+ *
+ * The app wraps the whole row in one `TouchableHighlight` and puts the dots' own touchable
+ * INSIDE it, so pressing the row lights the full width. A button cannot nest inside a button, so
+ * here they are siblings and the highlight is lifted to the row with `:has()` — otherwise the
+ * press state stopped 70pt short of the edge, exactly where the dots begin, which reads as the
+ * row being two things. */
 .m-fr-row {
   display: flex;
   align-items: center;
   height: 76px;
+}
+
+.m-fr-row:has(.m-fr-press:active) {
+  background: var(--m-grey-light-3);
 }
 
 .m-fr-press {
@@ -86,9 +95,6 @@
 }
 button.m-fr-press {
   cursor: pointer;
-}
-button.m-fr-press:active {
-  background: var(--m-grey-light-3);
 }
 
 /* `friendNameArea` — 18 in from the edge, which is 2 less than the 20 the rest of the tab uses. */
@@ -120,20 +126,6 @@ button.m-fr-press:active {
 .m-fr-pending {
   font-size: 12px;
   color: var(--m-grey-dark-3);
-}
-
-/* `flameView` — the flame and the number 10 apart, pushed to the end of the pressable. */
-.m-fr-flame {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--m-red);
-}
-
-.m-fr-streak {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--m-red);
 }
 
 /* `additionalInfoArea` — a 70pt square with 18 of padding on the right, so the dots have a real

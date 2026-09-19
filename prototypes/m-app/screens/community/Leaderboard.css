@@ -18,15 +18,10 @@
   margin-bottom: 20px;
 }
 
-/* The label row keeps the shared treatment; Change is a real button, so the row aligns on the
-   button's box rather than on a text baseline. */
-.m-lb-label {
-  align-items: center;
-}
-
-/* `ToggleTabs` sits on the gutter like everything else on this tab. */
+/* `ToggleTabs` sits on the gutter like everything else on this tab, with its own air above: the
+   heading's 8 is the gap to a line of copy, and a control needs more than a sentence does. */
 .m-lb-types {
-  margin: 0 var(--m-gutter) 12px;
+  margin: 8px var(--m-gutter) 12px;
 }
 
 .m-lb-list {

@@ -17,16 +17,18 @@
   display: none;
 }
 
-/* `refreshText` — 15/bold, and it is a header action rather than a button, because it is not the
-   thing the screen is for. */
+/* `refreshText` becomes a glyph — the header's end slot holds glyphs everywhere else in this
+   app. The padding is `m-sheethead-options`', not a guess: the header itself has none, so the
+   15pt inset on either side comes from the buttons. Without it the glyph sits flush on the
+   screen's edge while the dismiss chevron is 15 in, and the bar looks lopsided. */
 .m-fc-refresh {
-  padding: 0;
+  display: flex;
+  flex: none;
+  align-items: center;
+  padding: 15px 15px 15px 0;
   border: 0;
   background: none;
   cursor: pointer;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--m-accent);
 }
 
 /* `shareCodeText` — 18 centred with 40 either side, so the line breaks short. */

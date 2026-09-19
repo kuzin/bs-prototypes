@@ -15,14 +15,17 @@
   animation: m-ss-fade 260ms ease;
 }
 
-/* SNAP_POINTS ['25%', '50%'] — it opens at a quarter of the screen and can be dragged to half,
- * so the sheet is sized by the SCREEN, not by how many surveys there are. A reader with two
- * surveys gets the same sheet as one with nine. */
+/* DIVERGENCE — the sheet hugs its content.
+ *
+ * `SNAP_POINTS ['25%', '50%']` sizes it by the SCREEN: it opens at a quarter and can be dragged
+ * to half, so a reader with two options gets the same sheet as one with nine. With two short
+ * rows that leaves most of a quarter-screen empty under the last one, which reads as a list that
+ * failed to load rather than a list of two. The 50% ceiling stays — past that it should scroll,
+ * not grow. */
 .m-ss-sheet {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 25%;
   max-height: 50%;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;

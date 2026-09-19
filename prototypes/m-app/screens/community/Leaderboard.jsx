@@ -31,8 +31,10 @@ import './Leaderboard.css'
  * `ranking` is the server's, not the row's index: it is what decides a medal, and ties mean it
  * does not always march 1, 2, 3.
  *
- * A row is tappable only on the FRIENDS scope and only if it is not you — there is no page
- * behind a grade.
+ * A row opens that friend's page, the same one the Friends tab opens — `navigation.navigate
+ * ('friendDetail', { friendId: item.id })`, which works because a leaderboard row's id IS the
+ * profile id. Only on the FRIENDS scope and only if it is not you: there is no page behind a
+ * grade, and your own is the Log tab.
  *
  * `leaderboardDataWithReader` is the detail that makes this screen kind: if you are not in the
  * list, you are APPENDED at `length + 1` with a log value of 0 rather than left off. It only
@@ -93,6 +95,7 @@ export function Leaderboard({
   hasFriends = true,
   onlyUnconfirmed = false,
   onAddFriend,
+  onOpenFriend,
   allowAvatars = true,
 }) {
   const [scope, setScope] = useState(scopes[0] ?? 'friends')
@@ -140,7 +143,20 @@ export function Leaderboard({
       ) : (
         <>
           <header className="m-comm-label m-lb-label">
-            <h2 className="m-comm-label-text">{rangeLabel}</h2>
+            <div className="m-comm-label-stack">
+              <h2 className="m-comm-label-text">{rangeLabel}</h2>
+              {/* The source's "Logged" line. With one log type it names it — "Minutes logged" —
+                  because the switch below is hidden and nothing else would.
+
+                  No clock. The app hangs `images.clock` off this line, which earns its place
+                  beside a standalone "24 days to go" — a countdown is a clock fact. Here the line
+                  sits under "This Week" and says "Since Monday": the glyph repeats what two words
+                  of the label already established, and one that adds nothing still adds weight. */}
+              <p className="m-comm-sub">
+                {logTypes.length === 1 ? `${LABEL(logTypes[0])} logged · ` : ''}
+                {sinceLabel}
+              </p>
+            </div>
             <PressableButton
               size="small"
               type="grey"
@@ -148,16 +164,6 @@ export function Leaderboard({
               onButtonPress={() => setPickingRange(true)}
             />
           </header>
-
-          {/* The source's "Logged" line. With one log type it names it — "Minutes logged" —
-              because the switch below is hidden and nothing else would. */}
-          <p className="m-comm-sub">
-            <Img name="clock" className="m-comm-sub-icon" />
-            <span>
-              {logTypes.length === 1 ? `${LABEL(logTypes[0])} logged · ` : ''}
-              {sinceLabel}
-            </span>
-          </p>
 
           {/* What is counted: two or three options, which is what the pill is built for. */}
           {logTypes.length > 1 && (
@@ -183,7 +189,11 @@ export function Leaderboard({
               const tappable = scope === 'friends' && !isYou
               const Row = tappable ? 'button' : 'div'
               return (
-                <Row key={row.id} {...(tappable ? { type: 'button' } : null)} className="m-lb-item">
+                <Row
+                  key={row.id}
+                  {...(tappable ? { type: 'button', onClick: () => onOpenFriend?.(row) } : null)}
+                  className="m-lb-item"
+                >
                   <span className="m-lb-left">
                     <Rank ranking={row.ranking} />
                     {showAvatar && (
