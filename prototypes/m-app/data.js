@@ -859,6 +859,63 @@ export const CHALLENGE_DETAILS = {
         art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
       },
     ],
+    /* `useChallengesGoals(challengeId, 'challenge_log')` — `meta` drives the totals carousel and
+       `data` the titles. `log_types` decides which cards exist, and `book` is the only type
+       that contributes TWO: completions and distinct titles are different questions, because
+       reading one book four times is four completions and one title. */
+    challengeLogMeta: {
+      log_types: ['book', 'minute'],
+      total_completions: 16,
+      total_titles: 14,
+      total_minutes: 1340,
+      total_pages: 0,
+      total_days: 18,
+    },
+    /* `month_year` is the SERVER's formatted label — the heading is never derived on the client,
+       so it cannot disagree with the rows under it. `last_read_on` is what the sort uses. */
+    challengeLog: [
+      {
+        id: 'cl1',
+        title: 'The Crossover',
+        author: 'Kwame Alexander',
+        lastReadOn: '2026-08-14',
+        monthYear: 'August 2026',
+        isCompleted: true,
+        totalCompletions: 2,
+        art: 'linear-gradient(150deg,#19BFD5,#0E8CA0)',
+      },
+      {
+        id: 'cl2',
+        title: 'Front Desk',
+        author: 'Kelly Yang',
+        lastReadOn: '2026-08-02',
+        monthYear: 'August 2026',
+        isCompleted: true,
+        totalCompletions: 1,
+        art: 'linear-gradient(150deg,#F2A03D,#E8724B)',
+      },
+      {
+        // Still being read — no pill, which is the only difference in the row.
+        id: 'cl3',
+        title: 'When You Trap a Tiger',
+        author: 'Tae Keller',
+        lastReadOn: '2026-07-28',
+        monthYear: 'July 2026',
+        isCompleted: false,
+        totalCompletions: 0,
+        art: 'linear-gradient(150deg,#4C6FE8,#8E6BE8)',
+      },
+      {
+        id: 'cl4',
+        title: 'New Kid',
+        author: 'Jerry Craft',
+        lastReadOn: '2026-07-11',
+        monthYear: 'July 2026',
+        isCompleted: true,
+        totalCompletions: 3,
+        art: 'linear-gradient(150deg,#0BA85F,#2FB5A8)',
+      },
+    ],
   },
   c3: {
     challenge_name: 'Ms. Abbott’s Class Challenge',
