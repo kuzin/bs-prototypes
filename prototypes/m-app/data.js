@@ -798,6 +798,67 @@ export const CHALLENGE_DETAILS = {
         has_tickets: true,
       },
     ],
+    /* `useChallengesGoals(challengeId, 'rewards')` — a reward is unlocked BY a badge, so it
+       names one either way: as what unlocked it, or as what would. */
+    rewards: [
+      {
+        id: 'r1',
+        title: 'Free Bookmark',
+        badgeTitle: 'Off to a Good Start',
+        isEarned: true,
+        dateEarned: 'June 8, 2026',
+        description: 'Show this screen at the front desk to pick a bookmark from the jar.',
+      },
+      {
+        id: 'r2',
+        title: 'Paperback of Your Choice',
+        badgeTitle: 'Twenty Books In',
+        isEarned: false,
+      },
+    ],
+    /* `useChallengesGoals(challengeId, 'certificates')` — `title: name`, and nothing else. */
+    certificates: [
+      {
+        id: 'ce1',
+        title: 'Certificate of Completion',
+        name: 'Summer Reading 2026',
+        isEarned: false,
+      },
+    ],
+    /* `useChallengesGoals(challengeId, 'ticket_rewards')`. `availableTickets` is a BALANCE —
+       what is left to spend, not what was earned, which is why it sits on every row and the
+       heading reads the first one. */
+    drawings: [
+      {
+        id: 'd1',
+        title: 'Bluetooth Speaker',
+        drawingDate: '2026-08-31',
+        ticketsEntered: 4,
+        availableTickets: 2,
+        ended: false,
+        art: 'linear-gradient(140deg,#4C6FE8,#8E6BE8)',
+      },
+      {
+        id: 'd2',
+        title: 'Pizza Party for Your Class',
+        drawingDate: '2026-08-31',
+        ticketsEntered: 0,
+        availableTickets: 2,
+        ended: false,
+        art: 'linear-gradient(140deg,#F2A03D,#E8724B)',
+      },
+      {
+        /* Already drawn — faded, untappable, and carrying the "winners will be notified"
+           notice instead of an entry count it can no longer change. */
+        id: 'd3',
+        title: 'Signed Copy of The Crossover',
+        drawingDate: '2026-07-15',
+        ticketsEntered: 2,
+        availableTickets: 2,
+        ended: true,
+        art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+      },
+    ],
   },
   c3: {
     challenge_name: 'Ms. Abbott’s Class Challenge',

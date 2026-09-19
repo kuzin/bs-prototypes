@@ -1,0 +1,232 @@
+/* Rewards and Certificates share a shape: a 20pt gutter, 24 of air above and below each row,
+ * and a hairline BETWEEN rows only — never above the first or below the last. */
+.m-chp {
+  padding: 0 20px 34px;
+}
+
+.m-chp-certs {
+  padding-top: 16px;
+}
+
+.m-chp-rule {
+  display: block;
+  height: 1px;
+  background: var(--m-grey-light-2);
+}
+
+/* ── Rewards ────────────────────────────────────────────────────────────── */
+
+.m-chp-reward {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  margin: 24px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* `lockBackground` — 40pt with a 10pt border in the SAME colour as the fill. That is how a 20pt
+ * glyph ends up centred in a 40pt disc with no padding rule: the border eats the difference.
+ * Ported as-is because the border width is the only thing setting the inset. */
+.m-chp-lock {
+  display: flex;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+  border: 10px solid var(--m-grey-light-3);
+  border-radius: 20px;
+  background: var(--m-grey-light-3);
+  box-sizing: border-box;
+}
+
+.m-chp-lock.is-earned {
+  border-color: var(--m-green-light);
+  background: var(--m-green-light);
+}
+
+.m-chp-lock-img {
+  width: 20px;
+  height: 20px;
+}
+
+.m-chp-reward-text {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+}
+
+/* `bodySmall` tinted by state — green once unlocked, warmGrey while it is not. */
+.m-chp-explain {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-warm-grey);
+}
+
+.m-chp-explain.is-earned {
+  color: var(--m-green);
+}
+
+/* `rewardInstructionBox` — only rendered once the reward is earned. */
+.m-chp-instructions {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--m-grey-light-4);
+}
+
+.m-chp-instructions-title {
+  margin-bottom: 8px;
+}
+
+.m-chp-instructions-body {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-grey-dark-2);
+}
+
+/* ── Certificates ───────────────────────────────────────────────────────── */
+
+.m-chp-cert {
+  display: flex;
+  flex-direction: column;
+  margin: 24px 0;
+}
+
+/* Weight AND colour change together — an earned certificate is bold green, an unearned one is
+ * normal-weight greyDark2. */
+.m-chp-cert-date {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--m-grey-dark-2);
+}
+
+.m-chp-cert-date.is-earned {
+  font-weight: 700;
+  color: var(--m-green);
+}
+
+/* ── Ticket drawings ────────────────────────────────────────────────────── */
+
+/* `container` — 40 above, 56 below, 20 either side. */
+.m-chp-drawings {
+  margin: 40px 20px 56px;
+}
+
+/* `pageTitleStyle` — `titleSmall` at bold, in greyDark2 rather than the usual greyDark1. */
+.m-chp-balance {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  color: var(--m-grey-dark-2);
+}
+
+/* `columnWidth = (width - 56) / 2` — 40 of side margin and 16 between, so this one is measured
+ * differently from the Overview grid's `(width - 52) / 2`. Both are in the source; neither is a
+ * rounding of the other. */
+.m-chp-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 100%;
+  margin-top: 32px;
+}
+
+.m-chp-drawing {
+  display: flex;
+  width: calc((var(--m-screen-w) - 56px) / 2);
+  flex-direction: column;
+  margin-bottom: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.m-chp-drawing:disabled {
+  cursor: default;
+}
+
+/* The prize art is square — `width: columnWidth, height: columnWidth`. */
+.m-chp-prize {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.m-chp-prize-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+/* An ended drawing draws the image TWICE — a grey-tinted copy under a 20% one — so it reads as
+ * faded rather than disabled. */
+.m-chp-prize.is-ended .m-chp-prize-img:first-child {
+  filter: grayscale(1);
+}
+
+.m-chp-prize-img.is-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+}
+
+.m-chp-drawing-title {
+  color: var(--m-grey-dark-2);
+}
+
+.m-chp-drawing-date {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+}
+
+.m-chp-status {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 16px;
+}
+
+/* The ended notice wraps to several lines, so its glyph tops out rather than centring. */
+.m-chp-status.is-ended {
+  align-items: flex-start;
+}
+
+.m-chp-status-icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+}
+
+.m-chp-status-text {
+  flex-shrink: 1;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--m-grey-dark-3);
+}

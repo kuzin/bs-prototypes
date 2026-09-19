@@ -8,6 +8,7 @@ import {
   challengeTabsFor,
 } from './challengeOverviewData'
 import { ChallengeBadges } from './ChallengeBadges'
+import { ChallengeRewards, ChallengeCertificates, ChallengeTicketDrawings } from './ChallengePrizes'
 import './ChallengeDetail.css'
 
 /**
@@ -190,10 +191,33 @@ export function ChallengeDetail({ attributes, wordForDrawings = 'Drawings', onOp
           />
         )}
 
-        {/* Still real screens in the app and still to build: Rewards, Ticket Drawings,
-            Certificates, Challenge Log, Reading List and the Bingo Card. They are tabs here
-            because this challenge's totals put them here, not because they are placeholders. */}
-        {!['Overview', 'Description', 'Badges', 'Activities'].includes(active) && (
+        {active === 'Rewards' && (
+          <ChallengeRewards items={attributes.rewards ?? []} onOpenBadge={onOpenBadge} />
+        )}
+        {active === 'Certificates' && (
+          <ChallengeCertificates items={attributes.certificates ?? []} />
+        )}
+        {/* The tab is named with the tenant's PLURAL word and the notice inside uses the
+            singular — two different redux keys, `wordForDrawings` and `wordForDrawing`. */}
+        {active === `Ticket ${wordForDrawings}` && (
+          <ChallengeTicketDrawings
+            items={attributes.drawings ?? []}
+            wordForDrawing={wordForDrawings.replace(/s$/, '')}
+          />
+        )}
+
+        {/* Still real screens in the app and still to build: Challenge Log, Reading List and
+            the Bingo Card. They are tabs here because this challenge's totals put them here,
+            not because they are placeholders. */}
+        {![
+          'Overview',
+          'Description',
+          'Badges',
+          'Activities',
+          'Rewards',
+          'Certificates',
+          `Ticket ${wordForDrawings}`,
+        ].includes(active) && (
           <div className="m-chd-pending">
             <EmptyStateView
               source="my_badges_empty_state"
