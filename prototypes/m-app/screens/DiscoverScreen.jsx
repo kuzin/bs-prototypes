@@ -24,7 +24,14 @@ export const DISCOVER_TABS = [
   { id: 'events', label: 'Events' },
 ]
 
-export function DiscoverScreen({ tab, onTab, flags = {}, onOpenList, onOpenEvent }) {
+export function DiscoverScreen({
+  tab,
+  onTab,
+  flags = {},
+  onOpenList,
+  onOpenEvent,
+  onOpenChallenge,
+}) {
   const visible = DISCOVER_TABS.filter((t) => !GATED.includes(t.id) || flags[t.id])
   return (
     <>
@@ -35,6 +42,7 @@ export function DiscoverScreen({ tab, onTab, flags = {}, onOpenList, onOpenEvent
             challenges={DISCOVER_CHALLENGES}
             user="Maya"
             micrositeName="Lakeside Elementary"
+            onOpenChallenge={onOpenChallenge}
           />
         )}
         {/* `screens/activities/Activities.tsx` — the SAME ActivitiesList as Home, but with

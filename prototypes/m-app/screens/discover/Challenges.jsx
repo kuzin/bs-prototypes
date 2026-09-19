@@ -34,10 +34,10 @@ function logChallengeTypes({ challengeTypes = [], logTypes = [] }) {
   return types
 }
 
-function ChallengeCard({ challenge }) {
+function ChallengeCard({ challenge, onPress }) {
   const types = logChallengeTypes(challenge)
   return (
-    <button type="button" className="m-chl-card">
+    <button type="button" className="m-chl-card" onClick={() => onPress?.(challenge)}>
       <span className="m-chl-card-inner">
         <span className="m-chl-banner">
           {/* headerImageWrapper rounds only the TOP corners; the card's own border does the rest. */}
@@ -74,7 +74,13 @@ function ChallengeCard({ challenge }) {
   )
 }
 
-export function Challenges({ challenges, user, micrositeName, filter = 'Current' }) {
+export function Challenges({
+  challenges,
+  user,
+  micrositeName,
+  filter = 'Current',
+  onOpenChallenge,
+}) {
   const hasChallengeCode = challenges.some(
     (c) => c.challengeCode && !c.isRegistered && c.state !== 'past' && c.state !== 'ignored',
   )
@@ -143,7 +149,7 @@ export function Challenges({ challenges, user, micrositeName, filter = 'Current'
               <p className="m-t-body-small m-chl-subtitle">{s.subtitle}</p>
             </div>
             {s.data.map((c) => (
-              <ChallengeCard key={c.id} challenge={c} />
+              <ChallengeCard key={c.id} challenge={c} onPress={onOpenChallenge} />
             ))}
           </Fragment>
         ))}

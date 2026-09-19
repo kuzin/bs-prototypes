@@ -33,6 +33,7 @@ import { ReviewOptionsModal } from './modals/ReviewOptionsModal'
 import { ReviewDetails } from './screens/log/ReviewDetails'
 import { LogScreen, LOG_TABS } from './screens/LogScreen'
 import { DiscoverScreen, DISCOVER_TABS } from './screens/DiscoverScreen'
+import { ChallengeDetail } from './screens/discover/ChallengeDetail'
 import { CommunityScreen } from './screens/CommunityScreen'
 import { TABS, PLUS_ACTIONS } from './tabs'
 import {
@@ -49,6 +50,7 @@ import {
   ACCOUNT_FIELD_SECTIONS,
   READER_FIELD_SECTIONS,
   ALL_TITLES_SECTIONS,
+  CHALLENGE_DETAILS,
 } from './data'
 
 /**
@@ -80,6 +82,13 @@ function useSticky(key, initial) {
 }
 
 const TITLES = { home: 'Home', log: 'Log', discover: 'Discover', community: 'Community' }
+
+/**
+ * `profiles.wordForDrawings` — a TENANT word, defaulting to 'Drawings' and set per site from the
+ * prize-drawing plural (the reducer's test uses 'Sketches'). It is interpolated rather than
+ * hardcoded because it names a challenge tab: `Ticket ${wordForDrawings}`.
+ */
+const wordForDrawings = 'Drawings'
 
 /**
  * Home's conditional sections, with the real gate behind each. On device a reader sees whichever
@@ -219,6 +228,9 @@ export function App() {
   // so both live up here with the other pushed screens rather than inside the tab.
   const [friends, setFriends] = useState(FRIENDS)
   const [friendRequests, setFriendRequests] = useState(FRIEND_REQUEST_LIST)
+  /* `challengePage` is a PUSH on the challenges stack, not a modal — so it takes the whole
+     screen with no peeking edge. A challenge is a destination. */
+  const [openChallenge, setOpenChallenge] = useState(null)
   const [openFriend, setOpenFriend] = useState(null)
   const [fullLogFriend, setFullLogFriend] = useState(null)
   const [showFriendRequests, setShowFriendRequests] = useState(false)
@@ -452,9 +464,17 @@ export function App() {
              They are a detour rather than a destination — you open one, read or type a code, and
              leave — and the sheet's peeking edge is what says the thing behind is still there. A
              push implies you have gone somewhere and have to come back. */
-          overlayVariant={showSettings || showFriendRequests || fullLogFriend ? 'card' : 'sheet'}
+          overlayVariant={
+            showSettings || showFriendRequests || fullLogFriend || openChallenge ? 'card' : 'sheet'
+          }
           overlay={
-            fullLogFriend ? (
+            openChallenge ? (
+              <ChallengeDetail
+                attributes={openChallenge}
+                wordForDrawings={wordForDrawings}
+                onBack={() => setOpenChallenge(null)}
+              />
+            ) : fullLogFriend ? (
               <FriendFullLog
                 friend={fullLogFriend}
                 titles={fullLogFriend.titles ?? []}
@@ -709,6 +729,7 @@ export function App() {
               onTab={setDiscoverTab}
               flags={flags}
               onOpenList={setOpenList}
+              onOpenChallenge={(c) => setOpenChallenge(CHALLENGE_DETAILS[c.id] ?? null)}
             />
           )}
           {tab === 'community' && (

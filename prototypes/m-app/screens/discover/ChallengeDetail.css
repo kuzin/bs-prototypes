@@ -1,0 +1,318 @@
+/* `headerLowerContainer` — the page ground is cloudWhite, not white. The banner's shadow and
+ * the curve both need something slightly off-white to land on. */
+.m-chd {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  background: var(--m-cloud-white);
+}
+
+/* `backButtonContainer` — 60 tall, and it carries the challenge colour so it reads as the top
+ * of the band rather than a bar above it. */
+.m-chd-backbar {
+  display: flex;
+  flex: none;
+  height: 60px;
+  align-items: center;
+  padding: 0 20px;
+}
+
+/* `backButton: { marginLeft: -20 }` — the arrow hangs back out of the 20pt gutter so the GLYPH
+ * lines up with the content edge instead of its tappable box doing. */
+.m-chd-back {
+  display: flex;
+  margin-left: -20px;
+  padding: 18px 20px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.m-chd-back-img {
+  width: 24px;
+  height: 24px;
+}
+
+.m-chd-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.m-chd-scroll::-webkit-scrollbar {
+  width: 0;
+}
+
+/* `headerContainer` — 110, with the curve pinned to its bottom edge. */
+.m-chd-band {
+  position: relative;
+  height: 110px;
+}
+
+/* `headerCurve` — 44 tall, full width, `resizeMode: stretch`. It is the grey of the page
+ * arriving as a curve rather than a straight edge, so it must be `fill`: letting it keep its
+ * aspect ratio leaves a sliver of the band showing under it. */
+.m-chd-curve {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 44px;
+}
+
+/* `marginTop: -80` — the banner climbs 80pt into the band. This is the composition; without it
+ * the coloured field is a header strip and the image is just the first thing on the page. */
+.m-chd-banner {
+  margin: -80px 20px 0;
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.07));
+}
+
+.m-chd-banner-wrap {
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* `useBannerAspectRatio` — 920 × 351 is the upload guideline, and the real image's own ratio
+ * replaces it on load, clamped to 2.3–3.0. A fixture has no load event, so it is the guideline. */
+.m-chd-banner-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 920 / 351;
+}
+
+/* `challengeTitleSection` — and the title is CENTRED, which no other title in the app is. It
+ * earns it by sitting under a centred banner rather than at the head of a list. */
+.m-chd-title-section {
+  margin: 32px 20px 24px;
+}
+
+.m-chd-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 28px;
+  color: var(--m-grey-dark-1);
+  text-align: center;
+}
+
+.m-chd-dates {
+  margin: 6px 0 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 23px;
+  color: var(--m-grey-dark-3);
+  text-align: center;
+}
+
+/* ── Overview ───────────────────────────────────────────────────────────── */
+
+/* `overviewContainer: { paddingHorizontal: 20 }`. */
+.m-chd-overview {
+  padding: 0 20px 40px;
+}
+
+/* `SectionSmallTitle` — `fontStyles.titleSmall`. */
+.m-chd-section {
+  margin: 20px 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  color: var(--m-grey-dark-1);
+}
+
+.m-chd-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* `cardWidth = (width - 52) / 2` — measured against the SCREEN, not this container, which is
+ * why it resolves against `--m-screen-w`. Two of them plus the 40pt of gutter leaves 12pt
+ * between the columns.
+ *
+ * The doubled border is two real elements: a 2pt greyLight6 wrapper at radius 18 around a 2pt
+ * greyLight2 card at radius 16. One border with one colour does not produce the same soft edge —
+ * the outer ring is lighter than the inner one, so the card fades into the page rather than
+ * stopping at a line. */
+.m-chd-card {
+  display: flex;
+  width: calc((var(--m-screen-w) - 52px) / 2);
+  margin: 6px 0;
+  padding: 0;
+  border: 2px solid var(--m-grey-light-6);
+  border-radius: 18px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.m-chd-card-inner {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  border: 2px solid var(--m-grey-light-2);
+  border-radius: 16px;
+  background: var(--m-white);
+}
+
+.m-chd-card-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* `cardImageBorder` — 58 with a 3pt ring, holding a 44pt disc. The ring is the card's own pale
+ * colour until the goal is met, then green. */
+.m-chd-ring {
+  position: relative;
+  display: flex;
+  width: 58px;
+  height: 58px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid transparent;
+  border-radius: 50%;
+}
+
+.m-chd-disc {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.m-chd-icon {
+  width: 32px;
+  height: 32px;
+}
+
+/* `completeIconView` — hung off the ring's bottom-right by 5 each way, with a 3pt white border
+ * so it reads as sitting on top of the ring rather than cut into it. */
+.m-chd-tick {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  display: flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--m-white);
+  border-radius: 50%;
+  background: var(--m-green);
+}
+
+.m-chd-tick-img {
+  width: 12px;
+  height: 12px;
+}
+
+/* `bodySmall` plus an 800 — the one place the app overrides a fontStyle's weight inline. */
+.m-chd-pct {
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 20px;
+  color: var(--m-warm-grey);
+}
+
+.m-chd-pct.is-complete {
+  color: var(--m-green);
+}
+
+.m-chd-card-text {
+  display: flex;
+  margin-top: 20px;
+  flex-direction: column;
+}
+
+.m-chd-total {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.m-chd-data {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 28px;
+  color: var(--m-grey-dark-2);
+}
+
+.m-chd-slash {
+  margin: 0 5px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 21px;
+  color: var(--m-warm-grey);
+}
+
+.m-chd-goal {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 21px;
+  color: var(--m-warm-grey);
+}
+
+.m-chd-card-title {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+  color: var(--m-grey-dark-3);
+}
+
+/* ── Description ────────────────────────────────────────────────────────── */
+
+/* `descriptionContainer` — 40 above and below, 20 either side. The content is authored HTML, so
+ * the rules below are for tags the author can emit rather than for classes we control. */
+.m-chd-description {
+  margin: 40px 0;
+  padding: 0 20px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+  color: var(--m-grey-dark-2);
+}
+
+.m-chd-description p {
+  margin: 0 0 14px;
+}
+
+.m-chd-description p:last-child,
+.m-chd-description ul:last-child {
+  margin-bottom: 0;
+}
+
+.m-chd-description ul,
+.m-chd-description ol {
+  margin: 0 0 14px;
+  padding-left: 22px;
+}
+
+.m-chd-description li {
+  margin-bottom: 6px;
+}
+
+.m-chd-description strong {
+  font-weight: 800;
+}
+
+.m-chd-description a {
+  color: var(--m-accent);
+}
+
+.m-chd-pending {
+  padding: 40px 20px;
+}

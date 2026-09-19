@@ -622,6 +622,125 @@ export const DISCOVER_CHALLENGES = [
 ]
 
 /**
+ * `challengeDetail.data.attributes` — what a tapped challenge opens.
+ *
+ * Kept in the API's own snake_case names because almost every number here is load-bearing twice
+ * over, and renaming them would hide which two things a name is driving:
+ *
+ *   • `challengeTabs` in `ChallengeDetailScreen` builds the tab row by TESTING THESE TOTALS.
+ *     Overview and Description are always there; each of the rest appears only if its total is
+ *     above zero, in a fixed order. Badges is the sum of four of them.
+ *   • `GetCardOverviewData` turns the same numbers into the Overview grid, pairing a
+ *     `challenge_*_total` (what you have done) with a `goals_*_total` (what there is to do).
+ *
+ * So a challenge is configured by its numbers rather than by a list of features, and a tab
+ * exists because there is something in it. `goals_*` of 0 with a `challenge_*` above 0 still
+ * shows a card — you logged something the challenge does not have a goal for — which is why the
+ * card renders on `(total === 0 && data > 0) || total > 0`.
+ *
+ * `bgColorToSet` is the band behind the header. It comes from the LIST, not from here: the row
+ * you tapped hands it over so the colour is already right as the screen opens.
+ */
+export const CHALLENGE_DETAILS = {
+  c1: {
+    challenge_name: 'Summer Reading 2026',
+    challenge_dates: 'Jun 1, 2026 - Aug 31, 2026',
+    challenge_state: 'current',
+    /* The band colour and the banner are a PAIR: `getImageColor(headerImageUrl)` samples the
+       banner and lightens it, which is why the field behind a warm banner is warm. Two fixture
+       values standing in for one derivation. */
+    bgColorToSet: '#FDF0E3',
+    banner: 'linear-gradient(120deg,#F2A03D,#E8724B)',
+    challenge_description:
+      '<p>Read your way through the summer with <strong>Lakeside Elementary</strong>! Log books, earn badges, and collect tickets toward the end-of-summer drawing.</p><p>Every week you log at least three days, you earn a ticket. Finish the whole challenge and pick a prize from the library cart.</p><ul><li>Log any book you read, at home or at camp</li><li>Activities count too — check the Activities tab</li><li>Ask a librarian if you need a reading suggestion</li></ul>',
+    activities_only: false,
+    is_book_list_challenge: false,
+    is_bingo_challenge: false,
+    // Tab gates.
+    goals_challenges_total: 2,
+    goals_logging_total: 3,
+    goals_points_total: 0,
+    goals_reviews_total: 1,
+    goals_activities_total: 4,
+    rewards_total: 2,
+    drawings_total: 1,
+    certificates_total: 1,
+    challenge_log_total: 12,
+    // Overview grid — `challenge_*` is done, `goals_*` is the goal.
+    earned_badges_total: 4,
+    goals_book_list_total: 0,
+    challenge_book_lists_total: 0,
+    goals_minutes_total: 0,
+    challenge_minutes_total: 0,
+    goals_pages_total: 0,
+    challenge_pages_total: 0,
+    goals_reviews_goal_total: 1,
+    challenge_reviews_total: 1,
+    challenge_events_total: 0,
+    goals_days_total: 30,
+    challenge_days_total: 18,
+    challenge_learning_moments_total: 0,
+    challenge_hours_total: 0,
+    challenge_videos_total: 0,
+    challenge_magazines_total: 0,
+    goals_books_total: 20,
+    challenge_books_total: 14,
+    challenge_picture_reviews_total: 0,
+    challenge_activites_total: 3,
+    challenge_rewards: 1,
+    challenge_tickets_total: 6,
+    challenge_certificates: 0,
+    log_types: ['book'],
+    has_activities: true,
+  },
+  c3: {
+    challenge_name: 'Ms. Abbott’s Class Challenge',
+    challenge_dates: 'Ongoing challenge',
+    challenge_state: 'current',
+    bgColorToSet: '#E3F6FA',
+    banner: 'linear-gradient(120deg,#19BFD5,#0E8CA0)',
+    challenge_description:
+      '<p>Our class goal is <strong>10,000 minutes</strong> by the end of the year. Every minute you log at home counts toward it.</p><p>We check the total together every Friday afternoon.</p>',
+    activities_only: false,
+    is_book_list_challenge: false,
+    is_bingo_challenge: false,
+    goals_challenges_total: 0,
+    goals_logging_total: 2,
+    goals_points_total: 0,
+    goals_reviews_total: 0,
+    goals_activities_total: 0,
+    rewards_total: 0,
+    drawings_total: 0,
+    certificates_total: 0,
+    challenge_log_total: 31,
+    earned_badges_total: 2,
+    goals_book_list_total: 0,
+    challenge_book_lists_total: 0,
+    goals_minutes_total: 600,
+    challenge_minutes_total: 415,
+    goals_pages_total: 0,
+    challenge_pages_total: 0,
+    challenge_reviews_total: 0,
+    challenge_events_total: 0,
+    goals_days_total: 0,
+    challenge_days_total: 0,
+    challenge_learning_moments_total: 0,
+    challenge_hours_total: 0,
+    challenge_videos_total: 0,
+    challenge_magazines_total: 0,
+    goals_books_total: 0,
+    challenge_books_total: 0,
+    challenge_picture_reviews_total: 0,
+    challenge_activites_total: 0,
+    challenge_rewards: 0,
+    challenge_tickets_total: 0,
+    challenge_certificates: 0,
+    log_types: ['minute'],
+    has_activities: false,
+  },
+}
+
+/**
  * Discover > Activities. Same `ActivityItem` shape as HOME_ACTIVITIES — the tab renders the SAME
  * ActivitiesList, just without `horizontal`. There are no points and no emoji on an activity;
  * the third line is the completion count, from `useActivityDisplayData`.
