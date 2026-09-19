@@ -24,6 +24,25 @@ import './PhoneFrame.css'
  * and the tab labels, which is exactly what happened here. Its thicker top/bottom bezel is where
  * the earpiece and the home button live.
  */
+/**
+ * `forModalPresentationIOS` — React Navigation's own interpolator, which is what a
+ * `presentation: 'modal'` screen on `@react-navigation/stack` actually runs. Its numbers are
+ * derived per device rather than chosen, so they are computed here where the device is known:
+ *
+ *   topOffset   10 in portrait, 0 in landscape
+ *   scale       1 - (topOffset * 2) / screenWidth
+ *   translateY  statusBarHeight - topOffset * (screenHeight / screenWidth)
+ *   radius      10
+ *
+ * The translate is the half that is easy to miss. The presenting card does not shrink in place —
+ * it moves DOWN as it scales, which is what opens the gap at the top and makes the sheet read as
+ * something laid over a card rather than the screen simply getting smaller.
+ */
+const MODAL_TOP_OFFSET = 10
+
+/** The presentation duration, in step with `--m-motion-present` in base.css. */
+const PRESENT_MS = 320
+
 export const DEVICES = {
   'iphone-16-pro': {
     name: 'iPhone 16 Pro',
@@ -232,6 +251,40 @@ export function PhoneFrame({
     setKbOpen(false)
   }, [hasOverlay])
 
+  /**
+   * THE CLOSE IS THE OPEN IN REVERSE, and it was not.
+   *
+   * `ModalPresentationIOS` uses the same `TransitionIOSSpec` for `open` and `close`, and runs
+   * `forModalPresentationIOS` backwards — so the sheet slides back down over the full duration
+   * while the card scales and lifts back. Here the card did animate back, because its transform
+   * is a transition on an element that stays mounted, but the SHEET was simply removed from the
+   * DOM the instant state changed. Half the movement played and half of it cut, which is why
+   * closing felt wrong in a way opening did not.
+   *
+   * So the last overlay is held for the length of the exit and rendered with `is-closing`, which
+   * runs the slide-out. The `has-sheet` class comes off immediately, because the card should
+   * start its journey back at the same moment the sheet starts its own.
+   */
+  const lastOverlay = useRef(null)
+  if (overlay) lastOverlay.current = overlay
+  const [closing, setClosing] = useState(false)
+
+  useEffect(() => {
+    if (hasOverlay) {
+      setClosing(false)
+      return undefined
+    }
+    if (!lastOverlay.current) return undefined
+    setClosing(true)
+    // Matches `--m-motion-present`; a transitionend would need an element that survives the
+    // unmount, which is the thing being solved here.
+    const timer = setTimeout(() => {
+      setClosing(false)
+      lastOverlay.current = null
+    }, PRESENT_MS)
+    return () => clearTimeout(timer)
+  }, [hasOverlay])
+
   const dismissKeyboard = useCallback(() => {
     document.activeElement?.blur?.()
     setKbOpen(false)
@@ -247,6 +300,10 @@ export function PhoneFrame({
       '--m-screen-w': `${d.width}px`,
       '--m-screen-h': `${d.height}px`,
       '--m-screen-radius': `${d.radius ?? 41}px`,
+      // The presenting card's scale and drop, from `forModalPresentationIOS`. On a 393×852 that
+      // is 0.949 and 37.3pt — not the 0.913-and-stay-put this used to guess at.
+      '--m-present-scale': 1 - (MODAL_TOP_OFFSET * 2) / d.width,
+      '--m-present-translate': `${(d.top - MODAL_TOP_OFFSET * (d.height / d.width)).toFixed(2)}px`,
       '--m-bezel-x': `${d.bezel?.x ?? 3}px`,
       '--m-bezel-y': `${d.bezel?.y ?? 3}px`,
       '--m-island-w': `${d.island?.w ?? 0}px`,
@@ -301,10 +358,16 @@ export function PhoneFrame({
           {tabBar}
         </div>
 
-        {/* The sheet: inset from the top, rounded, above the tab bar AND the PlusMenu. */}
-        {overlay && (
-          <div className={overlayVariant === 'card' ? 'm-frame-card' : 'm-frame-sheet'}>
-            {overlay}
+        {/* The sheet: inset from the top, rounded, above the tab bar AND the PlusMenu. Held one
+            transition longer than the state that opened it, so it can leave the way it arrived. */}
+        {(overlay || closing) && (
+          <div
+            className={`${overlayVariant === 'card' ? 'm-frame-card' : 'm-frame-sheet'}${
+              closing ? ' is-closing' : ''
+            }`}
+            aria-hidden={closing || undefined}
+          >
+            {overlay ?? lastOverlay.current}
           </div>
         )}
 

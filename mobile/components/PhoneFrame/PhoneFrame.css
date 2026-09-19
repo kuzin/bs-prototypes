@@ -118,13 +118,15 @@
     border-radius var(--m-motion-present);
 }
 
-/* Scaled back and rounded, the way iOS stacks a card modal behind its sheet.
+/* Scaled back, dropped and rounded — `forModalPresentationIOS`, computed per device in
+ * PhoneFrame.jsx rather than eyeballed. On a 393×852 that is scale 0.949 and a 37.3pt drop.
  *
- * The card stays BELOW the status bar — it is the sheet that drops, leaving a sliver of the card's
- * rounded edge in the gap. Lifting the card instead put its header over the status bar, which
- * never happens on device. */
+ * It was scale 0.913 and no drop, which is wrong twice over: too far in (0.913 costs the card
+ * 17pt a side where the spec costs 10) and shrinking in place. The DROP is what opens the gap at
+ * the top of the screen; without it the card just gets smaller, which is why the whole thing
+ * read as the background lurching rather than a card settling back. */
 .m-frame-screen.has-sheet .m-frame-stage {
-  transform: scale(0.913);
+  transform: translateY(var(--m-present-translate)) scale(var(--m-present-scale));
   border-radius: 10px;
   overflow: hidden;
 }
@@ -267,6 +269,29 @@
   background: var(--m-white);
   overflow: hidden;
   animation: m-sheet-in var(--m-motion-present);
+}
+
+/* Out is in, reversed — the spec uses one `TransitionIOSSpec` for both directions. */
+.m-frame-sheet.is-closing {
+  animation: m-sheet-out var(--m-motion-present) forwards;
+  pointer-events: none;
+}
+
+.m-frame-card.is-closing {
+  animation: m-card-out var(--m-motion-present) forwards;
+  pointer-events: none;
+}
+
+@keyframes m-sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes m-card-out {
+  to {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes m-sheet-in {
