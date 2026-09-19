@@ -1,3 +1,4 @@
+import { FramePortal } from '../FramePortal/FramePortal'
 import { PressableButton } from '../PressableButton/PressableButton'
 import './ConfirmDialog.css'
 
@@ -24,17 +25,21 @@ export function ConfirmDialog({
 }) {
   if (!open) return null
 
+  /* Portals to the frame root, the way RN's `Modal` does — see FramePortal. Rendering in
+     place leaves the dialog inside whatever stacking context its caller happens to sit in. */
   return (
-    <div className="m-cd">
-      <button type="button" className="m-cd-backdrop" onClick={onClose} aria-label="Close" />
-      <div className="m-cd-box" role="dialog" aria-label={title}>
-        <p className="m-t-header-bar-title m-cd-title">{title}</p>
-        <p className="m-cd-text">{text}</p>
-        <PressableButton fullWidth buttonText={confirmText} onButtonPress={onConfirm} />
-        <button type="button" className="m-cd-cancel" onClick={onClose}>
-          {cancelText}
-        </button>
+    <FramePortal>
+      <div className="m-cd">
+        <button type="button" className="m-cd-backdrop" onClick={onClose} aria-label="Close" />
+        <div className="m-cd-box" role="dialog" aria-label={title}>
+          <p className="m-t-header-bar-title m-cd-title">{title}</p>
+          <p className="m-cd-text">{text}</p>
+          <PressableButton fullWidth buttonText={confirmText} onButtonPress={onConfirm} />
+          <button type="button" className="m-cd-cancel" onClick={onClose}>
+            {cancelText}
+          </button>
+        </div>
       </div>
-    </div>
+    </FramePortal>
   )
 }

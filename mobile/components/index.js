@@ -9,6 +9,7 @@
 import '../base.css'
 
 export { PhoneFrame, DEVICES } from './PhoneFrame/PhoneFrame'
+export { FramePortal } from './FramePortal/FramePortal'
 export { Keyboard, KEYBOARD_HEIGHT } from './Keyboard/Keyboard'
 export { Header } from './Header/Header'
 export { SectionHeader } from './SectionHeader/SectionHeader'

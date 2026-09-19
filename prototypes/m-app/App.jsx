@@ -34,6 +34,8 @@ import { ReviewDetails } from './screens/log/ReviewDetails'
 import { LogScreen, LOG_TABS } from './screens/LogScreen'
 import { DiscoverScreen, DISCOVER_TABS } from './screens/DiscoverScreen'
 import { ChallengeDetail } from './screens/discover/ChallengeDetail'
+import { ChallengeCodeSearch } from './screens/discover/ChallengeCodeSearch'
+import { JoinChallenge } from './screens/discover/JoinChallenge'
 import { CommunityScreen } from './screens/CommunityScreen'
 import { TABS, PLUS_ACTIONS } from './tabs'
 import {
@@ -51,6 +53,7 @@ import {
   READER_FIELD_SECTIONS,
   ALL_TITLES_SECTIONS,
   CHALLENGE_DETAILS,
+  DISCOVER_CHALLENGES,
 } from './data'
 
 /**
@@ -231,6 +234,13 @@ export function App() {
   /* `challengePage` is a PUSH on the challenges stack, not a modal — so it takes the whole
      screen with no peeking edge. A challenge is a destination. */
   const [openChallenge, setOpenChallenge] = useState(null)
+  /* The two halves of the fork a challenge card runs: registered opens `openChallenge`,
+     unregistered opens this. `fromCodeSearch` is not decoration — it hides Ignore, because
+     offering to hide the challenge you just went looking for makes no sense. */
+  const [joinChallenge, setJoinChallenge] = useState(null)
+  const [fromCodeSearch, setFromCodeSearch] = useState(false)
+  const [codeSearch, setCodeSearch] = useState(false)
+  const [challenges, setChallenges] = useState(DISCOVER_CHALLENGES)
   const [openFriend, setOpenFriend] = useState(null)
   const [fullLogFriend, setFullLogFriend] = useState(null)
   const [showFriendRequests, setShowFriendRequests] = useState(false)
@@ -465,10 +475,44 @@ export function App() {
              leave — and the sheet's peeking edge is what says the thing behind is still there. A
              push implies you have gone somewhere and have to come back. */
           overlayVariant={
-            showSettings || showFriendRequests || fullLogFriend || openChallenge ? 'card' : 'sheet'
+            showSettings || showFriendRequests || fullLogFriend || openChallenge || codeSearch
+              ? 'card'
+              : 'sheet'
           }
           overlay={
-            openChallenge ? (
+            codeSearch ? (
+              <ChallengeCodeSearch
+                challenges={challenges}
+                onFound={(c) => {
+                  setCodeSearch(false)
+                  setFromCodeSearch(true)
+                  if (c.isRegistered) setOpenChallenge(CHALLENGE_DETAILS[c.id] ?? null)
+                  else setJoinChallenge(c)
+                }}
+                onBack={() => setCodeSearch(false)}
+              />
+            ) : joinChallenge ? (
+              <JoinChallenge
+                challenge={joinChallenge}
+                fromCodeSearch={fromCodeSearch}
+                onJoin={(c) => {
+                  setChallenges((l) =>
+                    l.map((x) => (x.id === c.id ? { ...x, isRegistered: true } : x)),
+                  )
+                  setJoinChallenge(null)
+                  setFromCodeSearch(false)
+                }}
+                onIgnore={(c) =>
+                  setChallenges((l) =>
+                    l.map((x) => (x.id === c.id ? { ...x, state: 'ignored' } : x)),
+                  )
+                }
+                onClose={() => {
+                  setJoinChallenge(null)
+                  setFromCodeSearch(false)
+                }}
+              />
+            ) : openChallenge ? (
               <ChallengeDetail
                 attributes={openChallenge}
                 wordForDrawings={wordForDrawings}
@@ -729,7 +773,15 @@ export function App() {
               onTab={setDiscoverTab}
               flags={flags}
               onOpenList={setOpenList}
-              onOpenChallenge={(c) => setOpenChallenge(CHALLENGE_DETAILS[c.id] ?? null)}
+              challenges={challenges}
+              /* The card's own fork — `if (isRegistered) navigate('challengePage') else
+                 showModal('JoinChallenge')`. */
+              onOpenChallenge={(c) => {
+                setFromCodeSearch(false)
+                if (c.isRegistered) setOpenChallenge(CHALLENGE_DETAILS[c.id] ?? null)
+                else setJoinChallenge(c)
+              }}
+              onCodeSearch={() => setCodeSearch(true)}
             />
           )}
           {tab === 'community' && (

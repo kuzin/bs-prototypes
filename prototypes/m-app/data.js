@@ -583,6 +583,12 @@ export const DISCOVER_CHALLENGES = [
     state: 'upcoming',
     isRegistered: false,
     banner: 'linear-gradient(120deg,#0BA85F,#2FB5A8)',
+    /* `getImageColor(headerImageUrl)` again — the Join sheet's coloured top is sampled from the
+       banner, so the two travel together on an unregistered challenge the same way
+       `bgColorToSet` and the banner do on a registered one. */
+    bandColor: '#E4F6EE',
+    description:
+      '<p>Six continents, six books. Pick a title set somewhere you have never been and log it to fill in that part of the map.</p><p>Finish all six and your name goes on the display case by the front desk.</p>',
     logTypes: ['book'],
     challengeTypes: ['Reading List'],
   },
@@ -593,6 +599,9 @@ export const DISCOVER_CHALLENGES = [
     state: 'current',
     isRegistered: false,
     banner: 'linear-gradient(120deg,#4C6FE8,#8E6BE8)',
+    bandColor: '#E8ECFC',
+    description:
+      '<p>A five-by-five board of reading dares. Read a book with a <strong>blue cover</strong>, read somewhere you have never read before, read to a pet.</p><p>Any line across, down or diagonally wins a prize.</p>',
     logTypes: ['book'],
     challengeTypes: ['Bingo'],
   },
@@ -606,6 +615,9 @@ export const DISCOVER_CHALLENGES = [
     isRegistered: false,
     challengeCode: 'STAFF26',
     banner: 'linear-gradient(120deg,#E85648,#F2A03D)',
+    bandColor: '#FDE9E6',
+    description:
+      '<p>For staff across the district. Log your own reading alongside the students — 20 minutes a day is the ask.</p><p>Ask your building lead for the code if you have not been given one.</p>',
     logTypes: ['minute'],
     challengeTypes: ['Logging'],
   },

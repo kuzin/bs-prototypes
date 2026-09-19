@@ -119,3 +119,38 @@
 .m-am-row.is-destructive .m-am-label {
   color: var(--m-red-dark);
 }
+
+/* ── `isDateRangeItem` — the selectable variant ─────────────────────────── */
+
+/* The row keeps its 56pt height and 22pt inset; only the right-hand end changes. The label has
+ * to grow so the mark is pushed to the edge, which it does not need to do in the menu variant
+ * where nothing follows it. */
+.m-am-list.is-selectable .m-am-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* `DateRangeListItem`'s right icon — 26pt either way. Inactive is a 2pt gainsboro ring around
+ * nothing; active is a filled greenHaze disc with an 11 × 8 tick. Two different elements in the
+ * source, one element with a state here, because they are the same control. */
+.m-am-mark {
+  display: flex;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin-right: 22px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--m-c-gainsboro-white);
+  border-radius: 13px;
+}
+
+.m-am-mark.is-active {
+  border-color: var(--m-c-green-haze);
+  background: var(--m-c-green-haze);
+}
+
+.m-am-mark-tick {
+  width: 11px;
+  height: 8px;
+}

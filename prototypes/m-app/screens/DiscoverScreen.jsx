@@ -31,6 +31,8 @@ export function DiscoverScreen({
   onOpenList,
   onOpenEvent,
   onOpenChallenge,
+  onCodeSearch,
+  challenges,
 }) {
   const visible = DISCOVER_TABS.filter((t) => !GATED.includes(t.id) || flags[t.id])
   return (
@@ -39,10 +41,11 @@ export function DiscoverScreen({
       <div className="m-scroll">
         {tab === 'challenges' && (
           <Challenges
-            challenges={DISCOVER_CHALLENGES}
+            challenges={challenges ?? DISCOVER_CHALLENGES}
             user="Maya"
             micrositeName="Lakeside Elementary"
             onOpenChallenge={onOpenChallenge}
+            onCodeSearch={onCodeSearch}
           />
         )}
         {/* `screens/activities/Activities.tsx` — the SAME ActivitiesList as Home, but with

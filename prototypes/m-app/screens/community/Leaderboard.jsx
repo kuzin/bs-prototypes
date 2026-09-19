@@ -6,6 +6,7 @@ import {
   ToggleTabs,
   PressableButton,
   SelectSheet,
+  ActionsModal,
   EmptyStateView,
 } from '@mobile/components'
 import './community.css'
@@ -250,19 +251,21 @@ export function Leaderboard({
         onClose={() => setPickingScope(false)}
       />
 
-      {/* `DateRangeModal` — two options, and each states its own boundary rather than leaving you
-          to work out when "this week" started. */}
-      <SelectSheet
+      {/* `DateRangeModal` — an `ActionsModal` with `isDateRangeItem`, titled "Date Range". Two
+          options, and each states its own boundary rather than leaving you to work out when
+          "this week" started. */}
+      <ActionsModal
         open={pickingRange}
-        selectedId={dateRange}
-        items={[
-          { id: 'week', label: 'This Week (Since Monday)' },
-          { id: 'month', label: 'This Month (Since the 1st)' },
-        ]}
-        onSelect={(id) => {
-          setDateRange(id)
-          setPickingRange(false)
-        }}
+        selectable
+        title="Date Range"
+        options={[
+          { id: 'week', title: 'This Week (Since Monday)' },
+          { id: 'month', title: 'This Month (Since the 1st)' },
+        ].map((o) => ({
+          title: o.title,
+          isActive: dateRange === o.id,
+          onPress: () => setDateRange(o.id),
+        }))}
         onClose={() => setPickingRange(false)}
       />
     </div>

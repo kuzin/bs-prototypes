@@ -1,5 +1,5 @@
-import { Fragment } from 'react'
-import { Img, TextPill } from '@mobile/components'
+import { Fragment, useState } from 'react'
+import { Img, TextPill, ActionsModal } from '@mobile/components'
 import './Challenges.css'
 
 /**
@@ -74,13 +74,12 @@ function ChallengeCard({ challenge, onPress }) {
   )
 }
 
-export function Challenges({
-  challenges,
-  user,
-  micrositeName,
-  filter = 'Current',
-  onOpenChallenge,
-}) {
+export function Challenges({ challenges, user, micrositeName, onOpenChallenge, onCodeSearch }) {
+  /* `challengeListFilter` lives in redux in the app, because the same value is read by the list
+     and written by a modal mounted outside it. Here the modal is a sibling, so it is state. */
+  const [filter, setFilter] = useState('Current')
+  const [picking, setPicking] = useState(false)
+
   const hasChallengeCode = challenges.some(
     (c) => c.challengeCode && !c.isRegistered && c.state !== 'past' && c.state !== 'ignored',
   )
@@ -131,12 +130,14 @@ export function Challenges({
       <div className="m-chl-list">
         {/* ListHeaderComponent — the filter bar scrolls with the list rather than pinning. */}
         <div className="m-chl-filter">
-          <button type="button" className="m-chl-filter-btn">
+          <button type="button" className="m-chl-filter-btn" onClick={() => setPicking(true)}>
             <span className="m-chl-filter-text">{filter}</span>
             <Img name="filterArrow" className="m-chl-filter-arrow" />
           </button>
+          {/* Only when there IS a coded challenge to find. A code that matches nothing is the
+              error case, not the empty case, so the button does not offer itself otherwise. */}
           {hasChallengeCode && (
-            <button type="button" className="m-chl-code">
+            <button type="button" className="m-chl-code" onClick={onCodeSearch}>
               <span className="m-t-small-title m-chl-code-text">Challenge Code</span>
             </button>
           )}
@@ -154,6 +155,22 @@ export function Challenges({
           </Fragment>
         ))}
       </div>
+
+      {/* `OptionsModal` — an `ActionsModal` with `isDateRangeItem`, titled "View Options". The
+          selectable variant rather than the picker sheet: you are choosing a value from a named
+          set, and the app gives that a title and a Cancel. Past and Ignored each collapse the
+          two-section Current view down to one. */}
+      <ActionsModal
+        open={picking}
+        selectable
+        title="View Options"
+        options={['Current', 'Past', 'Ignored'].map((id) => ({
+          title: id,
+          isActive: filter === id,
+          onPress: () => setFilter(id),
+        }))}
+        onClose={() => setPicking(false)}
+      />
     </div>
   )
 }

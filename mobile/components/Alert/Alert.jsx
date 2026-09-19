@@ -1,3 +1,4 @@
+import { FramePortal } from '../FramePortal/FramePortal'
 import './Alert.css'
 
 /**
@@ -21,33 +22,37 @@ export function Alert({ open, title, message, buttons = [], onDismiss }) {
 
   const stacked = buttons.length > 2
 
+  /* Portals to the frame root, the way RN's `Modal` does — see FramePortal. Rendering in
+     place leaves the dialog inside whatever stacking context its caller happens to sit in. */
   return (
-    <div className="m-alert" role="alertdialog" aria-label={title} aria-modal="true">
-      {/* `cancelable: false` everywhere in this app — the scrim takes no press. */}
-      <div className="m-alert-scrim" aria-hidden="true" />
+    <FramePortal>
+      <div className="m-alert" role="alertdialog" aria-label={title} aria-modal="true">
+        {/* `cancelable: false` everywhere in this app — the scrim takes no press. */}
+        <div className="m-alert-scrim" aria-hidden="true" />
 
-      <div className="m-alert-box">
-        <div className="m-alert-copy">
-          <p className="m-alert-title">{title}</p>
-          {message && <p className="m-alert-message">{message}</p>}
-        </div>
+        <div className="m-alert-box">
+          <div className="m-alert-copy">
+            <p className="m-alert-title">{title}</p>
+            {message && <p className="m-alert-message">{message}</p>}
+          </div>
 
-        <div className={`m-alert-actions${stacked ? ' is-stacked' : ''}`}>
-          {buttons.map((b) => (
-            <button
-              key={b.text}
-              type="button"
-              className={`m-alert-btn is-${b.style ?? 'default'}`}
-              onClick={() => {
-                onDismiss?.()
-                b.onPress?.()
-              }}
-            >
-              {b.text}
-            </button>
-          ))}
+          <div className={`m-alert-actions${stacked ? ' is-stacked' : ''}`}>
+            {buttons.map((b) => (
+              <button
+                key={b.text}
+                type="button"
+                className={`m-alert-btn is-${b.style ?? 'default'}`}
+                onClick={() => {
+                  onDismiss?.()
+                  b.onPress?.()
+                }}
+              >
+                {b.text}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </FramePortal>
   )
 }
