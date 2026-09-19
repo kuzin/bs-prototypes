@@ -92,7 +92,19 @@
   transition: background-color var(--m-motion-present);
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  /* CLIP, NOT HIDDEN — `hidden` still makes this a scroll container, and a device screen must
+   * never be scrollable.
+   *
+   * A presenting sheet begins at `translateY(100%)`, which parks 783pt of it below the screen and
+   * takes this box's scrollHeight from 852 to 1635. As the sheet slides up that overflow
+   * collapses again, and Chrome's scroll anchoring "helpfully" moved scrollTop to compensate:
+   * 0 → 183 → 0 over the same 320ms. The status bar, the island and the card all rode up 183pt
+   * and sank back — THAT is the bounce. The sheet's own animation was correct the whole time;
+   * the chrome was being scrolled out from under it. A screen with more content to anchor to
+   * bounced harder, which is why the friend modal was worse than the achievement modal.
+   *
+   * `clip` is not a scroll container at all, so there is nothing to anchor and nothing to scroll. */
+  overflow: clip;
   /* Per device. A 41pt rounding on the SE's square display clipped the status-bar time and the
    * tab-bar labels, because its 20/0 safe insets leave nothing between the chrome and the corner. */
   border-radius: var(--m-screen-radius, 41px);
@@ -224,11 +236,23 @@
  * The FRAME scrolls, not the page. Without this the prototype would scroll the
  * browser window and the chrome would slide away — which is exactly the thing
  * a device shell exists to prevent. */
+/* Screen content NEVER paints over the chrome, whatever z-index it carries.
+ *
+ * React Native scopes a `zIndex` to its parent, so screens ported from the app are full of large
+ * ones that only ever meant "above my sibling" — the event date chip is `zIndex: 99999` and the
+ * challenge state pill is 9999. In CSS a number climbs to the nearest stacking context, and a
+ * plain `position: relative` card does not make one, so those values were competing with the tab
+ * bar and winning: the date chip painted on top of the tab bar as its card scrolled behind it.
+ *
+ * `isolation` makes this box the ceiling. Nothing inside is reordered — the chip still sits above
+ * its own panel — but the whole scroll region now resolves as one layer, under the tab bar that
+ * follows it. Fixing it here rather than card by card means the next ported screen inherits it. */
 .m-frame-body {
   flex: 1 1 0%;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  isolation: isolate;
   overflow: hidden;
 }
 
