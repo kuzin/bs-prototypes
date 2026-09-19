@@ -7,6 +7,7 @@ import {
   cardTitle,
   challengeTabsFor,
 } from './challengeOverviewData'
+import { ChallengeBadges } from './ChallengeBadges'
 import './ChallengeDetail.css'
 
 /**
@@ -120,7 +121,7 @@ function Description({ html }) {
   )
 }
 
-export function ChallengeDetail({ attributes, wordForDrawings = 'Drawings', onBack }) {
+export function ChallengeDetail({ attributes, wordForDrawings = 'Drawings', onOpenBadge, onBack }) {
   const tabs = challengeTabsFor(attributes, wordForDrawings)
   const [tab, setTab] = useState('Overview')
   const active = tabs.includes(tab) ? tab : 'Overview'
@@ -169,11 +170,30 @@ export function ChallengeDetail({ attributes, wordForDrawings = 'Drawings', onBa
         )}
         {active === 'Description' && <Description html={attributes.challenge_description} />}
 
-        {/* The remaining tabs are real screens in the app — Badges, Activities, Rewards, Ticket
-            Drawings, Certificates, Challenge Log, Reading List and the Bingo Card. They exist
-            here as tabs because the totals put them there, and they are the next thing to
-            build rather than something to fake. */}
-        {!['Overview', 'Description'].includes(active) && (
+        {/* Both tabs are the SAME component — `<ChallengeBadges goalType="challenge_badges" />`
+            and `<ChallengeBadges goalType="activity_goals" activityBadge />`. */}
+        {active === 'Badges' && (
+          <ChallengeBadges
+            items={attributes.badges ?? []}
+            challengeName={attributes.challenge_name}
+            isBookList={attributes.is_book_list_challenge}
+            isBingo={attributes.is_bingo_challenge}
+            onOpenBadge={onOpenBadge}
+          />
+        )}
+        {active === 'Activities' && (
+          <ChallengeBadges
+            activityBadge
+            items={attributes.activities ?? []}
+            challengeName={attributes.challenge_name}
+            onOpenBadge={onOpenBadge}
+          />
+        )}
+
+        {/* Still real screens in the app and still to build: Rewards, Ticket Drawings,
+            Certificates, Challenge Log, Reading List and the Bingo Card. They are tabs here
+            because this challenge's totals put them here, not because they are placeholders. */}
+        {!['Overview', 'Description', 'Badges', 'Activities'].includes(active) && (
           <div className="m-chd-pending">
             <EmptyStateView
               source="my_badges_empty_state"

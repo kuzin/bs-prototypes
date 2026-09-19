@@ -704,6 +704,100 @@ export const CHALLENGE_DETAILS = {
     challenge_certificates: 0,
     log_types: ['book'],
     has_activities: true,
+    /* `useChallengesGoals(challengeId, 'challenge_badges')`.
+     *
+     * `badge_type` is the grouping key and it is the API's own enum, not a label —
+     * `ChallengeBadges` maps it to a heading, and two of those mappings are conditional:
+     * BadgeRequirement reads "Book Badges" on a reading-list challenge and "Logging Badges"
+     * otherwise, and Completion reads "Bingo Badge" on a bingo card. Storing the label instead
+     * of the enum would throw away the thing the heading is derived from. */
+    badges: [
+      {
+        id: 'b1',
+        badge_type: 'BadgeRequirement',
+        name: 'Off to a Good Start',
+        earnedOn: '2026-06-08',
+        earnedText: 'Earned June 8, 2026',
+        art: 'linear-gradient(140deg,#F2A03D,#E8724B)',
+        has_tickets: true,
+      },
+      {
+        id: 'b2',
+        badge_type: 'BadgeRequirement',
+        name: 'Ten Books In',
+        earnedOn: '2026-07-14',
+        earnedText: 'Earned July 14, 2026',
+        art: 'linear-gradient(140deg,#19BFD5,#0E8CA0)',
+        has_tickets: true,
+      },
+      {
+        id: 'b3',
+        badge_type: 'BadgeRequirement',
+        name: 'Twenty Books In',
+        earnedText: '14 of 20 books',
+        art: 'linear-gradient(140deg,#4C6FE8,#8E6BE8)',
+        has_tickets: true,
+        has_rewards: true,
+      },
+      {
+        id: 'b4',
+        badge_type: 'ReviewRequirement',
+        name: 'Tell Us What You Thought',
+        earnedOn: '2026-06-22',
+        earnedText: 'Earned June 22, 2026',
+        art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+      },
+      {
+        /* The one badge that is not a step — `Completion` is the challenge itself, which is why
+           it carries all three markers and is the only one with a certificate behind it. */
+        id: 'b5',
+        badge_type: 'Completion',
+        name: 'Summer Reading Finisher',
+        earnedText: 'Not yet earned',
+        art: 'linear-gradient(140deg,#F2C53D,#0BA85F)',
+        has_certificates: true,
+        has_tickets: true,
+        has_rewards: true,
+      },
+    ],
+    /* `useChallengesGoals(challengeId, 'activity_goals')` — the SAME component with
+       `activityBadge`, which groups on `repeatable` instead of `badge_type`. */
+    activities: [
+      {
+        id: 'a1',
+        repeatable: false,
+        name: 'Visit the library',
+        earnedOn: '2026-06-15',
+        earnedText: 'Earned June 15, 2026',
+        art: 'linear-gradient(140deg,#19BFD5,#0E8CA0)',
+      },
+      {
+        id: 'a2',
+        repeatable: false,
+        name: 'Go to a summer reading event',
+        earnedOn: '2026-07-02',
+        earnedText: 'Earned July 2, 2026',
+        art: 'linear-gradient(140deg,#F2A03D,#E8724B)',
+      },
+      {
+        id: 'a3',
+        repeatable: false,
+        name: 'Recommend a book to a friend',
+        earnedText: 'Not yet earned',
+        art: 'linear-gradient(140deg,#4C6FE8,#8E6BE8)',
+      },
+      {
+        /* Repeatable and in progress: completions but no earned date, which is the case that
+           makes the Badge medallion show a coloured disc inside a GREY ring. */
+        id: 'a4',
+        repeatable: true,
+        name: 'Read outside',
+        completedItems: 3,
+        earnedText: 'Completed 3 times',
+        art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+        has_tickets: true,
+      },
+    ],
   },
   c3: {
     challenge_name: 'Ms. Abbott’s Class Challenge',

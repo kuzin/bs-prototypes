@@ -1,0 +1,19 @@
+/* `contentContainerStyle` — the list sits on the page's own gutter, and the Badge rows carry
+ * their own inset, so this only has to hold the section headings. */
+.m-chb {
+  padding: 0 0 40px;
+}
+
+/* `SectionSmallTitle` — `fontStyles.titleSmall`, on the 20pt gutter. 24 above it so a new
+ * section is clearly a new run and not another row. */
+.m-chb-section {
+  margin: 24px 20px 4px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  color: var(--m-grey-dark-1);
+}
+
+.m-chb-empty {
+  padding: 40px 20px;
+}

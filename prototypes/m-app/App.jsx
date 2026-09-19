@@ -516,6 +516,7 @@ export function App() {
               <ChallengeDetail
                 attributes={openChallenge}
                 wordForDrawings={wordForDrawings}
+                onOpenBadge={setOpenBadge}
                 onBack={() => setOpenChallenge(null)}
               />
             ) : fullLogFriend ? (
