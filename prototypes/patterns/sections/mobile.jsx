@@ -45,6 +45,10 @@ import {
   CompletedLoader,
   ListFooter,
   Img,
+  ToggleTabs,
+  Badge,
+  BookListItem,
+  TabBarV2,
 } from '@mobile/components'
 import { ACCENT_PRESETS, accentVars } from '@mobile/accent'
 import { Variant } from './_shared'
@@ -1650,6 +1654,211 @@ color: var(--m-green-dark);`,
       <MScope pad={0} background="transparent">
         <TabBar tabs={DEMO_TABS} active="home" onChange={() => {}} />
       </MScope>
+    ),
+  },
+  {
+    group: 'm-controls',
+    id: 'm-toggletabs',
+    name: 'ToggleTabs',
+    desc: (
+      <>
+        The pill segmented control — <code>components/shared/toggleTabs/ToggleTabs.tsx</code>. A
+        two-or-three-way switch <em>inside</em> a screen, for choosing what a list shows.
+        <br />
+        <br />
+        Not to be confused with <code>TopTabs</code>, which is the underlined navigation row for a
+        tab&rsquo;s screens. The test is whether the choice changes <em>where you are</em> (TopTabs)
+        or <em>what is in front of you</em> (ToggleTabs) — All Titles ⇄ Completed, Minutes ⇄ Books.
+        <br />
+        <br />
+        It takes and returns the tab <strong>label</strong>, not an id, which is why callers that
+        key on a slug convert at the boundary.
+      </>
+    ),
+    usage: `import { ToggleTabs } from '@mobile/components'
+
+<ToggleTabs tabs={['Minutes', 'Books']} currentTab={tab} setCurrentTab={setTab} />`,
+    render: () => {
+      const Demo = () => {
+        const [tab, setTab] = useState('All Titles')
+        const [count, setCount] = useState('Minutes')
+        return (
+          <>
+            <MVariant label="two — the common case">
+              <ToggleTabs
+                tabs={['All Titles', 'Completed']}
+                currentTab={tab}
+                setCurrentTab={setTab}
+              />
+            </MVariant>
+            <MVariant label="three — the leaderboard's school board, where the third is school-only">
+              <ToggleTabs
+                tabs={['Minutes', 'Books', 'Participation Rate']}
+                currentTab={count}
+                setCurrentTab={setCount}
+              />
+            </MVariant>
+          </>
+        )
+      }
+      return <Demo />
+    },
+  },
+  {
+    group: 'm-content',
+    id: 'm-badge',
+    name: 'Badge',
+    desc: (
+      <>
+        <code>components/badges/Badge/Badge.tsx</code>, list variant — the row on the Log
+        tab&rsquo;s Badges screen and inside a challenge. (Its circle variant is the strip on Home,
+        which is <code>HomeBadges</code>.)
+        <br />
+        <br />
+        The medallion is a 76pt ring around a 56pt disc, and the two report{' '}
+        <strong>different things</strong>: the RING turns green only when <code>earnedOn</code> is
+        set, while the DISC takes the tenant colour whenever the badge counts as earned — which
+        includes a repeatable with completions but no earned date. So a repeatable in progress shows
+        a coloured disc inside a grey ring, and that is not a bug.
+        <br />
+        <br />
+        <code>markers</code> are the challenge&rsquo;s certificate / ticket / reward flags, passed
+        by the app&rsquo;s own <code>*Marker</code> names.
+      </>
+    ),
+    usage: `import { Badge } from '@mobile/components'
+
+<Badge title="Summer Reading" name="Week One" earnedOn="2026-06-08" earnedText="Earned Jun 8" />`,
+    render: () => (
+      <>
+        <MVariant label="earned — green ring, coloured disc">
+          <Badge
+            title="Summer Reading 2026"
+            name="Week One Finisher"
+            earnedOn="2026-06-08"
+            earnedText="Earned June 8, 2026"
+            art="linear-gradient(140deg,#19BFD5,#0E8CA0)"
+          />
+        </MVariant>
+        <MVariant label="repeatable in progress — grey ring, coloured disc">
+          <Badge
+            title="Summer Reading 2026"
+            name="Bookworm"
+            repeatable
+            completedItems={2}
+            earnedText="Completed 2 times"
+            art="linear-gradient(140deg,#FFBC42,#F26430)"
+          />
+        </MVariant>
+        <MVariant label="unearned — grey throughout">
+          <Badge title="Summer Reading 2026" name="Finish the Board" earnedText="Not yet earned" />
+        </MVariant>
+      </>
+    ),
+  },
+  {
+    group: 'm-content',
+    id: 'm-booklistitem',
+    name: 'BookListItem',
+    desc: (
+      <>
+        The title row — a cover, a title and an author — used by All Titles, search results and a
+        friend&rsquo;s reading log.
+        <br />
+        <br />
+        <code>cover</code> and <code>coverColor</code> are not alternatives to each other:{' '}
+        <code>cover</code> is a background value, while <code>coverColor</code> is a{' '}
+        <strong>bare hex</strong> the component prefixes with <code>#</code>. Passing a gradient to
+        the second one silently renders no cover at all.
+        <br />
+        <br />
+        <code>disabled</code> is the friend&rsquo;s-log case: the same row, inert. You can read what
+        they logged and you cannot open it, because there is no session of theirs for you to see.
+      </>
+    ),
+    usage: `import { BookListItem } from '@mobile/components'
+
+<BookListItem title="The Crossover" author="Kwame Alexander" coverColor="19BFD5" onPress={open} />`,
+    render: () => (
+      <>
+        <MVariant label="default">
+          <BookListItem
+            title="The Crossover"
+            author="Kwame Alexander"
+            abbreviation="TC"
+            coverColor="19BFD5"
+            onPress={() => {}}
+          />
+        </MVariant>
+        <MVariant label="with progress — only while totalCompletions is 0">
+          <BookListItem
+            title="Front Desk"
+            author="Kelly Yang"
+            abbreviation="FD"
+            coverColor="F26430"
+            showProgressBar
+            percentageCompleted={40}
+            onPress={() => {}}
+          />
+        </MVariant>
+        <MVariant label="disabled — a friend's log, readable but not openable">
+          <BookListItem
+            title="New Kid"
+            author="Jerry Craft"
+            abbreviation="NK"
+            coverColor="7B61FF"
+            disabled
+          />
+        </MVariant>
+      </>
+    ),
+  },
+  {
+    group: 'm-chrome',
+    id: 'm-tabbar-v2',
+    name: 'TabBarV2',
+    desc: (
+      <>
+        <strong>A proposal, not a port.</strong> The shipped <code>TabBar</code> stays exactly as it
+        is; this sits beside it so the handoff can show &ldquo;here is what ships, here is what we
+        are asking for&rdquo;.
+        <br />
+        <br />
+        What changes: one <strong>vector</strong> per tab instead of the active/inactive PNG pair,
+        which is what lets the active state tint at all; a tinted <strong>pill</strong> behind the
+        active icon, using the app&rsquo;s own <code>activeTab</code> pair rather than an invented
+        colour; the plus <strong>inside</strong> the bar as a centred 44pt circle instead of a 56pt
+        one lifted 10pt clear of it; <strong>no labels</strong>, since a solid icon in a tinted pill
+        was already saying it; and a <strong>dot</strong> rather than a count.
+        <br />
+        <br />
+        <code>variant=&quot;floating&quot;</code> lifts the bar off the screen edge entirely.
+        Content then scrolls UNDERNEATH it, which is the trade — and why{' '}
+        <code>.has-floating-bar</code> makes every scroller pay the clearance back.
+      </>
+    ),
+    usage: `import { TabBarV2 } from '@mobile/components'
+
+<TabBarV2 tabs={TABS} active="home" onChange={setTab} onPlus={open} variant="floating" />`,
+    render: () => (
+      <>
+        <MVariant label="attached — the bar meets the screen edge" pad={0} background="transparent">
+          <TabBarV2 tabs={DEMO_TABS} active="home" onChange={() => {}} onPlus={() => {}} />
+        </MVariant>
+        <MVariant
+          label="floating — inset 16, content scrolls underneath"
+          pad={0}
+          background="var(--m-c-background-home-gray)"
+        >
+          <TabBarV2
+            tabs={DEMO_TABS}
+            active="community"
+            onChange={() => {}}
+            onPlus={() => {}}
+            variant="floating"
+          />
+        </MVariant>
+      </>
     ),
   },
 ]
