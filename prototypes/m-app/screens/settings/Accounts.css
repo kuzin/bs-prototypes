@@ -1,0 +1,110 @@
+/* `AccountsStyles` — white, 20 either side. */
+.m-acc {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-acc-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0 20px;
+}
+.m-acc-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* `mainTitle` — primaryTitle with 20 above and below. */
+.m-acc-heading {
+  margin: 20px 0;
+}
+
+/* `sectionSeparator` — a hairline in tableSeparator, full width of the padded container. */
+.m-acc-rule {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: var(--m-c-table-separator);
+  transform: scaleY(0.5);
+}
+
+/* `listItemContainerAccount` + `leftItemContainer`: 16 above and below a 48pt tile, so the row
+   stands 80 tall. */
+.m-acc-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 16px 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  text-align: left;
+}
+.m-acc-row:active {
+  opacity: 0.6;
+}
+
+/* `imageItemContainer` — 48 at `borderRadius: 50`, which is a CIRCLE. Settings' own rows use a
+   radius-20 rounded square for the same 48pt tile, so the two screens are deliberately different
+   shapes and copying one onto the other is the easy mistake. */
+.m-acc-tile {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--m-orange-light);
+}
+.m-acc-tile.is-add {
+  background: var(--m-c-form-gray-background);
+}
+
+.m-acc-dot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--m-c-green-haze);
+  border: 2px solid var(--m-white);
+  box-sizing: border-box;
+}
+
+.m-acc-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* `item` — marginLeft 16, colour `secondary`, and weight NORMAL: secondaryTitle would otherwise
+   bring its own bold, which is not what the row uses. */
+.m-acc-library {
+  margin-left: 16px;
+  color: var(--m-c-secondary);
+  font-weight: 400;
+}
+
+/* `subTitleItem` — 4 under the name at `spacing.normal`, which is also 16, so the two lines share
+   an edge. */
+.m-acc-holder {
+  margin-top: 4px;
+  margin-left: 16px;
+  color: var(--m-c-dim-gray);
+  font-weight: 400;
+}
+
+.m-acc-arrow {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}

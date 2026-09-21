@@ -1,0 +1,125 @@
+.m-ff {
+  display: flex;
+  flex-direction: column;
+}
+
+/* An errored box keeps the error colour whether or not it is focused — the app's `borderCheck`,
+   which exists so a form that failed validation still shows which field failed after you tab
+   away from it. */
+.m-ff-box.is-error,
+.m-ff-box.is-error.is-focused {
+  border-color: var(--m-c-red-error);
+}
+.m-ff-box.is-error .m-tf-input {
+  color: var(--m-c-red-error);
+}
+
+/* A select fills the box like the input does; the arrow is the app's own asset rather than the
+   platform's, which is the one part of a native select that never matches anything around it. */
+.m-ff-select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.m-ff-select.is-placeholder,
+.m-ff-date.is-placeholder {
+  color: var(--m-border-grey);
+}
+
+.m-ff-arrow {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-right: 16px;
+  pointer-events: none;
+}
+
+.m-ff-date {
+  text-align: left;
+  cursor: pointer;
+}
+
+/* `boolRowContainer` — the label takes the row and the switch hugs the end. Ruled off above like
+   the book editor's Track Progress, because a switch changes what the form asks rather than
+   answering one of its questions. */
+.m-ff-bool {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--m-c-border);
+}
+
+.m-ff-bool-label {
+  flex: 1 1 auto;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--m-grey-dark-1);
+}
+
+/* RN's platform `<Switch>`, which on iOS is a UISwitch — NOT the app's own `CustomToggleSwitch`
+   that [[ToggleSwitch]] models. Two different controls: this one is the system's, at UIKit's
+   51×31 with a 27pt knob and the system green, and it is what a `bool` field renders. */
+.m-ff-switch {
+  flex: none;
+  appearance: none;
+  position: relative;
+  width: 51px;
+  height: 31px;
+  margin: 0;
+  border-radius: 16px;
+  background: #e9e9ea;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.m-ff-switch:checked {
+  background: #34c759;
+}
+
+.m-ff-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: var(--m-white);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    0 1px 1px rgba(0, 0, 0, 0.16);
+  transition: transform 150ms ease;
+}
+
+.m-ff-switch:checked::after {
+  transform: translateX(20px);
+}
+
+.m-ff-error {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  margin: 10px 0 0;
+}
+
+.m-ff-bang {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--m-c-red-error);
+  color: var(--m-white);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.m-ff-error-text {
+  flex: 1 1 auto;
+  margin-left: 11px;
+  color: var(--m-c-red-error);
+}

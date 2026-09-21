@@ -1,0 +1,205 @@
+/* 24 under the tab bar, the same inset My Library takes — the three tabs are one surface and a
+   different gap on each reads as a misalignment rather than as three screens. */
+.m-fr {
+  display: flex;
+  flex-direction: column;
+  padding-top: 24px;
+}
+
+/* `FriendRequestNotificationCard` — the one row above the list, and the only one with a ground. */
+.m-fr-requests {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 20px 12px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--m-accent-wash);
+  cursor: pointer;
+  text-align: left;
+}
+
+.m-fr-requests-count {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 12px;
+  background: var(--m-red);
+  color: var(--m-white);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.m-fr-requests-text {
+  flex: 1 1 auto;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--m-grey-dark-1);
+}
+
+.m-fr-requests-chevron {
+  flex: none;
+  width: 28px;
+  height: 16px;
+}
+
+/* `listHeader` — the count on the left, the add/invite action on the right. It takes its own 16
+   only when something precedes it; first in the list, the page's inset is already the gap. */
+.m-fr-requests + .m-fr-head {
+  margin-top: 16px;
+}
+
+.m-fr-add {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-accent);
+}
+
+/* `friendItem` — 76 tall, space-between.
+ *
+ * The app wraps the whole row in one `TouchableHighlight` and puts the dots' own touchable
+ * INSIDE it, so pressing the row lights the full width. A button cannot nest inside a button, so
+ * here they are siblings and the highlight is lifted to the row with `:has()` — otherwise the
+ * press state stopped 70pt short of the edge, exactly where the dots begin, which reads as the
+ * row being two things. */
+.m-fr-row {
+  display: flex;
+  align-items: center;
+  height: 76px;
+}
+
+.m-fr-row:has(.m-fr-press:active) {
+  background: var(--m-grey-light-3);
+}
+
+.m-fr-press {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+button.m-fr-press {
+  cursor: pointer;
+}
+
+/* `friendNameArea` — 18 in from the edge, which is 2 less than the 20 the rest of the tab uses. */
+.m-fr-name-area {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-left: 18px;
+}
+
+/* `textArea` — 10 from the avatar, not the 15 a ProfileRow list row uses. */
+.m-fr-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  min-width: 0;
+  padding-left: 10px;
+}
+
+/* 18pt, and the FIRST name only — a friends list is people you know. */
+.m-fr-name {
+  font-size: 18px;
+  color: var(--m-c-mine-black);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-fr-pending {
+  font-size: 12px;
+  color: var(--m-grey-dark-3);
+}
+
+/* `additionalInfoArea` — a 70pt square with 18 of padding on the right, so the dots have a real
+   target rather than being a 24pt glyph at the screen's edge. */
+.m-fr-dots {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: flex-end;
+  width: 70px;
+  height: 70px;
+  padding-right: 18px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.m-fr-dots-img {
+  width: 24px;
+  height: 24px;
+}
+
+.m-fr-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px 40px;
+}
+
+.m-fr-empty > button {
+  width: auto;
+}
+
+/* `AddFriendsNotification` — 40 down, 20 either side, on `blueLight` at radius 10 with 16 of
+   padding. A one-time announcement rather than a description of the empty list, which is why it
+   is dismissible and the empty state under it is not. */
+.m-fr-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  align-self: stretch;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--m-blue-light, var(--m-accent-wash));
+}
+
+.m-fr-notice-text {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: -0.22px;
+  color: var(--m-grey-dark-2);
+}
+
+/* The close sits on its own tinted square rather than floating on the card. */
+.m-fr-notice-close {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(180, 219, 225, 0.19);
+  cursor: pointer;
+}
+
+.m-fr-notice-icon {
+  width: 16px;
+  height: 16px;
+}

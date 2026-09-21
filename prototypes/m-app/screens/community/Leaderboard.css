@@ -1,0 +1,122 @@
+/* 24 under the tab bar, matching My Library and Friends — but as a first-child margin, not page
+   padding, because the filter bar is the exception. */
+.m-lb {
+  display: flex;
+  flex-direction: column;
+}
+
+.m-lb > *:first-child {
+  margin-top: 24px;
+}
+
+/* The filter bar is full-bleed and takes NO inset above it. The 24 every other tab starts with
+   is the gap between the tab bar and the first piece of CONTENT; a bar that runs edge to edge is
+   not content sitting on the page, it is the page's own top edge — floating it 24 down leaves a
+   white stripe that reads as a gap in the chrome rather than as breathing room. */
+.m-lb > .m-filterbar:first-child {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+/* `ToggleTabs` sits on the gutter like everything else on this tab, with its own air above: the
+   heading's 8 is the gap to a line of copy, and a control needs more than a sentence does. */
+.m-lb-types {
+  margin: 8px var(--m-gutter) 12px;
+}
+
+.m-lb-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* `leaderboardItem` — 70 tall, stretched, 20 either side, with the left group 16 apart. */
+.m-lb-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 70px;
+  padding: 0 20px;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+button.m-lb-item {
+  cursor: pointer;
+}
+button.m-lb-item:active {
+  background: var(--m-grey-light-3);
+}
+
+.m-lb-item + .m-lb-item {
+  border-top: 1px solid var(--m-c-border);
+}
+
+.m-lb-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* Top three get a medal; everyone else gets the number. Both occupy the same 28pt column, so the
+   avatars below the podium stay in line with the ones on it. */
+.m-lb-medal {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.m-lb-rank {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-grey-dark-3);
+}
+
+.m-lb-name {
+  min-width: 0;
+  font-size: 16px;
+  line-height: 21px;
+  letter-spacing: -0.29px;
+  color: var(--m-c-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* `currentReader` — weight alone marks you, not a colour or a ground. */
+.m-lb-name.is-you {
+  font-weight: 700;
+}
+
+.m-lb-value {
+  flex: none;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  letter-spacing: -0.29px;
+  color: var(--m-c-secondary);
+}
+
+.m-lb-foot {
+  height: 100px;
+}
+
+/* The friends board's empty state carries a button, so it centres like the Friends tab's rather
+   than sitting flush left under the artwork. */
+.m-lb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px 40px;
+}
+
+.m-lb-empty > button {
+  width: auto;
+}

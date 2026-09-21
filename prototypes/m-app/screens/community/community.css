@@ -1,0 +1,54 @@
+/**
+ * One label treatment for every section on the Community tab.
+ *
+ * The three tabs are one surface, and before this each named its sections differently: My
+ * Library put "Our Goal" inside its card, Friends set its count at 16/700 in a padded row, and
+ * the Leaderboard stacked three sizes of grey. A label inside a card belongs to the card; a
+ * label above it names the section — a difference that is invisible on a white page and obvious
+ * on a grey one.
+ *
+ * The shape is title-left, action-right on one baseline, with an optional line of qualifying
+ * copy under it. Everything that heads a section on this tab uses it.
+ */
+/* Centred, not baseline-aligned. The action on the right sits against the whole heading — title
+   plus its sub-line — rather than against the title's baseline, so a two-line heading does not
+   leave the button riding high on the first line. */
+.m-comm-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 var(--m-gutter) 8px;
+}
+
+/* The heading's own column: the title and anything qualifying it, stacked, so the row has two
+   children whatever the heading turns out to be. */
+.m-comm-label-stack {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.m-comm-label-text {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 24px;
+  letter-spacing: 0.29px;
+  color: var(--m-grey-dark-1);
+}
+
+/* The line under a label — the tenant's sponsor sentence, a date boundary, a count. Copy, not a
+   heading, so it sits in grey at the body size. */
+.m-comm-sub {
+  margin: 0 var(--m-gutter) 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+}
+
+/* Inside the heading's column it is part of the heading, so it carries no gutter and no gap —
+   the leading between the two lines is the whole separation. */
+.m-comm-label-stack .m-comm-sub {
+  margin: 0;
+}

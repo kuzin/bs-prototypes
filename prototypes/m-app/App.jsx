@@ -18,12 +18,25 @@ import { BookDetail } from './screens/log/BookDetail'
 import { BookListDashboard } from './screens/discover/BookListDashboard'
 import { Settings } from './screens/Settings'
 import { LogSearch } from './screens/LogSearch'
+import { EventModal } from './screens/community/EventModal'
+import { FriendDetail } from './screens/community/FriendDetail'
+import { FriendRequests } from './screens/community/FriendRequests'
+import { ShareCode, EnterFriendCode } from './screens/community/FriendCode'
+import { FriendSearch } from './screens/community/FriendSearch'
+import { FriendFullLog } from './screens/community/FriendFullLog'
+import { ReadingSession } from './screens/log/ReadingSession'
+import { EditReadingSession } from './screens/log/EditReadingSession'
+import { EditTitle } from './screens/log/EditTitle'
 import { SwitchReadersSheet } from './modals/SwitchReadersSheet'
 import { TitleOptionsModal } from './modals/TitleOptionsModal'
 import { ReviewOptionsModal } from './modals/ReviewOptionsModal'
 import { ReviewDetails } from './screens/log/ReviewDetails'
 import { LogScreen, LOG_TABS } from './screens/LogScreen'
 import { DiscoverScreen, DISCOVER_TABS } from './screens/DiscoverScreen'
+import { ChallengeDetail } from './screens/discover/ChallengeDetail'
+import { ChallengeCodeSearch } from './screens/discover/ChallengeCodeSearch'
+import { ActivityDetail } from './screens/discover/ActivityDetail'
+import { JoinChallenge } from './screens/discover/JoinChallenge'
 import { CommunityScreen } from './screens/CommunityScreen'
 import { TABS, PLUS_ACTIONS } from './tabs'
 import {
@@ -32,7 +45,18 @@ import {
   BOOK_DETAIL,
   BOOK_LIST_DETAIL,
   PROFILES,
+  ACCOUNTS,
+  FRIENDS,
+  FRIEND_REQUEST_LIST,
+  FRIEND_DETAILS,
+  SITE_ROSTER,
+  ACCOUNT_FIELD_SECTIONS,
+  READER_FIELD_SECTIONS,
   ALL_TITLES_SECTIONS,
+  CHALLENGE_DETAILS,
+  DISCOVER_CHALLENGES,
+  CLASSROOM_LIBRARY_BOOKS,
+  LEARNING_TRACKS,
 } from './data'
 
 /**
@@ -64,6 +88,13 @@ function useSticky(key, initial) {
 }
 
 const TITLES = { home: 'Home', log: 'Log', discover: 'Discover', community: 'Community' }
+
+/**
+ * `profiles.wordForDrawings` — a TENANT word, defaulting to 'Drawings' and set per site from the
+ * prize-drawing plural (the reducer's test uses 'Sketches'). It is interpolated rather than
+ * hardcoded because it names a challenge tab: `Ticket ${wordForDrawings}`.
+ */
+const wordForDrawings = 'Drawings'
 
 /**
  * Home's conditional sections, with the real gate behind each. On device a reader sees whichever
@@ -133,6 +164,17 @@ export function App() {
   // storage key carries a version because the default moved to `floating` — a sticky value under
   // the old key would have pinned everyone to the old default and hidden the change.
   const [barStyle, setBarStyle] = useSticky('barStyle2', 'floating')
+  /**
+   * `microsite.clientServiceType` — and it forks more of the app than its name suggests.
+   *
+   * Community reads it three times: the first tab is labelled `My ${Capitalize(type)}`, the
+   * Leaderboard tab appears for a SCHOOL whether or not `displayLeaderboards` is on, and adding a
+   * friend takes an entirely different route. A school roster is a closed list both readers are
+   * already on, so you search it and send an invite; a library has no such list and no way to
+   * know two patrons know each other, so they exchange a code out of band. Settings forks on it
+   * too — a school account is one login to one reader, so it has no Add A Reader.
+   */
+  const [serviceType, setServiceType] = useSticky('serviceType', 'School')
   const [accent, setAccent] = useSticky('accent', DEFAULT_ACCENT)
   const [tab, setTab] = useSticky('tab', 'home')
   const [plusOpen, setPlusOpen] = useState(false)
@@ -186,7 +228,57 @@ export function App() {
   const [profileId, setProfileId] = useSticky('profile', PROFILES[0].id)
   const [switchReadersOpen, setSwitchReadersOpen] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  /* The streak card's dismissal, which the app keeps per profile in `streakComponentClosed`. */
+  const [openEvent, setOpenEvent] = useState(null)
+  // The community stack. `friendDetail` is a presented modal and `friendRequestList` is a push,
+  // so both live up here with the other pushed screens rather than inside the tab.
+  const [friends, setFriends] = useState(FRIENDS)
+  const [friendRequests, setFriendRequests] = useState(FRIEND_REQUEST_LIST)
+  /* `challengePage` is a PUSH on the challenges stack, not a modal — so it takes the whole
+     screen with no peeking edge. A challenge is a destination. */
+  const [openChallenge, setOpenChallenge] = useState(null)
+  /* The two halves of the fork a challenge card runs: registered opens `openChallenge`,
+     unregistered opens this. `fromCodeSearch` is not decoration — it hides Ignore, because
+     offering to hide the challenge you just went looking for makes no sense. */
+  const [joinChallenge, setJoinChallenge] = useState(null)
+  /* `appStatus.challengeTab` — see ChallengeDetail. It lives up here so a badge opened from the
+     Badges tab does not lose your place, and `resetChallengeTab` is the reset on a new one. */
+  const [challengeTab, setChallengeTab] = useState('Overview')
+  /* `selectedLearningTrack` — an activity row opens its TRACK, which is where the checkboxes are. */
+  const [openTrack, setOpenTrack] = useState(null)
+  const [fromCodeSearch, setFromCodeSearch] = useState(false)
+  const [codeSearch, setCodeSearch] = useState(false)
+  const [challenges, setChallenges] = useState(DISCOVER_CHALLENGES)
+  const [openFriend, setOpenFriend] = useState(null)
+  const [fullLogFriend, setFullLogFriend] = useState(null)
+  const [showFriendRequests, setShowFriendRequests] = useState(false)
+  const [codeScreen, setCodeScreen] = useState(null)
+  /* The code belongs to the READER, not the device — switching readers has to change it, or the
+     screen is telling you to share somebody else's. Seeded from the name so it is stable. */
+  const [codeSuffix, setCodeSuffix] = useState('7F3K')
+  const [streakClosed, setStreakClosed] = useSticky('streakClosed', false)
   const [showLogSearch, setShowLogSearch] = useState(false)
+  /* A session opened from the book panel. The panel stays mounted underneath — in the app this is
+     a push onto the same stack, so closing the session returns to the book rather than the tab. */
+  const [openSession, setOpenSession] = useState(null)
+  const [editSession, setEditSession] = useState(null)
+  const [editTitle, setEditTitle] = useState(null)
+
+  /* The book panel's edits land on `openBook`, which the panel merges over the fixture — so a
+     saved title or a changed session shows immediately and survives closing the panel. */
+  function patchBook(patch) {
+    setOpenBook((b) => ({ ...BOOK_DETAIL, ...b, ...patch }))
+  }
+
+  function replaceSession(next) {
+    setOpenBook((b) => {
+      const merged = { ...BOOK_DETAIL, ...b }
+      return {
+        ...merged,
+        sessions: merged.sessions.map((s) => (s.id === next.id ? next : s)),
+      }
+    })
+  }
 
   /* What the Log tab's search searches: every title the reader has logged, flattened out of the
      month sections All Titles reads them in. */
@@ -198,11 +290,74 @@ export function App() {
   const [discoverTab, setDiscoverTab] = useSticky('discoverTab', DISCOVER_TABS[0].id)
   const [communityTab, setCommunityTab] = useSticky('communityTab', 'microsite')
 
+  /**
+   * Home is a set of doors and everything behind them is on another tab, so a jump has to set the
+   * bottom tab AND the top tab under it — which is exactly the shape of the app's own
+   * `navigate('logTab', { screen: 'logTabs', params: { screen: 'theLog', params: { screen: … } } })`.
+   */
+  function goTo(nextTab, subTab) {
+    setTab(nextTab)
+    if (!subTab) return
+    if (nextTab === 'log') setLogTab(subTab)
+    if (nextTab === 'discover') setDiscoverTab(subTab)
+  }
+
   const d = DEVICES[device] ?? DEVICES['iphone-16-pro']
 
   // Home is the only tab whose content scrolls inside the frame's own body; the other three own
   // their scroll region because a top-tab row sits above it and must not scroll away.
   const isHome = tab === 'home'
+
+  /* WHICH overlay is up, derived ONCE — the frame hosts one at a time, and both the content
+     and its presentation have to agree about which one won. Reading the variant off a separate
+     `a || b || c` was a bug waiting to happen: a badge opened from inside a challenge is a
+     MODAL, but `openChallenge` was still truthy, so the sheet rendered with the pushed-card
+     chrome — no peeking edge, no scale-back, the wrong thing entirely.
+ 
+     Order is DEPTH, matching the chain below: deepest first. */
+  const OVERLAY_ORDER = [
+    ['fullLogFriend', fullLogFriend, 'card'],
+    ['codeScreen', codeScreen, 'sheet'],
+    ['openFriend', openFriend, 'sheet'],
+    ['showFriendRequests', showFriendRequests, 'card'],
+    ['openEvent', openEvent, 'sheet'],
+    ['showSettings', showSettings, 'card'],
+    ['showLogSearch', showLogSearch, 'sheet'],
+    ['openReview', openReview, 'sheet'],
+    ['openChat', openChat, 'sheet'],
+    ['openBadge', openBadge, 'sheet'],
+    ['openAchievement', openAchievement, 'sheet'],
+    ['openTrack', openTrack, 'sheet'],
+    ['editTitle', editTitle, 'sheet'],
+    ['editSession', editSession, 'sheet'],
+    ['openSession', openSession, 'sheet'],
+    ['openBook', openBook, 'sheet'],
+    ['codeSearch', codeSearch, 'card'],
+    ['joinChallenge', joinChallenge, 'sheet'],
+    ['openList', openList, 'sheet'],
+  ]
+  const topOverlay = OVERLAY_ORDER.find(([, open]) => open)
+  const overlayVariant = topOverlay?.[2] ?? 'sheet'
+
+  /* The challenge is a PUSHED SCREEN, so it lives in the frame's card layer rather than in the
+     overlay chain. It is the only thing here that can have something presented over it — its
+     Badges tab opens a badge, its Reading List opens a book — and sharing the overlay slot meant
+     the two took turns: the challenge unmounted on the way in, and on the way out it slid back
+     in from the right while the sheet was deleted rather than animated. Its own layer just stays
+     put and takes the scale-back. */
+  const challengeScreen = openChallenge ? (
+    <ChallengeDetail
+      attributes={openChallenge}
+      wordForDrawings={wordForDrawings}
+      tab={challengeTab}
+      onTab={setChallengeTab}
+      onOpenBadge={setOpenBadge}
+      /* `goToSelectedBook` posts the book and opens the logging options; here it opens the book
+         sheet the rest of the app already uses. */
+      onOpenBook={(b) => setOpenBook({ ...BOOK_DETAIL, title: b.title, author: b.author })}
+      onBack={() => setOpenChallenge(null)}
+    />
+  ) : null
 
   return (
     <>
@@ -255,6 +410,15 @@ export function App() {
                 <option value="compact">Goal · compact</option>
                 <option value="flush">Goal · flush</option>
                 <option value="card">Goal · card</option>
+              </select>
+
+              <select
+                aria-label="Site type"
+                value={serviceType}
+                onChange={(e) => setServiceType(e.target.value)}
+              >
+                <option value="School">Site · school</option>
+                <option value="Library">Site · library</option>
               </select>
 
               <select
@@ -365,10 +529,68 @@ export function App() {
              the whole navigator with no scale-back and no peeking edge: somewhere the app went,
              rather than something laid over it. Search keeps the presented card, which is what a
              screen you open, use once and dismiss should feel like. */
-          overlayVariant={showSettings ? 'card' : 'sheet'}
+          /* `codeScreen` is NOT in this list: the two friend-code screens present as modals.
+             They are a detour rather than a destination — you open one, read or type a code, and
+             leave — and the sheet's peeking edge is what says the thing behind is still there. A
+             push implies you have gone somewhere and have to come back. */
+          overlayVariant={overlayVariant}
+          card={challengeScreen}
           overlay={
-            showSettings ? (
-              <Settings onBack={() => setShowSettings(false)} />
+            fullLogFriend ? (
+              <FriendFullLog
+                friend={fullLogFriend}
+                titles={fullLogFriend.titles ?? []}
+                onBack={() => setFullLogFriend(null)}
+              />
+            ) : codeScreen === 'share' ? (
+              <ShareCode
+                profile={profile}
+                code={`${(profile.name.split(' ')[0] ?? 'CODE').toUpperCase()}-${codeSuffix}`}
+                onRefresh={() =>
+                  setCodeSuffix(Math.random().toString(36).slice(2, 6).toUpperCase())
+                }
+                onBack={() => setCodeScreen(null)}
+              />
+            ) : codeScreen === 'search' ? (
+              <FriendSearch
+                roster={SITE_ROSTER}
+                /* Gates the one-time privacy notice — `useFriendsList`'s
+                   `totalConfirmedFriends`, which counts the confirmed ones only. */
+                confirmedFriends={friends.filter((f) => f.confirmed).length}
+                onInvite={(r) =>
+                  setFriends((l) => [...l, { ...r, streak: null, confirmed: false }])
+                }
+                onBack={() => setCodeScreen(null)}
+              />
+            ) : codeScreen === 'enter' ? (
+              <EnterFriendCode onAdd={() => false} onBack={() => setCodeScreen(null)} />
+            ) : openFriend ? (
+              <FriendDetail
+                friend={openFriend}
+                onFullLog={setFullLogFriend}
+                onClose={() => setOpenFriend(null)}
+              />
+            ) : showFriendRequests ? (
+              <FriendRequests
+                requests={friendRequests}
+                onBack={() => setShowFriendRequests(false)}
+                onAccept={(r) => {
+                  setFriendRequests((l) => l.filter((x) => x.id !== r.id))
+                  setFriends((l) => [...l, { ...r, streak: null, confirmed: true }])
+                }}
+                onDecline={(r) => setFriendRequests((l) => l.filter((x) => x.id !== r.id))}
+              />
+            ) : openEvent ? (
+              <EventModal event={openEvent} onClose={() => setOpenEvent(null)} />
+            ) : showSettings ? (
+              <Settings
+                accounts={ACCOUNTS}
+                profiles={PROFILES}
+                serviceType={serviceType}
+                accountFields={ACCOUNT_FIELD_SECTIONS}
+                readerFields={READER_FIELD_SECTIONS}
+                onBack={() => setShowSettings(false)}
+              />
             ) : showLogSearch ? (
               <LogSearch
                 titles={loggedTitles}
@@ -397,17 +619,127 @@ export function App() {
                 achievement={openAchievement}
                 onClose={() => setOpenAchievement(null)}
               />
+            ) : openTrack ? (
+              <ActivityDetail
+                track={openTrack}
+                onToggleActivity={(a) =>
+                  setOpenTrack((t) => ({
+                    ...t,
+                    activities: t.activities.map((x) =>
+                      x.id === a.id
+                        ? t.repeatable
+                          ? { ...x, tally: (x.tally ?? 0) + 1 }
+                          : { ...x, completed: true }
+                        : x,
+                    ),
+                  }))
+                }
+                onBack={() => setOpenTrack(null)}
+              />
+            ) : editTitle ? (
+              <EditTitle
+                book={editTitle}
+                onBack={() => setEditTitle(null)}
+                onSave={(next) => {
+                  patchBook(next)
+                  setEditTitle(null)
+                }}
+              />
+            ) : editSession ? (
+              <EditReadingSession
+                session={editSession}
+                onBack={() => setEditSession(null)}
+                onSave={(next) => {
+                  replaceSession(next)
+                  setEditSession(null)
+                  setOpenSession(next)
+                }}
+                /* `pop(SCREENS_TO_POP_ON_DELETE)` — deleting from the edit screen goes back TWO,
+                   past the session it just removed, to the book. */
+                onDelete={(session) => {
+                  setOpenBook((b) => {
+                    const merged = { ...BOOK_DETAIL, ...b }
+                    return {
+                      ...merged,
+                      sessions: merged.sessions.filter((x) => x.id !== session.id),
+                    }
+                  })
+                  setEditSession(null)
+                  setOpenSession(null)
+                }}
+              />
+            ) : openSession ? (
+              <ReadingSession
+                session={openSession}
+                onBack={() => setOpenSession(null)}
+                onEdit={setEditSession}
+                onDelete={(session) => {
+                  /* Merge BEFORE filtering: `openBook` is whatever was tapped — a Home title
+                     carries no sessions of its own, they arrive from BOOK_DETAIL at render.
+                     Filtering the unmerged object wrote `sessions: []` and deleted all seven. */
+                  setOpenBook((b) => {
+                    const merged = { ...BOOK_DETAIL, ...b }
+                    return {
+                      ...merged,
+                      sessions: merged.sessions.filter((x) => x.id !== session.id),
+                    }
+                  })
+                  setOpenSession(null)
+                }}
+              />
             ) : openBook ? (
               <BookDetail
                 book={{ ...BOOK_DETAIL, ...openBook }}
+                readerName={profile.name.split(' ')[0]}
                 onClose={() => setOpenBook(null)}
                 onOptions={() => setTitleOptions({ ...BOOK_DETAIL, ...openBook })}
+                onOpenSession={setOpenSession}
+              />
+            ) : /* ORDER IS DEPTH, NOT PREFERENCE — the frame hosts ONE overlay and the app is a
+               stack, so whatever was pushed deepest has to be tested first. The book family
+               already reads that way (editTitle over editSession over openSession over
+               openBook), and these three sit here rather than at the top because a challenge
+               is a PARENT: its Badges tab opens a badge and its Reading List opens a book.
+               Tested before them, the challenge stayed on screen and the badge opened behind
+               it. */
+            codeSearch ? (
+              <ChallengeCodeSearch
+                challenges={challenges}
+                onFound={(c) => {
+                  setCodeSearch(false)
+                  setFromCodeSearch(true)
+                  setChallengeTab('Overview')
+                  if (c.isRegistered) setOpenChallenge(CHALLENGE_DETAILS[c.id] ?? null)
+                  else setJoinChallenge(c)
+                }}
+                onBack={() => setCodeSearch(false)}
+              />
+            ) : joinChallenge ? (
+              <JoinChallenge
+                challenge={joinChallenge}
+                fromCodeSearch={fromCodeSearch}
+                onJoin={(c) => {
+                  setChallenges((l) =>
+                    l.map((x) => (x.id === c.id ? { ...x, isRegistered: true } : x)),
+                  )
+                  setJoinChallenge(null)
+                  setFromCodeSearch(false)
+                }}
+                onIgnore={(c) =>
+                  setChallenges((l) =>
+                    l.map((x) => (x.id === c.id ? { ...x, state: 'ignored' } : x)),
+                  )
+                }
+                onClose={() => {
+                  setJoinChallenge(null)
+                  setFromCodeSearch(false)
+                }}
               />
             ) : openList ? (
               <BookListDashboard
                 list={{ ...BOOK_LIST_DETAIL, ...openList }}
                 onClose={() => setOpenList(null)}
-                onOpenBook={() => {}}
+                onOpenBook={setOpenBook}
               />
             ) : null
           }
@@ -417,6 +749,18 @@ export function App() {
                 open={Boolean(titleOptions)}
                 book={titleOptions}
                 onClose={() => setTitleOptions(null)}
+                /* `deleteBook` — the request goes out and then `navigation.goBack()`, so the
+                   panel you deleted the title from closes with it. */
+                onDelete={() => {
+                  setTitleOptions(null)
+                  setOpenSession(null)
+                  setOpenBook(null)
+                }}
+                /* `handleNavigation` — the options close and `editBook` is pushed. */
+                onEdit={(b) => {
+                  setTitleOptions(null)
+                  setEditTitle({ ...BOOK_DETAIL, ...openBook, ...b })
+                }}
               />
               <ReviewOptionsModal
                 open={Boolean(reviewOptions)}
@@ -471,7 +815,17 @@ export function App() {
             )
           }
         >
-          {tab === 'home' && <HomeScreen flags={flags} />}
+          {tab === 'home' && (
+            <HomeScreen
+              flags={flags}
+              onGoTo={goTo}
+              onOpenBook={setOpenBook}
+              onOpenBadge={setOpenBadge}
+              onOpenReview={setOpenReview}
+              streakClosed={streakClosed}
+              onCloseStreak={() => setStreakClosed(true)}
+            />
+          )}
           {tab === 'log' && (
             <LogScreen
               tab={logTab}
@@ -489,18 +843,60 @@ export function App() {
           )}
           {tab === 'discover' && (
             <DiscoverScreen
+              onOpenEvent={setOpenEvent}
               tab={discoverTab}
               onTab={setDiscoverTab}
               flags={flags}
               onOpenList={setOpenList}
+              challenges={challenges}
+              /* The card's own fork — `if (isRegistered) navigate('challengePage') else
+                 showModal('JoinChallenge')`. */
+              onOpenChallenge={(c) => {
+                setFromCodeSearch(false)
+                setChallengeTab('Overview')
+                if (c.isRegistered) setOpenChallenge(CHALLENGE_DETAILS[c.id] ?? null)
+                else setJoinChallenge(c)
+              }}
+              onCodeSearch={() => setCodeSearch(true)}
+              onOpenReview={setOpenReview}
+              /* `goToSelectedActivity` — the row is a TRACK, and the track is where the
+                 checkboxes live. */
+              onOpenActivity={(a) => setOpenTrack(LEARNING_TRACKS[a.id] ?? null)}
+              /* `classroomLibraryBookList` — the BOOK LIST DASHBOARD with a teacher's name where
+                 the list's goes, and no description, which is what the source renders too. */
+              onOpenLibrary={(lib) => {
+                const shelf = CLASSROOM_LIBRARY_BOOKS[lib.id]
+                if (!shelf) return
+                setOpenList({
+                  name: lib.name,
+                  bookCount: lib.bookCount,
+                  headerColor: shelf.headerColor,
+                  tint: shelf.tint,
+                  books: shelf.books,
+                  /* Explicit, because this spreads over BOOK_LIST_DETAIL — without it the
+                     Newbery blurb would turn up on a teacher's shelf. */
+                  description: null,
+                })
+              }}
             />
           )}
           {tab === 'community' && (
             <CommunityScreen
               tab={communityTab}
               onTab={setCommunityTab}
-              serviceType="School"
+              serviceType={serviceType}
               flags={flags}
+              profileId={profileId}
+              profileName={profile.name}
+              friends={friends}
+              requests={friendRequests}
+              onRemoveFriend={(f) => setFriends((l) => l.filter((x) => x.id !== f.id))}
+              onOpenEvent={setOpenEvent}
+              onOpenFriend={(f) => setOpenFriend(FRIEND_DETAILS[f.id] ?? f)}
+              onReviewRequests={() => setShowFriendRequests(true)}
+              onShareCode={() => setCodeScreen('share')}
+              onEnterCode={() => setCodeScreen('enter')}
+              onFriendSearch={() => setCodeScreen('search')}
             />
           )}
         </PhoneFrame>

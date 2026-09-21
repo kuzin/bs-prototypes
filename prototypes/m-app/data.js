@@ -44,15 +44,37 @@ export const HOME_CHALLENGES = [
   },
 ]
 
+/* Author and page count travel with a title, because the book panel merges whatever it is handed
+   over its own fixture — without them, tapping Amari on Home showed Peter Brown. */
 export const RECENT_TITLES = [
-  { id: 'b1', title: 'The Wild Robot', cover: 'linear-gradient(150deg,#2f6f4f,#7bb98f)' },
+  {
+    id: 'b1',
+    title: 'The Wild Robot',
+    author: 'Peter Brown',
+    pageCount: 279,
+    cover: 'linear-gradient(150deg,#2f6f4f,#7bb98f)',
+  },
   {
     id: 'b2',
     title: 'Amari and the Night Brothers',
+    author: 'B. B. Alston',
+    pageCount: 407,
     cover: 'linear-gradient(150deg,#2b2a6b,#6d6ac4)',
   },
-  { id: 'b3', title: 'New Kid', cover: 'linear-gradient(150deg,#1f5f8b,#6fb3d6)' },
-  { id: 'b4', title: 'Wings of Fire', cover: 'linear-gradient(150deg,#8a3d2e,#d98b6a)' },
+  {
+    id: 'b3',
+    title: 'New Kid',
+    author: 'Jerry Craft',
+    pageCount: 256,
+    cover: 'linear-gradient(150deg,#1f5f8b,#6fb3d6)',
+  },
+  {
+    id: 'b4',
+    title: 'Wings of Fire',
+    author: 'Tui T. Sutherland',
+    pageCount: 336,
+    cover: 'linear-gradient(150deg,#8a3d2e,#d98b6a)',
+  },
 ]
 
 /** `useStatistics('allTime')` → total_minutes / total_pages / total_books / total_sessions. */
@@ -91,16 +113,215 @@ export const EARNED_BADGES = [
 ]
 
 /**
- * The readers on this account, for the header's Switch Readers sheet.
+ * The accounts signed in on this device — `authentication.accounts` — and the readers under each.
  *
- * An account holds several readers — that is the shape a public-library account has, and it is
- * why the avatar opens a switcher rather than a profile page. A school account is one reader to
- * one login, and the sheet has its own fork for that: drop the second entry here and it renders
- * the single-reader state the app draws.
+ * The model is two levels and both are plural: **an account is a login at one Beanstack site, and
+ * an account holds several readers.** Every school and every library runs its own site with its
+ * own challenges and branding, so a family commonly has a login at their school's and another at
+ * their public library's; the app signs in to each and reads under one at a time. Inside whichever
+ * account is current, the header avatar swaps between that account's readers.
+ *
+ * So the same child is two profiles, one per site — Maya is registered at both — and Ada is only
+ * at the public library, which is what makes the second level visible rather than theoretical.
+ *
+ * A school account is the degenerate case: one login to one reader. `readers.length === 1` is what
+ * the app's single-reader forks key on, and dropping an account here to one entry renders them.
  */
-export const PROFILES = [
-  { id: 'p1', name: 'Maya Chen' },
-  { id: 'p2', name: 'Leo Chen' },
+export const ACCOUNTS = [
+  {
+    id: 'a1',
+    libraryName: 'Lakeside Elementary Library',
+    holder: 'Grace Chen',
+    current: true,
+    readers: [
+      { id: 'p1', name: 'Maya Chen' },
+      { id: 'p2', name: 'Leo Chen' },
+    ],
+  },
+  {
+    id: 'a2',
+    libraryName: 'Riverside Public Library',
+    holder: 'Grace Chen',
+    readers: [
+      { id: 'p3', name: 'Maya Chen' },
+      { id: 'p4', name: 'Leo Chen' },
+      { id: 'p5', name: 'Ada Chen' },
+    ],
+  },
+]
+
+/** The account being read under, and its readers — what the switcher and Settings both work from. */
+export const CURRENT_ACCOUNT = ACCOUNTS.find((a) => a.current) ?? ACCOUNTS[0]
+export const PROFILES = CURRENT_ACCOUNT.readers
+
+/**
+ * `registration_fields.sections` — what Edit Account and Edit Reader render.
+ *
+ * These forms are not authored. The server builds them per microsite and the screen renders
+ * whatever arrives, so every label, type and placeholder below is lifted from the definitions in
+ * `MicrositeRegistrationFieldsConcern` rather than written: "Jessie" and "Jones" really are the
+ * first/last-name placeholders, a phone really does read 555-867-5309, and a birthdate really is a
+ * date-picker whose empty state is the literal string YYYY-MM-DD.
+ *
+ * Which SECTION a field lands in is a setting, not a constant, and the rule is worth knowing: a
+ * field you can log in with lives in `sign_in_info`, and the same field lives in `contact_info`
+ * when you cannot. `allow_login_by_email` / `_username` / `_phone_number` / `_library_card_number`
+ * each subtract their field from whichever section it does not belong to. This account is modelled
+ * on the common library setup — log in by username — so Username sits under sign-in and Email and
+ * Phone sit under contact.
+ *
+ * Section titles are stored raw because the app rewrites one of them at render: `sign_in_info` is
+ * "Create An Account" everywhere, and the editors alone swap it for "Your Account" — reasonably,
+ * since you are not creating anything.
+ */
+export const ACCOUNT_FIELD_SECTIONS = [
+  {
+    name: 'sign_in_info',
+    title: 'Create An Account',
+    fields: [
+      {
+        name: 'username',
+        label: 'Username',
+        type: 'text',
+        placeholder: 'Pick a Username',
+        required: true,
+        value: 'gracechen',
+      },
+      {
+        name: 'password',
+        label: 'Password',
+        type: 'password',
+        placeholder: 'Password',
+        required: true,
+        value: '',
+      },
+    ],
+  },
+  {
+    name: 'personal_info',
+    title: 'Personal Information',
+    fields: [
+      {
+        name: 'first_name',
+        label: 'First Name',
+        type: 'text',
+        placeholder: 'Jessie',
+        value: 'Grace',
+      },
+      {
+        name: 'last_name',
+        label: 'Last Name',
+        type: 'text',
+        placeholder: 'Jones',
+        required: true,
+        value: 'Chen',
+      },
+    ],
+  },
+  {
+    name: 'contact_info',
+    title: 'Contact Information',
+    fields: [
+      {
+        name: 'email',
+        label: 'Email',
+        type: 'email',
+        placeholder: 'reader@email.com',
+        value: 'grace.chen@example.com',
+      },
+      {
+        name: 'phone_number',
+        label: 'Phone Number',
+        type: 'phone',
+        placeholder: '555-867-5309',
+        value: '555-0142',
+      },
+      { name: 'zipcode', label: 'ZIP Code', type: 'numeric', placeholder: '', value: '97214' },
+    ],
+  },
+]
+
+export const READER_FIELD_SECTIONS = [
+  {
+    name: 'personal_info',
+    title: 'Personal Information',
+    fields: [
+      {
+        name: 'first_name',
+        label: 'First Name',
+        type: 'text',
+        placeholder: 'Jessie',
+        required: true,
+        value: 'Maya',
+      },
+      { name: 'last_name', label: 'Last Name', type: 'text', placeholder: 'Jones', value: 'Chen' },
+      { name: 'birthdate', label: 'Birthdate', type: 'date-picker', value: '2016-04-12' },
+    ],
+  },
+  {
+    name: 'school_info',
+    title: 'School Information',
+    fields: [
+      {
+        name: 'grade_level_id',
+        label: 'Grade',
+        type: 'select',
+        placeholder: 'Select One',
+        value: '4',
+        options: [
+          { value: 'K', name: 'Kindergarten' },
+          { value: '1', name: '1st Grade' },
+          { value: '2', name: '2nd Grade' },
+          { value: '3', name: '3rd Grade' },
+          { value: '4', name: '4th Grade' },
+          { value: '5', name: '5th Grade' },
+        ],
+      },
+      {
+        name: 'teacher_id',
+        label: 'Teacher',
+        type: 'select',
+        placeholder: 'Select One',
+        value: 't2',
+        options: [
+          { value: 't1', name: 'Ms. Alvarez' },
+          { value: 't2', name: 'Mr. Okafor' },
+          { value: 't3', name: 'Mrs. Lindqvist' },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'library_info',
+    title: 'Library Information',
+    fields: [
+      {
+        name: 'library_branch_id',
+        label: 'Branch',
+        type: 'select',
+        placeholder: 'Select One',
+        value: 'b1',
+        options: [
+          { value: 'b1', name: 'Lakeside Elementary Library' },
+          { value: 'b2', name: 'Riverside Public Library' },
+        ],
+      },
+      {
+        name: 'library_card_number',
+        label: 'Library Card Number',
+        type: 'text',
+        placeholder: "Add the reader's library card number",
+        value: '',
+      },
+    ],
+  },
+  {
+    name: 'recommendation_info',
+    title: 'Should this reader receive a book recommendation each week?',
+    fields: [
+      { name: 'send_recommendations', label: 'Send recommendations', type: 'bool', value: true },
+    ],
+  },
 ]
 
 // ── Log tab ───────────────────────────────────────────────────────────────
@@ -111,7 +332,7 @@ export const PROFILES = [
  * A session that finished a book is `completed`, which is what switches its colours from blue to
  * coral.
  */
-export const READING_LOG = {
+const SEPTEMBER = {
   month: 'September 2026',
   // The log's own banner uses the staticTitle variant.
   goal: { goalMinutes: 20, totalMinutes: 13 },
@@ -202,6 +423,71 @@ export const READING_LOG = {
     },
   ],
 }
+
+/**
+ * The month before, so the log's ‹ › actually page. `isCurrentMonth` is what disables the forward
+ * arrow, so only the newest month carries it — you cannot log into next week.
+ *
+ * Thinner than September on purpose: a reader's older months are usually a few sessions rather
+ * than a full grid, and a log that looks identical whichever month you are in tells you nothing
+ * about the reader.
+ */
+const AUGUST = {
+  month: 'August 2026',
+  goal: { goalMinutes: 20, totalMinutes: 20 },
+  isCurrentMonth: false,
+  weeks: [
+    {
+      range: 'Aug 23 - Aug 29',
+      /* Oldest first, like September's — the view reverses a week so the newest day is on top. */
+      days: [
+        {
+          day: 25,
+          weekday: 'Tue',
+          goalMet: true,
+          streak: 2,
+          sessions: [
+            {
+              id: 'a2',
+              title: 'Amulet: The Stonekeeper',
+              author: 'Kazu Kibuishi',
+              minutes: 21,
+              pages: 33,
+              completed: true,
+            },
+          ],
+        },
+        {
+          day: 27,
+          weekday: 'Thu',
+          goalMet: true,
+          streak: 3,
+          sessions: [
+            { id: 'a1', title: 'Smile', author: 'Raina Telgemeier', minutes: 26, pages: 40 },
+          ],
+        },
+      ],
+    },
+    {
+      range: 'Aug 9 - Aug 15',
+      days: [
+        {
+          day: 11,
+          weekday: 'Tue',
+          goalMet: false,
+          streak: 0,
+          sessions: [{ id: 'a3', title: 'Dog Man', author: 'Dav Pilkey', minutes: 12, pages: 22 }],
+        },
+      ],
+    },
+  ],
+}
+
+/** Newest first, which is the direction ‹ walks. */
+export const READING_LOG_MONTHS = [SEPTEMBER, AUGUST]
+
+/** The month the log opens on. */
+export const READING_LOG = SEPTEMBER
 
 export const ALL_TITLES = [
   {
@@ -297,6 +583,12 @@ export const DISCOVER_CHALLENGES = [
     state: 'upcoming',
     isRegistered: false,
     banner: 'linear-gradient(120deg,#0BA85F,#2FB5A8)',
+    /* `getImageColor(headerImageUrl)` again — the Join sheet's coloured top is sampled from the
+       banner, so the two travel together on an unregistered challenge the same way
+       `bgColorToSet` and the banner do on a registered one. */
+    bandColor: '#E4F6EE',
+    description:
+      '<p>Six continents, six books. Pick a title set somewhere you have never been and log it to fill in that part of the map.</p><p>Finish all six and your name goes on the display case by the front desk.</p>',
     logTypes: ['book'],
     challengeTypes: ['Reading List'],
   },
@@ -307,6 +599,9 @@ export const DISCOVER_CHALLENGES = [
     state: 'current',
     isRegistered: false,
     banner: 'linear-gradient(120deg,#4C6FE8,#8E6BE8)',
+    bandColor: '#E8ECFC',
+    description:
+      '<p>A five-by-five board of reading dares. Read a book with a <strong>blue cover</strong>, read somewhere you have never read before, read to a pet.</p><p>Any line across, down or diagonally wins a prize.</p>',
     logTypes: ['book'],
     challengeTypes: ['Bingo'],
   },
@@ -320,6 +615,9 @@ export const DISCOVER_CHALLENGES = [
     isRegistered: false,
     challengeCode: 'STAFF26',
     banner: 'linear-gradient(120deg,#E85648,#F2A03D)',
+    bandColor: '#FDE9E6',
+    description:
+      '<p>For staff across the district. Log your own reading alongside the students — 20 minutes a day is the ask.</p><p>Ask your building lead for the code if you have not been given one.</p>',
     logTypes: ['minute'],
     challengeTypes: ['Logging'],
   },
@@ -334,6 +632,551 @@ export const DISCOVER_CHALLENGES = [
     challengeTypes: ['Logging', 'Activities'],
   },
 ]
+
+/**
+ * `challengeDetail.data.attributes` — what a tapped challenge opens.
+ *
+ * Kept in the API's own snake_case names because almost every number here is load-bearing twice
+ * over, and renaming them would hide which two things a name is driving:
+ *
+ *   • `challengeTabs` in `ChallengeDetailScreen` builds the tab row by TESTING THESE TOTALS.
+ *     Overview and Description are always there; each of the rest appears only if its total is
+ *     above zero, in a fixed order. Badges is the sum of four of them.
+ *   • `GetCardOverviewData` turns the same numbers into the Overview grid, pairing a
+ *     `challenge_*_total` (what you have done) with a `goals_*_total` (what there is to do).
+ *
+ * So a challenge is configured by its numbers rather than by a list of features, and a tab
+ * exists because there is something in it. `goals_*` of 0 with a `challenge_*` above 0 still
+ * shows a card — you logged something the challenge does not have a goal for — which is why the
+ * card renders on `(total === 0 && data > 0) || total > 0`.
+ *
+ * `bgColorToSet` is the band behind the header. It comes from the LIST, not from here: the row
+ * you tapped hands it over so the colour is already right as the screen opens.
+ */
+export const CHALLENGE_DETAILS = {
+  c1: {
+    challenge_name: 'Summer Reading 2026',
+    challenge_dates: 'Jun 1, 2026 - Aug 31, 2026',
+    challenge_state: 'current',
+    /* The band colour and the banner are a PAIR: `getImageColor(headerImageUrl)` samples the
+       banner and lightens it, which is why the field behind a warm banner is warm. Two fixture
+       values standing in for one derivation. */
+    bgColorToSet: '#FDF0E3',
+    banner: 'linear-gradient(120deg,#F2A03D,#E8724B)',
+    challenge_description:
+      '<p>Read your way through the summer with <strong>Lakeside Elementary</strong>! Log books, earn badges, and collect tickets toward the end-of-summer drawing.</p><p>Every week you log at least three days, you earn a ticket. Finish the whole challenge and pick a prize from the library cart.</p><ul><li>Log any book you read, at home or at camp</li><li>Activities count too — check the Activities tab</li><li>Ask a librarian if you need a reading suggestion</li></ul>',
+    activities_only: false,
+    is_book_list_challenge: false,
+    is_bingo_challenge: false,
+    // Tab gates.
+    goals_challenges_total: 2,
+    goals_logging_total: 3,
+    goals_points_total: 0,
+    goals_reviews_total: 1,
+    goals_activities_total: 4,
+    rewards_total: 2,
+    drawings_total: 1,
+    certificates_total: 1,
+    challenge_log_total: 12,
+    // Overview grid — `challenge_*` is done, `goals_*` is the goal.
+    earned_badges_total: 4,
+    goals_book_list_total: 0,
+    challenge_book_lists_total: 0,
+    goals_minutes_total: 0,
+    challenge_minutes_total: 0,
+    goals_pages_total: 0,
+    challenge_pages_total: 0,
+    goals_reviews_goal_total: 1,
+    challenge_reviews_total: 1,
+    challenge_events_total: 0,
+    goals_days_total: 30,
+    challenge_days_total: 18,
+    challenge_learning_moments_total: 0,
+    challenge_hours_total: 0,
+    challenge_videos_total: 0,
+    challenge_magazines_total: 0,
+    goals_books_total: 20,
+    challenge_books_total: 14,
+    challenge_picture_reviews_total: 0,
+    challenge_activites_total: 3,
+    challenge_rewards: 1,
+    challenge_tickets_total: 6,
+    challenge_certificates: 0,
+    log_types: ['book'],
+    has_activities: true,
+    /* `useChallengesGoals(challengeId, 'challenge_badges')`.
+     *
+     * `badge_type` is the grouping key and it is the API's own enum, not a label —
+     * `ChallengeBadges` maps it to a heading, and two of those mappings are conditional:
+     * BadgeRequirement reads "Book Badges" on a reading-list challenge and "Logging Badges"
+     * otherwise, and Completion reads "Bingo Badge" on a bingo card. Storing the label instead
+     * of the enum would throw away the thing the heading is derived from. */
+    badges: [
+      {
+        id: 'b1',
+        badge_type: 'BadgeRequirement',
+        name: 'Off to a Good Start',
+        earnedOn: '2026-06-08',
+        earnedText: 'Earned June 8, 2026',
+        art: 'linear-gradient(140deg,#F2A03D,#E8724B)',
+        has_tickets: true,
+      },
+      {
+        id: 'b2',
+        badge_type: 'BadgeRequirement',
+        name: 'Ten Books In',
+        earnedOn: '2026-07-14',
+        earnedText: 'Earned July 14, 2026',
+        art: 'linear-gradient(140deg,#19BFD5,#0E8CA0)',
+        has_tickets: true,
+      },
+      {
+        id: 'b3',
+        badge_type: 'BadgeRequirement',
+        name: 'Twenty Books In',
+        earnedText: '14 of 20 books',
+        art: 'linear-gradient(140deg,#4C6FE8,#8E6BE8)',
+        has_tickets: true,
+        has_rewards: true,
+      },
+      {
+        id: 'b4',
+        badge_type: 'ReviewRequirement',
+        name: 'Tell Us What You Thought',
+        earnedOn: '2026-06-22',
+        earnedText: 'Earned June 22, 2026',
+        art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+      },
+      {
+        /* The one badge that is not a step — `Completion` is the challenge itself, which is why
+           it carries all three markers and is the only one with a certificate behind it. */
+        id: 'b5',
+        badge_type: 'Completion',
+        name: 'Summer Reading Finisher',
+        earnedText: 'Not yet earned',
+        art: 'linear-gradient(140deg,#F2C53D,#0BA85F)',
+        has_certificates: true,
+        has_tickets: true,
+        has_rewards: true,
+      },
+    ],
+    /* `useChallengesGoals(challengeId, 'activity_goals')` — the SAME component with
+       `activityBadge`, which groups on `repeatable` instead of `badge_type`. */
+    activities: [
+      {
+        id: 'a1',
+        repeatable: false,
+        name: 'Visit the library',
+        earnedOn: '2026-06-15',
+        earnedText: 'Earned June 15, 2026',
+        art: 'linear-gradient(140deg,#19BFD5,#0E8CA0)',
+      },
+      {
+        id: 'a2',
+        repeatable: false,
+        name: 'Go to a summer reading event',
+        earnedOn: '2026-07-02',
+        earnedText: 'Earned July 2, 2026',
+        art: 'linear-gradient(140deg,#F2A03D,#E8724B)',
+      },
+      {
+        id: 'a3',
+        repeatable: false,
+        name: 'Recommend a book to a friend',
+        earnedText: 'Not yet earned',
+        art: 'linear-gradient(140deg,#4C6FE8,#8E6BE8)',
+      },
+      {
+        /* Repeatable and in progress: completions but no earned date, which is the case that
+           makes the Badge medallion show a coloured disc inside a GREY ring. */
+        id: 'a4',
+        repeatable: true,
+        name: 'Read outside',
+        completedItems: 3,
+        earnedText: 'Completed 3 times',
+        art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+        has_tickets: true,
+      },
+    ],
+    /* `useChallengesGoals(challengeId, 'rewards')` — a reward is unlocked BY a badge, so it
+       names one either way: as what unlocked it, or as what would. */
+    rewards: [
+      {
+        id: 'r1',
+        title: 'Free Bookmark',
+        badgeTitle: 'Off to a Good Start',
+        isEarned: true,
+        dateEarned: 'June 8, 2026',
+        description: 'Show this screen at the front desk to pick a bookmark from the jar.',
+      },
+      {
+        id: 'r2',
+        title: 'Paperback of Your Choice',
+        badgeTitle: 'Twenty Books In',
+        isEarned: false,
+      },
+    ],
+    /* `useChallengesGoals(challengeId, 'certificates')` — `title: name`, and nothing else. */
+    certificates: [
+      {
+        id: 'ce1',
+        title: 'Certificate of Completion',
+        name: 'Summer Reading 2026',
+        isEarned: false,
+      },
+    ],
+    /* `useChallengesGoals(challengeId, 'ticket_rewards')`. `availableTickets` is a BALANCE —
+       what is left to spend, not what was earned, which is why it sits on every row and the
+       heading reads the first one. */
+    drawings: [
+      {
+        id: 'd1',
+        title: 'Bluetooth Speaker',
+        drawingDate: '2026-08-31',
+        ticketsEntered: 4,
+        availableTickets: 2,
+        ended: false,
+        art: 'linear-gradient(140deg,#4C6FE8,#8E6BE8)',
+      },
+      {
+        id: 'd2',
+        title: 'Pizza Party for Your Class',
+        drawingDate: '2026-08-31',
+        ticketsEntered: 0,
+        availableTickets: 2,
+        ended: false,
+        art: 'linear-gradient(140deg,#F2A03D,#E8724B)',
+      },
+      {
+        /* Already drawn — faded, untappable, and carrying the "winners will be notified"
+           notice instead of an entry count it can no longer change. */
+        id: 'd3',
+        title: 'Signed Copy of The Crossover',
+        drawingDate: '2026-07-15',
+        ticketsEntered: 2,
+        availableTickets: 2,
+        ended: true,
+        art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+      },
+    ],
+    /* `useChallengesGoals(challengeId, 'challenge_log')` — `meta` drives the totals carousel and
+       `data` the titles. `log_types` decides which cards exist, and `book` is the only type
+       that contributes TWO: completions and distinct titles are different questions, because
+       reading one book four times is four completions and one title. */
+    challengeLogMeta: {
+      log_types: ['book', 'minute'],
+      total_completions: 16,
+      total_titles: 14,
+      total_minutes: 1340,
+      total_pages: 0,
+      total_days: 18,
+    },
+    /* `month_year` is the SERVER's formatted label — the heading is never derived on the client,
+       so it cannot disagree with the rows under it. `last_read_on` is what the sort uses. */
+    challengeLog: [
+      {
+        id: 'cl1',
+        title: 'The Crossover',
+        author: 'Kwame Alexander',
+        lastReadOn: '2026-08-14',
+        monthYear: 'August 2026',
+        isCompleted: true,
+        totalCompletions: 2,
+        art: 'linear-gradient(150deg,#19BFD5,#0E8CA0)',
+      },
+      {
+        id: 'cl2',
+        title: 'Front Desk',
+        author: 'Kelly Yang',
+        lastReadOn: '2026-08-02',
+        monthYear: 'August 2026',
+        isCompleted: true,
+        totalCompletions: 1,
+        art: 'linear-gradient(150deg,#F2A03D,#E8724B)',
+      },
+      {
+        // Still being read — no pill, which is the only difference in the row.
+        id: 'cl3',
+        title: 'When You Trap a Tiger',
+        author: 'Tae Keller',
+        lastReadOn: '2026-07-28',
+        monthYear: 'July 2026',
+        isCompleted: false,
+        totalCompletions: 0,
+        art: 'linear-gradient(150deg,#4C6FE8,#8E6BE8)',
+      },
+      {
+        id: 'cl4',
+        title: 'New Kid',
+        author: 'Jerry Craft',
+        lastReadOn: '2026-07-11',
+        monthYear: 'July 2026',
+        isCompleted: true,
+        totalCompletions: 3,
+        art: 'linear-gradient(150deg,#0BA85F,#2FB5A8)',
+      },
+    ],
+  },
+  /* A READING LIST challenge, and `program_books_requirement_type: 'specific'` is the value
+     worth having in the fixtures: it is the only one that splits the list into two headed
+     sections, and with three required titles against a minimum of five it also triggers the
+     fifth phrasing — "5 titles required, including these specific titles" — which exists
+     precisely because those two numbers disagree. */
+  c4: {
+    challenge_name: 'Read Around the World',
+    challenge_dates: 'Oct 1, 2026 - Dec 15, 2026',
+    challenge_state: 'upcoming',
+    bgColorToSet: '#E4F6EE',
+    banner: 'linear-gradient(120deg,#0BA85F,#2FB5A8)',
+    challenge_description:
+      '<p>Six continents, six books. Pick a title set somewhere you have never been and log it to fill in that part of the map.</p><p>Finish all six and your name goes on the display case by the front desk.</p>',
+    activities_only: false,
+    is_book_list_challenge: true,
+    is_bingo_challenge: false,
+    goals_challenges_total: 1,
+    goals_logging_total: 0,
+    goals_points_total: 0,
+    goals_reviews_total: 0,
+    goals_activities_total: 0,
+    rewards_total: 0,
+    drawings_total: 0,
+    certificates_total: 1,
+    challenge_log_total: 0,
+    earned_badges_total: 0,
+    goals_book_list_total: 6,
+    challenge_book_lists_total: 0,
+    goals_minutes_total: 0,
+    challenge_minutes_total: 0,
+    goals_pages_total: 0,
+    challenge_pages_total: 0,
+    challenge_reviews_total: 0,
+    challenge_events_total: 0,
+    goals_days_total: 0,
+    challenge_days_total: 0,
+    challenge_learning_moments_total: 0,
+    challenge_hours_total: 0,
+    challenge_videos_total: 0,
+    challenge_magazines_total: 0,
+    goals_books_total: 0,
+    challenge_books_total: 0,
+    challenge_picture_reviews_total: 0,
+    challenge_activites_total: 0,
+    challenge_rewards: 0,
+    challenge_tickets_total: 0,
+    challenge_certificates: 0,
+    log_types: ['book'],
+    has_activities: false,
+    bookList: {
+      numberOfBooks: 6,
+      requirementType: 'specific',
+      minimumRequired: 5,
+      books: [
+        {
+          id: 'bl1',
+          required: true,
+          title: 'The Crossover',
+          author: 'Kwame Alexander',
+          art: 'linear-gradient(150deg,#19BFD5,#0E8CA0)',
+        },
+        {
+          id: 'bl2',
+          required: true,
+          title: 'When You Trap a Tiger',
+          author: 'Tae Keller',
+          art: 'linear-gradient(150deg,#4C6FE8,#8E6BE8)',
+        },
+        {
+          id: 'bl3',
+          required: true,
+          title: 'A Long Walk to Water',
+          author: 'Linda Sue Park',
+          art: 'linear-gradient(150deg,#F2A03D,#E8724B)',
+        },
+        {
+          id: 'bl4',
+          required: false,
+          title: 'Front Desk',
+          author: 'Kelly Yang',
+          art: 'linear-gradient(150deg,#0BA85F,#2FB5A8)',
+        },
+        {
+          id: 'bl5',
+          required: false,
+          title: 'New Kid',
+          author: 'Jerry Craft',
+          art: 'linear-gradient(150deg,#822C95,#B43DD0)',
+        },
+        {
+          id: 'bl6',
+          required: false,
+          title: 'Other Words for Home',
+          author: 'Jasmine Warga',
+          art: 'linear-gradient(150deg,#E85648,#F2A03D)',
+        },
+      ],
+    },
+    badges: [
+      {
+        id: 'blb1',
+        badge_type: 'Completion',
+        name: 'Around the World',
+        earnedText: 'Not yet earned',
+        art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+        has_certificates: true,
+      },
+    ],
+    certificates: [
+      {
+        id: 'blc1',
+        title: 'Certificate of Completion',
+        name: 'Read Around the World',
+        isEarned: false,
+      },
+    ],
+  },
+  /* A BINGO challenge, and the point of having one in the fixtures is that the tab row it
+     produces is almost entirely different: `is_bingo_challenge` adds Bingo Card, its Completion
+     badge is headed "Bingo Badge" rather than "Completion Badge", and with no rewards, drawings
+     or certificates configured none of those tabs exist at all. Same screen, four tabs. */
+  c5: {
+    challenge_name: 'Winter Bingo',
+    challenge_dates: 'Nov 1, 2026 - Jan 31, 2027',
+    challenge_state: 'current',
+    bgColorToSet: '#E8ECFC',
+    banner: 'linear-gradient(120deg,#4C6FE8,#8E6BE8)',
+    challenge_description:
+      '<p>A five-by-five board of reading dares. Read a book with a <strong>blue cover</strong>, read somewhere you have never read before, read to a pet.</p><p>Any line across, down or diagonally wins a prize.</p>',
+    activities_only: false,
+    is_book_list_challenge: false,
+    is_bingo_challenge: true,
+    goals_challenges_total: 1,
+    goals_logging_total: 0,
+    goals_points_total: 0,
+    goals_reviews_total: 0,
+    goals_activities_total: 0,
+    rewards_total: 0,
+    drawings_total: 0,
+    certificates_total: 0,
+    challenge_log_total: 0,
+    earned_badges_total: 3,
+    goals_book_list_total: 0,
+    challenge_book_lists_total: 0,
+    goals_minutes_total: 0,
+    challenge_minutes_total: 0,
+    goals_pages_total: 0,
+    challenge_pages_total: 0,
+    challenge_reviews_total: 0,
+    challenge_events_total: 0,
+    goals_days_total: 0,
+    challenge_days_total: 0,
+    challenge_learning_moments_total: 0,
+    challenge_hours_total: 0,
+    challenge_videos_total: 0,
+    challenge_magazines_total: 0,
+    goals_books_total: 9,
+    challenge_books_total: 3,
+    challenge_picture_reviews_total: 0,
+    challenge_activites_total: 0,
+    challenge_rewards: 0,
+    challenge_tickets_total: 0,
+    challenge_certificates: 0,
+    log_types: ['book'],
+    has_activities: false,
+    /* `meta.card_state` and `meta.card_message` — the state picks the colour and the glyph,
+       the message is the server's own sentence. Anything that is not 'earned' or 'full' is the
+       yellow, shadowed, still-to-do treatment. */
+    bingoMeta: {
+      cardState: 'in_progress',
+      cardMessage: 'Complete any row, column or diagonal to get a bingo!',
+    },
+    /* NINE squares, so the board is 3 × 3 at 100pt. The count is the only thing that decides
+       both, which is why there is no grid setting anywhere.
+
+       `appropriateText` is an ARRAY, not a sentence, because an active square prints the number
+       over the unit — and an ACTIVITY square has no number, so it prints only the word. */
+    bingoBadges: [
+      {
+        id: 'bg1',
+        state: 'bingo',
+        appropriateText: ['1', 'BOOK'],
+        art: 'linear-gradient(140deg,#19BFD5,#0E8CA0)',
+      },
+      {
+        id: 'bg2',
+        state: 'bingo',
+        appropriateText: ['1', 'BOOK'],
+        art: 'linear-gradient(140deg,#F2A03D,#E8724B)',
+      },
+      {
+        id: 'bg3',
+        state: 'bingo',
+        appropriateText: ['1', 'BOOK'],
+        art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+      },
+      { id: 'bg4', state: 'active', appropriateText: ['2', 'BOOKS'] },
+      { id: 'bg5', state: 'active', appropriateText: ['1', 'BOOK'] },
+      { id: 'bg6', state: 'active', appropriateText: [null, 'ACTIVITY'] },
+      { id: 'bg7', state: 'unavailable', appropriateText: ['3', 'BOOKS'] },
+      { id: 'bg8', state: 'active', appropriateText: ['1', 'REVIEW'] },
+      { id: 'bg9', state: 'unavailable', appropriateText: ['5', 'BOOKS'] },
+    ],
+    badges: [
+      {
+        id: 'bgb1',
+        badge_type: 'Completion',
+        name: 'Blackout',
+        earnedText: 'Not yet earned',
+        art: 'linear-gradient(140deg,#4C6FE8,#8E6BE8)',
+        has_rewards: true,
+      },
+    ],
+  },
+  c3: {
+    challenge_name: 'Ms. Abbott’s Class Challenge',
+    challenge_dates: 'Ongoing challenge',
+    challenge_state: 'current',
+    bgColorToSet: '#E3F6FA',
+    banner: 'linear-gradient(120deg,#19BFD5,#0E8CA0)',
+    challenge_description:
+      '<p>Our class goal is <strong>10,000 minutes</strong> by the end of the year. Every minute you log at home counts toward it.</p><p>We check the total together every Friday afternoon.</p>',
+    activities_only: false,
+    is_book_list_challenge: false,
+    is_bingo_challenge: false,
+    goals_challenges_total: 0,
+    goals_logging_total: 2,
+    goals_points_total: 0,
+    goals_reviews_total: 0,
+    goals_activities_total: 0,
+    rewards_total: 0,
+    drawings_total: 0,
+    certificates_total: 0,
+    challenge_log_total: 31,
+    earned_badges_total: 2,
+    goals_book_list_total: 0,
+    challenge_book_lists_total: 0,
+    goals_minutes_total: 600,
+    challenge_minutes_total: 415,
+    goals_pages_total: 0,
+    challenge_pages_total: 0,
+    challenge_reviews_total: 0,
+    challenge_events_total: 0,
+    goals_days_total: 0,
+    challenge_days_total: 0,
+    challenge_learning_moments_total: 0,
+    challenge_hours_total: 0,
+    challenge_videos_total: 0,
+    challenge_magazines_total: 0,
+    goals_books_total: 0,
+    challenge_books_total: 0,
+    challenge_picture_reviews_total: 0,
+    challenge_activites_total: 0,
+    challenge_rewards: 0,
+    challenge_tickets_total: 0,
+    challenge_certificates: 0,
+    log_types: ['minute'],
+    has_activities: false,
+  },
+}
 
 /**
  * Discover > Activities. Same `ActivityItem` shape as HOME_ACTIVITIES — the tab renders the SAME
@@ -406,6 +1249,163 @@ export const ACTIVITIES = [
 ]
 
 /**
+ * `selectedLearningTrack` — the screen a tapped activity opens, keyed by the row's id.
+ *
+ * The Activities tab lists TRACKS, and the things you complete are inside one. That is why the
+ * row's third line counts completions rather than describing a task: the description lives here,
+ * per activity.
+ *
+ * Four cases worth having, and each changes the screen rather than a label:
+ *
+ *   da1  a finished one-off — every checkbox ticked and locked
+ *   da4  REPEATABLE — square green checkboxes with a plus, a tally pill, and the medallion takes
+ *        the tenant colour instead of greyLight1
+ *   da5  PREREQUISITE — the warning names the track you must finish first, and the whole list
+ *        drops to 0.3 and cannot be ticked
+ *   da6  INACTIVE — the same banner carrying the site's own message
+ */
+export const LEARNING_TRACKS = {
+  da1: {
+    title: 'Build a ramp and measure it',
+    headerColor: '#E3F6FA',
+    art: 'linear-gradient(140deg,#19BFD5,#0E8CA0)',
+    description:
+      'Roll a marble down ramps at different angles and record how far it travels each time.',
+    repeatable: false,
+    isActive: true,
+    hasPrerequisite: false,
+    activities: [
+      {
+        id: 'da1a1',
+        description: 'Build a ramp out of anything you have at home — books, a board, a box lid.',
+        completed: true,
+      },
+      {
+        id: 'da1a2',
+        description: 'Measure how far the marble rolls at three different angles.',
+        completed: true,
+      },
+      {
+        id: 'da1a3',
+        description: 'Write down which angle sent it furthest, and why you think that is.',
+        completed: true,
+        linkUrl: 'https://beanstack.com',
+        linkTitle: 'Printable worksheet',
+      },
+    ],
+  },
+  da2: {
+    title: 'Sketch a food web',
+    headerColor: '#E4F6EE',
+    art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+    description: 'Pick a habitat and draw who eats whom.',
+    repeatable: false,
+    isActive: true,
+    hasPrerequisite: false,
+    activities: [
+      {
+        id: 'da2a1',
+        description: 'Choose a habitat — a pond, a forest, your back garden.',
+        completed: true,
+      },
+      {
+        id: 'da2a2',
+        description: 'List five living things in it, from the smallest to the largest.',
+        completed: false,
+      },
+      {
+        id: 'da2a3',
+        description: 'Draw arrows between them to show what eats what.',
+        completed: false,
+      },
+      {
+        id: 'da2a4',
+        description: 'Find one book in the library about your habitat and log it.',
+        completed: false,
+      },
+    ],
+  },
+  da3: {
+    title: 'Write and perform a found poem',
+    headerColor: '#F4E2F8',
+    art: 'linear-gradient(140deg,#822C95,#B43DD0)',
+    description:
+      'A found poem takes its words from somewhere else — a book, a sign, a cereal box — and rearranges them.',
+    repeatable: false,
+    isActive: true,
+    hasPrerequisite: false,
+    activities: [
+      {
+        id: 'da3a1',
+        description: 'Copy out ten phrases you like from a book you are reading.',
+        completed: true,
+      },
+      {
+        id: 'da3a2',
+        description: 'Rearrange them into a poem, then read it out to someone.',
+        completed: true,
+        linkUrl: 'https://beanstack.com',
+        linkTitle: 'How to write a found poem',
+      },
+    ],
+  },
+  da4: {
+    title: 'Find a book using the catalogue',
+    headerColor: '#E4F6EE',
+    art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+    description: 'Look something up on the library catalogue and go and find it on the shelf.',
+    repeatable: true,
+    isActive: true,
+    hasPrerequisite: false,
+    activities: [
+      {
+        id: 'da4a1',
+        description:
+          'Search the catalogue for a subject you are curious about, then find one of the results on the shelf.',
+        completed: false,
+        tally: 5,
+      },
+    ],
+  },
+  da5: {
+    title: 'Design a marble run',
+    headerColor: '#E8ECFC',
+    art: 'linear-gradient(140deg,#4C6FE8,#8E6BE8)',
+    description: 'Put together a run with at least two turns and a jump.',
+    repeatable: false,
+    isActive: true,
+    hasPrerequisite: true,
+    prerequisite: 'Build a ramp and measure it',
+    activities: [
+      { id: 'da5a1', description: 'Sketch your run before you build it.', completed: false },
+      {
+        id: 'da5a2',
+        description: 'Build it, then time a marble from the top to the bottom.',
+        completed: false,
+      },
+    ],
+  },
+  da6: {
+    title: 'Interview a family member about a book',
+    headerColor: '#FDF0E3',
+    art: 'linear-gradient(140deg,#F2A03D,#E8724B)',
+    description: 'Ask someone at home about a book that mattered to them.',
+    repeatable: false,
+    isActive: false,
+    hasPrerequisite: false,
+    inactiveMessage: 'This activity is not running at the moment. Check back in December.',
+    activities: [
+      {
+        id: 'da6a1',
+        description:
+          'Ask them what they were reading at your age, and what they remember about it.',
+        completed: false,
+      },
+    ],
+  },
+}
+
+/**
  * Discover > Book Lists. `image_url` is API-served; a list without one falls back to
  * `chooseRandomBeanstackColor(name)` — derived from the NAME, so it is stable per list — with the
  * Beanstack heart over it. `tint` stands in for that here.
@@ -459,6 +1459,140 @@ export const BOOK_LIST_DETAIL = {
     },
   ],
 }
+
+/**
+ * `getClassroomLibraries` + `getClassroomLibraryBooks` — the Libraries tab.
+ *
+ * The API returns first/last name separately and the screen builds "Ms. Abbott's Class" from
+ * them, so the fixture keeps them apart: Mr. Rivers is here to exercise `checkLastLetter`'s
+ * bare apostrophe on a surname already ending in s.
+ *
+ * `tint` stands in for `chooseRandomBeanstackColor`, which hashes the FIRST BOOK's title — or
+ * the teacher's surname when the shelf has no covers — so the colour is stable per library
+ * rather than random per render.
+ */
+/**
+ * A teacher's shelf, keyed by library id — `selectedClassroomLibraryBooks`.
+ *
+ * `ClassroomLibraryBookList` is the BOOK LIST DASHBOARD with a teacher's name where the list's
+ * name goes: it renders `BookListDashboardHeader` and `BookListItem` exactly as the book-list
+ * screen does. The one difference is that a classroom library has NO description — the source's
+ * `headerAndDescription` renders only the back button and the header — which is why these carry
+ * no `description` and the dashboard's Description block is already conditional.
+ */
+export const CLASSROOM_LIBRARY_BOOKS = {
+  cl1: {
+    headerColor: '#19BFD5',
+    books: [
+      {
+        id: 'ab1',
+        title: 'The Wild Robot',
+        author: 'Peter Brown',
+        cover: 'linear-gradient(150deg,#19BFD5,#0E8CA0)',
+      },
+      {
+        id: 'ab2',
+        title: 'Because of Winn-Dixie',
+        author: 'Kate DiCamillo',
+        cover: 'linear-gradient(150deg,#F2C53D,#E8894B)',
+      },
+      {
+        id: 'ab3',
+        title: 'Hatchet',
+        author: 'Gary Paulsen',
+        cover: 'linear-gradient(150deg,#0BA85F,#12705A)',
+      },
+      {
+        id: 'ab4',
+        title: 'Frindle',
+        author: 'Andrew Clements',
+        tint: '#822C95',
+        abbreviation: 'F',
+      },
+      {
+        id: 'ab5',
+        title: 'Holes',
+        author: 'Louis Sachar',
+        cover: 'linear-gradient(150deg,#E8724B,#B5382C)',
+      },
+    ],
+  },
+  cl2: {
+    headerColor: '#F2A03D',
+    books: [
+      {
+        id: 'rb1',
+        title: 'The Crossover',
+        author: 'Kwame Alexander',
+        cover: 'linear-gradient(150deg,#E8724B,#B5382C)',
+      },
+      {
+        id: 'rb2',
+        title: 'New Kid',
+        author: 'Jerry Craft',
+        cover: 'linear-gradient(150deg,#4C6FE8,#8E6BE8)',
+      },
+      {
+        id: 'rb3',
+        title: 'Front Desk',
+        author: 'Kelly Yang',
+        cover: 'linear-gradient(150deg,#F2A03D,#E8724B)',
+      },
+    ],
+  },
+  cl3: {
+    // No covers at all, so the header falls back to the tinted tile and the Beanstack mark.
+    headerColor: '#822C95',
+    tint: '#822C95',
+    books: [
+      { id: 'ob1', title: 'Wonder', author: 'R. J. Palacio', tint: '#822C95', abbreviation: 'W' },
+      {
+        id: 'ob2',
+        title: 'Other Words for Home',
+        author: 'Jasmine Warga',
+        tint: '#B43DD0',
+        abbreviation: 'OW',
+      },
+    ],
+  },
+  cl4: {
+    headerColor: '#0BA85F',
+    books: [
+      {
+        id: 'db1',
+        title: 'When You Trap a Tiger',
+        author: 'Tae Keller',
+        cover: 'linear-gradient(150deg,#0BA85F,#2FB5A8)',
+      },
+    ],
+  },
+}
+
+export const CLASSROOM_LIBRARIES = [
+  {
+    id: 'cl1',
+    firstName: 'Ms.',
+    lastName: 'Abbott',
+    bookCount: 34,
+    cover: 'linear-gradient(150deg,#19BFD5,#0E8CA0)',
+  },
+  {
+    id: 'cl2',
+    firstName: 'Mr.',
+    lastName: 'Rivers',
+    bookCount: 21,
+    cover: 'linear-gradient(150deg,#F2A03D,#E8724B)',
+  },
+  // No covers on this shelf, so it falls back to the tinted tile and the Beanstack mark.
+  { id: 'cl3', firstName: 'Mrs.', lastName: 'Okafor', bookCount: 12, tint: '#822C95' },
+  {
+    id: 'cl4',
+    firstName: 'Mr.',
+    lastName: 'Delgado',
+    bookCount: 1,
+    cover: 'linear-gradient(150deg,#0BA85F,#2FB5A8)',
+  },
+]
 
 export const BOOK_LISTS = [
   {
@@ -526,25 +1660,257 @@ export const EVENTS = [
 ]
 
 // ── Community tab ─────────────────────────────────────────────────────────
-export const SITE_FEED = [
-  { id: 'f1', name: 'Jordan P.', action: 'earned the Night Owl badge', when: '10 minutes ago' },
-  { id: 'f2', name: 'Priya S.', action: 'finished New Kid', when: '1 hour ago' },
-  { id: 'f3', name: 'Ms. Abbott', action: 'added 4 books to Newbery Winners', when: 'Yesterday' },
-]
+/**
+ * `useMicrositeScreenData` — everything the My School / My Library tab draws. It is the SITE's
+ * page, not a social one: a logo, a community goal, what is coming up, and who paid for it.
+ *
+ * `percent_completed` arrives as a string with the sign on it, and `goal_type` is singular — the
+ * screen pluralises it itself, which is why "minute" is stored rather than "minutes".
+ */
+export const COMMUNITY_GOAL = {
+  remaining_days: 24,
+  show_remaining_days: true,
+  goal: 2000000,
+  goal_type: 'minute',
+  tally: 1204551,
+  percent_completed: '60%',
+}
 
+/**
+ * `micrositeSponsors`. `sponsor_position` is the sort key — the API does not send them in order.
+ *
+ * A sponsor logo is tenant-uploaded art served from a URL, so there is no asset to copy. These
+ * four are the real brand files already vendored in `public/<partner>` — Scholastic, Epic!, Sora
+ * and OverDrive, reading companies that genuinely work with school and library programmes. Real
+ * marks are what make the block worth looking at: they disagree with each other in a way four
+ * hand-drawn lockups never will.
+ */
+export const SPONSORS = {
+  sponsor_header: 'This year’s reading challenge is made possible by',
+  sponsors: [
+    { id: 's1', sponsor_position: 2, mark: 'epic' },
+    { id: 's2', sponsor_position: 1, mark: 'scholastic' },
+    { id: 's3', sponsor_position: 4, mark: 'overdrive' },
+    { id: 's4', sponsor_position: 3, mark: 'sora' },
+  ],
+}
+
+/**
+ * `funnel_page_image` — the one panel the microsite screen draws that nothing else does. A
+ * site-uploaded banner for the programme currently running, sized to its own aspect ratio over a
+ * `blueLight` backdrop.
+ *
+ * PLACEHOLDER, same as the sponsors: tenant art with no source to copy.
+ */
+export const FUNNEL_IMAGE = {
+  title: 'Summer Reading 2026',
+  subtitle: 'Read anything. Log everything.',
+}
+
+/**
+ * The friends on this reader's list — `useFriendsList`.
+ *
+ * A row carries a name, a streak and whether the invite is `confirmed`; there is no minutes
+ * figure on it, which is worth stating because an unconfirmed friend has no readable activity at
+ * all. `current_streak` is null rather than 0 when there is no streak, and null is what hides the
+ * flame.
+ */
 export const FRIENDS = [
-  { id: 'fr1', name: 'Jordan Park', minutes: 620, streak: 8 },
-  { id: 'fr2', name: 'Priya Shah', minutes: 540, streak: 0 },
-  { id: 'fr3', name: 'Sam Okafor', minutes: 410, streak: 15 },
+  { id: 'fr1', firstName: 'Jordan', lastName: 'Park', streak: 8, confirmed: true },
+  { id: 'fr2', firstName: 'Priya', lastName: 'Shah', streak: null, confirmed: true },
+  { id: 'fr3', firstName: 'Sam', lastName: 'Okafor', streak: 15, confirmed: true },
+  { id: 'fr4', firstName: 'Alex', lastName: 'Rivera', streak: null, confirmed: false },
 ]
 
-export const LEADERBOARD = [
-  { id: 'lb1', name: 'Priya Shah', minutes: '1,880' },
-  { id: 'lb2', name: 'Jordan Park', minutes: '1,640' },
-  { id: 'lb3', name: 'Maya Chen', minutes: '1,240', isYou: true },
-  { id: 'lb4', name: 'Sam Okafor', minutes: '1,120' },
-  { id: 'lb5', name: 'Alex Rivera', minutes: '980' },
+export const FRIEND_REQUESTS = 3
+
+/**
+ * The roster `friendSearch` searches — every reader at this site.
+ *
+ * A school has one of these and a library does not, which is the whole reason the two add-a-friend
+ * flows differ: you can look someone up here, but a public library cannot show you its patrons.
+ */
+/* `grade_level_name` is on every row because `FoundFriend` renders it under the name, and the
+   two Novaks are the reason it has to: a roster search returns everyone who matches, and on a
+   list of names alone there is no way to tell which Ellie you are inviting. */
+export const SITE_ROSTER = [
+  { id: 'sr1', firstName: 'Ellie', lastName: 'Novak', grade: '4th Grade' },
+  { id: 'sr2', firstName: 'Marcus', lastName: 'Webb', grade: '5th Grade' },
+  { id: 'sr3', firstName: 'Nadia', lastName: 'Haddad', grade: '3rd Grade' },
+  { id: 'sr4', firstName: 'Owen', lastName: 'Fitzgerald', grade: '5th Grade' },
+  { id: 'sr5', firstName: 'Ruby', lastName: 'Nakamura', grade: '2nd Grade' },
+  { id: 'sr6', firstName: 'Ellie', lastName: 'Novak', grade: '2nd Grade' },
 ]
+
+/** The pending requests behind that card — `useFriendRequests`. */
+export const FRIEND_REQUEST_LIST = [
+  { id: 'rq1', firstName: 'Nina', lastName: 'Okonkwo' },
+  { id: 'rq2', firstName: 'Theo', lastName: 'Bergman' },
+  { id: 'rq3', firstName: 'Ivy', lastName: 'Ramos' },
+]
+
+/**
+ * `useFriendsDetails` — a friend's own page.
+ *
+ * `displayLoggedBooksToFriends` is a privacy setting rather than a feature flag: it decides
+ * whether the Reading Log tab exists at all, so a friend can be on your list and still not show
+ * you what they read. Priya has it off, which is what makes the third tab conditional visible
+ * here rather than theoretical.
+ *
+ * `stats` omits a key entirely when the site does not count it — the source checks
+ * `hasOwnProperty` rather than for a value, so a missing `books` is a block that is not drawn,
+ * not a zero.
+ */
+export const FRIEND_DETAILS = {
+  fr1: {
+    id: 'fr1',
+    firstName: 'Jordan',
+    lastName: 'Park',
+    displayLoggedBooksToFriends: true,
+    badges: [
+      { id: 'b1', art: 'linear-gradient(135deg,#0F7280,#19BFD5)' },
+      { id: 'b2', art: 'linear-gradient(135deg,#826022,#FFBC42)' },
+      { id: 'b3', art: 'linear-gradient(135deg,#7A2E8E,#C158D6)' },
+    ],
+    achievements: [{ id: 'a1', art: 'linear-gradient(135deg,#1B7F4B,#43C37A)' }],
+    stats: { currentStreak: 8, longestStreak: 21, minutes: 1640, books: 14 },
+    challenges: [
+      { id: 'c1', title: 'Summer Reading 2026', subtitle: '14 of 20 books' },
+      { id: 'c2', title: 'Newbery Winners', subtitle: '3 of 10 books' },
+    ],
+    titles: [
+      {
+        id: 't1',
+        title: 'The Wild Robot',
+        author: 'Peter Brown',
+        cover: 'linear-gradient(160deg,#2F8F83,#1C5C57)',
+      },
+      {
+        id: 't2',
+        title: 'New Kid',
+        author: 'Jerry Craft',
+        cover: 'linear-gradient(160deg,#C4553E,#8E2F22)',
+      },
+    ],
+  },
+  fr2: {
+    id: 'fr2',
+    firstName: 'Priya',
+    lastName: 'Shah',
+    /* Off — so her page has two tabs, not three. */
+    displayLoggedBooksToFriends: false,
+    badges: [],
+    achievements: [],
+    stats: { currentStreak: null, longestStreak: 12, minutes: 1880 },
+    challenges: [],
+    titles: [],
+  },
+  fr3: {
+    id: 'fr3',
+    firstName: 'Sam',
+    lastName: 'Okafor',
+    displayLoggedBooksToFriends: true,
+    badges: [{ id: 'b4', art: 'linear-gradient(135deg,#B3472F,#F2703F)' }],
+    achievements: [],
+    stats: { currentStreak: 15, longestStreak: 15, minutes: 1120, books: 6 },
+    challenges: [{ id: 'c3', title: 'Summer Reading 2026', subtitle: '6 of 20 books' }],
+    titles: [
+      {
+        id: 't3',
+        title: 'Amari and the Night Brothers',
+        author: 'B. B. Alston',
+        cover: 'linear-gradient(160deg,#5B3FA8,#2E1E63)',
+      },
+    ],
+  },
+}
+
+/**
+ * `useLeaderboard(profileId, logType, dateRange, leaderboardType)` — four axes, and the screen
+ * shows three of them as controls.
+ *
+ * `leaderboard_types` is the SCOPE you are ranked within (your friends, your grade, your school),
+ * and `leaderboard_tabs` is WHAT is being counted. They are different tab rows rendered by the
+ * same component, which is easy to read as one thing in the source.
+ *
+ * `ranking` is the server's, not the row's index: it is what decides a medal, and ties mean it
+ * does not always march 1, 2, 3.
+ *
+ * A friend's row id here is their PROFILE id — the same one the friends list uses. That is not
+ * bookkeeping: the avatar colour is hashed from `id-first-last`, so giving the same person a
+ * different id on this screen would give them a different colour on it, and the whole point of
+ * deriving the colour is that a friend looks like themselves wherever they appear.
+ */
+export const LEADERBOARD_SCOPES = ['friends', 'grade', 'school']
+
+/**
+ * `leaderboard_tabs` — `'minutes' | 'books' | 'participation_rate'`, and it arrives in the meta of
+ * each request, so it is per SCOPE rather than global.
+ *
+ * Participation rate only exists on the school board, and it is the one figure here that is not a
+ * total: a school of 200 that reads a little beats a school of 800 that mostly does not, which is
+ * the whole reason to rank schools by it. `LeaderboardItem` is where that shows — it is the only
+ * value the app suffixes, and only on this pairing.
+ */
+export const LEADERBOARD_LOG_TYPES = {
+  friends: ['minutes', 'books'],
+  grade: ['minutes', 'books'],
+  school: ['minutes', 'books', 'participation_rate'],
+}
+
+export const LEADERBOARDS = {
+  friends: {
+    minutes: [
+      { id: 'fr2', ranking: 1, firstName: 'Priya', lastName: 'Shah', logValue: '1,880' },
+      { id: 'fr1', ranking: 2, firstName: 'Jordan', lastName: 'Park', logValue: '1,640' },
+      { id: 'p1', ranking: 3, firstName: 'Maya', lastName: 'Chen', logValue: '1,240' },
+      { id: 'fr3', ranking: 4, firstName: 'Sam', lastName: 'Okafor', logValue: '1,120' },
+      { id: 'fr4', ranking: 5, firstName: 'Alex', lastName: 'Rivera', logValue: '980' },
+    ],
+    books: [
+      { id: 'fr1', ranking: 1, firstName: 'Jordan', lastName: 'Park', logValue: '14' },
+      { id: 'p1', ranking: 2, firstName: 'Maya', lastName: 'Chen', logValue: '11' },
+      { id: 'fr2', ranking: 3, firstName: 'Priya', lastName: 'Shah', logValue: '9' },
+      { id: 'fr3', ranking: 4, firstName: 'Sam', lastName: 'Okafor', logValue: '6' },
+    ],
+  },
+  /* Grade and school rows carry a `name` instead of a first/last pair — they are not people. */
+  grade: {
+    minutes: [
+      { id: 'g5', ranking: 1, name: '5th Grade', logValue: '48,210' },
+      { id: 'g4', ranking: 2, name: '4th Grade', logValue: '44,905' },
+      { id: 'g3', ranking: 3, name: '3rd Grade', logValue: '39,140' },
+      { id: 'g2', ranking: 4, name: '2nd Grade', logValue: '28,660' },
+    ],
+    books: [
+      { id: 'g4', ranking: 1, name: '4th Grade', logValue: '612' },
+      { id: 'g5', ranking: 2, name: '5th Grade', logValue: '584' },
+      { id: 'g3', ranking: 3, name: '3rd Grade', logValue: '470' },
+      { id: 'g2', ranking: 4, name: '2nd Grade', logValue: '331' },
+    ],
+  },
+  school: {
+    minutes: [
+      { id: 'm2', ranking: 1, name: 'Northside Elementary', logValue: '204,880' },
+      { id: 'm1', ranking: 2, name: 'Lakeside Elementary', logValue: '196,410' },
+      { id: 'm3', ranking: 3, name: 'Riverbend Elementary', logValue: '158,220' },
+    ],
+    books: [
+      { id: 'm1', ranking: 1, name: 'Lakeside Elementary', logValue: '2,431' },
+      { id: 'm2', ranking: 2, name: 'Northside Elementary', logValue: '2,190' },
+      { id: 'm3', ranking: 3, name: 'Riverbend Elementary', logValue: '1,604' },
+    ],
+    /* The order is deliberately not the other two's: Riverbend logs the fewest minutes and the
+       fewest books of the three and still leads here, because a higher share of its readers log
+       at all. A participation board that ranked the same way as a totals board would not be
+       worth having. */
+    participation_rate: [
+      { id: 'm3', ranking: 1, name: 'Riverbend Elementary', logValue: 74 },
+      { id: 'm1', ranking: 2, name: 'Lakeside Elementary', logValue: 61 },
+      { id: 'm2', ranking: 3, name: 'Northside Elementary', logValue: 48 },
+    ],
+  },
+}
 
 // ── Feature-gated Home sections ───────────────────────────────────────────
 
@@ -703,8 +2069,13 @@ export const COMPLETED_TITLES = [
  * three logging ones. `longestSession` is preformatted `H:MM` by `longestSessionText`.
  */
 /**
- * The `bookDetail` modal. `headerColor` stands in for `getImageColor(cover_image_url)` — the band
- * is tinted from the COVER's dominant colour, not from the tenant accent.
+ * The book panel's inputs, not its output.
+ *
+ * `OverviewDataItems` DERIVES every card from these — reading time from `total_hours` and
+ * `total_minutes`, minutes and pages per session by dividing by the session count, and two dates
+ * that only appear when they exist. Holding the derived strings here instead is how the card list
+ * drifted into three invented sentences ("Your longest ran 48 minutes"); the numbers are the
+ * fixture and the formats belong to the screen.
  */
 export const BOOK_DETAIL = {
   id: 'bk1',
@@ -712,32 +2083,29 @@ export const BOOK_DETAIL = {
   author: 'Peter Brown',
   pageCount: 279,
   cover: 'linear-gradient(150deg,#2FB5A8,#0E8CA0)',
-  headerColor: '#2FB5A8',
-  overview: [
-    {
-      key: 'ov1',
-      source: 'reading_time',
-      detail: '3 hours 20 minutes',
-      description: 'Total time logged against this title.',
-    },
-    {
-      key: 'ov2',
-      source: 'pages_read',
-      detail: '279 of 279 pages',
-      description: 'You finished this one on August 28.',
-    },
-    {
-      key: 'ov3',
-      source: 'reading_sessions',
-      detail: '7 sessions',
-      description: 'Your longest ran 48 minutes.',
-    },
-  ],
+
+  /* `attributes.data.last_read_on` and `archived_on` — the second is set when a title is
+     completed, and is what puts a Date Completed card second in the list. */
+  lastReadOn: '2026-08-28',
+  archivedOn: '2026-08-28',
+  /* `attributes` — the totals the app divides. 3h 20m across 7 sessions of 279 pages. */
+  totalHours: 3,
+  totalMinutes: 200,
+  totalPages: 279,
+
+  /* `log_item_sessions`. A session carries what was entered — a date, a duration, and EITHER a
+     start and end page or a bare page count — and the session screen derives the rest from that:
+     pages read, and time per page. `hours` is its own field in the app, not minutes over 60. */
   sessions: [
-    { id: 's1', date: 'Aug 28, 2026', detail: '32 minutes · pages 244–279' },
-    { id: 's2', date: 'Aug 26, 2026', detail: '48 minutes · pages 180–244' },
-    { id: 's3', date: 'Aug 24, 2026', detail: '25 minutes · pages 140–180' },
-    { id: 's4', date: 'Aug 21, 2026', detail: '30 minutes · pages 96–140' },
+    { id: 's1', happenedOn: '2026-08-28', hours: 0, minutes: 32, startPage: 244, endPage: 279 },
+    { id: 's2', happenedOn: '2026-08-26', hours: 0, minutes: 48, startPage: 180, endPage: 244 },
+    { id: 's3', happenedOn: '2026-08-24', hours: 0, minutes: 25, startPage: 140, endPage: 180 },
+    { id: 's4', happenedOn: '2026-08-21', hours: 0, minutes: 30, startPage: 96, endPage: 140 },
+    { id: 's5', happenedOn: '2026-08-19', hours: 0, minutes: 22, startPage: 60, endPage: 96 },
+    /* No page range on this one — a reader who logged minutes and a count, which is the other
+       half of the app's fork: Pages Read instead of Start Page and End Page. */
+    { id: 's6', happenedOn: '2026-08-17', hours: 0, minutes: 25, pages: 32 },
+    { id: 's7', happenedOn: '2026-08-15', hours: 1, minutes: 78, startPage: 1, endPage: 28 },
   ],
 }
 

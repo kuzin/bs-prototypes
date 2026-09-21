@@ -1,0 +1,160 @@
+/* `content` — 40 above the carousel, 34 at the foot. */
+.m-chlog {
+  padding: 40px 0 34px;
+  background: var(--m-white);
+}
+
+/* ── The totals carousel ────────────────────────────────────────────────── */
+
+/* `card` — a tinted panel at radius 10 with a soft 9pt shadow at 3%. The colour is the card's
+ * own, per log type, so the strip is not one colour repeated. */
+.m-chlog-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 0 9px rgba(0, 0, 0, 0.03);
+}
+
+.m-chlog-card-icon {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  margin-right: 16px;
+}
+
+.m-chlog-card-text {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+}
+
+/* `statTitle` — 17/800/22, and NOT one of the shared fontStyles: the card declares it inline. */
+.m-chlog-card-value {
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 22px;
+  color: var(--m-grey-dark-1);
+}
+
+/* `bodySmall` with the weight overridden to bold. */
+.m-chlog-card-label {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+}
+
+/* ── The titles ─────────────────────────────────────────────────────────── */
+
+/* `loggedTitles` — 40 under the carousel. */
+.m-chlog-titles {
+  margin-top: 40px;
+}
+
+.m-chlog-month {
+  margin: 0 20px;
+}
+
+.m-chlog-month.has-gap {
+  margin-top: 32px;
+}
+
+/* `SectionSmallTitle` with 8 under it. */
+.m-chlog-month-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  color: var(--m-grey-dark-1);
+}
+
+.m-chlog-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  margin: 16px 0;
+}
+
+/* `BookImage` at 80 × 120 — the app's standard cover. */
+.m-chlog-book {
+  position: relative;
+  flex: none;
+  width: 80px;
+  height: 120px;
+}
+
+.m-chlog-cover {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: flex-start;
+  padding: 8px;
+  border-radius: 4px;
+  background: var(--m-grey-light-2);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* `numberOfLines={4}` at 14 — a coverless book prints its own title on the placeholder. */
+.m-chlog-cover-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 17px;
+  color: var(--m-white);
+}
+
+/* A shadow BOX, not a box-shadow. Inset 8 either side, hanging 5 below, 7% black at radius 8 —
+ * so it shows only under the bottom edge and the book reads as sitting on the page rather than
+ * floating above it. `zIndex: -1` in the source; here the cover is lifted instead, because a
+ * negative z-index would escape this row's stacking context. */
+.m-chlog-shadow {
+  position: absolute;
+  bottom: -5px;
+  left: 8px;
+  right: 8px;
+  height: 16px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.m-chlog-text {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  margin: 0 20px;
+}
+
+.m-chlog-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.m-chlog-author {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* `marginLeft: -5` — the pill's own padding is pulled back so its TEXT lines up with the author
+ * above it rather than its box doing. */
+.m-chlog-pill {
+  align-self: flex-start;
+  margin: 16px 0 0 -5px;
+}

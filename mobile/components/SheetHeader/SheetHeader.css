@@ -18,8 +18,13 @@
   align-items: center;
 }
 
+/* `flex: none` keeps the title on the true centre whatever the side slots hold — but only while
+   it fits. Allowed to SHRINK as well, so a long title ellipsizes instead of squeezing a text
+   action out of the end slot: "Share Your Friend Code" beside "Refresh" clipped the R off. It
+   still refuses to grow, so short titles stay centred. */
 .m-sheethead-slot--center {
-  flex: none;
+  flex: 0 1 auto;
+  min-width: 0;
   justify-content: center;
 }
 

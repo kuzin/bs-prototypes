@@ -34,13 +34,16 @@ function EventDateChip({ date, ongoing }) {
   )
 }
 
-function EventCard({ event, showAge = true }) {
+/* Exported because the microsite tab renders the same card — it is `MicrositeEventCard` in the
+   source, and Discover is the other caller rather than the owner. `showAge` is the source's own
+   prop and is on only in the Discover list, which is the list age FILTERS. */
+export function EventCard({ event, showAge = true, onPress }) {
   const ongoing = event.date === 'This is an ongoing event.'
   return (
     /* The Pressable and the panel are two elements, not one: the chip is absolute against the
        PRESSABLE, and the panel's 35pt top margin sits between them — which is what makes the chip
        hang 20pt above the panel's top edge instead of sitting inside it. */
-    <button type="button" className="m-ev-card">
+    <button type="button" className="m-ev-card" onClick={() => onPress?.(event)}>
       <EventDateChip date={event.date} ongoing={ongoing} />
       <span className="m-ev-panel">
         <span className="m-t-title-regular m-ev-title">{event.title}</span>
@@ -53,7 +56,7 @@ function EventCard({ event, showAge = true }) {
   )
 }
 
-export function Events({ events }) {
+export function Events({ events, onOpenEvent }) {
   if (events.length === 0) {
     return (
       /* The badges artwork again, as on Reviews. */
@@ -68,7 +71,7 @@ export function Events({ events }) {
   return (
     <div className="m-ev">
       {events.map((e) => (
-        <EventCard key={e.id} event={e} />
+        <EventCard key={e.id} event={e} onPress={onOpenEvent} />
       ))}
       {/* ListFooterComponent — a bare 50pt spacer. */}
       <div className="m-ev-foot" />

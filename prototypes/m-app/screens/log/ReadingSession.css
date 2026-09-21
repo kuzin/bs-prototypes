@@ -1,0 +1,88 @@
+/* ReadingSession — a pushed screen, white, with the list sitting under a band of the form grey. */
+.m-rsn {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-rsn-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.m-rsn-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.m-rsn-edit {
+  display: inline-flex;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+/* `editIconStyle` — 14pt in darkGrey, which is smaller than every other header glyph. */
+.m-rsn-edit-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+}
+
+/* `renderSectionHeader` — a 15pt band of the form grey closed by a hairline, which is what sets
+   the list off from the header rather than a margin. */
+.m-rsn-band {
+  height: 15px;
+  background: var(--m-grey-light-3);
+  border-bottom: 1px solid var(--m-c-border);
+}
+
+.m-rsn-list {
+  border-bottom: 1px solid var(--m-c-border);
+}
+
+/* `DetailListItem` — 44pt, the label left and the value right, 15 either side. */
+.m-rsn-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 44px;
+  padding: 0 15px;
+  background: var(--m-white);
+}
+
+.m-rsn-row + .m-rsn-row {
+  border-top: 1px solid var(--m-c-border);
+}
+
+.m-rsn-label,
+.m-rsn-value {
+  font-size: 16px;
+  color: var(--m-c-secondary);
+}
+
+.m-rsn-value {
+  text-align: right;
+}
+
+/* The delete is the screen's only destructive action, so it sits away from the list rather than
+   looking like another row of it. */
+.m-rsn-delete {
+  display: block;
+  width: 100%;
+  margin-top: 32px;
+  padding: 16px 20px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--m-c-medium-carmine);
+  text-align: center;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}

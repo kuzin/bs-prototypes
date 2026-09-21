@@ -1,0 +1,86 @@
+/* `styles.screen` is the form grey and `safeArea` is white over it, so the list reads as a sheet
+   of fields on a ground rather than as the screen itself. */
+.m-ers {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-grey-light-3);
+}
+
+.m-ers-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  background: var(--m-white);
+}
+.m-ers-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.m-ers-band {
+  height: 15px;
+  background: var(--m-grey-light-3);
+  border-bottom: 1px solid var(--m-c-border);
+}
+
+.m-ers-list {
+  border-bottom: 1px solid var(--m-c-border);
+  background: var(--m-white);
+}
+
+/* `horizontalContainer` — white, 13 either side. A title over its input, ruled full width between
+   rows (`renderFullScreenSeparator`, which is why the rule is not inset). */
+.m-ers-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 13px;
+  background: var(--m-white);
+}
+
+.m-ers-row + .m-ers-row {
+  border-top: 1px solid var(--m-c-border);
+}
+
+.m-ers-label {
+  font-size: 14px;
+  color: var(--m-grey-dark-3);
+}
+
+.m-ers-input {
+  width: 100%;
+  font: inherit;
+  font-size: 16px;
+  color: var(--m-c-mine-black);
+  background: none;
+  border: 0;
+  outline: none;
+}
+
+.m-ers-input::placeholder {
+  color: var(--m-grey-dark-4);
+}
+
+.m-ers-trash {
+  display: inline-flex;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.m-ers-trash-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* `buttonWrapper` + `button` — the save is pinned, not the last thing in the scroll. */
+.m-ers-foot {
+  flex: none;
+  padding: 16px 20px 24px;
+  background: var(--m-white);
+  border-top: 1px solid var(--m-c-border);
+}

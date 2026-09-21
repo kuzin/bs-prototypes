@@ -18,7 +18,7 @@ import { Achievements } from './log/Achievements'
 import { ReadingMotivation } from './log/ReadingMotivation'
 import { Reviews } from './log/Reviews'
 import {
-  READING_LOG,
+  READING_LOG_MONTHS,
   BOOK_TALKS_IN_PROGRESS,
   BOOK_TALKS_COMPLETED,
   ALL_TITLES_SECTIONS,
@@ -104,6 +104,9 @@ export function LogScreen({
   const [pickerOpen, setPickerOpen] = useState(false)
   const selectedSurvey = RMI_SURVEYS.find((s) => s.id === surveyId) ?? RMI_SURVEYS[0]
   // Four of the nine are conditional in LogTabNavigator; the rest always render.
+  const [monthIndex, setMonthIndex] = useState(0)
+  const logMonth = READING_LOG_MONTHS[monthIndex] ?? READING_LOG_MONTHS[0]
+
   const visible = LOG_TABS.filter((t) => !GATED.includes(t.id) || flags[t.id])
   return (
     <>
@@ -117,14 +120,20 @@ export function LogScreen({
 
         {!loading && tab === 'readingLog' && (
           <ReadingLog
-            month={READING_LOG.month}
-            weeks={some(READING_LOG.weeks)}
+            month={logMonth.month}
+            weeks={some(logMonth.weeks)}
             hasGoal={flags.dailyGoal}
             goalVariant={goalVariant}
-            isCurrentMonth={READING_LOG.isCurrentMonth}
-            goal={flags.dailyGoal ? READING_LOG.goal : null}
-            onPrevMonth={() => {}}
-            onNextMonth={() => {}}
+            isCurrentMonth={logMonth.isCurrentMonth}
+            isOldestMonth={monthIndex === READING_LOG_MONTHS.length - 1}
+            goal={flags.dailyGoal ? logMonth.goal : null}
+            /* Newest first, so ‹ walks UP the array and › walks back down it. Both arrows grey
+               out at their end rather than wrapping — `disableNext` on the current month is the
+               app's own rule, and there is nothing older than the oldest month. */
+            onPrevMonth={() =>
+              setMonthIndex(Math.min(monthIndex + 1, READING_LOG_MONTHS.length - 1))
+            }
+            onNextMonth={() => setMonthIndex(Math.max(monthIndex - 1, 0))}
             onOpenBook={onOpenBook}
           />
         )}

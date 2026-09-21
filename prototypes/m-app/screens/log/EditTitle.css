@@ -1,0 +1,63 @@
+.m-et {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-et-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding-bottom: 24px;
+}
+.m-et-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* `bookDataFields` — the boxes carry their own 20 side margin and 12 above, so the group only
+   owns the air at its ends. */
+.m-et-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 20px 0;
+}
+
+/* `toggleView` — ruled off from the fields above it, because the switch changes what the form
+   IS rather than being another value in it. */
+.m-et-track {
+  margin-top: 20px;
+  padding: 20px;
+  border-top: 1px solid var(--m-c-border);
+}
+
+.m-et-track-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.m-et-track-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--m-grey-dark-1);
+}
+
+/* `logText` — what the switch actually does, which the label alone does not say. */
+.m-et-track-note {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+}
+
+.m-et-foot {
+  flex: none;
+  padding: 16px 20px 24px;
+  background: var(--m-white);
+  border-top: 1px solid var(--m-c-border);
+}

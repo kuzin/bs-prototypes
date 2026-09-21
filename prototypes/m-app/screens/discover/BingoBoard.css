@@ -1,0 +1,127 @@
+.m-bng {
+  padding: 0 10px 30px;
+}
+
+/* `SectionSmallTitle` — on the page gutter, not the board's 10pt one. */
+.m-bng-title {
+  margin: 20px 10px 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  color: var(--m-grey-dark-1);
+}
+
+/* `messagingContainerYellow` / `...Green` — 90% wide, centred, radius 10, 20 of padding with 25
+ * on the right. The yellow one ALSO carries a shadow the green one does not: the app gives more
+ * prominence to "there is something left to do" than to "you are done". */
+.m-bng-message {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  align-self: center;
+  margin: 20px auto;
+  padding: 20px 25px 20px 20px;
+  border-radius: 10px;
+  background: var(--m-yellow-light);
+  box-shadow: 0 6px 1px rgba(0, 0, 0, 0.05);
+}
+
+.m-bng-message.is-won {
+  background: var(--m-green-light);
+  box-shadow: none;
+}
+
+.m-bng-message-icon {
+  flex: none;
+  width: 23px;
+  height: 23px;
+  margin-right: 12px;
+}
+
+.m-bng-message-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-yellow-dark);
+}
+
+.m-bng-message.is-won .m-bng-message-text {
+  color: var(--m-green-dark);
+}
+
+/* `numColumns` — a FIXED column count, set from how many badges there are. A responsive grid
+ * would reflow a 5×5 into four columns on a narrow phone and quietly stop being a bingo card. */
+.m-bng-grid {
+  display: grid;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.m-bng-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+/* `circleBtn` — a 3pt ring on every state; only the colour changes. */
+.m-bng-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border: 3px solid var(--m-grey-light-1);
+  border-radius: 50%;
+  background: var(--m-grey-light-1);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* An earned square keeps the grey ring; a BINGO square — one that completed a line — turns it
+ * green. That is the only difference between the two, and it is the whole game. */
+.m-bng-badge.is-art {
+  border-color: var(--m-grey-light-1);
+}
+
+.m-bng-badge.is-art.is-bingo {
+  border-color: var(--m-green);
+}
+
+.m-bng-badge.is-locked {
+  opacity: 0.65;
+}
+
+.m-bng-badge.is-active {
+  opacity: 0.5;
+}
+
+.m-bng-lock {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* The requirement split in two — the number reads first, the unit under it. */
+.m-bng-number {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 24px;
+  color: var(--m-grey-dark-1);
+  text-align: center;
+}
+
+.m-bng-logtype {
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 13px;
+  color: var(--m-grey-dark-1);
+  text-align: center;
+}
+
+.m-bng-empty {
+  padding: 20px;
+}

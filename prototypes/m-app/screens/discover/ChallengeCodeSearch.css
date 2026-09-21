@@ -1,0 +1,54 @@
+.m-ccs {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  background: var(--m-white);
+}
+
+/* `container` — 40 top and bottom, 20 either side, and `justifyContent: space-between` is what
+ * pushes the button to the floor rather than leaving it under the field. */
+.m-ccs-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 40px 20px 0;
+  overflow-y: auto;
+}
+
+/* `descriptionText` — `paragraphMedium` and CENTRED, with 30 under it. One sentence explaining
+ * why a screen with a single field exists. */
+.m-ccs-lede {
+  margin: 0 0 30px;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--m-grey-dark-2);
+  text-align: center;
+}
+
+/* `errorContainer` — a redLight PANEL at radius 10, not a bare line of red text. The glyph is
+ * only 12pt and sits 14 from the words. */
+.m-ccs-error {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0 0 20px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--m-red-light);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+  color: var(--m-red-dark);
+}
+
+.m-ccs-error-icon {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  margin-right: 14px;
+}
+
+.m-ccs-foot {
+  flex: none;
+  padding: 16px 20px 40px;
+}

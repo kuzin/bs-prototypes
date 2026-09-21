@@ -10,6 +10,8 @@
  */
 import {
   ProfileBar,
+  TextField,
+  ToggleSwitch,
   PhoneFrame,
   Header,
   TabBar,
@@ -24,6 +26,11 @@ import {
   Card,
   EmptyState,
   ProfileRow,
+  FriendAvatar,
+  ConfirmDialog,
+  ProgressBar,
+  StreakPill,
+  FormField,
   SheetHeader,
   ActionsModal,
   Alert,
@@ -38,6 +45,10 @@ import {
   CompletedLoader,
   ListFooter,
   Img,
+  ToggleTabs,
+  Badge,
+  BookListItem,
+  TabBarV2,
 } from '@mobile/components'
 import { ACCENT_PRESETS, accentVars } from '@mobile/accent'
 import { Variant } from './_shared'
@@ -124,6 +135,139 @@ function Dot() {
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.9" />
     </svg>
+  )
+}
+
+function ConfirmDialogDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <MVariant label="the confirm is a button, the cancel is text — not two equal answers">
+      <div style={{ position: 'relative', minHeight: open ? 300 : 0 }}>
+        <PressableButton buttonText="Show dialog" onButtonPress={() => setOpen(true)} />
+        <ConfirmDialog
+          open={open}
+          title="Are you sure?"
+          text="When you refresh your friend code, your previous code will no longer work."
+          confirmText="Accept"
+          onConfirm={() => setOpen(false)}
+          onClose={() => setOpen(false)}
+        />
+      </div>
+    </MVariant>
+  )
+}
+
+function FormFieldDemo() {
+  const [values, setValues] = useState({
+    first_name: 'Maya',
+    grade_level_id: '4',
+    birthdate: '2016-04-12',
+    send_recommendations: true,
+    email: 'not-an-email',
+  })
+  const set = (name, value) => setValues((v) => ({ ...v, [name]: value }))
+  return (
+    <>
+      <MVariant label="text — TextField's box, with the label notching the border">
+        <FormField
+          name="first_name"
+          label="First Name"
+          placeholder="Jessie"
+          value={values.first_name}
+          onChange={set}
+        />
+      </MVariant>
+      <MVariant label="select — in the same box, with the app's own dropdown_arrow">
+        <FormField
+          name="grade_level_id"
+          label="Grade"
+          type="select"
+          placeholder="Select One"
+          value={values.grade_level_id}
+          onChange={set}
+          options={[
+            { value: '4', name: '4th Grade' },
+            { value: '5', name: '5th Grade' },
+          ]}
+        />
+      </MVariant>
+      <MVariant label="date-picker — a button, not an input; unset it reads YYYY-MM-DD">
+        <FormField
+          name="birthdate"
+          label="Birthdate"
+          type="date-picker"
+          value={values.birthdate}
+          onChange={set}
+        />
+      </MVariant>
+      <MVariant label="bool — a ruled row and the platform switch, not a box">
+        <FormField
+          name="send_recommendations"
+          label="Send a book recommendation each week"
+          type="bool"
+          value={values.send_recommendations}
+          onChange={set}
+        />
+      </MVariant>
+      <MVariant label="error — the stroke holds the error colour whether or not it is focused">
+        <FormField
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="reader@email.com"
+          value={values.email}
+          onChange={set}
+          error="Email is not a valid address."
+        />
+      </MVariant>
+    </>
+  )
+}
+
+function TextFieldDemo() {
+  const [title, setTitle] = useState('The Wild Robot')
+  const [author, setAuthor] = useState('')
+  return (
+    <>
+      <MVariant label="raised — a value keeps the label up">
+        <div style={{ padding: '12px 0' }}>
+          <TextField label="Title" value={title} onChange={setTitle} />
+        </div>
+      </MVariant>
+      <MVariant label="at rest — the label sits in the box until it is needed">
+        <div style={{ padding: '12px 0' }}>
+          <TextField label="Author (Optional)" value={author} onChange={setAuthor} />
+        </div>
+      </MVariant>
+    </>
+  )
+}
+
+function ToggleSwitchDemo() {
+  const [on, setOn] = useState(true)
+  return (
+    <>
+      <MVariant label="the three sizes">
+        <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
+          <ToggleSwitch
+            size="small"
+            isOn={on}
+            announcementLabel="Small"
+            onToggle={() => setOn(!on)}
+          />
+          <ToggleSwitch isOn={on} announcementLabel="Track progress" onToggle={() => setOn(!on)} />
+          <ToggleSwitch
+            size="large"
+            isOn={on}
+            announcementLabel="Large"
+            onToggle={() => setOn(!on)}
+          />
+        </div>
+      </MVariant>
+      <MVariant label="off">
+        <ToggleSwitch isOn={false} announcementLabel="Track progress" onToggle={() => {}} />
+      </MVariant>
+    </>
   )
 }
 
@@ -476,6 +620,84 @@ color: var(--m-green-dark);`,
   },
   {
     group: 'm-content',
+    id: 'm-text-field',
+    name: 'TextField',
+    desc: (
+      <>
+        <code>src/components/FloatingTextField.tsx</code> &mdash; the app&rsquo;s one text input,
+        and the reason every form in it looks the same. The label starts inside the box at
+        placeholder weight and rises to sit <em>on</em> the border once there is focus or a value:
+        16/500 grey at rest, 12/bold black raised, with a white ground and 4pt of side padding so it{' '}
+        <strong>notches</strong> the stroke rather than crossing it. That notch is the whole idiom
+        &mdash; a label floating in clear air over a 2pt border reads as a mistake.
+        <br />
+        <br />
+        56 tall (48 <code>small</code>) at radius 10, the stroke `gainsboroWhite` at rest and the
+        tenant&rsquo;s colour while focused.
+      </>
+    ),
+    usage: `import { TextField } from '@mobile/components'
+
+<TextField label="Title" value={title} onChange={setTitle} />
+<TextField label="Pages" value={pages} onChange={setPages} inputMode="numeric" small />`,
+    render: () => <TextFieldDemo />,
+  },
+  {
+    group: 'm-content',
+    id: 'm-form-field',
+    name: 'FormField',
+    desc: (
+      <>
+        A field in a server-driven form &mdash;{' '}
+        <code>components/listItems/MaterialFormFieldItem.tsx</code>. The behaviour is the
+        app&rsquo;s and is the reason it exists: registration and settings forms are{' '}
+        <strong>not authored</strong>. The server sends <code>registration_fields.sections</code>{' '}
+        and the screen renders whatever arrives, so this is a switch over <code>field_type</code>,
+        not a layout.
+        <br />
+        <br />
+        The chrome is deliberately <strong>not</strong> the app&rsquo;s. MaterialFormFieldItem is
+        the oldest input in the codebase &mdash; a label above a bare line of text, over a 3pt
+        underline set to the literal string <code>white</code> that never changes, because both
+        editors pass <code>renderActiveState={'{false}'}</code>. It reserves 3pt, draws nothing, and
+        leaves a hairline to do the separating. Beside the book editor&rsquo;s boxes it reads as a
+        different product, so the box here is <a href="#/m-content/m-text-field">TextField</a>
+        &rsquo;s &mdash; a select and a date sit in that same box rather than redrawing one.
+        <br />
+        <br />
+        <code>bool</code> keeps its own shape: a ruled row with the platform UISwitch, which is what
+        the book editor&rsquo;s Track Progress is one screen over.
+      </>
+    ),
+    usage: `import { FormField } from '@mobile/components'
+
+<FormField name="first_name" label="First Name" placeholder="Jessie" value={value} onChange={set} />
+<FormField name="grade_level_id" label="Grade" type="select" options={options} value={value} onChange={set} />`,
+    render: () => <FormFieldDemo />,
+  },
+  {
+    group: 'm-content',
+    id: 'm-toggle-switch',
+    name: 'ToggleSwitch',
+    desc: (
+      <>
+        <code>readingLogging/components/CustomToggleSwitch.tsx</code>. Three sizes; medium is what
+        every caller uses &mdash; a 60pt track at radius 16 carrying a 24pt knob that travels 32. On
+        is <code>jadeGreen</code>, off is <code>lightGray</code>: the app&rsquo;s own green rather
+        than the tenant accent, so a switch reads the same on every microsite.
+        <br />
+        <br />
+        <code>announcementLabel</code> is the app&rsquo;s, and it appends the state &mdash; a switch
+        that only says its name tells a screen reader nothing about which way it is set.
+      </>
+    ),
+    usage: `import { ToggleSwitch } from '@mobile/components'
+
+<ToggleSwitch isOn={on} announcementLabel="Track progress" onToggle={() => setOn(!on)} />`,
+    render: () => <ToggleSwitchDemo />,
+  },
+  {
+    group: 'm-content',
     id: 'm-profile-bar',
     name: 'ProfileBar',
     desc: (
@@ -524,6 +746,115 @@ color: var(--m-green-dark);`,
   },
   {
     group: 'm-content',
+    id: 'm-friend-avatar',
+    name: 'FriendAvatar',
+    desc: (
+      <>
+        <code>friendsAndLeaderboards/components/FriendAvatar.jsx</code> &mdash; and deliberately{' '}
+        <strong>not</strong> <a href="#/m-content/m-profile-row">ProfileRow</a>&rsquo;s avatar.
+        ProfileRow paints every reader the same <code>redLight</code> disc because it is showing
+        YOUR readers, who are distinguished by name. A friends list and a leaderboard are full of
+        strangers.
+        <br />
+        <br />
+        So the colour is derived from the name. It is hashed to an integer, three bytes are read as
+        RGB, and only the <strong>hue</strong> survives &mdash; saturation and lightness are fixed
+        at 80/85 for the disc and 80/30 for the initials. The same person is the same colour on
+        every screen and every device, and no name can produce a muddy one.
+        <br />
+        <br />
+        The two states are different sizes, which is easy to miss: the initials disc is 46 and a
+        photo is 40.
+      </>
+    ),
+    usage: `import { FriendAvatar } from '@mobile/components'
+
+<FriendAvatar id="fr1" firstName="Jordan" lastName="Park" />`,
+    render: () => (
+      <MVariant label="one hue per name — hashed, so it never changes">
+        <div style={{ display: 'flex', gap: 12 }}>
+          <FriendAvatar id="fr1" firstName="Jordan" lastName="Park" />
+          <FriendAvatar id="fr2" firstName="Priya" lastName="Shah" />
+          <FriendAvatar id="fr3" firstName="Sam" lastName="Okafor" />
+          <FriendAvatar id="fr4" firstName="Alex" lastName="Rivera" />
+          <FriendAvatar id="rq1" firstName="Nina" lastName="Okonkwo" />
+        </div>
+      </MVariant>
+    ),
+  },
+  {
+    group: 'm-content',
+    id: 'm-streak-pill',
+    name: 'StreakPill',
+    desc: (
+      <>
+        <code>WeekdayStyles.streakContainer</code> &mdash; the flame and its count in an orange
+        pill.
+        <br />
+        <br />
+        The app has <strong>two</strong> streak treatments and they do not agree. The Reading
+        Log&rsquo;s day column uses this pill; the friends list uses bare flame art beside a red
+        bold number with no ground at all. Same fact, twice, in two colours &mdash; and the bare one
+        loses against a row that already has an avatar and a name competing for attention. So the
+        pill is the one, and both screens draw it: a streak is something you have earned rather than
+        a statistic, and a ground is what says so.
+        <br />
+        <br />
+        Renders nothing when there is no streak. The source distinguishes null from 0 and draws
+        neither &mdash; a reader with no streak has no pill, not a pill saying zero.
+      </>
+    ),
+    usage: `import { StreakPill } from '@mobile/components'
+
+<StreakPill streak={8} />`,
+    render: () => (
+      <MVariant label="nothing at all when the streak is null — not a zero">
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <StreakPill streak={1} />
+          <StreakPill streak={8} />
+          <StreakPill streak={128} />
+          <StreakPill streak={null} />
+        </div>
+      </MVariant>
+    ),
+  },
+  {
+    group: 'm-content',
+    id: 'm-progress-bar',
+    name: 'ProgressBar',
+    desc: (
+      <>
+        <code>components/shared/ProgressBar</code> &mdash; the community goal&rsquo;s bar, and not
+        the same thing as the daily goal&rsquo;s.{' '}
+        <a href="#/m-app-chrome/m-daily-goal-banner">DailyGoalBanner</a> caps its track with a 32pt
+        star that fills when the goal is met; this one caps it with a 30pt disc of the tenant
+        colour, ringed in 5pt of white around a 10pt white dot. Two bars, two statements: one is a
+        reward, this one is a position.
+        <br />
+        <br />
+        The knob pulls back 15 &mdash; half its width &mdash; so it <strong>centres</strong> on the
+        bar&rsquo;s end rather than starting there, which is what keeps it on the line at 0% and at
+        100%. The fill also carries a flat band of its own colour lightened to 91%, 4 down with no
+        blur.
+      </>
+    ),
+    usage: `import { ProgressBar } from '@mobile/components'
+
+<ProgressBar progress={60} />`,
+    render: () => (
+      <>
+        <MVariant label="the knob centres on the end, at either extreme">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, width: 300 }}>
+            <ProgressBar progress={0} />
+            <ProgressBar progress={60} />
+            <ProgressBar progress={100} />
+          </div>
+        </MVariant>
+      </>
+    ),
+  },
+  {
+    group: 'm-content',
     id: 'm-profile-row',
     name: 'ProfileRow',
     desc: (
@@ -531,11 +862,19 @@ color: var(--m-green-dark);`,
         <code>src/components/ProfileRow.tsx</code>. The initials fallback is not a grey circle — the
         app paints it <code>redLight</code> with <code>orangeDark</code> text. The link badge marks
         a tandem reader.
+        <br />
+        <br />
+        <code>layout</code> is the source&rsquo;s <code>showProfileName</code> fork, which is really
+        two components under one name. <code>chip</code> stacks a clamped name under the avatar —
+        the grid form. <code>list</code> is <code>barContent</code>: a 45pt avatar with 15 to its
+        right and the name beside it at 16, taking the rest of the row. Every reader LIST in the app
+        is the second one, so <code>size</code> does not apply to it.
       </>
     ),
     usage: `import { ProfileRow } from '@mobile/components'
 
-<ProfileRow name="Theo Chen" size="medium" showName linked />`,
+<ProfileRow name="Theo Chen" size="medium" showName linked />
+<ProfileRow name="Theo Chen" layout="list" showName />`,
     render: () => (
       <>
         <MVariant label="the three sizes">
@@ -547,6 +886,16 @@ color: var(--m-green-dark);`,
         </MVariant>
         <MVariant label="linked — the badge marks a tandem reader">
           <ProfileRow name="Theo Chen" size="medium" showName linked />
+        </MVariant>
+        <MVariant label="layout=list — the 70pt row every reader list is built from">
+          <div style={{ width: 320, background: 'var(--m-white)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', height: 70, paddingLeft: 20 }}>
+              <ProfileRow layout="list" name="Maya Chen" showName />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', height: 70, paddingLeft: 20 }}>
+              <ProfileRow layout="list" name="Leo Chen" showName />
+            </div>
+          </div>
         </MVariant>
       </>
     ),
@@ -767,6 +1116,29 @@ color: var(--m-green-dark);`,
   },
 
   // ── Overlays ───────────────────────────────────────────────────────────
+  {
+    group: 'm-overlays',
+    id: 'm-confirm-dialog',
+    name: 'ConfirmDialog',
+    desc: (
+      <>
+        <code>friendsAndLeaderboards/components/modals/ConfirmationModal.tsx</code> &mdash; the
+        app&rsquo;s own dialog, and not <a href="#/m-overlays/m-alert">Alert</a>. The OS alert is
+        iOS drawing two equal buttons; this one makes the confirm a full-width branded button and
+        the cancel small text under it.
+        <br />
+        <br />
+        That difference is the use: the app reaches for this when it is{' '}
+        <strong>asking permission</strong> rather than warning you &mdash; a privacy notice before a
+        friend can see your log, a friend code you are about to invalidate. 16 radius, 20 either
+        side, fades in, and the backdrop dismisses.
+      </>
+    ),
+    usage: `import { ConfirmDialog } from '@mobile/components'
+
+<ConfirmDialog open={open} title="Privacy Notice" text={notice} confirmText="Accept" onConfirm={accept} onClose={close} />`,
+    render: () => <ConfirmDialogDemo />,
+  },
   {
     group: 'm-overlays',
     id: 'm-actions-modal',
@@ -1282,6 +1654,227 @@ color: var(--m-green-dark);`,
       <MScope pad={0} background="transparent">
         <TabBar tabs={DEMO_TABS} active="home" onChange={() => {}} />
       </MScope>
+    ),
+  },
+  {
+    group: 'm-controls',
+    id: 'm-toggletabs',
+    name: 'ToggleTabs',
+    desc: (
+      <>
+        The pill segmented control — <code>components/shared/toggleTabs/ToggleTabs.tsx</code>. A
+        two-or-three-way switch <em>inside</em> a screen, for choosing what a list shows.
+        <br />
+        <br />
+        Not to be confused with <code>TopTabs</code>, which is the underlined navigation row for a
+        tab&rsquo;s screens. The test is whether the choice changes <em>where you are</em> (TopTabs)
+        or <em>what is in front of you</em> (ToggleTabs) — All Titles ⇄ Completed, Minutes ⇄ Books.
+        <br />
+        <br />
+        It takes and returns the tab <strong>label</strong>, not an id, which is why callers that
+        key on a slug convert at the boundary. Convert with a real map rather than by munging the
+        string — the leaderboard shows a label that is not its id (&ldquo;Participation&rdquo; for{' '}
+        <code>participation_rate</code>), and a derived round-trip silently selects nothing.
+        <br />
+        <br />
+        <strong>DIVERGENCE — a label that does not fit ellipsises rather than wrapping.</strong> The
+        source&rsquo;s <code>&lt;Text&gt;</code> has no <code>numberOfLines</code>, so a long label
+        wraps to two lines inside a 32pt pill and that tab reads as a different height from its
+        neighbours. The pills stay equal thirds either way: <code>flex: 1 1 0%</code> sizes them off
+        the container, not off their text, so one long label never steals room from the others.
+      </>
+    ),
+    usage: `import { ToggleTabs } from '@mobile/components'
+
+<ToggleTabs tabs={['Minutes', 'Books']} currentTab={tab} setCurrentTab={setTab} />`,
+    render: () => {
+      const Demo = () => {
+        const [tab, setTab] = useState('All Titles')
+        const [count, setCount] = useState('Minutes')
+        return (
+          <>
+            <MVariant label="two — the common case">
+              <ToggleTabs
+                tabs={['All Titles', 'Completed']}
+                currentTab={tab}
+                setCurrentTab={setTab}
+              />
+            </MVariant>
+            <MVariant label="three — the leaderboard's school board, where the third is school-only">
+              <ToggleTabs
+                tabs={['Minutes', 'Books', 'Participation']}
+                currentTab={count}
+                setCurrentTab={setCount}
+              />
+            </MVariant>
+            <MVariant label="too long to fit — one line, ellipsised, same height as its neighbours">
+              <ToggleTabs
+                tabs={['Minutes', 'Participation Rate By Grade']}
+                currentTab="Minutes"
+                setCurrentTab={() => {}}
+              />
+            </MVariant>
+          </>
+        )
+      }
+      return <Demo />
+    },
+  },
+  {
+    group: 'm-content',
+    id: 'm-badge',
+    name: 'Badge',
+    desc: (
+      <>
+        <code>components/badges/Badge/Badge.tsx</code>, list variant — the row on the Log
+        tab&rsquo;s Badges screen and inside a challenge. (Its circle variant is the strip on Home,
+        which is <code>HomeBadges</code>.)
+        <br />
+        <br />
+        The medallion is a 76pt ring around a 56pt disc, and the two report{' '}
+        <strong>different things</strong>: the RING turns green only when <code>earnedOn</code> is
+        set, while the DISC takes the tenant colour whenever the badge counts as earned — which
+        includes a repeatable with completions but no earned date. So a repeatable in progress shows
+        a coloured disc inside a grey ring, and that is not a bug.
+        <br />
+        <br />
+        <code>markers</code> are the challenge&rsquo;s certificate / ticket / reward flags, passed
+        by the app&rsquo;s own <code>*Marker</code> names.
+      </>
+    ),
+    usage: `import { Badge } from '@mobile/components'
+
+<Badge title="Summer Reading" name="Week One" earnedOn="2026-06-08" earnedText="Earned Jun 8" />`,
+    render: () => (
+      <>
+        <MVariant label="earned — green ring, coloured disc">
+          <Badge
+            title="Summer Reading 2026"
+            name="Week One Finisher"
+            earnedOn="2026-06-08"
+            earnedText="Earned June 8, 2026"
+            art="linear-gradient(140deg,#19BFD5,#0E8CA0)"
+          />
+        </MVariant>
+        <MVariant label="repeatable in progress — grey ring, coloured disc">
+          <Badge
+            title="Summer Reading 2026"
+            name="Bookworm"
+            repeatable
+            completedItems={2}
+            earnedText="Completed 2 times"
+            art="linear-gradient(140deg,#FFBC42,#F26430)"
+          />
+        </MVariant>
+        <MVariant label="unearned — grey throughout">
+          <Badge title="Summer Reading 2026" name="Finish the Board" earnedText="Not yet earned" />
+        </MVariant>
+      </>
+    ),
+  },
+  {
+    group: 'm-content',
+    id: 'm-booklistitem',
+    name: 'BookListItem',
+    desc: (
+      <>
+        The title row — a cover, a title and an author — used by All Titles, search results and a
+        friend&rsquo;s reading log.
+        <br />
+        <br />
+        <code>cover</code> and <code>coverColor</code> are not alternatives to each other:{' '}
+        <code>cover</code> is a background value, while <code>coverColor</code> is a{' '}
+        <strong>bare hex</strong> the component prefixes with <code>#</code>. Passing a gradient to
+        the second one silently renders no cover at all.
+        <br />
+        <br />
+        <code>disabled</code> is the friend&rsquo;s-log case: the same row, inert. You can read what
+        they logged and you cannot open it, because there is no session of theirs for you to see.
+      </>
+    ),
+    usage: `import { BookListItem } from '@mobile/components'
+
+<BookListItem title="The Crossover" author="Kwame Alexander" coverColor="19BFD5" onPress={open} />`,
+    render: () => (
+      <>
+        <MVariant label="default">
+          <BookListItem
+            title="The Crossover"
+            author="Kwame Alexander"
+            abbreviation="TC"
+            coverColor="19BFD5"
+            onPress={() => {}}
+          />
+        </MVariant>
+        <MVariant label="with progress — only while totalCompletions is 0">
+          <BookListItem
+            title="Front Desk"
+            author="Kelly Yang"
+            abbreviation="FD"
+            coverColor="F26430"
+            showProgressBar
+            percentageCompleted={40}
+            onPress={() => {}}
+          />
+        </MVariant>
+        <MVariant label="disabled — a friend's log, readable but not openable">
+          <BookListItem
+            title="New Kid"
+            author="Jerry Craft"
+            abbreviation="NK"
+            coverColor="7B61FF"
+            disabled
+          />
+        </MVariant>
+      </>
+    ),
+  },
+  {
+    group: 'm-chrome',
+    id: 'm-tabbar-v2',
+    name: 'TabBarV2',
+    desc: (
+      <>
+        <strong>A proposal, not a port.</strong> The shipped <code>TabBar</code> stays exactly as it
+        is; this sits beside it so the handoff can show &ldquo;here is what ships, here is what we
+        are asking for&rdquo;.
+        <br />
+        <br />
+        What changes: one <strong>vector</strong> per tab instead of the active/inactive PNG pair,
+        which is what lets the active state tint at all; a tinted <strong>pill</strong> behind the
+        active icon, using the app&rsquo;s own <code>activeTab</code> pair rather than an invented
+        colour; the plus <strong>inside</strong> the bar as a centred 44pt circle instead of a 56pt
+        one lifted 10pt clear of it; <strong>no labels</strong>, since a solid icon in a tinted pill
+        was already saying it; and a <strong>dot</strong> rather than a count.
+        <br />
+        <br />
+        <code>variant=&quot;floating&quot;</code> lifts the bar off the screen edge entirely.
+        Content then scrolls UNDERNEATH it, which is the trade — and why{' '}
+        <code>.has-floating-bar</code> makes every scroller pay the clearance back.
+      </>
+    ),
+    usage: `import { TabBarV2 } from '@mobile/components'
+
+<TabBarV2 tabs={TABS} active="home" onChange={setTab} onPlus={open} variant="floating" />`,
+    render: () => (
+      <>
+        <MVariant label="attached — the bar meets the screen edge" pad={0} background="transparent">
+          <TabBarV2 tabs={DEMO_TABS} active="home" onChange={() => {}} onPlus={() => {}} />
+        </MVariant>
+        <MVariant
+          label="floating — inset 16, content scrolls underneath"
+          pad={0}
+          background="var(--m-c-background-home-gray)"
+        >
+          <TabBarV2
+            tabs={DEMO_TABS}
+            active="community"
+            onChange={() => {}}
+            onPlus={() => {}}
+            variant="floating"
+          />
+        </MVariant>
+      </>
     ),
   },
 ]

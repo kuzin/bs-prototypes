@@ -6,6 +6,17 @@
   flex: none;
 }
 
+/* `barContent` — the list form. It takes the row rather than sitting in it, which is why it is
+   the one layout that is not `flex: none`: the name has to be able to run out of room and
+   ellipsize instead of pushing the row's right-hand control off the edge. */
+.m-profile-list {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+}
+
 .m-profile-avatar {
   position: relative;
   display: flex;
@@ -76,4 +87,30 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* The list avatar is 45 with 15 to its right — the source's own numbers, and not one of the chip
+   sizes. Declared after the size rules so `size` cannot shrink a list row's avatar. */
+.m-profile-list .m-profile-avatar {
+  flex: none;
+  width: 45px;
+  height: 45px;
+  margin-right: 15px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.22px;
+  line-height: 17px;
+}
+
+/* `profileFirstNameText`. Beside the avatar rather than under it, and free to take the row — the
+   chip's 72px clamp would truncate "Maya Chen" in a list that has 200pt going spare. */
+.m-profile-list .m-profile-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: none;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: -0.29px;
+  color: var(--m-c-eerie-black);
+  text-align: left;
 }

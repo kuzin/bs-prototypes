@@ -1,0 +1,124 @@
+.m-fc {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-fc-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0 20px;
+}
+.m-fc-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* `refreshText` becomes a glyph — the header's end slot holds glyphs everywhere else in this
+   app. The padding is `m-sheethead-options`', not a guess: the header itself has none, so the
+   15pt inset on either side comes from the buttons. Without it the glyph sits flush on the
+   screen's edge while the dismiss chevron is 15 in, and the bar looks lopsided. */
+.m-fc-refresh {
+  display: flex;
+  flex: none;
+  align-items: center;
+  padding: 15px 15px 15px 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+/* `shareCodeText` — 18 centred with 40 either side, so the line breaks short. */
+.m-fc-lede {
+  margin: 28px 40px 0;
+  font-size: 18px;
+  line-height: 25px;
+  text-align: center;
+  color: var(--m-c-mine-black);
+}
+
+/* One composed shape, not a card: the panel, the avatar overlapping it from above, and the code
+   placed over it. */
+.m-fc-block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 56px;
+  padding-top: 45px;
+}
+
+/* `codeContainer` — 180 tall at radius 10, the tenant colour at 0.35. The opacity is what keeps
+   it a wash rather than a slab, whatever colour the site is. */
+.m-fc-panel {
+  display: block;
+  width: 100%;
+  height: 180px;
+  border-radius: 10px;
+  background: var(--m-accent);
+  opacity: 0.35;
+}
+
+/* 90pt in a 4pt white ring, hung over the panel's top edge. */
+.m-fc-avatar {
+  position: absolute;
+  top: 0;
+  display: flex;
+  border-radius: 50%;
+  border: 4px solid var(--m-white);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* `codeText` — 45/600 in blueDarkness, absolutely placed over the panel rather than laid out in
+   it, which is why the panel's own height never changes with the code. */
+.m-fc-code {
+  position: absolute;
+  top: 150px;
+  font-size: 45px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--m-c-blue-darkness, var(--m-grey-dark-1));
+}
+
+.m-fc-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 22px auto 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--m-grey-dark-1);
+}
+
+.m-fc-copy-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.m-fc-field {
+  margin-top: 28px;
+}
+
+/* `ErrorMessage` — the code you typed is quoted back, because by the time it fails the keyboard
+   is covering the field. */
+.m-fc-error {
+  margin: 20px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--m-c-red-error);
+}
+
+.m-fc-foot {
+  flex: none;
+  padding: 16px 20px 24px;
+}

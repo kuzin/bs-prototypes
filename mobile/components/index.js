@@ -9,6 +9,7 @@
 import '../base.css'
 
 export { PhoneFrame, DEVICES } from './PhoneFrame/PhoneFrame'
+export { FramePortal } from './FramePortal/FramePortal'
 export { Keyboard, KEYBOARD_HEIGHT } from './Keyboard/Keyboard'
 export { Header } from './Header/Header'
 export { SectionHeader } from './SectionHeader/SectionHeader'
@@ -36,8 +37,15 @@ export {
   RefreshControl,
   ListFooter,
 } from './Loading/Loading'
+export { ConfirmDialog } from './ConfirmDialog/ConfirmDialog'
+export { FriendAvatar } from './FriendAvatar/FriendAvatar'
 export { ProfileRow } from './ProfileRow/ProfileRow'
+export { ProgressBar } from './ProgressBar/ProgressBar'
+export { StreakPill } from './StreakPill/StreakPill'
 export { ProfileBar } from './ProfileBar/ProfileBar'
+export { FormField } from './FormField/FormField'
+export { TextField } from './TextField/TextField'
+export { ToggleSwitch } from './ToggleSwitch/ToggleSwitch'
 export * from './SheetHeader/SheetHeader'
 export * from './ActionsModal/ActionsModal'
 export * from './SelectSheet/SelectSheet'
@@ -48,3 +56,4 @@ export * from '../svg.generated'
 export { checkFidelity, reportFidelity } from '../fidelity'
 export { IMAGES, IMAGE_NAMES, BENNY_REACTIONS } from '../images.generated'
 export { accentVars, ACCENT_PRESETS, DEFAULT_ACCENT, darken, lightness, mix } from '../accent'
+export { friendColor, friendColorKey } from '../friendColor'

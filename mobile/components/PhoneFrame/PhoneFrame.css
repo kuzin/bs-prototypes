@@ -81,13 +81,30 @@
   transform: translateX(-50%);
 }
 
+/* The ground fades on the same curve and duration as the card's scale-back. Without the
+ * transition it flipped to black in one frame while the card took 320ms to shrink, so the
+ * background snapped and the card glided — two halves of one movement disagreeing, which reads
+ * as the modal jumping rather than presenting. */
 .m-frame-screen {
   position: relative;
   display: flex;
   flex-direction: column;
+  transition: background-color var(--m-motion-present);
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  /* CLIP, NOT HIDDEN — `hidden` still makes this a scroll container, and a device screen must
+   * never be scrollable.
+   *
+   * A presenting sheet begins at `translateY(100%)`, which parks 783pt of it below the screen and
+   * takes this box's scrollHeight from 852 to 1635. As the sheet slides up that overflow
+   * collapses again, and Chrome's scroll anchoring "helpfully" moved scrollTop to compensate:
+   * 0 → 183 → 0 over the same 320ms. The status bar, the island and the card all rode up 183pt
+   * and sank back — THAT is the bounce. The sheet's own animation was correct the whole time;
+   * the chrome was being scrolled out from under it. A screen with more content to anchor to
+   * bounced harder, which is why the friend modal was worse than the achievement modal.
+   *
+   * `clip` is not a scroll container at all, so there is nothing to anchor and nothing to scroll. */
+  overflow: clip;
   /* Per device. A 41pt rounding on the SE's square display clipped the status-bar time and the
    * tab-bar labels, because its 20/0 safe insets leave nothing between the chrome and the corner. */
   border-radius: var(--m-screen-radius, 41px);
@@ -109,19 +126,51 @@
   min-height: 0;
   transform-origin: top center;
   transition:
-    transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-radius 320ms ease;
+    transform var(--m-motion-present),
+    border-radius var(--m-motion-present);
 }
 
-/* Scaled back and rounded, the way iOS stacks a card modal behind its sheet.
+/* Scaled back and rounded — `forModalPresentationIOS`'s scale, computed per device in
+ * PhoneFrame.jsx. On a 393pt screen that is 0.949, which costs the card 10pt a side.
  *
- * The card stays BELOW the status bar — it is the sheet that drops, leaving a sliver of the card's
- * rounded edge in the gap. Lifting the card instead put its header over the status bar, which
- * never happens on device. */
+ * NO translate: RN's 37.32 exists to undo a centre-origin scale on a full-screen card and land
+ * its top at the status bar. This stage already starts there and scales from `top center`, so
+ * its top is already correct — see the derivation in PhoneFrame.jsx. Adding the translate here
+ * pushed the card below the sheet and hid it entirely. */
 .m-frame-screen.has-sheet .m-frame-stage {
-  transform: scale(0.913);
+  transform: scale(var(--m-present-scale));
   border-radius: 10px;
   overflow: hidden;
+}
+
+/* With a CARD up, the stage is behind a full-screen screen and is not visible at all — so the
+ * scale belongs to the card and the stage must not also take it. Both scaling looks fine until
+ * the sheet leaves, when two things unscale at once behind it. */
+.m-frame-screen.has-card .m-frame-stage {
+  transform: none;
+  border-radius: 0;
+}
+
+/* The card layer. It slides in ONCE, when the screen is pushed, and then holds its place — the
+ * transition below is for the scale-back a presented sheet asks of it, not for its arrival. */
+.m-frame-card.is-card {
+  transform-origin: top center;
+  transition:
+    transform var(--m-motion-present),
+    border-radius var(--m-motion-present);
+}
+
+/* `forModalPresentationIOS` again, this time with the card as the presenting screen. */
+.m-frame-screen.has-sheet .m-frame-card.is-card {
+  transform: scale(var(--m-present-scale));
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Leaving, the card slides back out the way it came. `m-card-out` needs to beat the entrance
+ * animation still declared on `.m-frame-card`, hence the later rule and `forwards`. */
+.m-frame-card.is-card.is-closing {
+  animation: m-card-out var(--m-motion-present) forwards;
 }
 
 /* ── Status bar ─────────────────────────────────────────────────────────── */
@@ -132,9 +181,14 @@
  * Bottom-aligning it instead dropped the time and the glyphs ~18pt below the island they are
  * supposed to flank. On the SE there is no island and the same rule centres the text in its 20pt
  * bar, which is also correct. */
+/* Inverts on the same curve — the glyphs going white in one frame was the other half of the
+ * snap. */
 .m-statusbar {
   position: relative;
   z-index: 3;
+  transition:
+    color var(--m-motion-present),
+    background-color var(--m-motion-present);
   display: flex;
   flex: none;
   align-items: center;
@@ -212,11 +266,23 @@
  * The FRAME scrolls, not the page. Without this the prototype would scroll the
  * browser window and the chrome would slide away — which is exactly the thing
  * a device shell exists to prevent. */
+/* Screen content NEVER paints over the chrome, whatever z-index it carries.
+ *
+ * React Native scopes a `zIndex` to its parent, so screens ported from the app are full of large
+ * ones that only ever meant "above my sibling" — the event date chip is `zIndex: 99999` and the
+ * challenge state pill is 9999. In CSS a number climbs to the nearest stacking context, and a
+ * plain `position: relative` card does not make one, so those values were competing with the tab
+ * bar and winning: the date chip painted on top of the tab bar as its card scrolled behind it.
+ *
+ * `isolation` makes this box the ceiling. Nothing inside is reordered — the chip still sits above
+ * its own panel — but the whole scroll region now resolves as one layer, under the tab bar that
+ * follows it. Fixing it here rather than card by card means the next ported screen inherits it. */
 .m-frame-body {
   flex: 1 1 0%;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  isolation: isolate;
   overflow: hidden;
 }
 
@@ -244,19 +310,44 @@
  * presenting card's rounded edge peeking above it. */
 .m-frame-sheet {
   position: absolute;
-  /* 8pt below the presenting card's top edge, which is what leaves that edge visible. */
-  top: calc(var(--m-safe-top) + 8px);
+  /* `marginTop: statusBarHeight` then `translateY: topOffset` — so the sheet's top is the safe
+     inset plus 10, and the 10 is the sliver of card left showing above it. */
+  top: calc(var(--m-safe-top) + var(--m-present-peek, 10px));
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 200;
+  /* Above `.m-frame-card`, which is 200 — a presented sheet covers the card presenting it. */
+  z-index: 250;
   display: flex;
   flex-direction: column;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   background: var(--m-white);
   overflow: hidden;
-  animation: m-sheet-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: m-sheet-in var(--m-motion-present);
+}
+
+/* Out is in, reversed — the spec uses one `TransitionIOSSpec` for both directions. */
+.m-frame-sheet.is-closing {
+  animation: m-sheet-out var(--m-motion-present) forwards;
+  pointer-events: none;
+}
+
+.m-frame-card.is-closing {
+  animation: m-card-out var(--m-motion-present) forwards;
+  pointer-events: none;
+}
+
+@keyframes m-sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes m-card-out {
+  to {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes m-sheet-in {
@@ -278,6 +369,15 @@
   --m-safe-bottom: 0px;
 }
 
+/* Device chrome, like the status bar and the island — so it sits above EVERY app layer, action
+ * sheets and alerts included. iOS composites the home indicator over all of them; nothing an app
+ * draws can hide it.
+ *
+ * Getting this wrong is not just a missing line. A bottom sheet pays
+ * `max(--m-safe-bottom, 16px)` at its foot to keep its last row clear of the indicator, so with
+ * the indicator hidden behind it that 34pt reads as an unexplained gap — and the tempting fix is
+ * to delete the padding, which would put the row under the indicator on a real device. At 210 the
+ * sheet (400) and the alert (500) both buried it. */
 .m-home-indicator {
   position: absolute;
   left: 50%;
@@ -289,21 +389,29 @@
   opacity: 0.85;
   transform: translateX(-50%);
   pointer-events: none;
-  z-index: 5;
+  z-index: 600;
 }
 
-/* A PUSHED screen rather than a presented one. It covers the whole navigator — including the
- * status bar area, which it paints itself — with no scale-back behind it, no black ground and no
- * peeking card edge, because nothing is being presented over anything. It slides in from the
- * right, which is the other half of how a push reads. */
+/* A PUSHED screen rather than a presented one. It covers the whole navigator — no scale-back
+ * behind it, no black ground and no peeking card edge, because nothing is being presented over
+ * anything. It slides in from the right, which is the other half of how a push reads.
+ *
+ * It starts BELOW the status bar. A pushed screen is inside the navigator, and the navigator sits
+ * under the safe-area inset: the status bar and the island are the device's, and no app screen
+ * ever paints over them. Running the card to `inset: 0` hid both, which read as the app going
+ * full-screen — a different thing entirely, and the reason the header looked jammed into the
+ * glass. Only the sheet gets to change the status bar, and even then it only INVERTS it. */
 .m-frame-card {
   position: absolute;
-  inset: 0;
+  top: var(--m-safe-top);
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 200;
   display: flex;
   flex-direction: column;
   background: var(--m-white);
-  animation: m-card-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: m-card-in var(--m-motion-present);
 }
 
 @keyframes m-card-in {

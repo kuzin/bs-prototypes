@@ -1,0 +1,63 @@
+/* The shell both editors share — a header, a scrolling form, a pinned Save. */
+.m-edf {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-edf-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  background: var(--m-white);
+}
+.m-edf-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* The book editor's rhythm — boxes 12 apart with 20 either side — rather than a rule between every
+   field. A box carries its own edges, so the hairlines that made the Material fields legible are
+   noise between them.
+
+   BETWEEN SECTIONS is the other case, and there the rule earns its place: a section break is a
+   change of subject, and 20pt of air alone left the last box of one group and the title of the
+   next reading as one run. `renderFullScreenSeparator`, so it goes edge to edge rather than
+   inset to the fields. */
+.m-edf-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 20px 24px;
+}
+
+/* Between, not above the first — the header carries its own border, and stacking a second line
+   under it reads as one heavy rule rather than two deliberate ones. */
+.m-edf-group + .m-edf-group {
+  border-top: 1px solid var(--m-c-border);
+}
+
+/* `secondaryTitle`, one rung under the page heading on Accounts and Readers — three section
+   titles at that 20 would compete with the fields they organise. 20 above, and 8 below that the
+   group's own 12pt gap takes to 20. */
+.m-edf-section {
+  margin: 20px 0 8px;
+}
+
+/* Pinned outside the scroll, and ruled off it the way the book editor's foot is — so Save reads
+   as the screen's action rather than as the thing after the last field. */
+.m-edf-save {
+  flex: none;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  background: var(--m-white);
+  border-top: 1px solid var(--m-c-border);
+}
+
+/* `Delete Account` — the same 16-radius button in `brandColors.red`, but INSIDE the scroll, under
+   the last field. Destructive and reachable, without sitting next to Save. */
+.m-edf-delete {
+  padding: 16px 20px;
+}

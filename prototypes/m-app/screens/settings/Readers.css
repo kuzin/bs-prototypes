@@ -1,0 +1,76 @@
+/* Laid out like Accounts — white, 20 either side — rather than the app's form-grey SectionList.
+   A deliberate divergence: the two screens are siblings in Settings and were reading as unrelated
+   surfaces. See the note on the component. */
+.m-rdr {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-rdr-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0 20px;
+}
+.m-rdr-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.m-rdr-heading {
+  margin: 20px 0;
+}
+
+.m-rdr-rule {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: var(--m-c-table-separator);
+  transform: scaleY(0.5);
+}
+
+/* `ProfileListItem` keeps its 70pt. Accounts' rows are 80 (a 48 tile with 16 either side), so the
+   two lists are close without being forced to the same number — the reader row is the app's. */
+.m-rdr-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 70px;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  text-align: left;
+}
+.m-rdr-row:active {
+  opacity: 0.6;
+}
+
+/* `new_arrow_right` at 24, the arrow Accounts uses — not the 28×16 `disclosure_indicator` the app
+   puts on this list. Part of matching the sibling screen. */
+.m-rdr-arrow {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+/* The Add row borrows Accounts' neutral tile so the two screens end the same way. */
+.m-rdr-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-right: 12px;
+  border-radius: 50%;
+  background: var(--m-c-form-gray-background);
+}
+
+.m-rdr-add {
+  color: var(--m-c-secondary);
+  font-weight: 400;
+}

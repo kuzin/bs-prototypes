@@ -53,6 +53,21 @@
    * with shadowOpacity: 1. We take the iOS branch as intent — the Android
    * value would render cards roughly 8× too dark. */
   --m-shadow-card: 0 5px 15px rgba(0, 0, 0, 0.06);
+
+  /* PRESENTATION MOTION — one duration and one curve for everything that arrives over the
+   * screen: a modal sheet, a pushed card, an action sheet, a select sheet, and the ground and
+   * status bar that move with them.
+   *
+   * The curve matters more than the duration here. The old one, `cubic-bezier(0.2, 0.8, 0.2, 1)`,
+   * was 40% through the movement at a TENTH of its duration and 95% by halfway — so a 320ms
+   * transition did everything visible in about 140 and then crept imperceptibly for 180 more.
+   * That reads as a jump followed by nothing, which is exactly what it looked like.
+   *
+   * `cubic-bezier(0.3, 0, 0, 1)` spreads the same 320ms: 6% at a tenth, 53% at a quarter, 87% by
+   * halfway. It still leaves promptly — a sheet should not creep off the mark — but the motion
+   * is where you can see it. */
+  --m-motion-present: 320ms cubic-bezier(0.3, 0, 0, 1);
+  --m-ease-present: cubic-bezier(0.3, 0, 0, 1);
   --m-shadow-chrome: 0 3px 13px rgba(0, 0, 0, 0.05);
   --m-shadow-float: 0 3px 8px rgba(0, 0, 0, 0.12);
 

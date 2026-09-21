@@ -1,0 +1,35 @@
+/* `createToggleSwitchStyle` — the track. Radius 16 whatever the size, so a large switch is a
+   stadium and a small one is nearly a pill. */
+.m-tgl {
+  position: relative;
+  flex: none;
+  width: var(--m-tgl-w);
+  height: calc(var(--m-tgl-knob) + 8px);
+  padding: 0;
+  cursor: pointer;
+  background: var(--m-c-light-gray);
+  border: 0;
+  border-radius: 16px;
+  transition: background 0.3s ease;
+}
+
+.m-tgl.is-on {
+  background: var(--m-c-jade-green);
+}
+
+/* `createInsideCircleStyle` — margin 4, and `translateX` runs to `width - translateX`, which is
+   what leaves the same 4 on the far side. */
+.m-tgl-knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: var(--m-tgl-knob);
+  height: var(--m-tgl-knob);
+  border-radius: 50%;
+  background: var(--m-white);
+  transition: transform 0.3s ease;
+}
+
+.m-tgl.is-on .m-tgl-knob {
+  transform: translateX(calc(var(--m-tgl-x) - 8px));
+}

@@ -1,3 +1,4 @@
+import { FramePortal } from '../FramePortal/FramePortal'
 import './SelectSheet.css'
 
 /**
@@ -22,31 +23,35 @@ import './SelectSheet.css'
 export function SelectSheet({ open, items = [], selectedId, onSelect, onClose }) {
   if (!open) return null
 
+  /* Portals to the frame root, the way RN's `Modal` does — see FramePortal. Rendering in
+     place leaves the sheet inside whatever stacking context its caller happens to sit in. */
   return (
-    <div className="m-ss">
-      <button type="button" className="m-ss-backdrop" onClick={onClose} aria-label="Close" />
+    <FramePortal>
+      <div className="m-ss">
+        <button type="button" className="m-ss-backdrop" onClick={onClose} aria-label="Close" />
 
-      <div className="m-ss-sheet" role="dialog" aria-label="Select">
-        {/* gorhom's default handle. `enablePanDownToClose` is what it affords. */}
-        <span className="m-ss-handle" aria-hidden="true" />
+        <div className="m-ss-sheet" role="dialog" aria-label="Select">
+          {/* gorhom's default handle. `enablePanDownToClose` is what it affords. */}
+          <span className="m-ss-handle" aria-hidden="true" />
 
-        <ul className="m-ss-list">
-          {items.map((item) => (
-            <li key={item.id}>
-              <button
-                type="button"
-                className={`m-ss-item${item.id === selectedId ? ' is-selected' : ''}`}
-                onClick={() => {
-                  onSelect?.(item.id)
-                  onClose?.()
-                }}
-              >
-                <span className="m-t-body-regular">{item.label}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
+          <ul className="m-ss-list">
+            {items.map((item) => (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  className={`m-ss-item${item.id === selectedId ? ' is-selected' : ''}`}
+                  onClick={() => {
+                    onSelect?.(item.id)
+                    onClose?.()
+                  }}
+                >
+                  <span className="m-t-body-regular">{item.label}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </div>
+    </FramePortal>
   )
 }

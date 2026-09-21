@@ -1,0 +1,206 @@
+/* `fullChallengeView` — 16pt top corners, and `modalStyle` pins it to the bottom with no side
+ * margin. The frame's sheet chrome supplies the inset from the top. */
+.m-jc {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  background: var(--m-white);
+}
+
+/* `joinChallengeHeaderRow` — 60 tall, 20 either side. */
+.m-jc-head {
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  height: 60px;
+  margin: 0 20px;
+}
+
+/* 1 / 2 / 1. The centre cell is twice either end, so the title sits on the true centre of the
+ * sheet whether or not Ignore is rendered — sizing the ends to content instead moves the title
+ * every time the right-hand button appears. */
+.m-jc-head-cell {
+  display: flex;
+  align-items: center;
+}
+
+.m-jc-head-left {
+  flex: 1 1 0%;
+  justify-content: flex-start;
+}
+
+.m-jc-head-center {
+  flex: 2 1 0%;
+  min-width: 0;
+  justify-content: center;
+}
+
+.m-jc-head-right {
+  flex: 1 1 0%;
+  justify-content: flex-end;
+}
+
+/* `TextButton` with `textStyle: { color: primaryColor }` — both header actions are the tenant
+ * colour, which is what keeps Ignore from reading as destructive. It moves a challenge, it does
+ * not delete one. */
+.m-jc-text-btn {
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: -0.28px;
+  color: var(--m-accent);
+  cursor: pointer;
+}
+
+.m-jc-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.m-jc-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--m-white);
+  scrollbar-width: none;
+}
+
+.m-jc-scroll::-webkit-scrollbar {
+  width: 0;
+}
+
+/* `challengeColorSpacer` — 550 tall at `marginTop: -500`. Only 50 shows; the other 500 is what
+ * an overscroll pulls into view, so the top of the sheet stretches in colour instead of white. */
+.m-jc-spacer {
+  height: 550px;
+  margin-top: -500px;
+}
+
+/* `curvedGreyImage` — 43 tall at `marginTop: -1`. The overlap is deliberate: at 0 a hairline of
+ * background shows through the seam between the spacer and the curve. */
+.m-jc-curve {
+  display: block;
+  width: 100%;
+  height: 43px;
+  margin-top: -1px;
+}
+
+.m-jc-head-image {
+  border-radius: 10px;
+  background: var(--m-white);
+}
+
+/* The same `HeaderImage` as the detail screen — `marginTop: -80`, 20 either side, radius 10. */
+.m-jc-banner {
+  margin: -80px 20px 0;
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.07));
+}
+
+.m-jc-banner-wrap {
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.m-jc-banner-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 920 / 351;
+}
+
+/* `challengeMeta` — 32 above, 20 either side. */
+.m-jc-meta {
+  margin: 32px 20px 0;
+}
+
+.m-jc-name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 28px;
+  color: var(--m-grey-dark-1);
+  text-align: center;
+}
+
+.m-jc-date {
+  margin: 6px 0 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 23px;
+  color: var(--m-grey-dark-3);
+  text-align: center;
+}
+
+/* `challengeLogTypeView` — 14 above, centred and wrapping, with each pill carrying its own 10pt
+ * top margin so a second row is spaced from the first. */
+.m-jc-types {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.m-jc-type {
+  margin: 10px 4px 0;
+}
+
+/* `challengeDescription` — 32 of margin AND 32 of padding above the rule's content, which is
+ * what puts the rule a clear 32 below the pills and the heading a clear 32 under the rule. */
+.m-jc-description {
+  padding: 32px 20px 0;
+  margin-top: 32px;
+  border-top: 1px solid var(--m-grey-light-3);
+}
+
+.m-jc-description h2 {
+  margin: 0;
+}
+
+/* `descriptionBase` — 16/23 greyDark2, and 16 under the heading with 32 at the foot. */
+.m-jc-description-body {
+  margin: 16px 0 32px;
+  font-size: 16px;
+  line-height: 23px;
+  color: var(--m-grey-dark-2);
+}
+
+.m-jc-description-body p {
+  margin: 0 0 14px;
+}
+
+.m-jc-description-body p:last-child,
+.m-jc-description-body ul:last-child {
+  margin-bottom: 0;
+}
+
+.m-jc-description-body ul,
+.m-jc-description-body ol {
+  margin: 0 0 14px;
+  padding-left: 22px;
+}
+
+.m-jc-description-body li {
+  margin-bottom: 6px;
+}
+
+.m-jc-description-body strong {
+  font-weight: 800;
+}
+
+/* `buttonContainer` — a ruled white floor, `paddingTop: 16` and `paddingBottom: 16 + inset`. */
+.m-jc-foot {
+  flex: none;
+  padding: 16px 20px calc(16px + var(--m-safe-bottom, 0px));
+  border-top: 1px solid var(--m-grey-light-4);
+  background: var(--m-white);
+}

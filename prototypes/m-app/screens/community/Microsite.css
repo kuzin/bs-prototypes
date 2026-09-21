@@ -1,0 +1,194 @@
+/* Home's rhythm, value for value — see HomeScreen.css. THE PAGE owns it, not the cards: every
+   card here is marginless, so adding or removing a section cannot leave a double gap or none.
+   Two steps, and the second is the point: 16 between the stacked cards at the top, which are
+   read in one glance, and 56 between the SECTIONS, which are separate subjects. 24 on the first
+   child because the tabs above it already set an inset, and 58 at the foot. */
+.m-ms {
+  display: flex;
+  flex-direction: column;
+  background: var(--m-c-background-home-gray);
+  padding-bottom: 58px;
+}
+
+.m-ms > * + * {
+  margin-top: 16px;
+}
+
+.m-ms > .m-ms-section {
+  margin-top: 56px;
+}
+
+.m-ms > *:first-child {
+  margin-top: 24px;
+}
+
+/* The site's card — mark over name, centred, the only thing on the screen that is not a section. */
+.m-ms-head {
+  align-items: center;
+}
+
+/* The mark is contained in a fixed band so a wide logo and a square one occupy the same height. */
+.m-ms-logo {
+  width: 55%;
+  height: 56px;
+  object-fit: contain;
+}
+
+/* `text` — 18/800 centred. The app clamps it to half the width so a long name wraps to two short
+   lines instead of running the full measure; inside a card that becomes 80%. */
+.m-ms-name {
+  width: 80%;
+  margin: 12px 0 0;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* `funnelContainer` — the app hangs a `blueLight` band behind a 90%-wide image, inset 15 top and
+   bottom, so a full-bleed banner on a white page gets a soft edge instead of ending in mid-air.
+   On a grey ground with cards that band is vestigial: the banner IS a card, the page already
+   gives it an edge, and a blue strip in the gutter reads as a stray third colour. Dropped, and
+   the banner takes the card's own width and radius.
+
+   The height still follows the art's aspect ratio, which is the part that matters — the source
+   measures the image and sizes the holder to it rather than cropping to a fixed band. */
+.m-ms-funnel {
+  margin-left: var(--m-gutter);
+  margin-right: var(--m-gutter);
+  border-radius: var(--m-radius-card);
+  overflow: hidden;
+  box-shadow: var(--m-shadow-card);
+}
+
+.m-ms-funnel-art {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  aspect-ratio: 353 / 132;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.45), transparent 60%),
+    linear-gradient(135deg, #f2a03d, #e0632f 60%, #c2417a);
+  color: var(--m-white);
+  text-align: center;
+  padding: 0 20px;
+}
+
+.m-ms-funnel-title {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+}
+
+.m-ms-funnel-sub {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.92;
+}
+
+/* The section wrapper; the label itself is the shared `.m-comm-label` in community.css. */
+.m-ms-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.m-ms-days {
+  display: flex;
+  align-items: center;
+}
+
+.m-ms-clock {
+  width: 18px;
+  height: 18px;
+  margin-right: 5px;
+}
+
+.m-ms-days-text {
+  font-size: 12px;
+  line-height: 28px;
+  letter-spacing: 0.19px;
+  font-weight: 500;
+  color: var(--m-c-bajo-gray, var(--m-grey-dark-3));
+}
+
+/* The app runs this on ONE line and only just: at 27/900 plus 20/700 the string needs ~345 of
+   the 355 a full-bleed section leaves. A card is 50 narrower, so it wrapped — and a wrap that
+   drops the word "minutes" onto its own line looks like a bug rather than a measure.
+   Stacked deliberately instead: the count, then what it is out of. */
+.m-ms-tally {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 20px;
+  font-size: 27px;
+  font-weight: 900;
+  line-height: 30px;
+  letter-spacing: 0.43px;
+}
+
+.m-ms-goal-rest {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  letter-spacing: 0.43px;
+  color: var(--m-c-chevron-gray, var(--m-grey-dark-3));
+}
+
+.m-ms-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* `progressBarContainer` — 85%, which is what leaves the percentage its own column. */
+.m-ms-bar {
+  display: flex;
+  width: 85%;
+}
+
+.m-ms-percent {
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 17px;
+}
+
+/* ── Events ───────────────────────────────────────────────────────────── */
+/* The card is the EVENT, not the section: the carousel bleeds past the gutter so the next one's
+   edge shows, and wrapping it would clip exactly the thing that says the row scrolls.
+
+   The event panel is `greyLight7` in the app, which works on the white page it was drawn for and
+   vanishes on this one. White, with the page's own card shadow, so an event reads as a card like
+   everything else here. Scoped to this tab — the Discover list still sits on white, where the
+   grey is right. */
+.m-ms-section .m-ev-panel {
+  background: var(--m-white);
+  box-shadow: var(--m-shadow-card);
+}
+
+/* ── Sponsors ─────────────────────────────────────────────────────────── */
+.m-ms-sponsor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* One card each, centred. A ruled column of four reads as one list; four cards read as four
+   backers, which is what they are — and centring gives marks of different widths a common axis
+   that a left edge cannot. */
+.m-ms-sponsor {
+  align-items: center;
+  justify-content: center;
+  padding: 18px var(--m-space-6);
+}
+
+/* The marks are drawn on a common 200×56 canvas so four different lockups share one optical
+   height — a centred stack and a single-line wordmark otherwise sit at different weights in the
+   same card. */
+.m-ms-sponsor-mark {
+  display: block;
+  width: 200px;
+  max-width: 100%;
+}

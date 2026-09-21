@@ -1,0 +1,184 @@
+.m-crl {
+  padding-bottom: 40px;
+  background: var(--m-white);
+}
+
+/* `renderSubHeader` — `marginTop: 40` because the origin is ChallengeDetail; on the standalone
+ * Reading List screen it has none. */
+.m-crl-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 40px 20px 16px;
+}
+
+/* `SectionSmallTitle` — `fontStyles.titleSmall`. */
+.m-crl-count {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  color: var(--m-grey-dark-1);
+}
+
+.m-crl-toggle {
+  display: flex;
+  padding: 4px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.m-crl-toggle-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* `renderRequiredSubHeader` — 5 above, 19 below. */
+.m-crl-required {
+  margin: 5px 20px 19px;
+}
+
+.m-crl-required-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  color: var(--m-grey-dark-1);
+}
+
+/* `SectionSmallTitle`'s subtitle slot — `bodySmall` in the muted colour. */
+.m-crl-required-sub {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+}
+
+/* `renderHeader` — only "More Titles" ever reaches this, and only under `specific`. */
+.m-crl-section {
+  margin: 36px 20px 15px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  color: var(--m-grey-dark-1);
+}
+
+/* `numColumns: 3` with `columnWrapper` padding 12 / 8, and each cover carries its own 8pt side
+ * margin on top of that. */
+.m-crl-books.is-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 8px 12px 32px;
+}
+
+.m-crl-books.is-list {
+  padding-bottom: 28px;
+}
+
+.m-crl-grid-item {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.m-crl-grid-item:active {
+  opacity: 0.5;
+}
+
+/* `listRow` — 20 either side, 12 top and bottom, with a greyLight4 press state. */
+.m-crl-row {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 20px;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.m-crl-row:active {
+  background: var(--m-grey-light-4);
+}
+
+.m-crl-book {
+  position: relative;
+  margin: 0 8px;
+}
+
+/* `fluidWidth` in the grid — the cover fills its column and keeps the app's 2:3 proportion.
+ * The list row's cover is the fixed 80 × 120 instead. */
+.m-crl-book.is-grid {
+  width: auto;
+}
+
+.m-crl-book.is-list {
+  flex: none;
+  width: 80px;
+  margin-left: 0;
+  margin-right: 20px;
+}
+
+.m-crl-cover {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  aspect-ratio: 2 / 3;
+  padding: 8px;
+  border-radius: 4px;
+  background: var(--m-grey-light-2);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.m-crl-cover-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 17px;
+  color: var(--m-white);
+}
+
+.m-crl-shadow {
+  position: absolute;
+  bottom: -5px;
+  left: 8px;
+  right: 8px;
+  height: 16px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.m-crl-row-text {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.m-crl-row-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.m-crl-row-author {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

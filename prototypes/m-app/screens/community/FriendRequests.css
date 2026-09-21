@@ -1,0 +1,54 @@
+.m-frq {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-frq-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 8px 0 100px;
+}
+.m-frq-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.m-frq-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--m-c-border);
+}
+
+.m-frq-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 16px;
+  color: var(--m-c-mine-black);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Accept is a button and Decline is text — a pair with a default, not two equal answers. */
+.m-frq-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 14px;
+}
+
+.m-frq-decline {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--m-grey-dark-3);
+}

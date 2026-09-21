@@ -24,6 +24,36 @@ import './PhoneFrame.css'
  * and the tab labels, which is exactly what happened here. Its thicker top/bottom bezel is where
  * the earpiece and the home button live.
  */
+/**
+ * `forModalPresentationIOS` — React Navigation's own interpolator, which is what a
+ * `presentation: 'modal'` screen on `@react-navigation/stack` actually runs:
+ *
+ *   topOffset   10 in portrait, 0 in landscape
+ *   scale       1 - (topOffset * 2) / screenWidth        → 0.949 on a 393pt screen
+ *   translateY  statusBarHeight - topOffset * (h / w)    → 37.32pt
+ *   radius      10
+ *   sheet       marginTop statusBarHeight, then translateY topOffset
+ *
+ * TAKE THE SCALE, NOT THE TRANSLATE — the two live in different coordinate spaces.
+ *
+ * RN's card is the WHOLE screen, y 0 to 852, and RN scales from the CENTRE. So the scale alone
+ * drops its top by half the height it loses, (852 - 852×0.949)/2 = 21.68, and the 37.32 translate
+ * carries it the rest of the way: 21.68 + 37.32 = 59.00, exactly the status bar's height. The
+ * translate exists to undo a centre-origin scale and land the card under the status bar.
+ *
+ * Our stage already BEGINS at the status bar's bottom and scales from `top center`, so its top
+ * does not move at all — it is already where RN's two operations arrive. Applying the translate
+ * on top of that pushed the card to 96, below the sheet, and hid the thing the whole presentation
+ * exists to show.
+ *
+ * What is left is the sliver: RN's sheet sits at statusBarHeight + topOffset = 69, against a card
+ * top of 59, so 10pt of card shows above it. That 10 is `MODAL_TOP_OFFSET` again.
+ */
+const MODAL_TOP_OFFSET = 10
+
+/** The presentation duration, in step with `--m-motion-present` in base.css. */
+const PRESENT_MS = 320
+
 export const DEVICES = {
   'iphone-16-pro': {
     name: 'iPhone 16 Pro',
@@ -193,6 +223,19 @@ export function PhoneFrame({
    */
   overlayVariant = 'sheet',
   overlay,
+  /**
+   * A PUSHED SCREEN, held in its own layer for as long as it is open.
+   *
+   * It is not an `overlay` variant, and that distinction is the whole point: a card can have a
+   * sheet presented over it, so it must not share a slot with one. Passed through `overlay` the
+   * two took turns — opening a badge from a challenge unmounted the challenge, and closing the
+   * badge slid the challenge back IN FROM THE RIGHT as if freshly pushed while the sheet was
+   * deleted outright rather than animating away.
+   *
+   * Here it mounts once, animates in once, takes the scale-back while a sheet is over it, and
+   * unscales when that sheet leaves. It never moves.
+   */
+  card,
   /** A root-mounted `ActionsModal`, above the overlay and the tab bar both. */
   actionSheet,
   scroll = true,
@@ -232,6 +275,74 @@ export function PhoneFrame({
     setKbOpen(false)
   }, [hasOverlay])
 
+  /**
+   * THE CLOSE IS THE OPEN IN REVERSE, and it was not.
+   *
+   * `ModalPresentationIOS` uses the same `TransitionIOSSpec` for `open` and `close`, and runs
+   * `forModalPresentationIOS` backwards — so the sheet slides back down over the full duration
+   * while the card scales and lifts back. Here the card did animate back, because its transform
+   * is a transition on an element that stays mounted, but the SHEET was simply removed from the
+   * DOM the instant state changed. Half the movement played and half of it cut, which is why
+   * closing felt wrong in a way opening did not.
+   *
+   * So the last overlay is held for the length of the exit and rendered with `is-closing`, which
+   * runs the slide-out. The `has-sheet` class comes off immediately, because the card should
+   * start its journey back at the same moment the sheet starts its own.
+   */
+  /* A sheet is presented — the black ground, the scale-back and the inverted status bar all key
+     off this rather than off "an overlay exists", because a pushed card is neither presented nor
+     presenting anything. */
+  const hasSheet = Boolean(overlay) && overlayVariant === 'sheet'
+
+  /**
+   * THE EXIT IS MOUNTED FROM THE REF, NOT FROM STATE — which is the difference between a clean
+   * close and a flash.
+   *
+   * With `is-closing` arriving as a state update from an effect, closing took TWO commits: the
+   * first dropped the overlay out of the DOM entirely, the second put it back wearing the exit
+   * class. Measured 11–15ms apart, so the browser painted the gap about as often as not, and for
+   * that frame the sheet was simply absent — you saw the scaled screen on its black ground where
+   * a white sheet had been. THAT is the flash, and which screens showed it was pure luck about
+   * where the two commits fell against a frame boundary. The gap closing a review measured 11ms
+   * and closing an activity 15ms; only the second one was reliably visible.
+   *
+   * Holding the element on a REF instead puts the class in the SAME commit as `overlay` going
+   * null. Nothing unmounts, nothing is re-created, and there is no gap to paint. State is only
+   * what finally drops it, one transition later.
+   */
+  const [, endExit] = useState(0)
+  const dropAfterExit = useCallback((held) => {
+    const timer = setTimeout(() => {
+      held.current = null
+      endExit((n) => n + 1)
+    }, PRESENT_MS)
+    return () => clearTimeout(timer)
+  }, [])
+
+  /* The card's exit, held the same way the overlay's is. Without it a closing card vanishes
+     instead of sliding back out, which is the same cut the comment above describes. */
+  const lastCard = useRef(null)
+  if (card) lastCard.current = card
+  const heldCard = lastCard.current
+  const cardClosing = Boolean(heldCard) && !card
+
+  useEffect(() => (cardClosing ? dropAfterExit(lastCard) : undefined), [cardClosing, dropAfterExit])
+
+  const lastOverlay = useRef(null)
+  /* The VARIANT is held with the element, because `overlayVariant` is derived from whatever is
+   * open and falls back to `sheet` the moment nothing is. A closing card therefore turned into a
+   * sheet on its way out and left DOWNWARDS — Settings slid off the bottom instead of back to
+   * the right, which is the wrong navigation model played backwards. */
+  const lastVariant = useRef(overlayVariant)
+  if (overlay) {
+    lastOverlay.current = overlay
+    lastVariant.current = overlayVariant
+  }
+  const heldOverlay = lastOverlay.current
+  const closing = Boolean(heldOverlay) && !overlay
+
+  useEffect(() => (closing ? dropAfterExit(lastOverlay) : undefined), [closing, dropAfterExit])
+
   const dismissKeyboard = useCallback(() => {
     document.activeElement?.blur?.()
     setKbOpen(false)
@@ -247,6 +358,10 @@ export function PhoneFrame({
       '--m-screen-w': `${d.width}px`,
       '--m-screen-h': `${d.height}px`,
       '--m-screen-radius': `${d.radius ?? 41}px`,
+      // `forModalPresentationIOS`'s scale — the translate is absorbed by our origin, see above.
+      '--m-present-scale': 1 - (MODAL_TOP_OFFSET * 2) / d.width,
+      // The card's visible sliver above the sheet: RN's `topOffset`.
+      '--m-present-peek': `${MODAL_TOP_OFFSET}px`,
       '--m-bezel-x': `${d.bezel?.x ?? 3}px`,
       '--m-bezel-y': `${d.bezel?.y ?? 3}px`,
       '--m-island-w': `${d.island?.w ?? 0}px`,
@@ -278,19 +393,16 @@ export function PhoneFrame({
       )}
 
       <div
-        className={`m-frame-screen${overlay ? ' has-sheet' : ''}${kbOpen ? ' has-keyboard' : ''}`}
+        className={`m-frame-screen${hasSheet ? ' has-sheet' : ''}${
+          card ? ' has-card' : ''
+        }${kbOpen ? ' has-keyboard' : ''}`}
       >
         {/* The Dynamic Island. It is part of the display, painted over whatever the screen shows,
             and it is why the status bar's time and glyphs sit either side of centre rather than
             spanning the width. */}
         {d.island && <span className="m-frame-island" aria-hidden="true" />}
 
-        <StatusBar
-          background={statusBar}
-          time={time}
-          inverted={!!overlay && overlayVariant === 'sheet'}
-          legacy={!d.island}
-        />
+        <StatusBar background={statusBar} time={time} inverted={hasSheet} legacy={!d.island} />
 
         {/* The presenting screen. iOS `presentation: 'modal'` scales it back behind the sheet and
             rounds its corners, leaving a sliver visible at the top — that sliver is the whole
@@ -301,10 +413,36 @@ export function PhoneFrame({
           {tabBar}
         </div>
 
-        {/* The sheet: inset from the top, rounded, above the tab bar AND the PlusMenu. */}
-        {overlay && (
-          <div className={overlayVariant === 'card' ? 'm-frame-card' : 'm-frame-sheet'}>
-            {overlay}
+        {/* THE PRESENTING SCREEN, when it is not the stage.
+         *
+         * A modal presents over whatever you were looking at, and that is not always a root tab:
+         * open a challenge, go to its Badges tab, tap a badge, and the thing being presented over
+         * is the CHALLENGE. With one slot the challenge had to unmount for the badge to render,
+         * so the screen flashed back to Discover for a frame and the sheet then arrived over the
+         * wrong thing — you could watch your place disappear before the modal covered it.
+         *
+         * So a card can stay mounted under a sheet, and it takes the scale-back the stage would
+         * otherwise have taken. `presenting` is only for that pairing; a card on its own is still
+         * the `overlay`. */}
+        {heldCard && (
+          <div
+            className={`m-frame-card is-card${cardClosing ? ' is-closing' : ''}`}
+            aria-hidden={cardClosing || hasSheet || undefined}
+          >
+            {heldCard}
+          </div>
+        )}
+
+        {/* The sheet: inset from the top, rounded, above the tab bar AND the PlusMenu. Held one
+            transition longer than the state that opened it, so it can leave the way it arrived. */}
+        {heldOverlay && (
+          <div
+            className={`${lastVariant.current === 'card' ? 'm-frame-card' : 'm-frame-sheet'}${
+              closing ? ' is-closing' : ''
+            }`}
+            aria-hidden={closing || undefined}
+          >
+            {heldOverlay}
           </div>
         )}
 

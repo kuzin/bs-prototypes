@@ -8,19 +8,46 @@
   background: var(--m-c-form-gray-background);
 }
 
+/* DIVERGENCE — a label that does not fit ELLIPSISES rather than wrapping.
+ *
+ * The source's `<Text>` has no `numberOfLines`, so in RN a long label wraps inside its pill:
+ * "Participation Rate" became two lines in a 32pt-tall control, which pushed the text off
+ * centre and made that one tab read as a different height from its neighbours.
+ *
+ * Three things have to line up for it, and two of them are not obvious:
+ *
+ *   `min-width: 0` — a flex item defaults to `min-width: auto`, which refuses to shrink below
+ *   its own content, so `text-overflow` never fires: the item stays wide and pushes the row
+ *   instead. Overriding it is what allows a pill narrower than its label.
+ *
+ *   `display: block` rather than flex — `text-overflow` acts on a block container, and a flex
+ *   container is not one, so a flex pill can CLIP its label but never ellipsise it. The
+ *   centring still works out exactly: 32 tall, 8 of padding each side, `box-sizing: border-box`
+ *   leaves a 16pt content box and the 16pt line-height fills it. Same result as `align-items:
+ *   center`, one fewer thing to fight with.
+ *
+ *   10pt of side padding, so a truncated label's ellipsis does not touch the pill's edge.
+ *
+ * Equal thirds still hold: `flex: 1 1 0%` sizes every pill off the container, not off its text,
+ * so one long label never steals room from the others. */
 .m-toggle-item {
-  display: flex;
+  display: block;
   flex: 1 1 0%;
-  align-items: center;
-  justify-content: center;
+  min-width: 0;
   height: 32px;
+  padding: 8px 10px;
+  box-sizing: border-box;
   border-radius: var(--m-radius-card);
   color: var(--m-c-secondary);
   font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.25px;
   line-height: 16px;
+  text-align: center;
   text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* A shadow with NO offset — it sits evenly around the active pill rather than under it. */
