@@ -21,6 +21,8 @@ import './ClassroomLibraries.css'
  * `role !== 'patron'` is checked BEFORE the list is even considered, so a teacher sees their
  * message whether or not libraries exist.
  *
+ * Spacing is Book Lists' 24/56 rather than the source's 40 plus 32pt separators — see the CSS.
+ *
  * The teacher's name is built, not stored: `${first} ${last}'s Class`, with `checkLastLetter`'s
  * bare apostrophe on a name already ending in s. Mr. Rivers gets "Mr. Rivers' Class".
  */

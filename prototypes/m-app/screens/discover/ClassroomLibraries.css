@@ -1,15 +1,15 @@
-/* `contentContainerStyle: { paddingVertical: 40 }` — deeper than Book Lists' 24, and the rows
- * are further apart too: an `ItemSeparatorComponent` of 32 on top of each row's own 16pt
- * padding. A teacher's shelf is a short list, so it is allowed to breathe. */
+/* DIVERGENCE — Book Lists' spacing, not the source's.
+ *
+ * `ClassroomLibraries` pads 40 top and bottom and puts a 32pt separator between rows, on top of
+ * each row's own 16. Book Lists pads 24/56 with no separator. Same row, two spacings, and the
+ * tabs sit next to each other in the same tab bar — switching between them shifted the list and
+ * made the identical rows look like different components. Book Lists' is the one that matches
+ * every other list in the app. */
 .m-cls {
   display: flex;
   flex-direction: column;
-  padding: 40px 0;
+  padding: 24px 0 56px;
   background: var(--m-white);
-}
-
-.m-cls > * + * {
-  margin-top: 32px;
 }
 
 .m-cls-empty {

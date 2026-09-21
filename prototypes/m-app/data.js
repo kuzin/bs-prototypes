@@ -1314,6 +1314,103 @@ export const BOOK_LIST_DETAIL = {
  * the teacher's surname when the shelf has no covers — so the colour is stable per library
  * rather than random per render.
  */
+/**
+ * A teacher's shelf, keyed by library id — `selectedClassroomLibraryBooks`.
+ *
+ * `ClassroomLibraryBookList` is the BOOK LIST DASHBOARD with a teacher's name where the list's
+ * name goes: it renders `BookListDashboardHeader` and `BookListItem` exactly as the book-list
+ * screen does. The one difference is that a classroom library has NO description — the source's
+ * `headerAndDescription` renders only the back button and the header — which is why these carry
+ * no `description` and the dashboard's Description block is already conditional.
+ */
+export const CLASSROOM_LIBRARY_BOOKS = {
+  cl1: {
+    headerColor: '#19BFD5',
+    books: [
+      {
+        id: 'ab1',
+        title: 'The Wild Robot',
+        author: 'Peter Brown',
+        cover: 'linear-gradient(150deg,#19BFD5,#0E8CA0)',
+      },
+      {
+        id: 'ab2',
+        title: 'Because of Winn-Dixie',
+        author: 'Kate DiCamillo',
+        cover: 'linear-gradient(150deg,#F2C53D,#E8894B)',
+      },
+      {
+        id: 'ab3',
+        title: 'Hatchet',
+        author: 'Gary Paulsen',
+        cover: 'linear-gradient(150deg,#0BA85F,#12705A)',
+      },
+      {
+        id: 'ab4',
+        title: 'Frindle',
+        author: 'Andrew Clements',
+        tint: '#822C95',
+        abbreviation: 'F',
+      },
+      {
+        id: 'ab5',
+        title: 'Holes',
+        author: 'Louis Sachar',
+        cover: 'linear-gradient(150deg,#E8724B,#B5382C)',
+      },
+    ],
+  },
+  cl2: {
+    headerColor: '#F2A03D',
+    books: [
+      {
+        id: 'rb1',
+        title: 'The Crossover',
+        author: 'Kwame Alexander',
+        cover: 'linear-gradient(150deg,#E8724B,#B5382C)',
+      },
+      {
+        id: 'rb2',
+        title: 'New Kid',
+        author: 'Jerry Craft',
+        cover: 'linear-gradient(150deg,#4C6FE8,#8E6BE8)',
+      },
+      {
+        id: 'rb3',
+        title: 'Front Desk',
+        author: 'Kelly Yang',
+        cover: 'linear-gradient(150deg,#F2A03D,#E8724B)',
+      },
+    ],
+  },
+  cl3: {
+    // No covers at all, so the header falls back to the tinted tile and the Beanstack mark.
+    headerColor: '#822C95',
+    tint: '#822C95',
+    books: [
+      { id: 'ob1', title: 'Wonder', author: 'R. J. Palacio', tint: '#822C95', abbreviation: 'W' },
+      {
+        id: 'ob2',
+        title: 'Other Words for Home',
+        author: 'Jasmine Warga',
+        tint: '#B43DD0',
+        abbreviation: 'OW',
+      },
+    ],
+  },
+  cl4: {
+    headerColor: '#0BA85F',
+    books: [
+      {
+        id: 'db1',
+        title: 'When You Trap a Tiger',
+        author: 'Tae Keller',
+        cover: 'linear-gradient(150deg,#0BA85F,#2FB5A8)',
+      },
+    ],
+  },
+}
+
 export const CLASSROOM_LIBRARIES = [
   {
     id: 'cl1',

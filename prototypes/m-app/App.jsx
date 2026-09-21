@@ -54,6 +54,7 @@ import {
   ALL_TITLES_SECTIONS,
   CHALLENGE_DETAILS,
   DISCOVER_CHALLENGES,
+  CLASSROOM_LIBRARY_BOOKS,
 } from './data'
 
 /**
@@ -843,7 +844,22 @@ export function App() {
               }}
               onCodeSearch={() => setCodeSearch(true)}
               onOpenReview={setOpenReview}
-              onOpenLibrary={setOpenList}
+              /* `classroomLibraryBookList` — the BOOK LIST DASHBOARD with a teacher's name where
+                 the list's goes, and no description, which is what the source renders too. */
+              onOpenLibrary={(lib) => {
+                const shelf = CLASSROOM_LIBRARY_BOOKS[lib.id]
+                if (!shelf) return
+                setOpenList({
+                  name: lib.name,
+                  bookCount: lib.bookCount,
+                  headerColor: shelf.headerColor,
+                  tint: shelf.tint,
+                  books: shelf.books,
+                  /* Explicit, because this spreads over BOOK_LIST_DETAIL — without it the
+                     Newbery blurb would turn up on a teacher's shelf. */
+                  description: null,
+                })
+              }}
             />
           )}
           {tab === 'community' && (
