@@ -331,7 +331,32 @@ export function App() {
     ['openChallenge', openChallenge, 'card'],
     ['openList', openList, 'sheet'],
   ]
-  const overlayVariant = OVERLAY_ORDER.find(([, open]) => open)?.[2] ?? 'sheet'
+  const topOverlay = OVERLAY_ORDER.find(([, open]) => open)
+  const overlayVariant = topOverlay?.[2] ?? 'sheet'
+
+  /* A sheet presenting over a pushed CARD keeps that card on screen beneath it, rather than
+     letting it unmount and showing the root tab for a frame on the way past. The only pairing
+     that arises is a challenge underneath — its Badges tab opens a badge and its Reading List
+     opens a book — because every other card in the list is a leaf nothing opens from. */
+  const presentingChallenge =
+    overlayVariant === 'sheet' && openChallenge && topOverlay?.[0] !== 'openChallenge'
+
+  /* ONE element, two possible slots — the overlay when it is on top, the presenting card when a
+     sheet is over it. Rendered twice it would be two ChallengeDetails, and the tab you were on
+     would belong to whichever copy happened to be mounted. */
+  const challengeScreen = openChallenge ? (
+    <ChallengeDetail
+      attributes={openChallenge}
+      wordForDrawings={wordForDrawings}
+      tab={challengeTab}
+      onTab={setChallengeTab}
+      onOpenBadge={setOpenBadge}
+      /* `goToSelectedBook` posts the book and opens the logging options; here it opens the book
+         sheet the rest of the app already uses. */
+      onOpenBook={(b) => setOpenBook({ ...BOOK_DETAIL, title: b.title, author: b.author })}
+      onBack={() => setOpenChallenge(null)}
+    />
+  ) : null
 
   return (
     <>
@@ -508,6 +533,7 @@ export function App() {
              leave — and the sheet's peeking edge is what says the thing behind is still there. A
              push implies you have gone somewhere and have to come back. */
           overlayVariant={overlayVariant}
+          presenting={presentingChallenge ? challengeScreen : null}
           overlay={
             fullLogFriend ? (
               <FriendFullLog
@@ -692,19 +718,7 @@ export function App() {
                 }}
               />
             ) : openChallenge ? (
-              <ChallengeDetail
-                attributes={openChallenge}
-                wordForDrawings={wordForDrawings}
-                tab={challengeTab}
-                onTab={setChallengeTab}
-                onOpenBadge={setOpenBadge}
-                /* `goToSelectedBook` posts the book and opens the logging options; here it
-                   opens the book sheet the rest of the app already uses. */
-                onOpenBook={(b) =>
-                  setOpenBook({ ...BOOK_DETAIL, title: b.title, author: b.author })
-                }
-                onBack={() => setOpenChallenge(null)}
-              />
+              challengeScreen
             ) : openList ? (
               <BookListDashboard
                 list={{ ...BOOK_LIST_DETAIL, ...openList }}

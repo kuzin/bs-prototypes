@@ -223,6 +223,12 @@ export function PhoneFrame({
    */
   overlayVariant = 'sheet',
   overlay,
+  /**
+   * The screen a sheet is presenting OVER, when that is a pushed card rather than the stage.
+   * Stays mounted beneath the sheet and takes the scale-back, so opening a modal from inside a
+   * pushed screen does not flash the root tab on its way past.
+   */
+  presenting,
   /** A root-mounted `ActionsModal`, above the overlay and the tab bar both. */
   actionSheet,
   scroll = true,
@@ -346,7 +352,9 @@ export function PhoneFrame({
       )}
 
       <div
-        className={`m-frame-screen${overlay ? ' has-sheet' : ''}${kbOpen ? ' has-keyboard' : ''}`}
+        className={`m-frame-screen${overlay ? ' has-sheet' : ''}${
+          presenting ? ' has-presenting-card' : ''
+        }${kbOpen ? ' has-keyboard' : ''}`}
       >
         {/* The Dynamic Island. It is part of the display, painted over whatever the screen shows,
             and it is why the status bar's time and glyphs sit either side of centre rather than
@@ -368,6 +376,23 @@ export function PhoneFrame({
           <div className={`m-frame-body${scroll ? ' is-scroll' : ''}`}>{children}</div>
           {tabBar}
         </div>
+
+        {/* THE PRESENTING SCREEN, when it is not the stage.
+         *
+         * A modal presents over whatever you were looking at, and that is not always a root tab:
+         * open a challenge, go to its Badges tab, tap a badge, and the thing being presented over
+         * is the CHALLENGE. With one slot the challenge had to unmount for the badge to render,
+         * so the screen flashed back to Discover for a frame and the sheet then arrived over the
+         * wrong thing — you could watch your place disappear before the modal covered it.
+         *
+         * So a card can stay mounted under a sheet, and it takes the scale-back the stage would
+         * otherwise have taken. `presenting` is only for that pairing; a card on its own is still
+         * the `overlay`. */}
+        {presenting && (
+          <div className="m-frame-card is-presenting" aria-hidden="true">
+            {presenting}
+          </div>
+        )}
 
         {/* The sheet: inset from the top, rounded, above the tab bar AND the PlusMenu. Held one
             transition longer than the state that opened it, so it can leave the way it arrived. */}

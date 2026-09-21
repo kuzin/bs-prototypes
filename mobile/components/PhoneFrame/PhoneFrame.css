@@ -143,6 +143,30 @@
   overflow: hidden;
 }
 
+/* When a sheet presents over a pushed CARD, the card is the presenting screen and the stage is
+ * not visible at all — so the scale belongs to the card, and the stage must not also take it.
+ * Both scaling looks fine until the sheet closes, when two things unscale at once behind it. */
+.m-frame-screen.has-presenting-card .m-frame-stage {
+  transform: none;
+  border-radius: 0;
+}
+
+.m-frame-card.is-presenting {
+  /* No entrance animation — it is already on screen. Animating it would slide the thing you
+     were looking at in from the right at the moment a modal covers it. */
+  animation: none;
+  transform-origin: top center;
+  transition:
+    transform var(--m-motion-present),
+    border-radius var(--m-motion-present);
+}
+
+.m-frame-screen.has-sheet .m-frame-card.is-presenting {
+  transform: scale(var(--m-present-scale));
+  border-radius: 10px;
+  overflow: hidden;
+}
+
 /* ── Status bar ─────────────────────────────────────────────────────────── */
 /* Always above the presenting card — a scaled card must never paint over the status bar. */
 /* The status bar is CENTRED in the safe-top band, not sitting at its bottom — which on a notch
@@ -286,7 +310,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 200;
+  /* Above `.m-frame-card`, which is 200 — a presented sheet covers the card presenting it. */
+  z-index: 250;
   display: flex;
   flex-direction: column;
   border-top-left-radius: 10px;
