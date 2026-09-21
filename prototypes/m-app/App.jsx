@@ -35,6 +35,7 @@ import { LogScreen, LOG_TABS } from './screens/LogScreen'
 import { DiscoverScreen, DISCOVER_TABS } from './screens/DiscoverScreen'
 import { ChallengeDetail } from './screens/discover/ChallengeDetail'
 import { ChallengeCodeSearch } from './screens/discover/ChallengeCodeSearch'
+import { ActivityDetail } from './screens/discover/ActivityDetail'
 import { JoinChallenge } from './screens/discover/JoinChallenge'
 import { CommunityScreen } from './screens/CommunityScreen'
 import { TABS, PLUS_ACTIONS } from './tabs'
@@ -55,6 +56,7 @@ import {
   CHALLENGE_DETAILS,
   DISCOVER_CHALLENGES,
   CLASSROOM_LIBRARY_BOOKS,
+  LEARNING_TRACKS,
 } from './data'
 
 /**
@@ -242,6 +244,8 @@ export function App() {
   /* `appStatus.challengeTab` — see ChallengeDetail. It lives up here so a badge opened from the
      Badges tab does not lose your place, and `resetChallengeTab` is the reset on a new one. */
   const [challengeTab, setChallengeTab] = useState('Overview')
+  /* `selectedLearningTrack` — an activity row opens its TRACK, which is where the checkboxes are. */
+  const [openTrack, setOpenTrack] = useState(null)
   const [fromCodeSearch, setFromCodeSearch] = useState(false)
   const [codeSearch, setCodeSearch] = useState(false)
   const [challenges, setChallenges] = useState(DISCOVER_CHALLENGES)
@@ -323,6 +327,7 @@ export function App() {
     ['openChat', openChat, 'sheet'],
     ['openBadge', openBadge, 'sheet'],
     ['openAchievement', openAchievement, 'sheet'],
+    ['openTrack', openTrack, 'sheet'],
     ['editTitle', editTitle, 'sheet'],
     ['editSession', editSession, 'sheet'],
     ['openSession', openSession, 'sheet'],
@@ -619,6 +624,23 @@ export function App() {
                 achievement={openAchievement}
                 onClose={() => setOpenAchievement(null)}
               />
+            ) : openTrack ? (
+              <ActivityDetail
+                track={openTrack}
+                onToggleActivity={(a) =>
+                  setOpenTrack((t) => ({
+                    ...t,
+                    activities: t.activities.map((x) =>
+                      x.id === a.id
+                        ? t.repeatable
+                          ? { ...x, tally: (x.tally ?? 0) + 1 }
+                          : { ...x, completed: true }
+                        : x,
+                    ),
+                  }))
+                }
+                onBack={() => setOpenTrack(null)}
+              />
             ) : editTitle ? (
               <EditTitle
                 book={editTitle}
@@ -844,6 +866,9 @@ export function App() {
               }}
               onCodeSearch={() => setCodeSearch(true)}
               onOpenReview={setOpenReview}
+              /* `goToSelectedActivity` — the row is a TRACK, and the track is where the
+                 checkboxes live. */
+              onOpenActivity={(a) => setOpenTrack(LEARNING_TRACKS[a.id] ?? null)}
               /* `classroomLibraryBookList` — the BOOK LIST DASHBOARD with a teacher's name where
                  the list's goes, and no description, which is what the source renders too. */
               onOpenLibrary={(lib) => {

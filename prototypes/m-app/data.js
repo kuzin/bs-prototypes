@@ -1249,6 +1249,163 @@ export const ACTIVITIES = [
 ]
 
 /**
+ * `selectedLearningTrack` — the screen a tapped activity opens, keyed by the row's id.
+ *
+ * The Activities tab lists TRACKS, and the things you complete are inside one. That is why the
+ * row's third line counts completions rather than describing a task: the description lives here,
+ * per activity.
+ *
+ * Four cases worth having, and each changes the screen rather than a label:
+ *
+ *   da1  a finished one-off — every checkbox ticked and locked
+ *   da4  REPEATABLE — square green checkboxes with a plus, a tally pill, and the medallion takes
+ *        the tenant colour instead of greyLight1
+ *   da5  PREREQUISITE — the warning names the track you must finish first, and the whole list
+ *        drops to 0.3 and cannot be ticked
+ *   da6  INACTIVE — the same banner carrying the site's own message
+ */
+export const LEARNING_TRACKS = {
+  da1: {
+    title: 'Build a ramp and measure it',
+    headerColor: '#E3F6FA',
+    art: 'linear-gradient(140deg,#19BFD5,#0E8CA0)',
+    description:
+      'Roll a marble down ramps at different angles and record how far it travels each time.',
+    repeatable: false,
+    isActive: true,
+    hasPrerequisite: false,
+    activities: [
+      {
+        id: 'da1a1',
+        description: 'Build a ramp out of anything you have at home — books, a board, a box lid.',
+        completed: true,
+      },
+      {
+        id: 'da1a2',
+        description: 'Measure how far the marble rolls at three different angles.',
+        completed: true,
+      },
+      {
+        id: 'da1a3',
+        description: 'Write down which angle sent it furthest, and why you think that is.',
+        completed: true,
+        linkUrl: 'https://beanstack.com',
+        linkTitle: 'Printable worksheet',
+      },
+    ],
+  },
+  da2: {
+    title: 'Sketch a food web',
+    headerColor: '#E4F6EE',
+    art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+    description: 'Pick a habitat and draw who eats whom.',
+    repeatable: false,
+    isActive: true,
+    hasPrerequisite: false,
+    activities: [
+      {
+        id: 'da2a1',
+        description: 'Choose a habitat — a pond, a forest, your back garden.',
+        completed: true,
+      },
+      {
+        id: 'da2a2',
+        description: 'List five living things in it, from the smallest to the largest.',
+        completed: false,
+      },
+      {
+        id: 'da2a3',
+        description: 'Draw arrows between them to show what eats what.',
+        completed: false,
+      },
+      {
+        id: 'da2a4',
+        description: 'Find one book in the library about your habitat and log it.',
+        completed: false,
+      },
+    ],
+  },
+  da3: {
+    title: 'Write and perform a found poem',
+    headerColor: '#F4E2F8',
+    art: 'linear-gradient(140deg,#822C95,#B43DD0)',
+    description:
+      'A found poem takes its words from somewhere else — a book, a sign, a cereal box — and rearranges them.',
+    repeatable: false,
+    isActive: true,
+    hasPrerequisite: false,
+    activities: [
+      {
+        id: 'da3a1',
+        description: 'Copy out ten phrases you like from a book you are reading.',
+        completed: true,
+      },
+      {
+        id: 'da3a2',
+        description: 'Rearrange them into a poem, then read it out to someone.',
+        completed: true,
+        linkUrl: 'https://beanstack.com',
+        linkTitle: 'How to write a found poem',
+      },
+    ],
+  },
+  da4: {
+    title: 'Find a book using the catalogue',
+    headerColor: '#E4F6EE',
+    art: 'linear-gradient(140deg,#0BA85F,#2FB5A8)',
+    description: 'Look something up on the library catalogue and go and find it on the shelf.',
+    repeatable: true,
+    isActive: true,
+    hasPrerequisite: false,
+    activities: [
+      {
+        id: 'da4a1',
+        description:
+          'Search the catalogue for a subject you are curious about, then find one of the results on the shelf.',
+        completed: false,
+        tally: 5,
+      },
+    ],
+  },
+  da5: {
+    title: 'Design a marble run',
+    headerColor: '#E8ECFC',
+    art: 'linear-gradient(140deg,#4C6FE8,#8E6BE8)',
+    description: 'Put together a run with at least two turns and a jump.',
+    repeatable: false,
+    isActive: true,
+    hasPrerequisite: true,
+    prerequisite: 'Build a ramp and measure it',
+    activities: [
+      { id: 'da5a1', description: 'Sketch your run before you build it.', completed: false },
+      {
+        id: 'da5a2',
+        description: 'Build it, then time a marble from the top to the bottom.',
+        completed: false,
+      },
+    ],
+  },
+  da6: {
+    title: 'Interview a family member about a book',
+    headerColor: '#FDF0E3',
+    art: 'linear-gradient(140deg,#F2A03D,#E8724B)',
+    description: 'Ask someone at home about a book that mattered to them.',
+    repeatable: false,
+    isActive: false,
+    hasPrerequisite: false,
+    inactiveMessage: 'This activity is not running at the moment. Check back in December.',
+    activities: [
+      {
+        id: 'da6a1',
+        description:
+          'Ask them what they were reading at your age, and what they remember about it.',
+        completed: false,
+      },
+    ],
+  },
+}
+
+/**
  * Discover > Book Lists. `image_url` is API-served; a list without one falls back to
  * `chooseRandomBeanstackColor(name)` — derived from the NAME, so it is stable per list — with the
  * Beanstack heart over it. `tint` stands in for that here.
