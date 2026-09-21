@@ -1672,7 +1672,16 @@ color: var(--m-green-dark);`,
         <br />
         <br />
         It takes and returns the tab <strong>label</strong>, not an id, which is why callers that
-        key on a slug convert at the boundary.
+        key on a slug convert at the boundary. Convert with a real map rather than by munging the
+        string — the leaderboard shows a label that is not its id (&ldquo;Participation&rdquo; for{' '}
+        <code>participation_rate</code>), and a derived round-trip silently selects nothing.
+        <br />
+        <br />
+        <strong>DIVERGENCE — a label that does not fit ellipsises rather than wrapping.</strong> The
+        source&rsquo;s <code>&lt;Text&gt;</code> has no <code>numberOfLines</code>, so a long label
+        wraps to two lines inside a 32pt pill and that tab reads as a different height from its
+        neighbours. The pills stay equal thirds either way: <code>flex: 1 1 0%</code> sizes them off
+        the container, not off their text, so one long label never steals room from the others.
       </>
     ),
     usage: `import { ToggleTabs } from '@mobile/components'
@@ -1693,9 +1702,16 @@ color: var(--m-green-dark);`,
             </MVariant>
             <MVariant label="three — the leaderboard's school board, where the third is school-only">
               <ToggleTabs
-                tabs={['Minutes', 'Books', 'Participation Rate']}
+                tabs={['Minutes', 'Books', 'Participation']}
                 currentTab={count}
                 setCurrentTab={setCount}
+              />
+            </MVariant>
+            <MVariant label="too long to fit — one line, ellipsised, same height as its neighbours">
+              <ToggleTabs
+                tabs={['Minutes', 'Participation Rate By Grade']}
+                currentTab="Minutes"
+                setCurrentTab={() => {}}
               />
             </MVariant>
           </>

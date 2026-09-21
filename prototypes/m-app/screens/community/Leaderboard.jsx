@@ -22,7 +22,8 @@ import './Leaderboard.css'
  *     school. It changes what a row IS: grade and school rows are not people, carry a `name`
  *     rather than a first/last pair, and get no avatar.
  *   • WHAT IS COUNTED (`leaderboard_tabs`) is minutes, books or — on the school board only —
- *     participation rate. It changes one column, and the third option changes its units: it is
+ *     participation rate (labelled just "Participation"). It changes one column, and the third
+ *     option changes its units: it is
  *     the one value the app renders as a percentage rather than a total, because ranking schools
  *     by a total just ranks them by enrolment.
  *
@@ -53,6 +54,22 @@ const LABEL = (t) =>
     .split('_')
     .map((w) => w[0].toUpperCase() + w.slice(1))
     .join(' ')
+
+/**
+ * Log-type labels, and `participation_rate` is why this is a map rather than `LABEL`.
+ *
+ * "Participation Rate" is the API's name for it and it does not fit a third of a 393pt row —
+ * it wrapped to two lines inside a 32pt pill. "Participation" is unambiguous next to Minutes
+ * and Books, since neither of those is a rate either.
+ *
+ * Keyed BOTH ways on purpose. `ToggleTabs` takes and returns the label, so with a label that is
+ * no longer `LABEL(id)` the way back cannot be string munging any more:
+ * `'Participation'.toLowerCase()` is not `participation_rate`, and deriving it would have
+ * silently selected nothing.
+ */
+const TYPE_LABEL = { participation_rate: 'Participation' }
+const typeLabel = (t) => TYPE_LABEL[t] ?? LABEL(t)
+const typeFromLabel = (label, types) => types.find((t) => typeLabel(t) === label) ?? types[0]
 
 const MEDALS = { 1: 'award_first_place', 2: 'award_second_place', 3: 'award_third_place' }
 
@@ -169,7 +186,7 @@ export function Leaderboard({
                   sits under "This Week" and says "Since Monday": the glyph repeats what two words
                   of the label already established, and one that adds nothing still adds weight. */}
               <p className="m-comm-sub">
-                {scopeTypes.length === 1 ? `${LABEL(scopeTypes[0])} logged · ` : ''}
+                {scopeTypes.length === 1 ? `${typeLabel(scopeTypes[0])} logged · ` : ''}
                 {sinceLabel}
               </p>
             </div>
@@ -185,9 +202,9 @@ export function Leaderboard({
           {scopeTypes.length > 1 && (
             <ToggleTabs
               className="m-lb-types"
-              tabs={scopeTypes.map(LABEL)}
-              currentTab={LABEL(activeType)}
-              setCurrentTab={(t) => setLogType(t.toLowerCase().replace(/ /g, '_'))}
+              tabs={scopeTypes.map(typeLabel)}
+              currentTab={typeLabel(activeType)}
+              setCurrentTab={(label) => setLogType(typeFromLabel(label, scopeTypes))}
             />
           )}
 
