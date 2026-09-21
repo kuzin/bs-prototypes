@@ -294,46 +294,54 @@ export function PhoneFrame({
      presenting anything. */
   const hasSheet = Boolean(overlay) && overlayVariant === 'sheet'
 
+  /**
+   * THE EXIT IS MOUNTED FROM THE REF, NOT FROM STATE — which is the difference between a clean
+   * close and a flash.
+   *
+   * With `is-closing` arriving as a state update from an effect, closing took TWO commits: the
+   * first dropped the overlay out of the DOM entirely, the second put it back wearing the exit
+   * class. Measured 11–15ms apart, so the browser painted the gap about as often as not, and for
+   * that frame the sheet was simply absent — you saw the scaled screen on its black ground where
+   * a white sheet had been. THAT is the flash, and which screens showed it was pure luck about
+   * where the two commits fell against a frame boundary. The gap closing a review measured 11ms
+   * and closing an activity 15ms; only the second one was reliably visible.
+   *
+   * Holding the element on a REF instead puts the class in the SAME commit as `overlay` going
+   * null. Nothing unmounts, nothing is re-created, and there is no gap to paint. State is only
+   * what finally drops it, one transition later.
+   */
+  const [, endExit] = useState(0)
+  const dropAfterExit = useCallback((held) => {
+    const timer = setTimeout(() => {
+      held.current = null
+      endExit((n) => n + 1)
+    }, PRESENT_MS)
+    return () => clearTimeout(timer)
+  }, [])
+
   /* The card's exit, held the same way the overlay's is. Without it a closing card vanishes
-     instead of sliding back out, which is the same cut this comment describes for the sheet. */
+     instead of sliding back out, which is the same cut the comment above describes. */
   const lastCard = useRef(null)
   if (card) lastCard.current = card
-  const hasCard = Boolean(card)
-  const [cardClosing, setCardClosing] = useState(false)
+  const heldCard = lastCard.current
+  const cardClosing = Boolean(heldCard) && !card
 
-  useEffect(() => {
-    if (hasCard) {
-      setCardClosing(false)
-      return undefined
-    }
-    if (!lastCard.current) return undefined
-    setCardClosing(true)
-    const timer = setTimeout(() => {
-      setCardClosing(false)
-      lastCard.current = null
-    }, PRESENT_MS)
-    return () => clearTimeout(timer)
-  }, [hasCard])
+  useEffect(() => (cardClosing ? dropAfterExit(lastCard) : undefined), [cardClosing, dropAfterExit])
 
   const lastOverlay = useRef(null)
-  if (overlay) lastOverlay.current = overlay
-  const [closing, setClosing] = useState(false)
+  /* The VARIANT is held with the element, because `overlayVariant` is derived from whatever is
+   * open and falls back to `sheet` the moment nothing is. A closing card therefore turned into a
+   * sheet on its way out and left DOWNWARDS — Settings slid off the bottom instead of back to
+   * the right, which is the wrong navigation model played backwards. */
+  const lastVariant = useRef(overlayVariant)
+  if (overlay) {
+    lastOverlay.current = overlay
+    lastVariant.current = overlayVariant
+  }
+  const heldOverlay = lastOverlay.current
+  const closing = Boolean(heldOverlay) && !overlay
 
-  useEffect(() => {
-    if (hasOverlay) {
-      setClosing(false)
-      return undefined
-    }
-    if (!lastOverlay.current) return undefined
-    setClosing(true)
-    // Matches `--m-motion-present`; a transitionend would need an element that survives the
-    // unmount, which is the thing being solved here.
-    const timer = setTimeout(() => {
-      setClosing(false)
-      lastOverlay.current = null
-    }, PRESENT_MS)
-    return () => clearTimeout(timer)
-  }, [hasOverlay])
+  useEffect(() => (closing ? dropAfterExit(lastOverlay) : undefined), [closing, dropAfterExit])
 
   const dismissKeyboard = useCallback(() => {
     document.activeElement?.blur?.()
@@ -416,25 +424,25 @@ export function PhoneFrame({
          * So a card can stay mounted under a sheet, and it takes the scale-back the stage would
          * otherwise have taken. `presenting` is only for that pairing; a card on its own is still
          * the `overlay`. */}
-        {(card || cardClosing) && (
+        {heldCard && (
           <div
             className={`m-frame-card is-card${cardClosing ? ' is-closing' : ''}`}
             aria-hidden={cardClosing || hasSheet || undefined}
           >
-            {card ?? lastCard.current}
+            {heldCard}
           </div>
         )}
 
         {/* The sheet: inset from the top, rounded, above the tab bar AND the PlusMenu. Held one
             transition longer than the state that opened it, so it can leave the way it arrived. */}
-        {(overlay || closing) && (
+        {heldOverlay && (
           <div
-            className={`${overlayVariant === 'card' ? 'm-frame-card' : 'm-frame-sheet'}${
+            className={`${lastVariant.current === 'card' ? 'm-frame-card' : 'm-frame-sheet'}${
               closing ? ' is-closing' : ''
             }`}
             aria-hidden={closing || undefined}
           >
-            {overlay ?? lastOverlay.current}
+            {heldOverlay}
           </div>
         )}
 
