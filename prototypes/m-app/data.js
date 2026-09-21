@@ -1303,6 +1303,43 @@ export const BOOK_LIST_DETAIL = {
   ],
 }
 
+/**
+ * `getClassroomLibraries` + `getClassroomLibraryBooks` — the Libraries tab.
+ *
+ * The API returns first/last name separately and the screen builds "Ms. Abbott's Class" from
+ * them, so the fixture keeps them apart: Mr. Rivers is here to exercise `checkLastLetter`'s
+ * bare apostrophe on a surname already ending in s.
+ *
+ * `tint` stands in for `chooseRandomBeanstackColor`, which hashes the FIRST BOOK's title — or
+ * the teacher's surname when the shelf has no covers — so the colour is stable per library
+ * rather than random per render.
+ */
+export const CLASSROOM_LIBRARIES = [
+  {
+    id: 'cl1',
+    firstName: 'Ms.',
+    lastName: 'Abbott',
+    bookCount: 34,
+    cover: 'linear-gradient(150deg,#19BFD5,#0E8CA0)',
+  },
+  {
+    id: 'cl2',
+    firstName: 'Mr.',
+    lastName: 'Rivers',
+    bookCount: 21,
+    cover: 'linear-gradient(150deg,#F2A03D,#E8724B)',
+  },
+  // No covers on this shelf, so it falls back to the tinted tile and the Beanstack mark.
+  { id: 'cl3', firstName: 'Mrs.', lastName: 'Okafor', bookCount: 12, tint: '#822C95' },
+  {
+    id: 'cl4',
+    firstName: 'Mr.',
+    lastName: 'Delgado',
+    bookCount: 1,
+    cover: 'linear-gradient(150deg,#0BA85F,#2FB5A8)',
+  },
+]
+
 export const BOOK_LISTS = [
   {
     id: 'bl1',

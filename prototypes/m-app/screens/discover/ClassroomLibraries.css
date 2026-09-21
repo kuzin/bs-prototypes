@@ -1,0 +1,17 @@
+/* `contentContainerStyle: { paddingVertical: 40 }` — deeper than Book Lists' 24, and the rows
+ * are further apart too: an `ItemSeparatorComponent` of 32 on top of each row's own 16pt
+ * padding. A teacher's shelf is a short list, so it is allowed to breathe. */
+.m-cls {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 0;
+  background: var(--m-white);
+}
+
+.m-cls > * + * {
+  margin-top: 32px;
+}
+
+.m-cls-empty {
+  padding: 40px 20px;
+}

@@ -238,6 +238,9 @@ export function App() {
      unregistered opens this. `fromCodeSearch` is not decoration — it hides Ignore, because
      offering to hide the challenge you just went looking for makes no sense. */
   const [joinChallenge, setJoinChallenge] = useState(null)
+  /* `appStatus.challengeTab` — see ChallengeDetail. It lives up here so a badge opened from the
+     Badges tab does not lose your place, and `resetChallengeTab` is the reset on a new one. */
+  const [challengeTab, setChallengeTab] = useState('Overview')
   const [fromCodeSearch, setFromCodeSearch] = useState(false)
   const [codeSearch, setCodeSearch] = useState(false)
   const [challenges, setChallenges] = useState(DISCOVER_CHALLENGES)
@@ -299,6 +302,36 @@ export function App() {
   // Home is the only tab whose content scrolls inside the frame's own body; the other three own
   // their scroll region because a top-tab row sits above it and must not scroll away.
   const isHome = tab === 'home'
+
+  /* WHICH overlay is up, derived ONCE — the frame hosts one at a time, and both the content
+     and its presentation have to agree about which one won. Reading the variant off a separate
+     `a || b || c` was a bug waiting to happen: a badge opened from inside a challenge is a
+     MODAL, but `openChallenge` was still truthy, so the sheet rendered with the pushed-card
+     chrome — no peeking edge, no scale-back, the wrong thing entirely.
+ 
+     Order is DEPTH, matching the chain below: deepest first. */
+  const OVERLAY_ORDER = [
+    ['fullLogFriend', fullLogFriend, 'card'],
+    ['codeScreen', codeScreen, 'sheet'],
+    ['openFriend', openFriend, 'sheet'],
+    ['showFriendRequests', showFriendRequests, 'card'],
+    ['openEvent', openEvent, 'sheet'],
+    ['showSettings', showSettings, 'card'],
+    ['showLogSearch', showLogSearch, 'sheet'],
+    ['openReview', openReview, 'sheet'],
+    ['openChat', openChat, 'sheet'],
+    ['openBadge', openBadge, 'sheet'],
+    ['openAchievement', openAchievement, 'sheet'],
+    ['editTitle', editTitle, 'sheet'],
+    ['editSession', editSession, 'sheet'],
+    ['openSession', openSession, 'sheet'],
+    ['openBook', openBook, 'sheet'],
+    ['codeSearch', codeSearch, 'card'],
+    ['joinChallenge', joinChallenge, 'sheet'],
+    ['openChallenge', openChallenge, 'card'],
+    ['openList', openList, 'sheet'],
+  ]
+  const overlayVariant = OVERLAY_ORDER.find(([, open]) => open)?.[2] ?? 'sheet'
 
   return (
     <>
@@ -474,57 +507,9 @@ export function App() {
              They are a detour rather than a destination — you open one, read or type a code, and
              leave — and the sheet's peeking edge is what says the thing behind is still there. A
              push implies you have gone somewhere and have to come back. */
-          overlayVariant={
-            showSettings || showFriendRequests || fullLogFriend || openChallenge || codeSearch
-              ? 'card'
-              : 'sheet'
-          }
+          overlayVariant={overlayVariant}
           overlay={
-            codeSearch ? (
-              <ChallengeCodeSearch
-                challenges={challenges}
-                onFound={(c) => {
-                  setCodeSearch(false)
-                  setFromCodeSearch(true)
-                  if (c.isRegistered) setOpenChallenge(CHALLENGE_DETAILS[c.id] ?? null)
-                  else setJoinChallenge(c)
-                }}
-                onBack={() => setCodeSearch(false)}
-              />
-            ) : joinChallenge ? (
-              <JoinChallenge
-                challenge={joinChallenge}
-                fromCodeSearch={fromCodeSearch}
-                onJoin={(c) => {
-                  setChallenges((l) =>
-                    l.map((x) => (x.id === c.id ? { ...x, isRegistered: true } : x)),
-                  )
-                  setJoinChallenge(null)
-                  setFromCodeSearch(false)
-                }}
-                onIgnore={(c) =>
-                  setChallenges((l) =>
-                    l.map((x) => (x.id === c.id ? { ...x, state: 'ignored' } : x)),
-                  )
-                }
-                onClose={() => {
-                  setJoinChallenge(null)
-                  setFromCodeSearch(false)
-                }}
-              />
-            ) : openChallenge ? (
-              <ChallengeDetail
-                attributes={openChallenge}
-                wordForDrawings={wordForDrawings}
-                onOpenBadge={setOpenBadge}
-                /* `goToSelectedBook` posts the book and opens the logging options; here it
-                   opens the book sheet the rest of the app already uses. */
-                onOpenBook={(b) =>
-                  setOpenBook({ ...BOOK_DETAIL, title: b.title, author: b.author })
-                }
-                onBack={() => setOpenChallenge(null)}
-              />
-            ) : fullLogFriend ? (
+            fullLogFriend ? (
               <FriendFullLog
                 friend={fullLogFriend}
                 titles={fullLogFriend.titles ?? []}
@@ -666,6 +651,60 @@ export function App() {
                 onOptions={() => setTitleOptions({ ...BOOK_DETAIL, ...openBook })}
                 onOpenSession={setOpenSession}
               />
+            ) : /* ORDER IS DEPTH, NOT PREFERENCE — the frame hosts ONE overlay and the app is a
+               stack, so whatever was pushed deepest has to be tested first. The book family
+               already reads that way (editTitle over editSession over openSession over
+               openBook), and these three sit here rather than at the top because a challenge
+               is a PARENT: its Badges tab opens a badge and its Reading List opens a book.
+               Tested before them, the challenge stayed on screen and the badge opened behind
+               it. */
+            codeSearch ? (
+              <ChallengeCodeSearch
+                challenges={challenges}
+                onFound={(c) => {
+                  setCodeSearch(false)
+                  setFromCodeSearch(true)
+                  setChallengeTab('Overview')
+                  if (c.isRegistered) setOpenChallenge(CHALLENGE_DETAILS[c.id] ?? null)
+                  else setJoinChallenge(c)
+                }}
+                onBack={() => setCodeSearch(false)}
+              />
+            ) : joinChallenge ? (
+              <JoinChallenge
+                challenge={joinChallenge}
+                fromCodeSearch={fromCodeSearch}
+                onJoin={(c) => {
+                  setChallenges((l) =>
+                    l.map((x) => (x.id === c.id ? { ...x, isRegistered: true } : x)),
+                  )
+                  setJoinChallenge(null)
+                  setFromCodeSearch(false)
+                }}
+                onIgnore={(c) =>
+                  setChallenges((l) =>
+                    l.map((x) => (x.id === c.id ? { ...x, state: 'ignored' } : x)),
+                  )
+                }
+                onClose={() => {
+                  setJoinChallenge(null)
+                  setFromCodeSearch(false)
+                }}
+              />
+            ) : openChallenge ? (
+              <ChallengeDetail
+                attributes={openChallenge}
+                wordForDrawings={wordForDrawings}
+                tab={challengeTab}
+                onTab={setChallengeTab}
+                onOpenBadge={setOpenBadge}
+                /* `goToSelectedBook` posts the book and opens the logging options; here it
+                   opens the book sheet the rest of the app already uses. */
+                onOpenBook={(b) =>
+                  setOpenBook({ ...BOOK_DETAIL, title: b.title, author: b.author })
+                }
+                onBack={() => setOpenChallenge(null)}
+              />
             ) : openList ? (
               <BookListDashboard
                 list={{ ...BOOK_LIST_DETAIL, ...openList }}
@@ -784,10 +823,13 @@ export function App() {
                  showModal('JoinChallenge')`. */
               onOpenChallenge={(c) => {
                 setFromCodeSearch(false)
+                setChallengeTab('Overview')
                 if (c.isRegistered) setOpenChallenge(CHALLENGE_DETAILS[c.id] ?? null)
                 else setJoinChallenge(c)
               }}
               onCodeSearch={() => setCodeSearch(true)}
+              onOpenReview={setOpenReview}
+              onOpenLibrary={setOpenList}
             />
           )}
           {tab === 'community' && (

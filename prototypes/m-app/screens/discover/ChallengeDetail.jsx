@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Img, TopTabs } from '@mobile/components'
 import {
   getCardOverviewData,
@@ -128,13 +127,20 @@ function Description({ html }) {
 export function ChallengeDetail({
   attributes,
   wordForDrawings = 'Drawings',
+  /* `appStatus.challengeTab` — app-level state in the source, and it has to be: opening a badge
+     from the Badges tab covers this screen, and on the way back you should still be on Badges.
+     Held in the component it reset to Overview every time, because the frame renders one overlay
+     and this one unmounts while the badge is up. `resetChallengeTab` on entry is what makes a
+     NEW challenge start on Overview. */
+  tab = 'Overview',
+  onTab,
   onOpenBadge,
   onOpenBook,
   onBack,
 }) {
   const tabs = challengeTabsFor(attributes, wordForDrawings)
-  const [tab, setTab] = useState('Overview')
   const active = tabs.includes(tab) ? tab : 'Overview'
+  const setTab = (t) => onTab?.(t)
   const bg = attributes.bgColorToSet
 
   return (

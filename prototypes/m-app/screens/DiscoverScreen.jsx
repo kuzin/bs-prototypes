@@ -2,9 +2,17 @@ import { TopTabs, Text, TextPill, Img, EmptyStateView } from '@mobile/components
 import { Challenges } from './discover/Challenges'
 import { Events } from './discover/Events'
 import { BookLists } from './discover/BookLists'
+import { ClassroomLibraries } from './discover/ClassroomLibraries'
 import { ActivitiesList } from '../components/ActivitiesList'
 import { Reviews } from './log/Reviews'
-import { DISCOVER_CHALLENGES, ACTIVITIES, BOOK_LISTS, EVENTS, DISCOVER_REVIEWS } from '../data'
+import {
+  DISCOVER_CHALLENGES,
+  ACTIVITIES,
+  BOOK_LISTS,
+  CLASSROOM_LIBRARIES,
+  EVENTS,
+  DISCOVER_REVIEWS,
+} from '../data'
 import './Screens.css'
 
 /**
@@ -32,7 +40,11 @@ export function DiscoverScreen({
   onOpenEvent,
   onOpenChallenge,
   onCodeSearch,
+  onOpenReview,
+  onOpenActivity,
+  onOpenLibrary,
   challenges,
+  role = 'patron',
 }) {
   const visible = DISCOVER_TABS.filter((t) => !GATED.includes(t.id) || flags[t.id])
   return (
@@ -53,7 +65,9 @@ export function DiscoverScreen({
             87pt badge rail. */}
         {tab === 'activities' &&
           (ACTIVITIES.length > 0 ? (
-            <ActivitiesList activities={ACTIVITIES} onPress={() => {}} />
+            /* `goToSelectedActivity` — an activity opens its LEARNING TRACK, which is the
+               screen that actually holds the requirement and the log button. */
+            <ActivitiesList activities={ACTIVITIES} onPress={onOpenActivity} />
           ) : (
             <EmptyStateView
               source="my_badges_empty_state"
@@ -66,15 +80,20 @@ export function DiscoverScreen({
         {/* The same component the Log tab uses — `<Reviews type="discover" />` in the real
             navigator, which adds the author's name and the profile circle. */}
         {tab === 'reviews_discover' && (
-          <Reviews reviews={DISCOVER_REVIEWS} profile="Maya Chen" type="discover" />
+          <Reviews
+            reviews={DISCOVER_REVIEWS}
+            profile="Maya Chen"
+            type="discover"
+            /* No `onOptions` on purpose — these are other readers' reviews, and `showOptions`
+               is `!isDiscover || review.isMine`, so the dots only appear on your own. */
+            onOpenReview={onOpenReview}
+          />
         )}
-        {/* ClassroomLibraries' own empty state — `recent_titles_empty_state` artwork, and the
-            copy is the patron branch. A non-patron sees a different message entirely. */}
         {tab === 'libraries_discover' && (
-          <EmptyStateView
-            source="recent_titles_empty_state"
-            boldText="No classroom libraries to show"
-            middleText="Your teachers haven’t added any books to their libraries yet."
+          <ClassroomLibraries
+            libraries={CLASSROOM_LIBRARIES}
+            role={role}
+            onOpenLibrary={onOpenLibrary}
           />
         )}
       </div>
