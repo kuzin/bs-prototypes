@@ -224,11 +224,18 @@ export function PhoneFrame({
   overlayVariant = 'sheet',
   overlay,
   /**
-   * The screen a sheet is presenting OVER, when that is a pushed card rather than the stage.
-   * Stays mounted beneath the sheet and takes the scale-back, so opening a modal from inside a
-   * pushed screen does not flash the root tab on its way past.
+   * A PUSHED SCREEN, held in its own layer for as long as it is open.
+   *
+   * It is not an `overlay` variant, and that distinction is the whole point: a card can have a
+   * sheet presented over it, so it must not share a slot with one. Passed through `overlay` the
+   * two took turns — opening a badge from a challenge unmounted the challenge, and closing the
+   * badge slid the challenge back IN FROM THE RIGHT as if freshly pushed while the sheet was
+   * deleted outright rather than animating away.
+   *
+   * Here it mounts once, animates in once, takes the scale-back while a sheet is over it, and
+   * unscales when that sheet leaves. It never moves.
    */
-  presenting,
+  card,
   /** A root-mounted `ActionsModal`, above the overlay and the tab bar both. */
   actionSheet,
   scroll = true,
@@ -282,6 +289,32 @@ export function PhoneFrame({
    * runs the slide-out. The `has-sheet` class comes off immediately, because the card should
    * start its journey back at the same moment the sheet starts its own.
    */
+  /* A sheet is presented — the black ground, the scale-back and the inverted status bar all key
+     off this rather than off "an overlay exists", because a pushed card is neither presented nor
+     presenting anything. */
+  const hasSheet = Boolean(overlay) && overlayVariant === 'sheet'
+
+  /* The card's exit, held the same way the overlay's is. Without it a closing card vanishes
+     instead of sliding back out, which is the same cut this comment describes for the sheet. */
+  const lastCard = useRef(null)
+  if (card) lastCard.current = card
+  const hasCard = Boolean(card)
+  const [cardClosing, setCardClosing] = useState(false)
+
+  useEffect(() => {
+    if (hasCard) {
+      setCardClosing(false)
+      return undefined
+    }
+    if (!lastCard.current) return undefined
+    setCardClosing(true)
+    const timer = setTimeout(() => {
+      setCardClosing(false)
+      lastCard.current = null
+    }, PRESENT_MS)
+    return () => clearTimeout(timer)
+  }, [hasCard])
+
   const lastOverlay = useRef(null)
   if (overlay) lastOverlay.current = overlay
   const [closing, setClosing] = useState(false)
@@ -352,8 +385,8 @@ export function PhoneFrame({
       )}
 
       <div
-        className={`m-frame-screen${overlay ? ' has-sheet' : ''}${
-          presenting ? ' has-presenting-card' : ''
+        className={`m-frame-screen${hasSheet ? ' has-sheet' : ''}${
+          card ? ' has-card' : ''
         }${kbOpen ? ' has-keyboard' : ''}`}
       >
         {/* The Dynamic Island. It is part of the display, painted over whatever the screen shows,
@@ -361,12 +394,7 @@ export function PhoneFrame({
             spanning the width. */}
         {d.island && <span className="m-frame-island" aria-hidden="true" />}
 
-        <StatusBar
-          background={statusBar}
-          time={time}
-          inverted={!!overlay && overlayVariant === 'sheet'}
-          legacy={!d.island}
-        />
+        <StatusBar background={statusBar} time={time} inverted={hasSheet} legacy={!d.island} />
 
         {/* The presenting screen. iOS `presentation: 'modal'` scales it back behind the sheet and
             rounds its corners, leaving a sliver visible at the top — that sliver is the whole
@@ -388,9 +416,12 @@ export function PhoneFrame({
          * So a card can stay mounted under a sheet, and it takes the scale-back the stage would
          * otherwise have taken. `presenting` is only for that pairing; a card on its own is still
          * the `overlay`. */}
-        {presenting && (
-          <div className="m-frame-card is-presenting" aria-hidden="true">
-            {presenting}
+        {(card || cardClosing) && (
+          <div
+            className={`m-frame-card is-card${cardClosing ? ' is-closing' : ''}`}
+            aria-hidden={cardClosing || hasSheet || undefined}
+          >
+            {card ?? lastCard.current}
           </div>
         )}
 

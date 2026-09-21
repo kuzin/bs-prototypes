@@ -334,22 +334,17 @@ export function App() {
     ['openBook', openBook, 'sheet'],
     ['codeSearch', codeSearch, 'card'],
     ['joinChallenge', joinChallenge, 'sheet'],
-    ['openChallenge', openChallenge, 'card'],
     ['openList', openList, 'sheet'],
   ]
   const topOverlay = OVERLAY_ORDER.find(([, open]) => open)
   const overlayVariant = topOverlay?.[2] ?? 'sheet'
 
-  /* A sheet presenting over a pushed CARD keeps that card on screen beneath it, rather than
-     letting it unmount and showing the root tab for a frame on the way past. The only pairing
-     that arises is a challenge underneath — its Badges tab opens a badge and its Reading List
-     opens a book — because every other card in the list is a leaf nothing opens from. */
-  const presentingChallenge =
-    overlayVariant === 'sheet' && openChallenge && topOverlay?.[0] !== 'openChallenge'
-
-  /* ONE element, two possible slots — the overlay when it is on top, the presenting card when a
-     sheet is over it. Rendered twice it would be two ChallengeDetails, and the tab you were on
-     would belong to whichever copy happened to be mounted. */
+  /* The challenge is a PUSHED SCREEN, so it lives in the frame's card layer rather than in the
+     overlay chain. It is the only thing here that can have something presented over it — its
+     Badges tab opens a badge, its Reading List opens a book — and sharing the overlay slot meant
+     the two took turns: the challenge unmounted on the way in, and on the way out it slid back
+     in from the right while the sheet was deleted rather than animated. Its own layer just stays
+     put and takes the scale-back. */
   const challengeScreen = openChallenge ? (
     <ChallengeDetail
       attributes={openChallenge}
@@ -539,7 +534,7 @@ export function App() {
              leave — and the sheet's peeking edge is what says the thing behind is still there. A
              push implies you have gone somewhere and have to come back. */
           overlayVariant={overlayVariant}
-          presenting={presentingChallenge ? challengeScreen : null}
+          card={challengeScreen}
           overlay={
             fullLogFriend ? (
               <FriendFullLog
@@ -740,8 +735,6 @@ export function App() {
                   setFromCodeSearch(false)
                 }}
               />
-            ) : openChallenge ? (
-              challengeScreen
             ) : openList ? (
               <BookListDashboard
                 list={{ ...BOOK_LIST_DETAIL, ...openList }}

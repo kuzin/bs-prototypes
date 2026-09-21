@@ -143,28 +143,34 @@
   overflow: hidden;
 }
 
-/* When a sheet presents over a pushed CARD, the card is the presenting screen and the stage is
- * not visible at all — so the scale belongs to the card, and the stage must not also take it.
- * Both scaling looks fine until the sheet closes, when two things unscale at once behind it. */
-.m-frame-screen.has-presenting-card .m-frame-stage {
+/* With a CARD up, the stage is behind a full-screen screen and is not visible at all — so the
+ * scale belongs to the card and the stage must not also take it. Both scaling looks fine until
+ * the sheet leaves, when two things unscale at once behind it. */
+.m-frame-screen.has-card .m-frame-stage {
   transform: none;
   border-radius: 0;
 }
 
-.m-frame-card.is-presenting {
-  /* No entrance animation — it is already on screen. Animating it would slide the thing you
-     were looking at in from the right at the moment a modal covers it. */
-  animation: none;
+/* The card layer. It slides in ONCE, when the screen is pushed, and then holds its place — the
+ * transition below is for the scale-back a presented sheet asks of it, not for its arrival. */
+.m-frame-card.is-card {
   transform-origin: top center;
   transition:
     transform var(--m-motion-present),
     border-radius var(--m-motion-present);
 }
 
-.m-frame-screen.has-sheet .m-frame-card.is-presenting {
+/* `forModalPresentationIOS` again, this time with the card as the presenting screen. */
+.m-frame-screen.has-sheet .m-frame-card.is-card {
   transform: scale(var(--m-present-scale));
   border-radius: 10px;
   overflow: hidden;
+}
+
+/* Leaving, the card slides back out the way it came. `m-card-out` needs to beat the entrance
+ * animation still declared on `.m-frame-card`, hence the later rule and `forwards`. */
+.m-frame-card.is-card.is-closing {
+  animation: m-card-out var(--m-motion-present) forwards;
 }
 
 /* ── Status bar ─────────────────────────────────────────────────────────── */
