@@ -539,6 +539,12 @@
   align-items: center;
   text-align: center;
   width: 100%;
+  /* Its own, not the page's. The `box-sizing` reset is declared per prototype
+     rather than centrally, so in one that hasn't declared it this block's 20px
+     of padding was being added outside its 100% and it hung 20px past its panel
+     on each side. A shared component shouldn't need the consumer to have reset
+     anything for it to fit. */
+  box-sizing: border-box;
   margin: 0;
   padding: 30px 20px;
   gap: 16px;

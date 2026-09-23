@@ -9,7 +9,7 @@ import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Banner, IconButton } from '@components/Primitives/Primitives'
 import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 
-import { BOOKS, READING_LOG, STREAK_SEED, LOG_MONTH } from '../data'
+import { BOOKS, READING_LOG, LOG_MONTH } from '../data'
 
 /* Is the window phone-width right now? Not just at mount — a view that a phone
    can't draw has to go the moment the window gets there, however it got there.
@@ -728,8 +728,12 @@ export function ReadingLog({
   month = LOG_MONTH,
   /* How many consecutive days the reader had already logged the day before this
      log's first entry — the part of a run that happened before the window the
-     entries cover. Everything else about a streak is derived from them. */
-  streakSeed = STREAK_SEED,
+     entries cover. Everything else about a streak is derived from them.
+     Defaults to 0, meaning this log is the whole record: the seed belongs to a
+     particular set of entries, so a surface that brings its own brings its own
+     seed. Defaulting it to logging-flow's put a "4 day streak" banner over a
+     single isolated day in Beeverso's log. */
+  streakSeed = 0,
 }) {
   const [ownTab, setOwnTab] = useState(defaultTab)
   const tab = tabProp ?? ownTab
@@ -837,14 +841,14 @@ export function ReadingLog({
               <div className="rl-streaks">
                 <StatCard
                   value={streaks.current}
-                  unit="Days"
+                  unit={streaks.current === 1 ? 'Day' : 'Days'}
                   label="Current streak"
                   color="#DC493A"
                   icon={<Icon name="flame-filled" size={20} />}
                 />
                 <StatCard
                   value={streaks.longest}
-                  unit="Days"
+                  unit={streaks.longest === 1 ? 'Day' : 'Days'}
                   label="Longest streak"
                   color="#F0A024"
                   icon={<Icon name="flame-filled" size={20} />}

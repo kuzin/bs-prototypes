@@ -1091,11 +1091,12 @@
 
 /* ── Setting rows (label + toggle), grouped in a bordered card ── */
 
+/* No box of its own: the panel around it is already the card, and a second
+   frame inside it inset every row a further 14px from the title they belong to
+   — a card in a card, paid for twice in padding. The hairlines between the rows
+   are what groups them. */
 .gb-settings {
-  margin-top: 18px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 2px 14px;
+  margin-top: 12px;
 }
 
 /* Shared <SettingRow> (class .setting-row) inside the legacy .gb-settings card

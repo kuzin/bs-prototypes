@@ -43,6 +43,7 @@ import {
   TOP_SCHOOLS,
   TOP_GRADES,
   BOOKS,
+  STREAK_SEED,
 } from '../data'
 import { CONNECTION_LIST, autoLoggedRows } from '../connections'
 import { ReadingLog } from './ReadingLog'
@@ -442,6 +443,10 @@ export function Dashboard({
   partners = CONNECTION_LIST,
   titlesView = true,
   logEntries,
+  /* Every surface built on this Dashboard shows logging-flow's own log, whole
+     or filtered, so they all inherit the run that log begins part-way through.
+     A prototype with a different log calls `ReadingLog` itself and gets 0. */
+  streakSeed = STREAK_SEED,
   logTabs = [],
   renderLogTab,
   logTab,
@@ -637,6 +642,7 @@ export function Dashboard({
           ) : view === 'log' ? (
             <ReadingLog
               entries={logEntries}
+              streakSeed={streakSeed}
               partners={partners}
               titlesView={titlesView}
               /* The goal is the site's, so the log shows it wherever the rail
