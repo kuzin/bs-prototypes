@@ -1,0 +1,143 @@
+.cshelf {
+  position: relative;
+}
+
+.cshelf-rail {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  /* Mandatory, not proximity: paging by a viewport's width otherwise stops
+     mid-cover and clips the first title in view. */
+  scroll-snap-type: x mandatory;
+  /* No visible bar: the arrows are how you move a shelf, and a track under the
+     covers reads as a second, competing control. It still scrolls — a trackpad
+     swipe and a touch drag both work, and the arrows drive the same scroll. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cshelf-rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* Covers share the row's width instead of sitting at a fixed size and scrolling
+   off — they grow and shrink with the panel. The floor stops six covers
+   squeezing to thumbnails in a narrow card (past it the shelf scrolls instead);
+   the cap stops them ballooning. */
+.cshelf-item {
+  flex: 1 1 0;
+  min-width: 108px;
+  max-width: 180px;
+  scroll-snap-align: start;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: none;
+  border: 0;
+}
+
+.cshelf-item--link {
+  cursor: pointer;
+}
+
+.cshelf-cover {
+  position: relative;
+  display: block;
+}
+
+.cshelf-cover .bkcov {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  border-radius: 7px;
+  transition: transform 0.14s ease;
+}
+
+/* The flat fallback sets its own text for a full-size cover; on a shelf it is a
+   colour, not a jacket. */
+.cshelf-cover .bkcov-title,
+.cshelf-cover .bkcov-author {
+  display: none;
+}
+
+.cshelf-item--link:hover .bkcov {
+  transform: translateY(-3px);
+}
+
+/* Centred along the cover's bottom edge rather than tucked into a corner: in
+   the corner it reads as a watermark on the artwork, and the badge is the one
+   fact this shelf carries. */
+.cshelf-badge {
+  position: absolute;
+  left: 50%;
+  bottom: 7px;
+  transform: translateX(-50%);
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.82);
+  color: #fff;
+  font-size: var(--text-tag);
+  font-weight: var(--fw-extrabold);
+  white-space: nowrap;
+}
+
+/* ── The pager ─────────────────────────────────────────────────────────────── */
+
+/* Centred on the artwork, not the tile: `--shelf-cover-h` is published by the
+   shelf on each measure, because the covers are fluid and CSS has no fixed
+   height to work from. */
+.cshelf-arrow {
+  position: absolute;
+  top: calc(var(--shelf-cover-h, 180px) / 2);
+  margin-top: -18px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--c-text-dark);
+  /* White with a lift, so the control reads against whatever cover it lands
+     on. */
+  background: #fff;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 1px 6px rgb(15 23 42 / 18%);
+  cursor: pointer;
+}
+
+.cshelf-arrow--prev {
+  left: 6px;
+}
+
+.cshelf-arrow--next {
+  right: 6px;
+}
+
+/* Nothing to page to — leave the rail unobstructed rather than showing a dead
+   control over the covers. */
+.cshelf-arrow:disabled {
+  display: none;
+}
+
+/* The arrows sit *over* the artwork, so at rest they cover the thing you came
+   to look at. They fade in on hover — the shelf itself is the affordance, the
+   way a streaming rail works — and on keyboard focus, or they'd be unreachable
+   without a mouse. `visibility` rides along so a hidden arrow can't be clicked
+   by accident. */
+.cshelf-arrow {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.14s ease,
+    visibility 0.14s ease;
+}
+
+.cshelf:hover .cshelf-arrow,
+.cshelf:focus-within .cshelf-arrow {
+  opacity: 1;
+  visibility: visible;
+}

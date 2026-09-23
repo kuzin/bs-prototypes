@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Stars, RatingInline, StarInput } from '../../books/components/Stars'
+import { Stars, RatingInline, RatingBlock, StarInput } from '@components/Stars/Stars'
 import { BookCard } from '../../books/components/BookCard'
 import { Shelf } from '../../books/components/Shelf'
 import { PartnerBrand, PartnerTag, PartnerMark } from '../../books/components/PartnerBits'
@@ -20,32 +20,56 @@ function StarInputDemo() {
 
 export const booksSections = [
   {
-    group: 'books',
+    group: 'badges',
     id: 'bk-stars',
     name: 'Stars · Rating',
     desc: (
       <>
-        The rating family (no star component existed in the system before this). <code>Stars</code>{' '}
-        shows a read-only rating with fractional fill; <code>RatingInline</code> adds the numeric
-        value and count; <code>StarInput</code> is the interactive picker used by the review
-        composer.
+        The system&rsquo;s one star rating. <code>Stars</code> is the read-only scale, and the fill
+        on the last star is <strong>fractional</strong> — a 4.3 draws four stars and a third,
+        because rounding to whole stars makes a 4.5 and a 4.9 look identical, which is the one thing
+        a rating is for.
+        <br />
+        <br />
+        Three wrappers, by how much room the rating gets. <code>RatingInline</code> is the summary
+        for a card or a row — figure, stars, count on one line. <code>RatingBlock</code> is for a
+        panel that is <em>about</em> the thing being rated: the figure leads at display size because
+        it is the reading, the stars are the scale it sits on, and the count is how much to trust
+        it. <code>StarInput</code> is the picker in a review composer.
+        <br />
+        <br />
+        The two colours live on <code>.stars</code> as <code>--star-on</code> /{' '}
+        <code>--star-off</code>, so a rating on a tinted wash can lift the empty star without a
+        consumer redefining the amber.
       </>
     ),
+    usage: `import { Stars, RatingInline, RatingBlock, StarInput } from '@components/Stars/Stars'
+
+<Stars value={4.3} size={18} />
+<RatingInline value={4.8} count={1247} />
+<RatingBlock value={4.3} count={12} />
+<StarInput value={stars} onChange={setStars} />`,
     render: () => (
       <div className="bk-catalog">
-        <Variant label="Stars (read-only, fractional)">
+        <Variant label="Stars — read-only, fractional fill">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 16 }}>
             <Stars value={5} size={20} />
             <Stars value={4.6} size={20} />
             <Stars value={3.2} size={20} />
           </div>
         </Variant>
-        <Variant label="RatingInline">
+        <Variant label="RatingInline — one line, for a card or a row">
           <div style={{ padding: 16 }}>
             <RatingInline value={4.8} count={1247} size={16} />
           </div>
         </Variant>
-        <Variant label="StarInput (interactive)">
+        <Variant label="RatingBlock — for a panel about the thing being rated">
+          <div style={{ display: 'flex', gap: 40, padding: 16 }}>
+            <RatingBlock value={4.3} count={12} />
+            <RatingBlock value={null} count={0} />
+          </div>
+        </Variant>
+        <Variant label="StarInput — the review composer's picker">
           <StarInputDemo />
         </Variant>
       </div>

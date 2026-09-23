@@ -1080,20 +1080,6 @@
   color: #424242;
 }
 
-.bp-warning-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: #fff8f0;
-  border: 1px solid #fed7aa;
-  border-radius: 10px;
-  margin-top: 14px;
-  font-size: 15px;
-  color: #424242;
-  font-weight: 500;
-}
-
 .bp-flag-breakdown {
   margin-bottom: 14px;
 }
@@ -1128,19 +1114,6 @@
 .bp-flag-type {
   color: #424242;
   font-weight: 500;
-}
-
-.bp-unfinished-banner {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 11px 14px;
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
-  border-radius: 10px;
-  font-size: 15px;
-  color: #991b1b;
-  font-weight: 700;
 }
 
 /* ─── Goal tracker ───────────────────────────────────────────────────────── */
@@ -4619,10 +4592,6 @@
   border-top: 0;
 }
 
-.bp-card:has(> .bp-statrow--static) > .bp-section-heading:first-child {
-  margin-bottom: 0;
-}
-
 .bp-card:has(> .bp-tb-item) > .bp-latest-head {
   margin-bottom: 0;
 }
@@ -4750,15 +4719,23 @@
   --stat-trail: 26px; /* a chip */
 }
 
-/* A caption is wider than a chip, so one caption widens the lane for every row
-   in that card — the alternative is a column that steps in and out. */
+/* A caption is wider than a chip, so one caption sets the lane for every row in
+   that card — the alternative is a column that steps in and out. */
 .bp-card:has(.bp-statrow > .bp-statrow-note) {
   --stat-trail: 58px;
 }
 
-.bp-statrow > .trend-tip,
+/* A caption fills the lane; a chip is 26px and stays 26px. Sizing the chip's
+   box to the lane made a 26px pill as wide as the figure it annotates, so the
+   slack is a margin *after* the chip instead: the chip keeps its own width and
+   sits against its figure, and the figures still end on one line. */
 .bp-statrow > .bp-statrow-note {
   flex: 0 0 var(--stat-trail, auto);
+}
+
+.bp-statrow > .trend-tip {
+  flex: 0 0 auto;
+  margin-right: calc(var(--stat-trail, 26px) - 26px);
 }
 
 .bp-statrow:not(:has(> .trend-tip, > .bp-statrow-note)) .bp-statrow-value {
@@ -5325,14 +5302,19 @@
     display: none;
   }
 }
-/* A stat row sitting directly under a card's header bar.
-   `.bp-card:has(> .bp-statrow--static) > .bp-section-heading` already zeroes
-   the heading's bottom margin, but SectionCard.css loads *after* this file and
-   its own `.section-card-title:first-child` margin wins — so the 14px comes back and
-   stacks on the row's padding. Cancelling it here beats the order. The row's
-   own inset is the list's, set with the bleed above. */
-.section-card > .section-card-title:first-child + .bp-statrow {
-  margin-top: -14px;
+/* A stat row sitting directly under a card's header bar. The header's own rule
+   is the list's first divider, so the header gives up the gap it would leave
+   below itself and the row starts at the rule — a table under its head.
+
+   One declaration does it, on the header. It used to be two that had to cancel
+   out: a zeroed margin here *and* a -14px pull on the row, written because
+   SectionCard.css loads after this file and its `--divider` margin won. When
+   both landed, the row was dragged a full 14px up under the header. This
+   selector carries a class more than SectionCard's, so it wins on weight rather
+   than on order and nothing has to be subtracted back. */
+.section-card--divider:not(.section-card--flush)
+  > .section-card-title:first-child:has(+ .bp-statrow) {
+  margin-bottom: 0;
 }
 
 /* ── Activity types ─────────────────────────────────────────────────────────

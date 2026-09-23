@@ -1,0 +1,645 @@
+/* One title, everything the school knows about it. Sits in the shared side
+   Modal, so this file is only what the panel puts inside it. */
+
+/* The centre modal is 520px, which is a dialogue's width — a question and two
+   buttons. This one is a page about a book, so it takes a page's width. */
+.modal--center.bkm-modal {
+  width: min(880px, calc(100vw - var(--modal-gutter) * 2));
+}
+
+/* Three panels, divided by rules rather than by whitespace: the book down the
+   left, the tab bar across the top of the right, and the panel it opens under
+   it. The rules are what say "this column doesn't move when that one scrolls" —
+   without them two independently scrolling regions read as one page misbehaving. */
+.bkm {
+  display: grid;
+  grid-template-columns: 228px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  /* A height, not a cap. Two independently scrolling regions need a shared box
+     to scroll within — and a dialog that grew and shrank as you moved between
+     Readers (thirty rows) and Where it is (four lines) would jump under the
+     pointer every time you changed tab. */
+  height: min(78vh, 820px);
+}
+
+/* ── 1. The book ───────────────────────────────────────────────────────────── */
+
+.bkm-rail {
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+  min-height: 0;
+  padding: 24px;
+  overflow-y: auto;
+  border-right: 1px solid var(--c-border);
+}
+
+/* A jacket, not a poster. The rail is reference, not the display case — the
+   cover identifies the book and the numbers under it are what the panel is
+   for — so the rail is narrow and the cover fills it rather than floating in a
+   column with room to spare. */
+/* Capped rather than filling the rail: the rail is as wide as its widest
+   control (the action at its foot), and a cover that grew to match would take
+   the room the numbers need. */
+.bkm-rail .bkcov {
+  width: 100%;
+  max-width: 124px;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+}
+
+.bkm-rail .bkcov-title,
+.bkm-rail .bkcov-author {
+  display: none;
+}
+
+/* ── 2. The tab bar ────────────────────────────────────────────────────────── */
+
+/* The rule runs the full width of the panel, which the strip's own border
+   can't do inside the region's padding — so the region draws it and the strip
+   gives its own up. */
+.bkm-tabs {
+  min-width: 0;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.bkm-tabs .tabs--underline {
+  border-bottom: 0;
+}
+
+/* ── 3. The panel ──────────────────────────────────────────────────────────── */
+
+.bkm-panel .emp {
+  flex: 1;
+  justify-content: center;
+  padding: 28px 20px;
+}
+
+/* The admin's own page shape, inside the panel: content on the page grey, each
+   block in a white card. The rail and the tab bar stay white so the grey reads
+   as "this is the part that changes". */
+.bkm-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ce-gap, 16px);
+  min-width: 0;
+  min-height: 240px;
+  padding: 20px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  background: var(--c-gray-100);
+}
+
+/* The section itself is transparent: its title and its filter are controls
+   *for* the list, so they sit on the grey the way a page header and a filter
+   bar do, and only the content they describe is carded. */
+.bkm-panel > section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The content block is the card. */
+.bkm-list,
+.bkm-similar,
+.bkm-wherelist,
+.bkm-reviews,
+.bkm-facts,
+.bkm-panel .emp {
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+}
+
+/* A `<ul>`'s own 40px indent goes with the bullets — the rows are the list. */
+.bkm-list,
+.bkm-similar,
+.bkm-wherelist {
+  padding: 0;
+}
+
+/* A list of rows fills its card edge to edge and clips to it. That is what
+   makes a hover fill take the card's corners at the top and bottom of the list
+   and square ones in the middle — the first row's highlight rounds off with the
+   card, the last one's does too, a middle row's is a plain band, and a list of
+   one is rounded all round. Clipping does all four without a rule per case. */
+.bkm-list,
+.bkm-similar,
+.bkm-wherelist,
+.bkm-facts {
+  overflow: hidden;
+}
+
+/* Reviews are quotes in their own tinted blocks rather than rows, and an empty
+   state is centred in the space — both keep the card's padding. */
+.bkm-reviews,
+.bkm-panel .emp {
+  padding: 10px;
+}
+
+/* An empty tab takes the room its list would have had and centres in it. A
+   message pinned under the filter left two thirds of the panel blank below it,
+   which read as the list having failed to load rather than as there being
+   nothing to list. */
+.bkm-panel > section:has(> .emp) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* One column, and one scroller: three scrolling panes stacked is worse than one
+   page, and a 248px rail beside a reader row is narrower than the row needs. */
+@media (max-width: 760px) {
+  .bkm {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    height: auto;
+    max-height: min(84vh, 820px);
+    overflow-y: auto;
+  }
+
+  .bkm-rail,
+  .bkm-panel {
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+
+  /* Side by side instead of stacked — a full-width cover at this size is a
+     poster nobody asked for, and a small one alone above the title leaves the
+     line beside it empty. */
+  .bkm-rail {
+    grid-row: auto;
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  /* Beside the cover rather than under it, so the caption reads from the left
+     again — centred text in a column next to a jacket is just ragged. */
+  .bkm-rail .bkm-head-text {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .bkm-rail .bkcov {
+    width: 84px;
+  }
+
+  .bkm-rail .bkm-stats {
+    grid-column: 1 / -1;
+  }
+
+  .bkm-tabs {
+    padding: 0 20px;
+  }
+
+  .bkm-panel {
+    padding: 18px 20px 22px;
+  }
+}
+
+/* ── The book, in the rail ─────────────────────────────────────────────────── */
+
+/* Four things stacked in a 152px column — a title that runs to three lines, an
+   author, a rating and then the numbers. They need real steps between them or
+   they read as one paragraph, so the spacing is declared here rather than left
+   to a single flex gap that can't tell a title from its author. */
+/* The jacket, its title, its author and its rating are one stack centred under
+   the cover — the cover is the widest thing in the rail and the rest is a
+   caption on it. The numbers below stay a full-width list: a label and its
+   figure belong at opposite ends of their row, which is the one thing
+   centring would take away. */
+.bkm-head-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  width: 100%;
+}
+
+.bkm-rail .bkm-stats {
+  align-self: stretch;
+}
+
+.bkm-title {
+  font-size: var(--text-body);
+  font-weight: var(--fw-extrabold);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  color: var(--c-text-dark);
+  margin-bottom: 7px;
+}
+
+.bkm-author {
+  font-size: var(--text-tag);
+  line-height: 1.4;
+  color: var(--c-text-light);
+  margin-bottom: 14px;
+}
+
+/* The rating is a fact about the book in a rail, not the subject of a reviews
+   page — so the figure stays under the title it belongs to rather than at the
+   display size the block uses on its own. Stacked rather than set beside the
+   stars, because the rail is a centred column: the figure, the stars it stands
+   for and the count behind it read down the same centre line as the title and
+   the cover above them. Sideways it put a 22px number off to one side of a
+   stack that is otherwise symmetrical. */
+.bkm-rail .rating-block {
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bkm-rail .rating-score {
+  font-size: var(--text-subhead);
+}
+
+.bkm-rail .rating-meta {
+  align-items: center;
+}
+
+/* ── 4. The footer ─────────────────────────────────────────────────────────── */
+
+/* The one thing you can do to a title from here. It runs under both columns
+   because it acts on the whole title, and it holds still like the tab bar does
+   — neither of the two scrolling regions owns it. The button's own label says
+   what it does, so it stands alone at the trailing edge. */
+.bkm-foot {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 14px 28px;
+  border-top: 1px solid var(--c-border);
+}
+
+/* ── A panel ───────────────────────────────────────────────────────────────── */
+
+/* The step under a panel's title belongs to whatever follows it — a filter, a
+   list, an empty state — and not to the title. The title's own bottom margin
+   collapsed with the next element's top one on a tab whose section is a plain
+   block, and didn't on a tab whose section is a flex column (the empty ones),
+   so the same two elements sat 16px apart on one tab and 28px on another. */
+.bkm-panel .section-card-title {
+  margin-bottom: 0;
+}
+
+/* An empty state is a content block like a list, so it takes the same step off
+   whatever named or filtered it — 16px under a title, and the filter's own
+   tighter 10px below. Without this it sat flush against the filter strip,
+   because only a list had the rule. */
+.bkm-panel .emp {
+  margin-top: 16px;
+}
+
+/* The panel's section header is the system's own title row (`SectionCardTitle`
+   used standalone — a plain bold heading), with one line under it saying what
+   the list below is. Every tab opens the same way. */
+.bkm-sub {
+  font-size: var(--text-tag);
+  line-height: 1.5;
+  color: var(--c-text-light);
+  margin-top: 4px;
+  max-width: 62ch;
+}
+
+/* The rows bleed into the panel's padding so their *text* lines up with the
+   heading above them while the hover fill still reaches past it. A list inset
+   by its own row padding reads as accidentally indented. */
+.bkm-wherelist,
+.bkm-list,
+.bkm-similar,
+.bkm-reviews {
+  list-style: none;
+  /* The 16px step under whatever names the list. The rows carry their own
+     padding, so the card around them only needs enough to keep the hairlines
+     off its edge. */
+  margin: 16px 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* In the panel there is room for the row the app actually draws: the source,
+   where to find it, and the strongest honest claim, on one line. */
+.bkm-whererow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px;
+  border-radius: 10px;
+}
+
+.bkm-reader:hover,
+.bkm-simrow:hover {
+  background: var(--c-gray-100);
+}
+
+/* Tooltip wraps the claim in its own span, so the row's flex sizing lands on
+   that wrapper — which is why the claim is pushed right by its own margin
+   rather than by a flex:1 on a middle cell. */
+.bkm-whererow .ttp {
+  margin-left: auto;
+  min-width: 0;
+}
+
+/* The strongest honest claim about this holding — a licence we own, a queue we
+   can't see, or a copy the school owns. Never availability. It hugs the row's
+   trailing edge, so the claims line up down the list. */
+.bkm-cert {
+  flex: 0 0 auto;
+  padding-left: 12px;
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
+  color: var(--c-text);
+}
+
+/* ── The funnel, down the rail ──────────────────────────────────────────────
+   Four numbers stacked, not a strip across the top of the panel: they belong to
+   the book rather than to whichever tab you are reading, so they sit beside the
+   cover and hold still while the panel changes. */
+
+.bkm-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--c-border);
+}
+
+.bkm-stats > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.bkm-stats dt {
+  font-size: var(--text-tag);
+  line-height: 1.3;
+  color: var(--c-text-light);
+}
+
+.bkm-stats dd {
+  margin: 0;
+  font-size: var(--text-body);
+  font-weight: var(--fw-extrabold);
+  color: var(--c-text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Readers, talks, reviews ───────────────────────────────────────────────── */
+
+.bkm-reader,
+.bkm-simrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  font: inherit;
+}
+
+/* A hairline between rows, inset to the text so it reads as a list rather than
+   as a table ruled to the edge of the panel. The rule is on the row and not on
+   the item, so the hover fill covers it. */
+.bkm-list > li + li,
+.bkm-similar > li + li,
+.bkm-wherelist > li + li {
+  border-top: 1px solid var(--c-border);
+}
+
+.bkm-reader--link,
+.bkm-simrow--link {
+  cursor: pointer;
+}
+
+.bkm-reader--link .bkm-reader-name,
+.bkm-simrow--link:hover .bkm-reader-name {
+  color: var(--c-blue, #196dd5);
+}
+
+.bkm-reader-chev {
+  flex: 0 0 auto;
+  color: var(--c-gray-500);
+}
+
+.bkm-reader-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.bkm-reader-name {
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bkm-reader-sub {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}
+
+.bkm-readerright {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.bkm-reviews {
+  gap: 10px;
+  padding: 10px;
+}
+
+.bkm-review {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--c-gray-100);
+}
+
+.bkm-review-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bkm-review-text {
+  font-size: var(--text-cell);
+  line-height: 1.5;
+  color: var(--c-text);
+  margin-top: 8px;
+}
+
+/* ── About ─────────────────────────────────────────────────────────────────── */
+
+/* The record as a full-width list, the same shape as the holdings above it:
+   the field on the left, what it says on the right, a hairline between. Two
+   hugging columns left the values in a ragged band down the middle of a panel
+   with nothing on the other half of it. */
+.bkm-facts {
+  display: flex;
+  flex-direction: column;
+  margin: 16px 0 0;
+}
+
+.bkm-facts > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 16px;
+}
+
+.bkm-facts > div + div {
+  border-top: 1px solid var(--c-border);
+}
+
+.bkm-facts dt {
+  font-size: var(--text-label);
+  color: var(--c-text-light);
+}
+
+.bkm-facts dd {
+  margin: 0;
+  font-size: var(--text-label);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+  text-align: right;
+}
+
+/* A thumbnail, not a poster — same sizing the tables use. */
+.bkm-simrow .bkcov {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 51px;
+  border-radius: 4px;
+}
+
+.bkm-simrow .bkcov-title,
+.bkm-simrow .bkcov-author {
+  display: none;
+}
+
+/* ── Panel ─────────────────────────────────────────────────────────────────── */
+
+/* The filter over the list, between the panel's header and the list itself —
+   it is what the header is describing, so it sits under it rather than beside
+   the tab bar above. Same 16px step off the sub-line that a list gets. */
+.bkm-filter {
+  margin-top: 16px;
+}
+
+/* The filter sits closer to what it filters than a title does. */
+.bkm-filter + .bkm-list,
+.bkm-filter + .emp {
+  margin-top: 10px;
+}
+
+/* ── Lists ─────────────────────────────────────────────────────────────────
+   Where a title already sits — curated Book Lists, the Reading List Challenges
+   that require it, and the Discover shelves the engine builds. Three kinds, so
+   three carded runs with a heading each rather than one flat list: which sort
+   of list a title is on is the first thing being asked, and a mixed list made
+   you read every row to find out. */
+.bkm-lists {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  /* The same 16px step off the section title every other panel's list takes. */
+  margin-top: 16px;
+}
+
+/* Each kind is a card, and the kind's name is that card's title — same shape as
+   every other titled block in the panel: a name and its count on a bar of the
+   card's own width, a hairline under it, then rows edge to edge. */
+.bkm-listgroup {
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.bkm-listgroup-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 15px 18px 13px;
+  border-bottom: 1px solid var(--c-border);
+  font-size: var(--text-body);
+  font-weight: var(--fw-extrabold);
+  letter-spacing: -0.01em;
+  color: var(--c-text);
+}
+
+.bkm-listgroup-count {
+  padding: 1px 8px;
+  border-radius: 99px;
+  background: var(--c-gray-150);
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-light);
+}
+
+.bkm-listrows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bkm-listrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+}
+
+.bkm-listrow + .bkm-listrow {
+  border-top: 1px solid var(--c-border);
+}
+
+.bkm-listrow-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bkm-listrow-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-body-sm);
+  font-weight: var(--fw-bold);
+  color: var(--c-text);
+}
+
+/* An external list opens somewhere that isn't Beanstack — the app's own
+   `external_list_url`. The mark is the only thing that says so. */
+.bkm-listrow-ext {
+  color: var(--c-gray-650);
+}
+
+.bkm-listrow-sub {
+  font-size: var(--text-tag);
+  color: var(--c-gray-750);
+}

@@ -37,12 +37,16 @@ import { gameboardSections } from './sections/gameboard'
 import { gameboardReaderSections } from './sections/gameboard-reader'
 import { wordsWithBennySections } from './sections/words-with-benny'
 import { engagementSignalsSections } from './sections/engagement-signals'
+import { collectionEngineSections } from './sections/collection-engine'
+import { collectionEngineTeacherSections } from './sections/collection-engine-teacher'
 import { rmiSections } from './sections/rmi'
 import { mobileSections } from './sections/mobile'
 import { mobileIconSections } from './sections/mobile-icons'
 
 // Global resets + body font (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
+import '../collection-engine/index.css'
+import '../collection-engine-teacher/index.css'
 
 // Bring in CSS for the components so they render properly here
 import '@components/Cards/Cards.css'
@@ -296,6 +300,20 @@ export const GROUPS = [
     color: 'var(--c-teal)',
   },
   {
+    id: 'collection-engine',
+    kind: 'prototype',
+    title: 'Collection Engine',
+    desc: 'Components for the Collection Engine \u2014 the parts that keep a recommendation honest about where a reader can actually get a book: the three-certainty holdings row, the call number that walks them to a shelf, the catalog\u2019s "as of" stamp, and the feed cards behind it.',
+    color: 'var(--c-teal-ink)',
+  },
+  {
+    id: 'collection-engine-teacher',
+    kind: 'prototype',
+    title: 'Collection Engine: Teacher',
+    desc: 'The classroom and profile surfaces of the Collection Engine \u2014 the tab a teacher scans to see who the engine is reaching, and the profile section that shows one reader what they were handed and what came of it.',
+    color: 'var(--c-purple)',
+  },
+  {
     id: 'engagement-signals',
     kind: 'prototype',
     title: 'Engagement Signals',
@@ -376,6 +394,8 @@ export const SECTIONS = [
   ...gameboardReaderSections,
   ...wordsWithBennySections,
   ...engagementSignalsSections,
+  ...collectionEngineSections,
+  ...collectionEngineTeacherSections,
   ...rmiSections,
   ...mobileSections,
   ...mobileIconSections,

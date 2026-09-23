@@ -4,7 +4,7 @@ import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { BookCard } from './BookCard'
 
 // A full-page view of one Discover list — its header + every title in a grid.
-export function ListPage({ list, onOpen, onWish, wishlist, onBack }) {
+export function ListPage({ list, onOpen, onWish, wishlist, onBack, settings }) {
   return (
     <div className="bk-browse-page">
       <ReaderBack onClick={onBack}>Back to Discover</ReaderBack>
@@ -27,6 +27,7 @@ export function ListPage({ list, onOpen, onWish, wishlist, onBack }) {
       <div className="bk-results-grid">
         {list.books.map((b) => (
           <BookCard
+            settings={settings}
             key={b.id}
             book={b}
             onOpen={onOpen}

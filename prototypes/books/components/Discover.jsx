@@ -16,7 +16,7 @@ const BENNY_SHELF = {
   title: 'Benny’s Picks',
   subtitle: (
     <>
-      Because you loved <strong>{READER.justFinished}</strong>
+      From the Recommendation Engine, because you loved <strong>{READER.justFinished}</strong>
     </>
   ),
 }
@@ -56,10 +56,11 @@ export function Discover({ onOpen, onWish, wishlist, settings, onBrowse, onPlay,
         }
       />
 
-      <AskBenny onOpen={onOpen} onWish={onWish} wishlist={wishlist} />
+      <AskBenny onOpen={onOpen} onWish={onWish} wishlist={wishlist} settings={settings} />
 
       {/* Benny recommendation row — same shelf anatomy as every other row */}
       <Shelf
+        settings={settings}
         shelf={BENNY_SHELF}
         books={getBooks(BENNY_PICKS)}
         onOpen={onOpen}
@@ -74,6 +75,7 @@ export function Discover({ onOpen, onWish, wishlist, settings, onBrowse, onPlay,
         return !key || settings[key]
       }).map((shelf) => (
         <Shelf
+          settings={settings}
           key={shelf.id}
           shelf={shelf}
           books={getBooks(shelf.books)}

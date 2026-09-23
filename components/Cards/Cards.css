@@ -87,10 +87,12 @@
 }
 
 /* Optional — the tile reads fine as just a figure and its label. */
-/* The glyph sits on a white plate, the same one the reader banner's mark does
-   — a bare 20px glyph on the tile's own tint read as a stray mark beside the
-   figure rather than as the tile's icon, and the plate is what makes the two
-   the same object wherever a reader meets them. */
+/* The glyph sits on a plate: a bare 20px glyph on the tile's own tint reads as
+   a stray mark beside the figure rather than as the tile's icon.
+
+   The plate is white — lighter than the tile's own 16% tint, so the mark sits
+   forward of the card rather than sinking into it, and the glyph at full
+   strength has the cleanest ground to sit on. */
 .rc-stat-ico {
   display: inline-flex;
   align-items: center;
@@ -105,11 +107,12 @@
   box-shadow: 0 2px 3px rgb(0 0 0 / 6%);
 }
 
-/* Two things in this slot are the mark themselves and fill it edge to edge: a
-   progress ring, and an illustrated icon. Neither has room for a plate behind
-   it, and a circle peeking out from under square artwork is worse than none. */
-.rc-stat-ico:has(.rc-ring),
-.rc-stat-ico:has(.plumpy-icon) {
+/* A progress ring is the mark itself and fills the slot edge to edge — no room
+   for a plate behind it, and a circle peeking out from under one is worse than
+   none. (A Plumpy glyph used to be excepted here too, from when Plumpy meant
+   full-bleed artwork. At 22px in a 40px slot it is a glyph like any other, and
+   the exception was what left it sitting bare.) */
+.rc-stat-ico:has(.rc-ring) {
   background: none;
   box-shadow: none;
 }
@@ -550,4 +553,23 @@
 .rc-card-head + .rc-card-body--flush .tbl--flush thead tr:first-child .tbl-th:last-child {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+/* `progress` — the tile's figure drawn again as a bar. It takes the card's own
+   colour, on a track mixed from the same hue so the bar reads against the
+   tile's tint rather than against white. */
+.rc-stat-bar {
+  display: block;
+  height: 6px;
+  margin-top: 10px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--rc-stat-color) 22%, #fff);
+  border-radius: 999px;
+}
+
+.rc-stat-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--rc-stat-color);
+  border-radius: inherit;
 }

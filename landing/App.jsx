@@ -64,6 +64,10 @@ const ICON_NAMES = {
   'reader-profile': 'users',
   'engagement-signals': 'activity-pulse',
   rmi: 'flame',
+  'collection-engine': 'books',
+  'collection-engine-district': 'building-community',
+  'collection-engine-teacher': 'school',
+  'discover-lists': 'clipboard-list',
 }
 
 const ICONS = Object.fromEntries(

@@ -4053,24 +4053,12 @@
 
 /* Pink warning callout (point types, repeatable activities). */
 
+/* The shared <Banner> at `warning` carries the chrome and the glyph — this is
+   only the step under it. It used to be a bespoke pink callout with a `⚠` in a
+   `::before`, which is how the same sentence came out pink here and yellow
+   three screens away. */
 .gb-warn-note {
-  display: flex;
-  gap: 9px;
   margin: 0 0 14px;
-  padding: 11px 14px;
-  border: 1px solid color-mix(in srgb, #e11d48 30%, transparent);
-  border-radius: 10px;
-  background: color-mix(in srgb, #e11d48 7%, #fff);
-  color: #9f1239;
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-.gb-warn-note::before {
-  content: '⚠';
-  flex: none;
-  font-size: 14px;
-  line-height: 1.4;
 }
 
 /* In the editor fieldscol the flex gap already spaces it — drop the extra margin. */

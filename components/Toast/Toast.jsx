@@ -13,6 +13,9 @@ import './Toast.css'
  *   push({ title: 'Badge earned', body: 'Space', tone: 'success' })
  *   <ToastStack toasts={toasts} onDismiss={dismiss} />
  *
+ * `action` is an optional `{ label, onClick }` — one way on from the thing that
+ * just happened ("View", "Undo"). It dismisses the toast as it fires.
+ *
  * `tone` is `success` (default) | `info` | `warning`. Each toast carries its own
  * timer and clears itself; hovering the stack pauses nothing, because a toast
  * short enough to read in four seconds shouldn't need pausing — put anything
@@ -52,7 +55,7 @@ export function useToasts() {
 }
 
 function Toast({ toast, onDismiss }) {
-  const { id, title, body, tone } = toast
+  const { id, title, body, tone, action } = toast
   const cfg = TONES[tone] ?? TONES.success
 
   useEffect(() => {
@@ -71,6 +74,20 @@ function Toast({ toast, onDismiss }) {
         <span className="toast-title">{title}</span>
         {body && <span className="toast-body">{body}</span>}
       </span>
+      {/* One optional way on — "View", "Undo". It dismisses as it fires, or the
+          toast sits there after the thing it offered has already happened. */}
+      {action && (
+        <button
+          type="button"
+          className="toast-action"
+          onClick={() => {
+            action.onClick?.()
+            onDismiss(id)
+          }}
+        >
+          {action.label}
+        </button>
+      )}
       <button
         type="button"
         className="toast-close"

@@ -128,15 +128,15 @@ export const PROTOTYPES = [
     id: 'books',
     name: 'Book Discovery',
     section: 'Prototypes',
-    category: 'Reader experience',
+    category: 'Collection Engine',
     href: '/bs-prototypes/books/',
     accent: '#0D9488',
     description:
-      'Discover and My Shelf on the reader app — the catalog, Benny recommendations and partner shelves, with the rest of the nav coming from Web App.',
+      'Discover and the Wish List on the reader app — the catalog, Benny recommendations and partner shelves, with the rest of the nav coming from Web App.',
   },
   {
     id: 'logging-flow',
-    name: 'Scholastic Logging Flow',
+    name: 'Scholastic Integration',
     section: 'Prototypes',
     category: 'Integrations',
     href: '/bs-prototypes/logging-flow/',
@@ -195,7 +195,7 @@ export const PROTOTYPES = [
     id: 'words-with-benny',
     name: 'Words with Benny',
     section: 'Prototypes',
-    category: 'Reader experience',
+    category: 'Challenges',
     href: '/bs-prototypes/words-with-benny/',
     accent: '#B43DD0',
     description:
@@ -213,7 +213,7 @@ export const PROTOTYPES = [
   {
     id: 'm-app',
     name: 'Mobile · App',
-    section: 'Prototypes',
+    section: 'Experiments',
     category: 'Mobile app',
     platform: 'mobile',
     href: '/bs-prototypes/m-app/',
@@ -227,5 +227,45 @@ export const PROTOTYPES = [
     href: '/bs-prototypes/rmi/',
     accent: '#14B8A6',
     description: 'The standalone RMI product — educator indexes and the student motivation quiz.',
+  },
+  {
+    id: 'collection-engine',
+    name: 'Collection Engine: School',
+    section: 'Prototypes',
+    category: 'Collection Engine',
+    href: '/bs-prototypes/collection-engine/',
+    accent: '#0F766E',
+    description:
+      'Recommend only what the school actually owns — and show the librarian what came of it.',
+  },
+  {
+    id: 'collection-engine-district',
+    name: 'Collection Engine: District',
+    section: 'Prototypes',
+    category: 'Collection Engine',
+    href: '/bs-prototypes/collection-engine-district/',
+    accent: '#0CA7BC',
+    description:
+      'District collection intelligence — where the collection meets demand, and where it falls short.',
+  },
+  {
+    id: 'collection-engine-teacher',
+    name: 'Collection Engine: Teacher',
+    section: 'Prototypes',
+    category: 'Collection Engine',
+    href: '/bs-prototypes/collection-engine-teacher/',
+    accent: '#B43DD0',
+    description:
+      "The classroom view of the engine, and how a recommendation reaches a reader's profile.",
+  },
+  {
+    id: 'discover-lists',
+    name: 'Book Discovery: Book Lists',
+    section: 'Prototypes',
+    category: 'Collection Engine',
+    href: '/bs-prototypes/discover-lists/',
+    accent: '#0CA7BC',
+    description:
+      'The staff side of the reader’s Discover page — the book lists teachers and media specialists curate onto it.',
   },
 ]

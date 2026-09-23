@@ -43,6 +43,14 @@ function pageSeries(page, totalPages, window = 1) {
   return out
 }
 
+/* A click that landed on a control in the row belongs to that control, not to
+   the row. Without this, a toggle in a cell fires its own `onChange` *and*
+   opens whatever the row opens — which is how "shown on Discover" also became
+   "edit this list". A row action was the same bug being invisible, because it
+   usually opened the same thing the row did. */
+const CONTROLS = 'button, a, input, select, textarea, label, [role="button"], [role="switch"]'
+const fromControl = (e) => Boolean(e.target.closest?.(CONTROLS))
+
 export function Table({
   columns,
   rows,
@@ -196,13 +204,6 @@ export function Table({
             </td>
           </tr>
         )}
-        {!loading && sortedRows.length === 0 && (
-          <tr>
-            <td className="tbl-state" colSpan={columns.length}>
-              {empty ?? 'No rows'}
-            </td>
-          </tr>
-        )}
         {!loading &&
           visibleRows.map((row, i) => {
             const isHighlight = highlightRow?.(row)
@@ -216,7 +217,7 @@ export function Table({
                 ]
                   .filter(Boolean)
                   .join(' ')}
-                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                onClick={onRowClick ? (e) => !fromControl(e) && onRowClick(row) : undefined}
               >
                 {columns.map((c) => {
                   const value = row[c.key]
@@ -244,6 +245,15 @@ export function Table({
       )}
     </table>
   )
+
+  /* A table with nothing in it is not a table — it is a message. Drawn inside
+     the grid it used to be a column of headers over one merged cell, which
+     reads as a table that failed to load rather than as one with nothing to
+     show; there is also nothing for those headers to label. So the empty state
+     replaces the table outright, and the header comes back with the first row.
+     (`loading` keeps its skeleton rows: there, the columns are about to be
+     real.) */
+  if (!loading && sortedRows.length === 0) return empty ?? null
 
   if (!scrollX) return tableEl
 

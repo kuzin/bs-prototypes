@@ -146,6 +146,100 @@ const PLUMPY = {
       </>
     ),
   },
+  /* Icons8 "Combo Chart" — bars with a rising line over them. The growth
+     glyph for a stat tile; Plumpy has no plain arrow-trend. */
+  'combo-chart': {
+    id: 'DXG9JcM0rNM6',
+    figma: 'icons8-combo-chart',
+    body: (
+      <>
+        <path
+          opacity=".35"
+          d="M6,21H4c-1.105,0-2-0.895-2-2v-3c0-1.105,0.895-2,2-2h2c1.105,0,2,0.895,2,2v3C8,20.105,7.105,21,6,21z"
+        />
+        <path
+          opacity=".35"
+          d="M20,21h-2c-1.105,0-2-0.895-2-2v-6c0-1.105,0.895-2,2-2h2c1.105,0,2,0.895,2,2v6C22,20.105,21.105,21,20,21z"
+        />
+        <path
+          opacity=".35"
+          d="M13,21h-2c-1.105,0-2-0.895-2-2v-9c0-1.105,0.895-2,2-2h2c1.105,0,2,0.895,2,2v9C15,20.105,14.105,21,13,21z"
+        />
+        <path d="M5.019,9C4.673,9,4.337,8.821,4.152,8.501c-0.277-0.479-0.113-1.09,0.364-1.366l6.982-4.039c0.235-0.136,0.514-0.169,0.772-0.098l7,1.973c0.531,0.15,0.841,0.702,0.691,1.234c-0.15,0.531-0.701,0.841-1.234,0.691l-6.594-1.858L5.519,8.865C5.36,8.957,5.188,9,5.019,9z" />
+        <circle cx="19" cy="6" r="2" />
+        <circle cx="12" cy="4" r="2" />
+        <circle cx="5" cy="8" r="2" />
+      </>
+    ),
+  },
+  /* Icons8 "School Building" — one school, for a district counting them. */
+  'school-building': {
+    id: 'lO8LskGjlEeI',
+    figma: 'icons8-school-building',
+    body: (
+      <>
+        <path
+          opacity=".35"
+          d="M19,8h-2V6.8c0-0.703-0.369-1.354-0.971-1.715l-3-1.8c-0.633-0.38-1.425-0.38-2.058,0l-3,1.8C7.369,5.446,7,6.097,7,6.8V8H5c-1.105,0-2,0.895-2,2v8c0,1.657,1.343,3,3,3h12c1.657,0,3-1.343,3-3v-8C21,8.895,20.105,8,19,8z"
+        />
+        <path d="M16,1c-0.186,0-1.814,0-2,0c-0.552,0-1,0.448-1,1c0,0.552,0.448,1,1,1c0.186,0,1.814,0,2,0c0.552,0,1-0.448,1-1C17,1.448,16.552,1,16,1z" />
+        <circle cx="12" cy="8" r="2" />
+        <path d="M14,18c0-1.105-0.895-2-2-2s-2,0.895-2,2c0,0.601,0,3,0,3h4C14,21,14,18.601,14,18z" />
+        <rect width="2" height="2" x="17" y="12" />
+        <rect width="2" height="2" x="11" y="12" />
+        <rect width="2" height="2" x="17" y="16" />
+        <rect width="2" height="2" x="5" y="12" />
+        <rect width="2" height="2" x="5" y="16" />
+      </>
+    ),
+  },
+  /* Icons8 "Connected" — two ends of a cable joined, for a synced source. */
+  connected: {
+    id: 'OSBQNmXiAh9Y',
+    figma: 'icons8-connected',
+    body: (
+      <>
+        <path d="M14.5,18c-0.384,0-0.768-0.146-1.061-0.439l-7-7c-0.586-0.585-0.586-1.536,0-2.121c0.586-0.586,1.535-0.586,2.121,0l7,7c0.586,0.585,0.586,1.536,0,2.121C15.268,17.854,14.884,18,14.5,18z" />
+        <path
+          opacity=".35"
+          d="M11.121,19.879L14,17l-7-7l-2.879,2.879c-1.172,1.172-1.172,3.071,0,4.243l2.757,2.757C8.05,21.05,9.95,21.05,11.121,19.879z"
+        />
+        <path d="M6.56,19.56l-2,2C4.27,21.85,3.88,22,3.5,22s-0.77-0.15-1.06-0.44c-0.59-0.58-0.59-1.54,0-2.12l2-2L6.56,19.56z" />
+        <path d="M16.5,16c-0.384,0-0.768-0.146-1.061-0.439l-7-7c-0.586-0.585-0.586-1.536,0-2.121c0.586-0.586,1.535-0.586,2.121,0l7,7c0.586,0.585,0.586,1.536,0,2.121C17.268,15.854,16.884,16,16.5,16z" />
+        <path
+          opacity=".35"
+          d="M12.879,4.121L10,7l7,7l2.879-2.879c1.172-1.172,1.172-3.071,0-4.243l-2.757-2.757C15.95,2.95,14.05,2.95,12.879,4.121z"
+        />
+        <path d="M17.44,4.44l2-2C19.73,2.15,20.12,2,20.5,2s0.77,0.15,1.06,0.44c0.59,0.58,0.59,1.54,0,2.12l-2,2L17.44,4.44z" />
+      </>
+    ),
+  },
+  /* Icons8 "Sparkling" — the AI mark. Used to flag the parts of a screen where
+     a model is doing the work, rather than a rule the admin wrote. */
+  sparkle: {
+    id: 'X5yFCoZOFW4v',
+    figma: 'icons8-sparkling',
+    body: (
+      <>
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          opacity=".35"
+          d="M16.404,5.561l1.823,3.333c0.184,0.336,0.459,0.611,0.795,0.795l3.333,1.823c0.748,0.409,0.748,1.483,0,1.892l-3.333,1.823c-0.336,0.184-0.611,0.459-0.795,0.795l-1.823,3.333c-0.409,0.748-1.483,0.748-1.892,0l-1.823-3.333c-0.184-0.336-0.459-0.611-0.795-0.795l-3.333-1.823c-0.748-0.409-0.748-1.483,0-1.892l3.333-1.823c0.336-0.184,0.611-0.459,0.795-0.795l1.823-3.333C14.921,4.813,15.995,4.813,16.404,5.561z"
+        />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M6.82,2.539l0.656,1.519c0.09,0.209,0.257,0.376,0.466,0.466L9.461,5.18c0.719,0.31,0.719,1.33,0,1.641L7.942,7.476c-0.209,0.09-0.376,0.257-0.466,0.466L6.82,9.461c-0.31,0.719-1.33,0.719-1.641,0L4.524,7.942c-0.09-0.209-0.257-0.376-0.466-0.466L2.539,6.82c-0.719-0.31-0.719-1.33,0-1.641l1.519-0.656c0.209-0.09,0.376-0.257,0.466-0.466L5.18,2.539C5.49,1.82,6.51,1.82,6.82,2.539z"
+        />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M4.615,15.404l0.492,1.139c0.068,0.157,0.193,0.282,0.35,0.35l1.139,0.492c0.539,0.233,0.539,0.998,0,1.23l-1.139,0.492c-0.157,0.068-0.282,0.193-0.35,0.35l-0.492,1.139c-0.233,0.539-0.998,0.539-1.23,0l-0.492-1.139c-0.068-0.157-0.193-0.282-0.35-0.35l-1.139-0.492c-0.539-0.233-0.539-0.998,0-1.23l1.139-0.492c0.157-0.068,0.282-0.193,0.35-0.35l0.492-1.139C3.618,14.865,4.382,14.865,4.615,15.404z"
+        />
+      </>
+    ),
+  },
   announcement: {
     id: 'Zftbby3vkxVB',
     figma: 'icons8-announcement',
@@ -557,6 +651,49 @@ const PLUMPY = {
       </>
     ),
   },
+  /* The pair a view switcher is drawn with — Icons8 Plumpy's own "List" and
+     "Thumbnail View", which is what a grid of covers is called in the pack. */
+  'list-view': {
+    id: 'qgkD7gW3GBKy',
+    figma: 'icons8-list',
+    body: (
+      <>
+        <circle cx="5" cy="5" r="2" />
+        <path
+          d="M19.5,4c-0.386,0-8.614,0-9,0C9.672,4,9,4.672,9,5.5S9.672,7,10.5,7c0.386,0,8.614,0,9,0 C20.328,7,21,6.328,21,5.5S20.328,4,19.5,4z"
+          opacity=".35"
+        />
+        <path
+          d="M19.5,11c-0.386,0-8.614,0-9,0C9.672,11,9,11.672,9,12.5S9.672,14,10.5,14c0.386,0,8.614,0,9,0 c0.828,0,1.5-0.672,1.5-1.5S20.328,11,19.5,11z"
+          opacity=".35"
+        />
+        <path
+          d="M19.5,18c-0.386,0-8.614,0-9,0C9.672,18,9,18.672,9,19.5S9.672,21,10.5,21c0.386,0,8.614,0,9,0 c0.828,0,1.5-0.672,1.5-1.5S20.328,18,19.5,18z"
+          opacity=".35"
+        />
+        <circle cx="5" cy="12" r="2" />
+        <circle cx="5" cy="19" r="2" />
+      </>
+    ),
+  },
+  'grid-view': {
+    id: 'kskqOgaMPJTm',
+    figma: 'icons8-four-squares',
+    body: (
+      <>
+        <path d="M9,11H5c-1.105,0-2-0.895-2-2V5c0-1.105,0.895-2,2-2h4c1.105,0,2,0.895,2,2v4C11,10.105,10.105,11,9,11z" />
+        <path
+          d="M19,11h-4c-1.105,0-2-0.895-2-2V5c0-1.105,0.895-2,2-2h4c1.105,0,2,0.895,2,2v4 C21,10.105,20.105,11,19,11z"
+          opacity=".35"
+        />
+        <path
+          d="M9,21H5c-1.105,0-2-0.895-2-2v-4c0-1.105,0.895-2,2-2h4c1.105,0,2,0.895,2,2v4 C11,20.105,10.105,21,9,21z"
+          opacity=".35"
+        />
+        <path d="M19,21h-4c-1.105,0-2-0.895-2-2v-4c0-1.105,0.895-2,2-2h4c1.105,0,2,0.895,2,2v4C21,20.105,20.105,21,19,21z" />
+      </>
+    ),
+  },
   view: {
     id: 'mHBAv5xJ2dcq',
     figma: 'icons8-visible',
@@ -704,9 +841,28 @@ const PLUMPY = {
 /* Where the app's semantic name and Plumpy's differ for the same glyph. The
    `<Icon>` registry is the naming authority — a caller says `flame` and should
    get Plumpy's fire without having to know which pack drew it. */
+/* Our semantic names onto the pack's. Only where the two mean the same thing —
+   a plural label over the same drawing, or the same idea under another word.
+   A name that means something the pack can't draw gets the real glyph fetched
+   from Icons8, not the nearest lookalike. */
 const ALIAS = {
   flame: 'fire',
+  'flame-filled': 'fire',
+  eye: 'view',
   'message-chatbot': 'chat',
+  books: 'book',
+  'book-2': 'book',
+  'circle-check': 'check',
+  'circle-check-filled': 'check',
+  users: 'people',
+  'trending-up': 'combo-chart',
+  'building-community': 'school-building',
+  'plug-connected': 'connected',
+  'reading-log': 'log',
+  award: 'medal',
+  coin: 'points',
+  'star-filled': 'star',
+  'bookmark-filled': 'bookmark',
 }
 
 /** Whether the Plumpy pack can draw this name, aliases included. */

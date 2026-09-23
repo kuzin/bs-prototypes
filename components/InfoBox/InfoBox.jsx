@@ -22,15 +22,24 @@ import '@components/InfoBox/InfoBox.css'
  *
  * The icon and the actions centre against the whole box rather than against
  * the title, so a one-line and a three-line announcement both read as
- * balanced; the ends are the only fixed points a long message has.
+ * balanced; the ends are the only fixed points a long message has. The message
+ * wraps — the app's own `.infobox` does, and a bar that ellipsised its second
+ * line lost the half of the sentence that said what to do about it.
  *
- * `icon` takes a Plumpy name (default `announcement`) or your own node.
+ * `icon` takes a Plumpy name or your own node; left out, the level's own mark
+ * is drawn, so every notice on a page carries the same glyph.
  * `action` / `readMore` are `{ label, href, onClick }` — `readMore` renders
  * second and quieter, for the case where the bar can only summarise.
  */
 export function InfoBox({
   title,
-  icon = 'announcement',
+  /* No default glyph: an InfoBox is the shared <Banner> at a level, so with
+     nothing passed it draws that level's own mark — the same circle every
+     other notice on the page carries. It used to default to the `announcement`
+     megaphone, which made an announcement and an inline notice sitting inches
+     apart read as two different systems. A caller that wants a subject glyph
+     still passes one. */
+  icon,
   action,
   readMore,
   level = 'info',
@@ -38,14 +47,14 @@ export function InfoBox({
   children,
   className = '',
 }) {
-  const glyph = typeof icon === 'string' ? <PlumpyIcon name={icon} size={26} /> : icon
+  const glyph = typeof icon === 'string' ? <PlumpyIcon name={icon} size={20} /> : icon
   const btn = (cfg, variant) => (
     <Button
       as={cfg.href ? 'a' : undefined}
       href={cfg.href}
       onClick={cfg.onClick}
       variant={variant}
-      size="md"
+      size="sm"
     >
       {cfg.label}
     </Button>
@@ -61,7 +70,9 @@ export function InfoBox({
       action={
         (action || readMore) && (
           <div className="ibx-actions">
-            {action && btn(action, 'primary')}
+            {/* The app draws one shape here — an outline button on the box's
+                own ground — whichever of the two it is. */}
+            {action && btn(action, 'secondary')}
             {readMore && btn(readMore, 'secondary')}
           </div>
         )

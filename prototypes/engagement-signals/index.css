@@ -31,10 +31,13 @@ body,
 /* ─── Shell ────────────────────────────────────────────────────────────── */
 /* The classroom page is the whole prototype, so the shell is just a
    full-height stage for it with the profile panel over the top. */
+/* Stops short of the prototype nav rather than running under it: the bar is
+   `position: fixed` at the bottom and publishes `--proto-nav-h` for exactly
+   this, so a full-height scrolling stage hides its own last row behind it. */
 .es-root {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(100% - var(--proto-nav-h, 48px));
 }
 .es-stage {
   flex: 1;

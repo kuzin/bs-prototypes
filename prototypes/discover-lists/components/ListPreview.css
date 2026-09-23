@@ -1,0 +1,55 @@
+/* The Discover preview — the reader's own shelf, shown to staff.
+   The stage carries the reader app's ground so the shelf sits on what it will
+   actually sit on, rather than on the admin's white card. */
+.modal--center.dlv-modal {
+  width: min(880px, calc(100vw - 32px));
+}
+
+.dlv {
+  display: flex;
+  flex-direction: column;
+  max-height: min(80vh, 760px);
+}
+
+.dlv-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.dlv-headtext {
+  min-width: 0;
+}
+
+.dlv-title {
+  margin: 0;
+  font-size: var(--text-subhead);
+  font-weight: var(--fw-extrabold);
+  letter-spacing: -0.01em;
+  color: var(--c-text-dark);
+}
+
+.dlv-stage {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px;
+  background: var(--c-gray-100);
+}
+
+/* On Discover a shelf pads 36px below itself to stand off the next one. There
+   is no next one here, so it's a gap above the footer — the stage's own padding
+   is what spaces this shelf from its edges. */
+.dlv-stage .bk-shelf {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.dlv-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 24px;
+  border-top: 1px solid var(--c-border);
+}

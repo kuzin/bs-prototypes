@@ -5,6 +5,12 @@ import '@components/Modal/Modal.css'
 
 const ANIM_DURATION = 220
 
+/* Which modals are open, innermost last. Modals stack — a book panel opens a
+   reader, a reader opens a session — and every open one used to listen for
+   Escape, so one press closed the whole stack instead of stepping back through
+   it. Only the top of the stack answers. */
+const OPEN_STACK = []
+
 /**
  * Three variants:
  *   <Modal open={open} onClose={fn} variant="side">…</Modal>   // right-slide panel
@@ -68,14 +74,33 @@ export function Modal({
     return () => clearTimeout(t)
   }, [open])
 
+  // A stable identity for this instance's place in the stack, and how deep it
+  // sits — the backdrop and the panel both step up by depth, so a modal opened
+  // over another one dims the one underneath instead of appearing beside it on
+  // the same layer.
+  const token = useRef({})
+  const [depth, setDepth] = useState(0)
+
   useEffect(() => {
     if (!mounted) return
+    const me = token.current
+    setDepth(OPEN_STACK.length)
+    OPEN_STACK.push(me)
     function onKey(e) {
-      if (e.key === 'Escape') handleClose()
+      if (e.key !== 'Escape') return
+      if (OPEN_STACK[OPEN_STACK.length - 1] !== me) return
+      handleClose()
     }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      const i = OPEN_STACK.indexOf(me)
+      if (i !== -1) OPEN_STACK.splice(i, 1)
+    }
   }, [mounted, handleClose])
+
+  // Two layers per level: the scrim, then the panel it belongs to.
+  const layer = depth ? { '--modal-layer': depth * 2 } : undefined
 
   if (!mounted) return null
 
@@ -91,11 +116,13 @@ export function Modal({
       {!full && (
         <div
           className={`modal-backdrop modal-backdrop--${variant}${closingClass}`}
+          style={layer}
           onClick={handleClose}
         />
       )}
       <div
         className={`modal modal--${variant}${closeBadge ? ' modal--has-close-badge' : ''}${closingClass} ${className}`.trim()}
+        style={layer}
         role="dialog"
         aria-label={ariaLabel}
         aria-modal="true"

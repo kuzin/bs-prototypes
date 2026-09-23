@@ -680,7 +680,7 @@
   width: 100%;
   max-width: 640px;
   margin: 0 auto;
-  padding: 4px 0 8px;
+  padding: 20px 0 8px;
   text-align: center;
   font-size: 14px;
   color: #868e96;
@@ -1350,4 +1350,188 @@
   width: 100%;
   height: 100%;
   border-radius: 8px;
+}
+
+/* ── The title step's shelves ──────────────────────────────────────────────
+   Two of them, and the rest on request. Collapsed with `nth-child` rather than
+   by slicing a list in JSX: the shelves are three different shapes — one
+   optional, one a map, one always there — and counting them in the markup made
+   every one of them harder to read than the thing it draws. */
+.lf-shelves {
+  display: contents;
+}
+
+.lf-shelves:not(.is-open) > *:nth-child(n + 3) {
+  display: none;
+}
+
+/* The way to the shelves the step keeps back — and the way to put them away
+   again. A disc rather than a line of text, centred under the last shelf where
+   the next one would have started. */
+.lf-moreshelves {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0 2px;
+}
+
+.lf-moreshelves-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--c-gray-750);
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.lf-moreshelves-btn:hover {
+  background: var(--c-gray-100);
+  color: var(--c-text-dark);
+}
+
+/* Open, the arrow has turned over — which is the whole message. */
+.lf-moreshelves-btn.is-open {
+  transform: rotate(180deg);
+}
+
+/* The shelves that were held back arrive rather than appear — each a beat
+   after the one above it, so the eye follows them down the page. They can only
+   be animated in: closing them is a `display: none`, which has nothing to
+   animate. */
+@keyframes lf-shelf-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.lf-shelves.is-open > *:nth-child(n + 3) {
+  animation: lf-shelf-in 0.28s ease both;
+}
+
+.lf-shelves.is-open > *:nth-child(4) {
+  animation-delay: 0.06s;
+}
+
+.lf-shelves.is-open > *:nth-child(5) {
+  animation-delay: 0.12s;
+}
+
+.lf-shelves.is-open > *:nth-child(n + 6) {
+  animation-delay: 0.18s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lf-moreshelves-btn {
+    transition: none;
+  }
+
+  .lf-shelves.is-open > *:nth-child(n + 3) {
+    animation: none;
+  }
+}
+
+/* ── What to read next, after a finished log ───────────────────────────────
+   Benny's bubble over a single title and one button. Ranged left inside a
+   centred column on purpose: the bubble is him leaning in with a suggestion,
+   not another announcement, and a book with an author and an action reads as a
+   row rather than as a poster. */
+.lf-nextup {
+  width: min(440px, 100%);
+  margin: 4px auto 0;
+  text-align: left;
+}
+
+.lf-nextup .benny-bubble {
+  text-wrap: pretty;
+}
+
+.lf-nextup-book {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md, 10px);
+  background: #fff;
+}
+
+.lf-nextup-meta {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lf-nextup-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-text-dark);
+  /* A long title is two lines and then an ellipsis — the cover beside it is
+     already doing the identifying. */
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.lf-nextup-author {
+  overflow: hidden;
+  font-size: 13px;
+  color: var(--c-gray-600);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The button keeps its width when its label changes, so confirming doesn't
+   shuffle the row it sits in. */
+.lf-nextup-book .btn {
+  flex: none;
+}
+
+@media (max-width: 520px) {
+  /* The button takes its own line rather than squeezing the title off the
+     row. */
+  .lf-nextup-book {
+    flex-wrap: wrap;
+  }
+
+  .lf-nextup-book .btn {
+    width: 100%;
+  }
+}
+
+/* The dot a jacket wears when a linked app can open it — the same dot Book
+   Discovery's shelves use, in the same corner, so a cover means the same thing
+   on both sides of the app.
+
+   Top left: the finished tick hangs off the top right, and the bottom of a
+   magazine placeholder is its masthead and issue line. `z-index` for the reason
+   `.lf-tile-mark` gives — the covers sit at 1 to clear their own shadow, and a
+   mark left on `auto` is painted underneath one. */
+.lf-tile-now {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  left: 8px;
+  width: 12px;
+  height: 12px;
+  background: #0ba85f;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+  pointer-events: none;
 }

@@ -364,7 +364,7 @@ export function ReaderPill({ reader, otherReaders = [], onSwitch, onEdit }) {
  * also mean "view my streaks". The accent variant takes the colour and leaves
  * the semantics alone.
  */
-export function StreakBanner({ streak, onLog, message }) {
+export function StreakBanner({ streak, onLog, onViewStreaks, message }) {
   const n = streak?.current ?? 0
   return (
     <ReaderBanner
@@ -390,8 +390,13 @@ export function StreakBanner({ streak, onLog, message }) {
           </>
         )
       }
+      /* Two different buttons wearing one handler: **Log Today** opens the log,
+         and **View Streaks** goes to the reading log's calendar, where the
+         streak actually is. Both ran `onLog`, so the one that offered to show
+         you something opened the form instead. Falls back, so a caller that
+         hasn't wired it is no worse off than before. */
       action={
-        <ReaderBannerAction onClick={onLog}>
+        <ReaderBannerAction onClick={n > 0 ? onLog : (onViewStreaks ?? onLog)}>
           {n > 0 ? 'Log Today' : 'View Streaks'}
         </ReaderBannerAction>
       }

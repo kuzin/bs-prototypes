@@ -118,6 +118,10 @@
   z-index: 1;
 }
 
+/* A line of italic grey, for the loading case. An *empty* table no longer
+   draws a cell at all — it is replaced by its `empty` node, because a header
+   row over one merged cell reads as a table that failed rather than one with
+   nothing in it. */
 .tbl-state {
   padding: 22px 12px;
   text-align: center;

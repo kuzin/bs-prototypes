@@ -37,27 +37,8 @@
   }
 }
 
-.sdb-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
-}
-
-.sdb-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--c-text-light);
-}
-
-.sdb-legend-swatch {
-  display: inline-block;
-  width: 18px;
-  height: 2.5px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
+/* .sdb-legend* moved to components/charts/charts.css, next to the
+   <ChartLegend> that draws them. */
 
 /* ── Tooltip ──────────────────────────────────────────────────────────────── */
 .sdb-tooltip {

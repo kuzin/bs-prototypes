@@ -15,7 +15,14 @@ import '@components/BookCover/BookCover.css'
  * off. It is the shape of the tile, not a different component.
  */
 export function BookCover({ book, size = 'md', square = false, className = '' }) {
-  const [err, setErr] = useState(false)
+  /* Which candidate URL this cover is currently asking for. Not a boolean
+     `err`, because one failed request used to drop a cover to its placeholder
+     for good — and the common failure isn't a missing cover, it's Open Library
+     throttling a shelf that asks for fifteen at once. So a failure moves to the
+     next candidate rather than giving up, and the list is walked twice before
+     the placeholder stands in: by the second pass the burst that caused the
+     throttle is over. */
+  const [attempt, setAttempt] = useState(0)
   /* A placeholder cover is one flat pastel. `cover` is a pair because it used
      to be painted as a gradient, and a shelf of gradients read as decoration
      rather than as a row of books — the second stop is kept in the fixtures so
@@ -25,8 +32,12 @@ export function BookCover({ book, size = 'md', square = false, className = '' })
   const [hue] = book.cover || ['#ACACAC']
   const ground = `color-mix(in srgb, ${hue} 30%, #fff)`
   const ink = `color-mix(in srgb, ${hue} 62%, #1f2933)`
-  const src = coverIdUrl(book.coverId) ?? coverUrl(book.isbn)
-  const showImg = src && !err
+  /* `coverId` is Open Library's exact image and `isbn` is a lookup that can
+     land on a coverless edition, so the id goes first — but a book with both
+     gets two real chances rather than one. */
+  const sources = [coverIdUrl(book.coverId), coverUrl(book.isbn)].filter(Boolean)
+  const src = sources.length ? sources[attempt % sources.length] : null
+  const showImg = Boolean(src) && attempt < sources.length * 2
   const isMag = !showImg && book.kind === 'magazine'
 
   return (
@@ -41,7 +52,15 @@ export function BookCover({ book, size = 'md', square = false, className = '' })
       aria-hidden="true"
     >
       {showImg ? (
-        <img src={src} alt={book.title} loading="lazy" onError={() => setErr(true)} />
+        <img
+          /* Keyed on the attempt so a retry of the *same* URL is a new element
+             and actually re-requests — setting an identical `src` doesn't. */
+          key={attempt}
+          src={src}
+          alt={book.title}
+          loading="lazy"
+          onError={() => setAttempt((a) => a + 1)}
+        />
       ) : (
         <>
           {/* At thumbnail sizes a title and an author — or a masthead and an

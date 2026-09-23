@@ -16,12 +16,17 @@ export function SearchInput({
   onChange,
   placeholder = 'Search…',
   ariaLabel,
+  /* The glyph in the well. A loupe means "find the thing you already have a
+     word for", which is not what every field in this shape does — a field you
+     describe a mood to is asking a different question, and says so with a
+     different mark. */
+  icon = 'search',
   className = '',
 }) {
   return (
     <div className={`search-input${value ? ' is-active' : ''} ${className}`.trim()}>
       <span className="search-input-ic">
-        <Icon name="search" size={16} />
+        <Icon name={icon} size={16} />
       </span>
       <input
         type="text"

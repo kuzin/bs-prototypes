@@ -1164,7 +1164,19 @@ export const moleculesSections = [
 <Tabs variant="pill" block active={range} onChange={setRange} items={ranges} />
 
 /* \`onTint\` — a darker track, for a pill strip on the page's grey */
-<Tabs variant="pill" onTint active={tab} onChange={setTab} items={items} />`,
+<Tabs variant="pill" onTint active={tab} onChange={setTab} items={items} />
+
+/* \`iconOnly\` — a glyph segmented control; the label stays as the accessible name */
+<Tabs
+  variant="pill"
+  iconOnly
+  active={view}
+  onChange={setView}
+  items={[
+    { id: 'cards', label: 'Covers', icon: <PlumpyIcon name="grid-view" size={20} /> },
+    { id: 'list', label: 'List', icon: <PlumpyIcon name="list-view" size={20} /> },
+  ]}
+/>`,
     desc: (
       <>
         Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>.
@@ -1195,6 +1207,13 @@ export const moleculesSections = [
         instead of white — for a sub-tab bar that already sits on a tinted band of its own, where a
         white-on-grey pill would vanish. That&apos;s the reader&apos;s Reading Log and Collections
         bars.
+        <br />
+        <br />
+        <code>iconOnly</code> is a segmented control drawn as glyphs — a List / Covers view
+        switcher, a Day / Week / Month stepper. The pill goes square and the label is taken out of
+        the drawing rather than out of the markup, so it is still the button&apos;s accessible name
+        and its tooltip. On an admin surface the glyph is <strong>Plumpy</strong>, like every other
+        admin icon.
         <br />
         <br />
         <code>center</code> centres the strip in its container — for a short bar inside a card,

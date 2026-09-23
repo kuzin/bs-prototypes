@@ -267,9 +267,13 @@
   background: var(--c-gray-200);
   color: #374151;
 }
+/* `--c-amber-600` was never a token — it is defined nowhere in the app, so the
+   background resolved to nothing and the white numeral landed on white. Bronze
+   now follows gold and silver above: a light ground with its own ink, from the
+   palette that does exist. */
 .drt-rank--bronze {
-  background: var(--c-amber-600);
-  color: #fff;
+  background: var(--c-orange-wash);
+  color: var(--c-orange-ink);
 }
 .drt-rank--plain {
   background: none;
@@ -284,7 +288,7 @@
   font-family: inherit;
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-fig-blue-600);
+  color: var(--c-blue);
   background: none;
   border: 0;
   padding: 0;
@@ -295,7 +299,7 @@
 }
 
 .drt-name:hover {
-  color: #1e40af;
+  color: var(--c-blue-ink);
   text-decoration: underline;
 }
 

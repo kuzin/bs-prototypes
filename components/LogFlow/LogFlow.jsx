@@ -162,6 +162,16 @@ export function LogFlow({
   connections = {},
   onTalkToBenny,
   onOpenWord,
+  /* "Read in Comics Plus" — where a tile's menu goes when the title lives in a
+     partner the reader has linked. The flow can't open someone else's app, so
+     the surface that owns the partner handles it. Left off, the menu's two
+     choices both led here, to this flow's own form, which made the choice a
+     lie: offered and unavailable is worse than not offered. */
+  onReadInPartner,
+  /* Saving the title Benny recommends on the way out of a finished log. The
+     flow has no shelf of its own, so the surface that keeps one handles it;
+     left off, the recommendation isn't offered at all. */
+  onAddToWishlist,
   /* The catalog this flow searches and the shelves it offers. All demo data,
      so all of it comes in — a shared component doesn't get to know about any
      one prototype's fixtures. */
@@ -173,10 +183,18 @@ export function LogFlow({
      title's form instead of the search; left off, it opens where it always
      did. */
   book: bookProp,
+  /* Opened on a title the reader has just finished elsewhere — the partner's
+     reader hands them here to confirm it — so the form arrives with **Finished**
+     already answered. They can still say otherwise. */
+  startFinished = false,
   readingList,
   /* `reading_list_challenges#index` — the book-list challenges this reader is
      enrolled in. Given any, the search screen offers them. */
   readingListChallenges = [],
+  /* Benny's own recommendations, as a shelf like the rest. Additive and
+     defaulted: a prototype that doesn't hand them any renders exactly as it
+     did. */
+  bennyPicks = [],
   reader: readerProp,
   readers = [],
   loggedDates = LOGGED_DATES,
@@ -254,7 +272,7 @@ export function LogFlow({
     setCountInput('')
     setDates([])
     setDateOpen(false)
-    setFinished(false)
+    setFinished(Boolean(startFinished))
     setReviewChoice('no')
     setAttested(false)
     setReview({ title: '', author: '', text: '' })
@@ -265,7 +283,7 @@ export function LogFlow({
     // every render, so listing it here would reset the flow under the reader's
     // hands.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, bookProp])
+  }, [open, bookProp, startFinished])
 
   // The flow covers the window, so the page behind it holds still.
   useLockScroll(open)
@@ -318,6 +336,16 @@ export function LogFlow({
   function typeForBook(b) {
     return b?.measure === 'pages' ? LOG_TYPES.page : siteType
   }
+
+  /* Reading it in the partner's app leaves this flow entirely, so the flow
+     closes behind it. Without a host to hand it to, the menu doesn't offer
+     the choice at all. */
+  const readInPartner = onReadInPartner
+    ? (b) => {
+        onClose?.()
+        onReadInPartner(b)
+      }
+    : undefined
 
   // Picking a title takes you straight to the log details.
   function pickBook(b) {
@@ -472,6 +500,7 @@ export function LogFlow({
               recentlyLogged={recentlyLogged}
               readingList={readingList}
               readingListChallenges={readingListChallenges}
+              bennyPicks={bennyPicks}
               cfg={cfg}
               onEpic={() => setEpicOpen(true)}
               onOpenList={(list) => {
@@ -483,6 +512,7 @@ export function LogFlow({
               scanOpen={scanOpen}
               setScanOpen={setScanOpen}
               onPick={pickBook}
+              onRead={readInPartner}
               onManual={startManual}
               onWithoutTitle={startWithoutTitle}
               onChangeReader={canSwitchReader ? openReaderPicker : undefined}
@@ -497,7 +527,7 @@ export function LogFlow({
               /* Logging from a list is `source=reading_list_challenge`: the
                  title is already chosen, so it goes straight to the form. */
               onLog={(b) => logBook(b)}
-              onRead={(b) => logBook(b)}
+              onRead={readInPartner}
             />
           )}
 
@@ -589,6 +619,17 @@ export function LogFlow({
                 setAttested(false)
                 setStep(firstStep)
               }}
+              /* Only a finished book has a "what next" — a log that left the
+                 reader mid-book already has its answer. */
+              nextUp={
+                result?.finished && books[result.book?.id]?.nextUp
+                  ? {
+                      book: books[books[result.book.id].nextUp.id],
+                      reason: books[result.book.id].nextUp.reason,
+                    }
+                  : null
+              }
+              onAddToWishlist={onAddToWishlist}
               onTalkToBenny={onTalkToBenny}
               /* A word waiting is one more screen, not a second offer crammed
                  onto this one — the success screen ends in Next. */
@@ -840,6 +881,14 @@ function CoverTile({
           aria-label={book.title}
         >
           <BookCover book={book} size={size} />
+          {/* A title a linked app can open says so on the jacket, the way the
+              shelves in Book Discovery do — the menu behind the cover is the
+              only other place it is said, and you have to press it to find
+              out. One mark, not the app's logo: the reader is being told the
+              title opens, and *which* app opens it is what the menu is for.
+              Gated on `onRead` for the same reason the menu item is: without
+              somewhere to go it would be a promise the tile can't keep. */}
+          {partner && onRead && <span className="lf-tile-now" title="Read it now" />}
           {/* `.completed-checkmarker-wrapper` */}
           {done && (
             <span className="lf-tile-mark lf-tile-mark--done">
@@ -858,7 +907,9 @@ function CoverTile({
             {book.author && <span className="lf-tile-menuauthor">{book.author}</span>}
           </div>
           <FlyoutMenu>
-            {partner && (
+            {/* Only where there is somewhere to go: the host has to own the
+                partner's app, so without a handler the choice isn't offered. */}
+            {partner && onRead && (
               <FlyoutMenuItem
                 onClick={() => {
                   close()
@@ -908,6 +959,11 @@ function BookGrid({ rows, books, connections, onLog, onRead }) {
 
 // ─── Step 1: search ──────────────────────────────────────────────────────────
 
+/* How many shelves the title step opens with. Two is the most that fits above
+   the fold beside the search box on a 640px panel — past that the reader is
+   scrolling through offers to reach the field that answers faster. */
+const SHELVES_SHOWN = 2
+
 function SearchStep({
   reader,
   connections,
@@ -916,6 +972,7 @@ function SearchStep({
   recentlyLogged,
   readingList,
   readingListChallenges,
+  bennyPicks = [],
   cfg,
   onEpic,
   onOpenList,
@@ -924,6 +981,7 @@ function SearchStep({
   scanOpen,
   setScanOpen,
   onPick,
+  onRead,
   onManual,
   onWithoutTitle,
   onChangeReader,
@@ -973,6 +1031,17 @@ function SearchStep({
     const h = bodyRef.current.offsetHeight
     if (h) setRestHeight((prev) => (prev === h ? prev : h))
   }, [atRest, books, recentlyLogged])
+
+  /* Two shelves, then the rest on request. `shelfCount` is what the reader
+     actually has, not what the component can draw — a partner list only counts
+     once that account is connected, and a challenge whose titles this catalog
+     doesn't carry draws nothing. */
+  const [shelvesOpen, setShelvesOpen] = useState(false)
+  const shelfCount =
+    (bennyPicks.some((id) => books[id]) ? 1 : 0) +
+    (readingList && (!readingList.partner || connections[readingList.partner]) ? 1 : 0) +
+    readingListChallenges.filter((rlc) => rlc.books.some((b) => books[b.id])).length +
+    1 // Recently Logged Titles, which is always there
 
   const bodyStyle = !atRest && !scanOpen && restHeight ? { minHeight: restHeight } : undefined
 
@@ -1102,84 +1171,73 @@ function SearchStep({
 
           {!searching && !q && (
             <>
-              {/* A shelf from a linked partner's catalog, so it only appears once
-              that account is connected. */}
-              {readingList && (!readingList.partner || connections[readingList.partner]) && (
-                <section className="lf-panel lf-rlband">
-                  <div className="lf-rlhead">
-                    <PartnerMark id={readingList.partner} size={20} />
-                    <h2 className="lf-panel-title lf-rlhead-title">{readingList.title}</h2>
-                  </div>
-
-                  <div className="lf-coverrow lf-coverrow--rl">
-                    {readingList.titles
-                      .filter((id) => books[id])
-                      .slice(0, 4)
-                      .map((id) => (
-                        <CoverTile
-                          key={id}
-                          book={books[id]}
-                          size="md"
-                          done={readingList.completed.includes(id)}
-                          connections={connections}
-                          onLog={onPick}
-                          onRead={onPick}
-                        />
-                      ))}
-
-                    <button
-                      className="lf-morecard"
-                      onClick={() => onOpenList(partnerList(readingList))}
-                    >
-                      <span className="lf-morecard-label">
-                        <span>View</span>
-                        <span>More</span>
-                      </span>
-                    </button>
-                  </div>
-                </section>
-              )}
-
-              {/* `reading_list_challenges` — one shelf per challenge the reader
-                  is enrolled in, the same anatomy as a partner's: what it's
-                  called, a few of its titles with the ones they've read ticked
-                  off, and the way into the whole list. A single "Reading List
-                  Challenges" button stood here before, which made the reader
-                  open a screen to find out whether there was anything on it. */}
-              {readingListChallenges.map((rlc) => {
-                const shelf = rlc.books.filter((b) => books[b.id])
-                if (shelf.length === 0) return null
-                /* Four titles and the way into the rest, which is the fifth
-                   card on the shelf rather than a link under it — a shelf that
-                   ends in a card reads as continuing, where a link under it
-                   read as a footnote. Five is what fits a 640px panel. */
-                const shown = shelf.slice(0, 4)
-                return (
-                  <section key={rlc.id} className="lf-panel lf-rlband">
+              {/* Every shelf here makes the same offer — some titles, pick one —
+                  so a reader with a partner list, two challenges and a recents
+                  row scrolls past four of them to reach the search box that
+                  answers the question faster. Two, and the rest behind a press.
+                  Collapsed by CSS rather than by slicing the list: the shelves
+                  are three different shapes (one optional, one a map, one
+                  always there) and counting them in JSX made each of them
+                  harder to read than the thing it draws. */}
+              <div className={`lf-shelves${shelvesOpen ? ' is-open' : ''}`}>
+                {/* Benny's picks — the one shelf that isn't a list someone made,
+                    so it leads: the reader came to log a book, and this is the
+                    app's best guess at which one. */}
+                {bennyPicks.filter((id) => books[id]).length > 0 && (
+                  <section className="lf-panel lf-rlband">
                     <div className="lf-rlhead">
-                      <span className="lf-rlmark" style={{ '--rl-tint': rlc.tint }}>
-                        <Icon name="book" size={13} stroke={2.4} />
+                      <span className="lf-rlmark" style={{ '--rl-tint': '#0D9488' }}>
+                        <Icon name="sparkles" size={13} stroke={2.4} />
                       </span>
-                      <h2 className="lf-panel-title lf-rlhead-title">{rlc.title}</h2>
-                      {rlc.dates && <span className="lf-rldates">{rlc.dates}</span>}
+                      <h2 className="lf-panel-title lf-rlhead-title">Benny’s Picks</h2>
                     </div>
 
                     <div className="lf-coverrow lf-coverrow--rl">
-                      {shown.map((b) => (
-                        <CoverTile
-                          key={b.id}
-                          book={books[b.id]}
-                          size="md"
-                          done={b.done}
-                          connections={connections}
-                          onLog={onPick}
-                          onRead={onPick}
-                        />
-                      ))}
+                      {bennyPicks
+                        .filter((id) => books[id])
+                        .slice(0, 5)
+                        .map((id) => (
+                          <CoverTile
+                            key={id}
+                            book={books[id]}
+                            size="md"
+                            connections={connections}
+                            onLog={onPick}
+                            onRead={onRead}
+                          />
+                        ))}
+                    </div>
+                  </section>
+                )}
+
+                {/* A shelf from a linked partner's catalog, so it only appears once
+              that account is connected. */}
+                {readingList && (!readingList.partner || connections[readingList.partner]) && (
+                  <section className="lf-panel lf-rlband">
+                    <div className="lf-rlhead">
+                      <PartnerMark id={readingList.partner} size={20} />
+                      <h2 className="lf-panel-title lf-rlhead-title">{readingList.title}</h2>
+                    </div>
+
+                    <div className="lf-coverrow lf-coverrow--rl">
+                      {readingList.titles
+                        .filter((id) => books[id])
+                        .slice(0, 4)
+                        .map((id) => (
+                          <CoverTile
+                            key={id}
+                            book={books[id]}
+                            size="md"
+                            done={readingList.completed.includes(id)}
+                            connections={connections}
+                            onLog={onPick}
+                            onRead={onRead}
+                          />
+                        ))}
 
                       <button
                         className="lf-morecard"
-                        onClick={() => onOpenList(challengeList(rlc))}
+                        onClick={() => onOpenList(partnerList(readingList))}
                       >
                         <span className="lf-morecard-label">
                           <span>View</span>
@@ -1188,32 +1246,100 @@ function SearchStep({
                       </button>
                     </div>
                   </section>
-                )
-              })}
+                )}
 
-              {/* `.logged-books--recently-read-books` — what they logged lately,
+                {/* `reading_list_challenges` — one shelf per challenge the reader
+                  is enrolled in, the same anatomy as a partner's: what it's
+                  called, a few of its titles with the ones they've read ticked
+                  off, and the way into the whole list. A single "Reading List
+                  Challenges" button stood here before, which made the reader
+                  open a screen to find out whether there was anything on it. */}
+                {readingListChallenges.map((rlc) => {
+                  const shelf = rlc.books.filter((b) => books[b.id])
+                  if (shelf.length === 0) return null
+                  /* Four titles and the way into the rest, which is the fifth
+                   card on the shelf rather than a link under it — a shelf that
+                   ends in a card reads as continuing, where a link under it
+                   read as a footnote. Five is what fits a 640px panel. */
+                  const shown = shelf.slice(0, 4)
+                  return (
+                    <section key={rlc.id} className="lf-panel lf-rlband">
+                      <div className="lf-rlhead">
+                        <span className="lf-rlmark" style={{ '--rl-tint': rlc.tint }}>
+                          <Icon name="book" size={13} stroke={2.4} />
+                        </span>
+                        <h2 className="lf-panel-title lf-rlhead-title">{rlc.title}</h2>
+                        {rlc.dates && <span className="lf-rldates">{rlc.dates}</span>}
+                      </div>
+
+                      <div className="lf-coverrow lf-coverrow--rl">
+                        {shown.map((b) => (
+                          <CoverTile
+                            key={b.id}
+                            book={books[b.id]}
+                            size="md"
+                            done={b.done}
+                            connections={connections}
+                            onLog={onPick}
+                            onRead={onRead}
+                          />
+                        ))}
+
+                        <button
+                          className="lf-morecard"
+                          onClick={() => onOpenList(challengeList(rlc))}
+                        >
+                          <span className="lf-morecard-label">
+                            <span>View</span>
+                            <span>More</span>
+                          </span>
+                        </button>
+                      </div>
+                    </section>
+                  )
+                })}
+
+                {/* `.logged-books--recently-read-books` — what they logged lately,
                   a shelf of its own now that the reading lists have theirs, and
                   named like them so three shelves read as three shelves. */}
-              <section className="lf-sect lf-recentsect">
-                <div className="lf-rlhead">
-                  <h2 className="lf-panel-title lf-rlhead-title">Recently Logged Titles</h2>
+                <section className="lf-sect lf-recentsect">
+                  <div className="lf-rlhead">
+                    <h2 className="lf-panel-title lf-rlhead-title">Recently Logged Titles</h2>
+                  </div>
+                  <div className="lf-recent">
+                    {recentlyLogged
+                      .filter((id) => books[id])
+                      .slice(0, 5)
+                      .map((id) => (
+                        <CoverTile
+                          key={id}
+                          book={books[id]}
+                          size="md"
+                          connections={connections}
+                          onLog={onPick}
+                          onRead={onRead}
+                        />
+                      ))}
+                  </div>
+                </section>
+              </div>
+
+              {/* A disc with a chevron in it rather than a line of text: it
+                  opens *and* closes, and the arrow turning over is what says
+                  which way the next press goes. */}
+              {shelfCount > SHELVES_SHOWN && (
+                <div className="lf-moreshelves">
+                  <button
+                    type="button"
+                    className={`lf-moreshelves-btn${shelvesOpen ? ' is-open' : ''}`}
+                    onClick={() => setShelvesOpen((v) => !v)}
+                    aria-expanded={shelvesOpen}
+                    aria-label={shelvesOpen ? 'Show fewer shelves' : 'View more to see the rest'}
+                  >
+                    <Icon name="chevron-down" size={20} stroke={2.4} />
+                  </button>
                 </div>
-                <div className="lf-recent">
-                  {recentlyLogged
-                    .filter((id) => books[id])
-                    .slice(0, 5)
-                    .map((id) => (
-                      <CoverTile
-                        key={id}
-                        book={books[id]}
-                        size="md"
-                        connections={connections}
-                        onLog={onPick}
-                        onRead={onPick}
-                      />
-                    ))}
-                </div>
-              </section>
+              )}
 
               {/* `.logged-books--log-without-title` — the app's own last line,
                   and a plain link because it is the way out of the question
@@ -1632,6 +1758,10 @@ export function LogSuccess({
   result,
   bookTitle,
   dailyGoal,
+  /* `{ book, reason }` — what to read next and why, in Benny's words. Shown
+     only for a finished title. */
+  nextUp,
+  onAddToWishlist,
   onDone,
   onAnother,
   onViewBadge,
@@ -1730,6 +1860,17 @@ export function LogSuccess({
       {/* `logged_books-goal` — the daily goal, moved. */}
       {goal && <GoalSummary {...goal} />}
 
+      {/* Finishing a book is the one moment the reader is certainly between
+          books, so it's the one moment a recommendation helps rather than
+          interrupts. Benny makes it himself, the way he says everything else. */}
+      {nextUp?.book && onAddToWishlist && (
+        <NextUp
+          book={nextUp.book}
+          reason={nextUp.reason}
+          onAdd={() => onAddToWishlist(nextUp.book)}
+        />
+      )}
+
       {/* Benny catches the reader here, while the book is still in mind. */}
       {onTalkToBenny ? (
         <>
@@ -1763,6 +1904,45 @@ export function LogSuccess({
         </div>
       )}
     </div>
+  )
+}
+
+/**
+ * What to read next, after a finished log. Benny's own bubble rather than a
+ * headed card, because it is him talking — and the one thing it asks for is a
+ * yes: the title goes on the reader's Wish List and the screen carries on to
+ * wherever it was going.
+ */
+function NextUp({ book, reason, onAdd }) {
+  const [added, setAdded] = useState(false)
+
+  return (
+    <section className="lf-nextup">
+      {/* The excited face, not the neutral one: which portrait he is wearing is
+          part of what he is saying. */}
+      <BennyBubble avatar="/bs-prototypes/benny-excited.svg">
+        <strong>You finished it! Here’s what I’d read next.</strong> {reason}
+      </BennyBubble>
+
+      <div className="lf-nextup-book">
+        <BookCover book={book} size="sm" />
+        <div className="lf-nextup-meta">
+          <span className="lf-nextup-title">{book.title}</span>
+          {book.author && <span className="lf-nextup-author">{book.author}</span>}
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={added}
+          onClick={() => {
+            setAdded(true)
+            onAdd?.()
+          }}
+        >
+          {added ? 'On your Wish List' : 'Add to Wish List'}
+        </Button>
+      </div>
+    </section>
   )
 }
 

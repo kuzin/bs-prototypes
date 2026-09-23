@@ -1,0 +1,121 @@
+/* `ul.block-grid.large-block-grid-5` — the catalog's own shelf. A cover is the
+   unit, so the column width is a cover's width and the gap is generous enough
+   that two jackets don't read as one spread. */
+.tcard-grid {
+  display: grid;
+  /* 120px, not 150: at 150 a four-column shelf stretched each jacket to ~196px,
+     which is bigger than the app's own five-across grid draws them on a wider
+     page. This lands a cover at ~145px here and five across on a full admin
+     page, which is what `large-block-grid-5` gives. */
+  grid-template-columns: repeat(auto-fill, minmax(min(120px, 100%), 1fr));
+  gap: 16px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* The Tooltip's wrapper is the tile: it has to fill the grid cell, or the cover
+   sizes to the wrapper's own content width instead of the column's. */
+.tcard .ttp {
+  display: block;
+  width: 100%;
+}
+
+.tcard button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.tcard {
+  position: relative;
+}
+
+.tcard-cover {
+  display: block;
+  width: 100%;
+  transition: transform 0.14s ease;
+}
+
+/* Over the jacket's top-right corner, clear of the lift on hover. */
+.tcard-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: inline-flex;
+}
+
+/* A disc, not a rounded square: it floats on the artwork rather than sitting in
+   a row of controls, and a circle is what reads as lifted off a jacket. Sized
+   explicitly because the button is out of the table cell that would otherwise
+   give it its 32px. */
+.tcard-badge .row-action {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(255 255 255 / 92%);
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 18%);
+}
+
+.tcard button:hover .tcard-cover {
+  transform: translateY(-3px);
+}
+
+.tcard .bkcov {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  border-radius: 8px;
+}
+
+/* The flat fallback sets its own text for a full-size cover; on a shelf it is a
+   colour, not a jacket. */
+.tcard .bkcov-title,
+.tcard .bkcov-author {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .tcard-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100px, 100%), 1fr));
+    gap: 12px;
+  }
+}
+
+/* ── The tile's caption, in its tooltip ────────────────────────────────────── */
+
+/* The bubble is portaled to `document.body`, so these ride on the content
+   rather than on any wrapper the shelf owns. */
+.tcard-tip {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+}
+
+.tcard-tip-name {
+  font-size: var(--text-label);
+  font-weight: var(--fw-extrabold);
+  line-height: 1.3;
+}
+
+.tcard-tip-author,
+.tcard-tip-meta {
+  font-size: var(--text-tag);
+  font-weight: var(--fw-normal);
+  color: rgb(255 255 255 / 72%);
+}
+
+.tcard-tip-meta {
+  margin-top: 4px;
+  font-weight: var(--fw-bold);
+  color: #fff;
+}

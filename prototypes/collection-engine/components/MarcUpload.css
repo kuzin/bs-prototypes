@@ -1,0 +1,146 @@
+.modal--center.mup-modal {
+  width: min(520px, calc(100vw - var(--modal-gutter) * 2));
+}
+
+.mup {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 24px 20px;
+}
+
+.mup .section-card-title {
+  margin-bottom: 16px;
+}
+
+/* ── Choose ────────────────────────────────────────────────────────────────── */
+
+.mup-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 30px 20px;
+  font: inherit;
+  color: var(--c-text-light);
+  background: var(--c-gray-0);
+  border: 2px dashed var(--c-gray-300);
+  border-radius: 12px;
+  cursor: pointer;
+  transition:
+    border-color 0.12s,
+    background 0.12s;
+}
+
+.mup-drop:hover {
+  border-color: var(--c-blue);
+  background: #fff;
+}
+
+/* A chosen file is a statement, not an invitation, so the target stops looking
+   like one. */
+.mup-drop--has {
+  border-style: solid;
+  border-color: var(--c-green, #0ba85f);
+  background: #fff;
+  color: var(--c-green, #0ba85f);
+}
+
+.mup-file {
+  font-size: var(--text-cell);
+  font-weight: var(--fw-extrabold);
+  color: var(--c-text-dark);
+}
+
+.mup-note {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}
+
+.mup-hint {
+  margin-top: 14px;
+  font-size: var(--text-tag);
+  line-height: 1.5;
+  color: var(--c-text-light);
+}
+
+/* ── Running ───────────────────────────────────────────────────────────────── */
+
+.mup-running {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 34px 0 30px;
+}
+
+.mup-step {
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+}
+
+.mup-track {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  background: var(--c-gray-150);
+  border-radius: 99px;
+}
+
+.mup-fill {
+  height: 100%;
+  background: var(--c-blue);
+  border-radius: 99px;
+  transition: width 0.12s linear;
+}
+
+/* ── Done ──────────────────────────────────────────────────────────────────── */
+
+.mup-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px 0 6px;
+}
+
+.mup-tick {
+  display: inline-flex;
+  color: var(--c-green, #0ba85f);
+}
+
+.mup-result {
+  display: flex;
+  gap: 28px;
+  margin: 16px 0 0;
+}
+
+.mup-result > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.mup-result dt {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}
+
+.mup-result dd {
+  margin: 0;
+  font-size: var(--text-head);
+  font-weight: var(--fw-extrabold);
+  color: var(--c-text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Foot ──────────────────────────────────────────────────────────────────── */
+
+.mup-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 22px;
+}

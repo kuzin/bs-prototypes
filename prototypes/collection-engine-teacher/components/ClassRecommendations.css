@@ -1,0 +1,69 @@
+.cet-class {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── A title in a row ──────────────────────────────────────────────────────── */
+
+.cet-book {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* A thumbnail, not a poster — same sizing the Collection tables use, and the
+   flat fallback's own text is set for the full-size cover, so a coverless book
+   shows its colour alone. */
+.cet-book .bkcov {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 51px;
+  border-radius: 4px;
+}
+
+.cet-book .bkcov-title,
+.cet-book .bkcov-author {
+  display: none;
+}
+
+.cet-book-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 250px;
+}
+
+.cet-book-name {
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+}
+
+.cet-book-sub {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Why it is being suggested ─────────────────────────────────────────────── */
+
+.cet-signals {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.cet-signals-more {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}
+
+.cet-ok {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}

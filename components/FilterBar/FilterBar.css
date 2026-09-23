@@ -182,6 +182,21 @@
   background: var(--c-gray-150);
 }
 
+/* Every control in the bar is the same 40px, including the ones that aren't
+   `.ms-choice`. A `SearchInput` is 44 on its own (the form ladder's `md`) and a
+   pill tab group is 44 or 36, so a bar with a search box beside a filter came
+   out with two heights and nothing to align the row on. The bar's height is the
+   app's, so the outsiders come down to it rather than the filter going up. */
+.fltr--compact .fltr-ctl .search-input {
+  height: 40px;
+  border-radius: 12px;
+}
+
+/* A segmented control in the action slot is a control on this bar too. */
+.fltr--compact .fltr-action .tabs--pill .tab {
+  height: 40px;
+}
+
 /* The app's caret here isn't the form select's small chevron — it's a filled
    20px `expand-arrow` in a 40px box against the right edge. */
 .fltr--compact .fltr-ctl .sel-caret {

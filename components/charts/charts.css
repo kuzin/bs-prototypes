@@ -1,0 +1,27 @@
+/* Styles for the chart helpers in charts.jsx.
+   These used to live in the RIS prototype's SchoolDashboard.css, which meant
+   <ChartLegend> only drew correctly inside RIS — any other consumer got three
+   run-together words and no swatches. A shared component carries its own CSS,
+   per the folder-component convention. */
+
+.sdb-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.sdb-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--c-text-light);
+}
+
+.sdb-legend-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 2.5px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

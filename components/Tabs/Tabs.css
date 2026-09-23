@@ -365,6 +365,43 @@
   display: none;
 }
 
+/* What the select and its steppers *look* like, outside any breakpoint: the
+   rules below only decide **when** the swap happens, and a consumer can decide
+   that for itself — the book page collapses on a container query, because its
+   column runs out of room long before the window does. Kept in the media query,
+   these came out as an unstyled native select between two default buttons. */
+.tabs-select-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Step to the tab next door without opening the menu — on a five-tab nav that
+   is most of the moves anyone makes. */
+.tabs-step {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: var(--c-text);
+  cursor: pointer;
+  background: #fff;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
+}
+
+.tabs-step:disabled {
+  color: var(--c-gray-400);
+  cursor: default;
+  opacity: 0.6;
+}
+
+.tabs-step:not(:disabled):hover {
+  border-color: var(--c-gray-500);
+}
+
 @media (max-width: 699px) {
   /* A pill group collapses too where the caller asks for it (`collapse`): a
      filter bar of two segmented controls is a dozen buttons, and past the point
@@ -410,34 +447,34 @@
   .fmenu-bar:has(.tabs-select) > * + * {
     margin-top: 8px;
   }
+}
 
-  .tabs-select-input {
-    flex: 1;
-    min-width: 0;
-  }
+/* ── Icon-only ─────────────────────────────────────────────────────────────── */
 
-  /* Step to the tab next door without opening the menu — on a five-tab nav
-     that is most of the moves anyone makes. */
-  .tabs-step {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    color: var(--c-text);
-    cursor: pointer;
-    background: #fff;
-    border: 2px solid var(--c-gray-300);
-    border-radius: 10px;
-  }
-  .tabs-step:disabled {
-    color: var(--c-gray-400);
-    cursor: default;
-    opacity: 0.6;
-  }
-  .tabs-step:not(:disabled):hover {
-    border-color: var(--c-gray-500);
-  }
+/* A segmented control drawn as glyphs. The label is still in the DOM — it is
+   the button's accessible name and its tooltip — so it is taken out of the
+   drawing rather than out of the markup, and the pill goes square. */
+.tabs--icon-only .tab-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tabs--pill.tabs--icon-only .tab {
+  padding: 0;
+  aspect-ratio: 1;
+  justify-content: center;
+}
+
+/* The glyph is the whole label now, so it takes the room the words were
+   using — 14px reads as an adornment beside text and as a speck alone. */
+.tabs--icon-only .tab-icon svg {
+  width: 20px;
+  height: 20px;
 }

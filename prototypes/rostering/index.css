@@ -692,30 +692,17 @@
 }
 
 /* ─── Schedule (Summer pause) — banners + date fields ─────────────────────── */
-.rost-info-banner {
-  display: flex;
-  gap: 10px;
-  padding: 12px 14px;
-  background: var(--rost-blue-soft);
-  border: 1px solid #c9d8fb;
-  border-radius: 10px;
-  font-size: 13px;
-  color: #1e40af;
+
+/* The shared <Banner> carries the chrome now — this is only where it sits in
+   the panel. It used to be two hand-rolled bars with their own tints, borders
+   and 13px type, which is how one notice ended up looking like a different
+   object depending on which settings card you were in. */
+.rost-banner {
   margin-bottom: 14px;
 }
-.rost-info-banner .rost-info-icon {
-  flex-shrink: 0;
-  color: #2563eb;
-}
-.rost-warn-banner {
-  display: flex;
-  gap: 10px;
-  padding: 12px 14px;
-  background: var(--rost-amber-soft);
-  border: 1px solid #fcd34d;
-  border-radius: 10px;
-  font-size: 13px;
-  color: #92400e;
+
+.rost-banner--after {
+  margin: 16px 0 0;
 }
 
 .rost-field-label {

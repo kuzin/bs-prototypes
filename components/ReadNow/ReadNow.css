@@ -1,0 +1,419 @@
+/* The in-app partner reader — see `ReadNow.jsx`. Lifted out of the Book
+   Discovery prototype when the log flow's "Read in …" needed the same
+   screen; the class prefix changed with it. */
+
+/* ═══ Read Now reader ═══════════════════════════════════════════════════════ */
+
+.rdn-reader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(900px 500px at 50% -10%, #20242f, transparent 70%),
+    linear-gradient(180deg, #14161e, #0c0e14);
+  color: #fff;
+}
+
+.rdn-reader-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex: 0 0 auto;
+}
+
+.rdn-reader-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13.5px;
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+
+.rdn-reader-close:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.rdn-reader-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+}
+
+.rdn-reader-title strong {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.rdn-reader-title span {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.rdn-reader-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.rdn-reader-brand span {
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 600;
+}
+
+.rdn-reader-brand img {
+  width: 22px;
+  height: 22px;
+}
+
+.rdn-reader-stage {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  min-height: 0;
+}
+
+.rdn-reader-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background 0.12s;
+}
+
+.rdn-reader-nav:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.rdn-reader-nav:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.rdn-reader-nav--prev {
+  left: 24px;
+}
+
+.rdn-reader-nav--next {
+  right: 24px;
+}
+
+.rdn-reader-sheet {
+  height: min(80vh, 760px);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.rdn-reader-coverwrap {
+  height: 100%;
+  aspect-ratio: 2 / 3;
+}
+
+/* On the reader's sheet the placeholder is the whole page rather than a
+   jacket on a shelf, so the masthead sits in the middle of it — bottom-left is
+   where a title goes on a 132px tile, and on a 507px sheet it read as a caption
+   fallen to the floor. */
+.rdn-reader-coverwrap .bkcov {
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* comic page */
+.rdn-reader-comic {
+  height: 100%;
+  aspect-ratio: 3 / 4;
+  background: #fff;
+  border-radius: 6px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+.rdn-reader-comic.l-a {
+  grid-template:
+    'a a' 1.2fr
+    'b c' 1fr / 1fr 1fr;
+}
+
+.rdn-reader-comic.l-b {
+  grid-template:
+    'a b' 1fr
+    'c d' 1fr / 1fr 1fr;
+}
+
+.rdn-reader-comic.l-c {
+  grid-template:
+    'a' 1fr
+    'b' 1.3fr / 1fr;
+}
+
+.rdn-reader-comic > .rdn-panel:nth-child(1) {
+  grid-area: a;
+}
+
+.rdn-reader-comic > .rdn-panel:nth-child(2) {
+  grid-area: b;
+}
+
+.rdn-reader-comic > .rdn-panel:nth-child(3) {
+  grid-area: c;
+}
+
+.rdn-reader-comic > .rdn-panel:nth-child(4) {
+  grid-area: d;
+}
+
+.rdn-panel {
+  position: relative;
+  border: 3px solid #14161e;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rdn-panel-bubble {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #fff;
+  border: 2px solid #14161e;
+  border-radius: 12px;
+  padding: 9px 11px;
+  max-width: 56%;
+}
+
+.rdn-panel-bubble.is-right {
+  left: auto;
+  right: 12px;
+}
+
+.rdn-panel-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 16px;
+  width: 11px;
+  height: 11px;
+  background: #fff;
+  border-right: 2px solid #14161e;
+  border-bottom: 2px solid #14161e;
+  transform: rotate(35deg) skew(-8deg);
+}
+
+.rdn-panel-bubble i {
+  display: block;
+  height: 4px;
+  border-radius: 3px;
+  background: #c2c7d0;
+}
+
+.rdn-panel-bubble i:nth-child(1) {
+  width: 46px;
+}
+
+.rdn-panel-bubble i:nth-child(2) {
+  width: 64px;
+}
+
+.rdn-panel-bubble i:nth-child(3) {
+  width: 38px;
+}
+
+.rdn-panel-caption {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #fff7da;
+  border: 2px solid #14161e;
+  border-radius: 3px;
+  padding: 6px 8px;
+}
+
+.rdn-panel-caption i {
+  display: block;
+  height: 4px;
+  border-radius: 3px;
+  background: #9a8a4a;
+}
+
+.rdn-panel-caption i:nth-child(1) {
+  width: 52px;
+}
+
+.rdn-panel-caption i:nth-child(2) {
+  width: 34px;
+}
+
+.rdn-panel-sfx {
+  position: absolute;
+  right: 9%;
+  top: 28%;
+  font-size: clamp(22px, 4vw, 40px);
+  font-weight: 900;
+  font-style: italic;
+  color: #ffe14d;
+  -webkit-text-stroke: 2.5px #14161e;
+  letter-spacing: -0.02em;
+  transform: rotate(-9deg);
+  text-shadow: 3px 3px 0 #14161e;
+}
+
+/* text page */
+.rdn-reader-text {
+  height: 100%;
+  aspect-ratio: 3 / 4;
+  background: #fffdf7;
+  border-radius: 6px;
+  padding: 54px 52px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.rdn-reader-dropcap {
+  float: left;
+  font-size: 62px;
+  font-weight: 900;
+  line-height: 0.78;
+  color: #14161e;
+  margin: 4px 12px 0 0;
+}
+
+/* end page */
+.rdn-reader-end {
+  width: min(440px, 82vw);
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px 30px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.rdn-reader-end-benny {
+  width: 70px;
+  height: 70px;
+}
+
+.rdn-reader-end h2 {
+  font-size: 22px;
+  font-weight: 900;
+  color: #18324a;
+  margin-top: 8px;
+}
+
+.rdn-reader-end p {
+  font-size: 14.5px;
+  color: #707070;
+  margin-bottom: 14px;
+}
+
+.rdn-reader-finish {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-weight: 800;
+  font-size: 15px;
+  color: #fff;
+  background: linear-gradient(120deg, #0ba85f, #0f9268);
+}
+
+.rdn-reader-finish:hover {
+  filter: brightness(1.05);
+}
+
+.rdn-reader-backbtn {
+  border: 0;
+  background: none;
+  color: #707070;
+  font-weight: 700;
+  font-size: 13.5px;
+  margin-top: 10px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.rdn-reader-backbtn:hover {
+  color: #18324a;
+}
+
+/* bottom bar */
+.rdn-reader-bottom {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex: 0 0 auto;
+}
+
+.rdn-reader-count {
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  min-width: 92px;
+}
+
+.rdn-reader-progress {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.rdn-reader-progress span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #14b8a6, #0d9488);
+  transition: width 0.25s ease;
+}
+
+.rdn-reader-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+}

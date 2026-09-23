@@ -18,6 +18,7 @@ import {
   PartnerSwitcher,
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
+import { ReadNow } from '@components/ReadNow/ReadNow'
 import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeReader'
 import { AccountSettings } from '@components/AccountSettings/AccountSettings'
 import { BannerStack } from '@components/ReaderApp/ReaderApp'
@@ -274,6 +275,27 @@ const AUTO_LOGGED_ROWS = [
   },
 ]
 
+/* Two shapes of page, which is the only thing the reader branches on. */
+const READNOW_COMIC = {
+  id: 'amulet',
+  title: 'Amulet: The Stonekeeper',
+  author: 'Kazu Kibuishi',
+  cover: ['#5B21B6', '#312E81'],
+  coverId: 2420582,
+  genres: ['Graphic Novel'],
+  color: '#5B21B6',
+}
+
+const READNOW_MAG = {
+  id: 'scope',
+  title: 'Scholastic Scope',
+  author: 'Scholastic',
+  cover: ['#2AA5B8', '#0B5566'],
+  kind: 'magazine',
+  masthead: 'Scope',
+  issue: 'May 2026 · Survival Stories',
+}
+
 // One partner per example — the handoff wears each partner's own brand the
 // whole way through, so three buttons in one frame hid the thing worth seeing.
 function ConnectFlowDemo({ partner: p }) {
@@ -292,6 +314,20 @@ function ConnectFlowDemo({ partner: p }) {
           onLinked={() => setOpen(false)}
         />
       )}
+    </>
+  )
+}
+
+/* The reader is a full-screen takeover, so the showcase opens it from a button
+   the way every surface that offers it does. */
+function ReadNowDemo({ book, partner }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Read {book.title}
+      </Button>
+      {open && <ReadNow book={book} partner={partner} onClose={() => setOpen(false)} />}
     </>
   )
 }
@@ -666,6 +702,35 @@ import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
               />
             </BannerStack>
           </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
+    sub: 'account',
+    id: 'read-now',
+    name: 'Read Now',
+    usage: `import { ReadNow } from '@components/ReadNow/ReadNow'
+
+<ReadNow book={book} partner="comicsplus" onClose={close} onFinish={done} />`,
+    desc: (
+      <>
+        The in-app reader a linked partner&apos;s title opens in — Book Discovery&apos;s{' '}
+        <strong>Read now</strong> and the log flow&apos;s <strong>Read in …</strong> both land here.
+        Chrome takes the partner&apos;s own colour from <code>PARTNER_BRANDS</code>. A book whose{' '}
+        <code>genres</code> include <em>Graphic Novel</em> gets stylised comic panels; everything
+        else gets a text page. Arrows, space and Escape all work, and the last page offers{' '}
+        <code>onFinish</code>.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="A graphic novel — comic panels">
+          <ReadNowDemo book={READNOW_COMIC} partner="comicsplus" />
+        </Variant>
+        <Variant label="A magazine on Scholastic — text pages">
+          <ReadNowDemo book={READNOW_MAG} partner="scholastic" />
         </Variant>
       </>
     ),
