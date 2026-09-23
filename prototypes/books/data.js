@@ -22,9 +22,23 @@ export const READER = {
 
 // ─── Partners ─────────────────────────────────────────────────────────────────
 
+/* What a reader can honestly be told about getting a book is the same question
+   the Collection Engine answers for staff, so it is the same model — imported
+   rather than restated, or the two drift and the reader is promised something
+   the engine knows it can't deliver.
+
+   `CERTAINTY` is the engine's three claims: a licence we own, a queue we can't
+   see, a copy the school owns. None of them is *availability*, which nothing in
+   any of these feeds actually knows. */
+export { CERTAINTY } from '../collection-engine/data'
+
+/** The one word on the button, per claim. The caveat rides under the name. */
+export const CERTAINTY_CTA = { own: 'Read now', hold: 'Borrow', shelf: 'Find it' }
+
 export const PARTNERS = {
   comicsplus: {
     id: 'comicsplus',
+    certainty: 'own',
     name: 'Comics Plus',
     accent: '#0CA7BC',
     soft: '#E6F7FA',
@@ -35,6 +49,7 @@ export const PARTNERS = {
   },
   scholastic: {
     id: 'scholastic',
+    certainty: 'own',
     name: 'Scholastic',
     accent: '#E1141C',
     soft: '#FDECEC',
@@ -43,6 +58,7 @@ export const PARTNERS = {
   },
   sora: {
     id: 'sora',
+    certainty: 'hold',
     name: 'Sora',
     accent: '#2C6BED',
     soft: '#EAF0FE',
@@ -51,14 +67,27 @@ export const PARTNERS = {
   },
   libby: {
     id: 'libby',
+    certainty: 'hold',
     name: 'Libby',
     accent: '#A21CAF',
     soft: '#F8E8FB',
     kind: 'Borrow',
     blurb: 'Borrow ebooks & audiobooks free from your public library, via Libby.',
   },
+  /* The engine's `clc` — books a teacher scanned onto their own shelf. It is a
+     real place a reader can get a book and the reader app never showed it. */
+  classroom: {
+    id: 'classroom',
+    certainty: 'shelf',
+    name: 'Classroom Library',
+    accent: '#0BA85F',
+    soft: '#E6F8EF',
+    kind: 'In your classroom',
+    blurb: 'On the shelf in your own classroom.',
+  },
   library: {
     id: 'library',
+    certainty: 'shelf',
     name: 'School Library',
     accent: '#0BA85F',
     soft: '#E6F8EF',
@@ -68,6 +97,15 @@ export const PARTNERS = {
 }
 
 // ─── Genre palette (chips) ────────────────────────────────────────────────────
+
+/* `Review::STATES` — the real model's three, and what each one owes the reader
+   who wrote it. A review starts `pending` (`INITIAL_STATE`) unless the site has
+   `auto_approve_review?` on, editing one sends it back to pending, and staff
+   move it from there. `approved` carries no chip: it is simply on the page. */
+export const REVIEW_STATES = {
+  pending: { label: 'Awaiting approval', icon: 'clock' },
+  rejected: { label: 'Not approved', icon: 'alert-triangle' },
+}
 
 export const GENRES = {
   Adventure: { bg: '#D1FAE5', color: '#065F46' },
@@ -141,10 +179,12 @@ const review = (who, stars, date, body, opts = {}) => ({
   body,
   helpful: opts.helpful ?? Math.round(stars * 7 + body.length / 20),
   verified: opts.verified ?? false, // logged the book + completed a Benny Book Talk
-  replies: opts.replies || [],
+  state: opts.state || 'approved',
+  mine: opts.mine || false,
+  /* A `PictureReview` — a drawing the reader made about the book. Named from
+     the art already in `public/picture-reviews`. */
+  image: opts.image || null,
 })
-
-const reply = (who, date, body) => ({ ...P[who], date, body })
 
 // ─── Books ──────────────────────────────────────────────────────────────────
 // availability: where a reader can get it. partner ∈ PARTNERS; the first entry
@@ -159,7 +199,6 @@ const RAW = [
     series: { name: 'The Wild Robot', number: 2 },
     color: '#0E9F6E',
     genres: ['Adventure', 'Sci-Fi', 'Animals'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
       { partner: 'libby', format: 'audiobook', action: 'Borrow' },
@@ -194,7 +233,6 @@ const RAW = [
         {
           verified: true,
           helpful: 64,
-          replies: [reply('emma', 'Apr 29, 2026', 'same!! the ending of book 1 destroyed me')],
         },
       ),
       review(
@@ -212,6 +250,8 @@ const RAW = [
         { helpful: 22 },
       ),
       review('ava', 5, 'Mar 18, 2026', 'I love Roz so much. She is the best robot mom.', {
+        // A `PictureReview`: she drew Roz on the island rather than writing about her.
+        image: 'wild',
         helpful: 18,
       }),
     ],
@@ -224,7 +264,6 @@ const RAW = [
     series: { name: 'The Wild Robot', number: 1 },
     color: '#0BA85F',
     genres: ['Adventure', 'Sci-Fi', 'Animals'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
       { partner: 'libby', format: 'audiobook', action: 'Borrow' },
@@ -281,7 +320,6 @@ const RAW = [
     series: { name: 'Supernatural Investigations', number: 1 },
     color: '#6D28D9',
     genres: ['Fantasy', 'Adventure', 'Mystery'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'scholastic', format: 'print', action: 'On the list' },
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
@@ -338,7 +376,6 @@ const RAW = [
     author: 'Jerry Craft',
     color: '#0CA7BC',
     genres: ['Graphic Novel', 'Realistic Fiction'],
-    formats: ['print', 'ebook'],
     availability: [
       { partner: 'comicsplus', format: 'ebook', action: 'Read now' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -394,7 +431,6 @@ const RAW = [
     series: { name: 'Dog Man', number: 1 },
     color: '#F0A024',
     genres: ['Graphic Novel', 'Humor'],
-    formats: ['print', 'ebook'],
     availability: [
       { partner: 'comicsplus', format: 'ebook', action: 'Read now' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -450,7 +486,6 @@ const RAW = [
     series: { name: 'Percy Jackson & the Olympians', number: 1 },
     color: '#196DD5',
     genres: ['Fantasy', 'Adventure'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
       { partner: 'libby', format: 'audiobook', action: 'Borrow' },
@@ -508,7 +543,6 @@ const RAW = [
     series: { name: 'Front Desk', number: 1 },
     color: '#AB720A',
     genres: ['Realistic Fiction', 'Historical'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'scholastic', format: 'print', action: 'On the list' },
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
@@ -557,7 +591,6 @@ const RAW = [
     author: 'Kwame Alexander',
     color: '#F26430',
     genres: ['Sports', 'Novel in Verse', 'Realistic Fiction'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'scholastic', format: 'print', action: 'On the list' },
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
@@ -607,7 +640,6 @@ const RAW = [
     author: 'Katherine Applegate',
     color: '#0F766E',
     genres: ['Animals', 'Realistic Fiction'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -649,7 +681,6 @@ const RAW = [
     author: 'Raina Telgemeier',
     color: '#EC4899',
     genres: ['Graphic Novel', 'Memoir'],
-    formats: ['print', 'ebook'],
     availability: [
       { partner: 'comicsplus', format: 'ebook', action: 'Read now' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -691,7 +722,6 @@ const RAW = [
     author: 'Cece Bell',
     color: '#0891B2',
     genres: ['Graphic Novel', 'Memoir'],
-    formats: ['print', 'ebook'],
     availability: [
       { partner: 'comicsplus', format: 'ebook', action: 'Read now' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -737,7 +767,6 @@ const RAW = [
     author: 'Gary Paulsen',
     color: '#15803D',
     genres: ['Survival', 'Adventure'],
-    formats: ['print', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
       { partner: 'libby', format: 'audiobook', action: 'Borrow' },
@@ -785,7 +814,6 @@ const RAW = [
     series: { name: 'Harry Potter', number: 1 },
     color: '#6D28D9',
     genres: ['Fantasy', 'Adventure'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'scholastic', format: 'print', action: 'On the list' },
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
@@ -833,7 +861,6 @@ const RAW = [
     author: 'Alan Gratz',
     color: '#1E40AF',
     genres: ['Historical', 'Survival'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'scholastic', format: 'print', action: 'On the list' },
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
@@ -881,7 +908,6 @@ const RAW = [
     author: 'Sharon M. Draper',
     color: '#BE185D',
     genres: ['Realistic Fiction'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
       { partner: 'libby', format: 'audiobook', action: 'Borrow' },
@@ -928,7 +954,6 @@ const RAW = [
     author: 'R. J. Palacio',
     color: '#B43DD0',
     genres: ['Realistic Fiction'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -969,7 +994,6 @@ const RAW = [
     series: { name: 'Track', number: 1 },
     color: '#0E7490',
     genres: ['Sports', 'Realistic Fiction'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'scholastic', format: 'print', action: 'On the list' },
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
@@ -1012,7 +1036,6 @@ const RAW = [
     author: 'Louis Sachar',
     color: '#B45309',
     genres: ['Adventure', 'Mystery'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1058,7 +1081,6 @@ const RAW = [
     author: 'Lois Lowry',
     color: '#656565',
     genres: ['Dystopian', 'Sci-Fi'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1101,7 +1123,6 @@ const RAW = [
     author: 'Madeleine L’Engle',
     color: '#4338CA',
     genres: ['Sci-Fi', 'Fantasy'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1145,7 +1166,6 @@ const RAW = [
     author: 'Pam Muñoz Ryan',
     color: '#B91C1C',
     genres: ['Historical', 'Realistic Fiction'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'scholastic', format: 'print', action: 'On the list' },
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
@@ -1187,7 +1207,6 @@ const RAW = [
     author: 'Jacqueline Woodson',
     color: '#9333EA',
     genres: ['Memoir', 'Novel in Verse', 'Historical'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
       { partner: 'libby', format: 'audiobook', action: 'Borrow' },
@@ -1234,7 +1253,6 @@ const RAW = [
     author: 'Kate DiCamillo',
     color: '#CA8A04',
     genres: ['Realistic Fiction', 'Animals'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1274,7 +1292,6 @@ const RAW = [
     author: 'Roald Dahl',
     color: '#B43DD0',
     genres: ['Humor', 'Fantasy'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1315,7 +1332,6 @@ const RAW = [
     author: 'E. B. White',
     color: '#E85648',
     genres: ['Animals', 'Fantasy'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
       { partner: 'libby', format: 'audiobook', action: 'Borrow' },
@@ -1366,7 +1382,6 @@ const RAW = [
     author: 'Lynda Mullaly Hunt',
     color: '#0284C7',
     genres: ['Realistic Fiction'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1416,7 +1431,6 @@ const RAW = [
     author: 'Shannon Messenger',
     color: '#2563EB',
     genres: ['Fantasy', 'Adventure', 'Mystery'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1466,7 +1480,6 @@ const RAW = [
     author: 'Kate DiCamillo',
     color: '#CA8A04',
     genres: ['Fantasy', 'Adventure', 'Animals'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
       { partner: 'libby', format: 'audiobook', action: 'Borrow' },
@@ -1518,7 +1531,6 @@ const RAW = [
     series: { name: 'The Last Kids on Earth', number: 1 },
     color: '#15803D',
     genres: ['Humor', 'Adventure', 'Survival'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'ebook', action: 'Borrow' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1568,7 +1580,6 @@ const RAW = [
     author: 'Sara Pennypacker',
     color: '#EA580C',
     genres: ['Animals', 'Adventure', 'Realistic Fiction'],
-    formats: ['print', 'ebook', 'audiobook'],
     availability: [
       { partner: 'sora', format: 'audiobook', action: 'Borrow' },
       { partner: 'libby', format: 'audiobook', action: 'Borrow' },
@@ -1619,7 +1630,6 @@ const RAW = [
     author: 'National Geographic',
     color: '#FFC72C',
     genres: ['Nonfiction', 'Animals'],
-    formats: ['magazine', 'ebook'],
     availability: [{ partner: 'comicsplus', format: 'magazine', action: 'Read now' }],
     lexile: '—',
     ageRange: '7–12',
@@ -1666,7 +1676,6 @@ const RAW = [
     series: { name: 'Amulet', number: 1 },
     color: '#5B21B6',
     genres: ['Graphic Novel', 'Fantasy', 'Adventure'],
-    formats: ['print', 'ebook'],
     availability: [
       { partner: 'comicsplus', format: 'ebook', action: 'Read now' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1716,7 +1725,6 @@ const RAW = [
     series: { name: 'Cat Kid Comic Club', number: 1 },
     color: '#0BA85F',
     genres: ['Graphic Novel', 'Humor'],
-    formats: ['print', 'ebook'],
     availability: [
       { partner: 'comicsplus', format: 'ebook', action: 'Read now' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1767,7 +1775,6 @@ const RAW = [
     series: { name: 'InvestiGators', number: 1 },
     color: '#2563EB',
     genres: ['Graphic Novel', 'Humor', 'Mystery'],
-    formats: ['print', 'ebook'],
     availability: [
       { partner: 'comicsplus', format: 'ebook', action: 'Read now' },
       { partner: 'library', format: 'print', action: 'Find it' },
@@ -1815,7 +1822,6 @@ const RAW = [
     author: 'Scholastic',
     color: '#E1141C',
     genres: ['Magazine', 'Current Events'],
-    formats: ['magazine', 'ebook'],
     availability: [{ partner: 'scholastic', format: 'magazine', action: 'Read issue' }],
     lexile: 'Grade 4',
     ageRange: '8–10',
@@ -1860,7 +1866,6 @@ const RAW = [
     author: 'Scholastic',
     color: '#B43DD0',
     genres: ['Magazine', 'Realistic Fiction'],
-    formats: ['magazine', 'ebook'],
     availability: [{ partner: 'scholastic', format: 'magazine', action: 'Read issue' }],
     lexile: 'Grades 3–5',
     ageRange: '8–11',
@@ -1906,7 +1911,6 @@ const RAW = [
     author: 'Scholastic',
     color: '#2563EB',
     genres: ['Magazine', 'Science'],
-    formats: ['magazine', 'ebook'],
     availability: [{ partner: 'scholastic', format: 'magazine', action: 'Read issue' }],
     lexile: 'Grades 3–6',
     ageRange: '8–12',
@@ -1947,7 +1951,6 @@ const RAW = [
     author: 'Scholastic',
     color: '#F0A024',
     genres: ['Magazine', 'Nonfiction'],
-    formats: ['magazine', 'ebook'],
     availability: [{ partner: 'scholastic', format: 'magazine', action: 'Read issue' }],
     lexile: 'Grades 3–5',
     ageRange: '8–11',
@@ -1990,7 +1993,6 @@ const RAW = [
     author: 'Scholastic',
     color: '#0E7490',
     genres: ['Magazine', 'Realistic Fiction'],
-    formats: ['magazine', 'ebook'],
     availability: [{ partner: 'scholastic', format: 'magazine', action: 'Read issue' }],
     lexile: 'Grades 6–8',
     ageRange: '11–14',
@@ -2033,23 +2035,83 @@ function deriveDist(rating, count) {
   return dist
 }
 
+/* Whether the library's copy is on hand or in a queue. A prototype can't know,
+   and hand-authoring the flag onto forty rows would be inventing forty facts —
+   so it is derived from the title and the app. Stable across reloads, mixed
+   across the catalog, and the same answer every time you open the same book. */
+function hashOf(str) {
+  let h = 0x811c9dc5
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  return h >>> 0
+}
+
+/* Roughly two in five are in hand. Enough that a reader meets both answers
+   without either looking like the broken one. */
+const inStock = (bookId, partner) => hashOf(`${bookId}:${partner}`) % 100 < 42
+
+const BORROWED_FROM = ['sora', 'libby']
+
+/* About a third of what the library has, which is the sort of overlap a
+   teacher's shelf actually has with the stacks. */
+const inClassroom = (bookId) => hashOf(`${bookId}:clc`) % 100 < 32
+
+const partnerCertainty = (bookId, partner) =>
+  BORROWED_FROM.includes(partner)
+    ? inStock(bookId, partner)
+      ? 'own'
+      : 'hold'
+    : (PARTNERS[partner]?.certainty ?? 'shelf')
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-export const BOOKS = RAW.map((b) => ({
-  ...b,
-  /* What `BookCover` reads off a record. `cover` is the flat pastel it paints
-     when Open Library has nothing — a pair, because it used to be a gradient —
-     and `kind` picks the magazine placeholder, a masthead and an issue rather
-     than a title and an author. A magazine that also has a print edition is a
-     book on a shelf, so it keeps the book treatment. */
-  cover: [b.color, b.color],
-  kind:
-    (b.formats ?? []).includes('magazine') && !(b.formats ?? []).includes('print')
-      ? 'magazine'
-      : 'book',
-  ratingDist: b.ratingDist || deriveDist(b.rating, b.ratingCount),
-  reviews: b.reviews || [],
-}))
+export const BOOKS = RAW.map((b) => {
+  /* What a title comes in is not a fact of its own — it is the set of ways
+     there are to get it. Authored as its own field, the two drifted: 31 records
+     claimed an ebook with nothing in `availability` offering one, so the
+     Details tab listed a format the Where-to-read rail had no row for, and the
+     Find-a-book format filter returned books you then couldn't get that way.
+     Derived, the two can't disagree.
+
+     Ordered by `FORMATS` rather than by however the availability happens to be
+     written, so every book lists them in the same order. */
+  const have = new Set((b.availability ?? []).map((a) => a.format))
+  const formats = Object.keys(FORMATS).filter((f) => have.has(f))
+
+  /* Each way in gets the certainty the reader would actually meet. A partner's
+     own certainty is the default; the two borrowing apps resolve per copy,
+     because "Sora has it" and "Sora has it free right now" are different
+     answers and only one of them opens a reader. */
+  const availability = (b.availability ?? []).map((a) => ({
+    ...a,
+    certainty: a.certainty ?? partnerCertainty(b.id, a.partner),
+  }))
+
+  /* The engine's third holding — a copy on the classroom's own shelf, which the
+     reader app never showed. Derived for the same reason the hold queue is:
+     which of a teacher's books are on their shelf is a fact a fixture can't
+     know, and hand-authoring it would be inventing it forty times. */
+  if (availability.some((a) => a.format === 'print') && inClassroom(b.id)) {
+    availability.push({ partner: 'classroom', format: 'print', certainty: 'shelf' })
+  }
+
+  return {
+    ...b,
+    availability,
+    formats,
+    /* What `BookCover` reads off a record. `cover` is the flat pastel it paints
+       when Open Library has nothing — a pair, because it used to be a gradient
+       — and `kind` picks the magazine placeholder, a masthead and an issue
+       rather than a title and an author. A magazine that also has a print
+       edition is a book on a shelf, so it keeps the book treatment. */
+    cover: [b.color, b.color],
+    kind: formats.includes('magazine') && !formats.includes('print') ? 'magazine' : 'book',
+    ratingDist: b.ratingDist || deriveDist(b.rating, b.ratingCount),
+    reviews: b.reviews || [],
+  }
+})
 
 const BY_ID = Object.fromEntries(BOOKS.map((b) => [b.id, b]))
 /* The reading log knows a title by its name, not its id — every logged session
@@ -2064,12 +2126,19 @@ export const getBooks = (ids) => ids.map((id) => BY_ID[id]).filter(Boolean)
 // `kind: 'reason'` rows show Benny's per-book "why"; `kind: 'rank'` rows show a
 // trending rank + reader count; `partner` rows render a branded header.
 
+/* The engine's own recommendations for a reader who just finished The Wild
+   Robot. Two of the five it shows are titles this site can open on the spot —
+   Comics Plus, so it holds whatever the borrowing queues are doing — because a
+   shelf of recommendations a reader can't act on for a week is a reading list,
+   not a next book. The rest are behind View More. */
 export const BENNY_PICKS = [
   'amari',
-  'lightning-thief',
+  'el-deafo',
   'one-ivan',
-  'hatchet',
+  'new-kid',
   'winn-dixie',
+  'hatchet',
+  'lightning-thief',
   'harry-potter',
 ]
 
@@ -2204,22 +2273,131 @@ export const ageBounds = (range) => {
   return [nums[0], nums[1] ?? 99]
 }
 // "Read now in app" = a digital edition (ebook/magazine) on an in-app reader partner.
-export const isReadNow = (book) =>
-  (book.availability || []).some(
-    (a) =>
-      (a.partner === 'comicsplus' || a.partner === 'scholastic') &&
-      (a.format === 'ebook' || a.format === 'magazine'),
-  )
+/* ─── Where a physical copy actually is ─────────────────────────────────────
+   A shelf source can't offer a button — nothing opens — so what it owes the
+   reader is the walk: which part of the room, and what is on the spine.
 
-// ─── My Shelf — the reader's saved books ───────────────────────────────────────
-// id → status. Seeds App state; the bookmark + the detail "Your shelf" chips edit it.
+   Both come out of the holdings record. MARC 852 carries the shelving location
+   in `$c` and the call number across `$h` (class) and `$i` (item), which is
+   what a school's Destiny export hands over and what the Collection Engine
+   already derives the same way — fiction files under the author's surname, a
+   graphic novel lives in its own run, non-fiction takes a Dewey class. */
+
+const SHELF_AREAS = [
+  { genre: 'Magazine', area: 'Magazine rack', prefix: null },
+  { genre: 'Graphic Novel', area: 'Graphic novels', prefix: 'GN' },
+  { genre: 'Memoir', area: 'Biography', prefix: 'B' },
+  { genre: 'Nonfiction', area: 'Non-fiction', prefix: '973' },
+  { genre: 'Science', area: 'Non-fiction', prefix: '500' },
+  { genre: 'Current Events', area: 'Non-fiction', prefix: '030' },
+]
+
+/* The reader's own classroom. The engine calls this `clc` — the books a
+   teacher scanned onto their own shelf — and a reader only ever sees theirs,
+   so it is one room rather than a field on every row. A classroom shelf has no
+   call numbers on it; what walks you to the book is whose room it is. */
+export const CLASSROOM = { teacher: 'Mr. Reyes', room: 'Room 12' }
+
+/* `852 $c` and `852 $h$i`. Fiction is the fallback because it is most of a
+   school library and files the same way whatever the genre chips say. */
+export const shelfLocation = (book, partner = 'library') => {
+  if (partner === 'classroom')
+    return { name: `${CLASSROOM.teacher}’s class`, area: CLASSROOM.room, callNumber: null }
+  const hit = SHELF_AREAS.find((r) => (book.genres || []).includes(r.genre))
+  const surname = (book.author || '')
+    .split(' ')
+    .pop()
+    .replace(/[^A-Za-z]/g, '')
+    .toUpperCase()
+    .slice(0, 3)
+  if (hit?.prefix === null) return { name: null, area: hit.area, callNumber: null }
+  const prefix = hit?.prefix ?? 'FIC'
+  return { name: null, area: hit?.area ?? 'Fiction', callNumber: `${prefix} ${surname}` }
+}
+
+/* ─── What a reader can do with a copy ──────────────────────────────────────
+   Three questions, and the engine's own `CERTAINTY` answers all of them: do we
+   hold a licence (`own` → read it now), is there a queue in front of it
+   (`hold` → borrow it), or is it a physical copy somewhere (`shelf` → find it).
+
+   Which partners these are is not a list to keep in a component. It used to be
+   — `READABLE_PARTNERS = ['comicsplus', 'scholastic']` — and it made Sora and
+   Libby unopenable on principle, when an OverDrive ebook with nobody waiting is
+   the most openable thing in the catalog. */
+
+/* Apps with a reader in them. The rest of the sources are shelves you walk to. */
+const IN_APP_READERS = ['comicsplus', 'scholastic', 'sora', 'libby']
+
+/* The site setting that gates each source. Every one of the engine's ways in
+   has a switch now — a school that has not scanned its classroom shelves
+   should not be told a book is on one. */
+const PARTNER_SETTING = {
+  comicsplus: 'comicsplus',
+  scholastic: 'scholastic',
+  sora: 'sora',
+  libby: 'libby',
+  library: 'library',
+  classroom: 'classroom',
+}
+
+/* A site with everything on — what a surface that hasn't been handed the
+   reviewer's switches should assume. */
+const ALL_ON = {
+  comicsplus: true,
+  scholastic: true,
+  sora: true,
+  libby: true,
+  library: true,
+  classroom: true,
+  audiobooks: true,
+}
+
+export const rowEnabled = (row, settings = ALL_ON) => {
+  const key = PARTNER_SETTING[row.partner]
+  if (key && !settings[key]) return false
+  // Audiobooks are a format rather than a partner, and have their own switch.
+  if (row.format === 'audiobook' && !settings.audiobooks) return false
+  return true
+}
+
+/* Which linked app can open this title right now, if any. The partner rather
+   than a yes/no, because what a shelf puts on the jacket is that partner's own
+   mark — the reader recognises Comics Plus, not the word "available". */
+export const readNowPartner = (book, settings) =>
+  (book.availability || []).find(
+    (a) =>
+      a.certainty === 'own' &&
+      IN_APP_READERS.includes(a.partner) &&
+      (a.format === 'ebook' || a.format === 'magazine') &&
+      rowEnabled(a, settings),
+  )?.partner ?? null
+
+/* Every app that could open it, for the surfaces that offer the choice. */
+export const readNowPartners = (book, settings) => [
+  ...new Set(
+    (book.availability || [])
+      .filter(
+        (a) =>
+          a.certainty === 'own' &&
+          IN_APP_READERS.includes(a.partner) &&
+          (a.format === 'ebook' || a.format === 'magazine') &&
+          rowEnabled(a, settings),
+      )
+      .map((a) => a.partner),
+  ),
+]
+
+export const isReadNow = (book, settings) => Boolean(readNowPartner(book, settings))
+
+// ─── The Wish List — the reader’s saved books ───────────────────────────────────────
+// id → status. Seeds App state; the bookmark + the detail Wish List chips edit it.
 export const SHELF_SEED = {
   'wild-robot': 'finished',
   wonder: 'finished',
   smile: 'finished',
   crossover: 'finished',
   'dog-man': 'reading',
-  'scholastic-news': 'reading',
+  matilda: 'reading',
   'wild-robot-escapes': 'want',
   'front-desk': 'want',
   amari: 'want',

@@ -11,6 +11,8 @@ import { ChatBubble } from '@components/ChatBubble/ChatBubble'
 import { Table } from '@components/Table/Table'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { Modal, ModalClose } from '@components/Modal/Modal'
+import { Flyout, FlyoutMenu, FlyoutMenuItem } from '@components/Flyout/Flyout'
+import '@components/Flyout/Flyout.css'
 import { RowAction, RowActions } from '@components/RowAction/RowAction'
 import '@components/Modal/Modal.css'
 import '@components/RowAction/RowAction.css'
@@ -24,19 +26,36 @@ import { BookCover } from '@components/BookCover/BookCover'
    opened here and a book opened there is the same page; only what goes on the
    rail and in the panel differs. */
 import '../../web-app/components/BookPage.css'
-import { RatingInline } from './Stars'
+import { RatingInline } from '@components/Stars/Stars'
 import { BookCard } from './BookCard'
 import { Reviews } from './Reviews'
-import { ReadNow } from './ReadNow'
+import { FriendCard } from '../../web-app/components/Friends'
+import '../../web-app/components/Friends.css'
+import { ReadNow } from '@components/ReadNow/ReadNow'
 import { ExpandableText } from './ExpandableText'
 import { PartnerMark } from './PartnerBits'
 import { Avatar } from '@components/Avatar/Avatar'
-import { GENRES, FORMATS, PARTNERS, getBooks, friendsWhoRead } from '../data'
+import {
+  GENRES,
+  FORMATS,
+  PARTNERS,
+  CERTAINTY_CTA,
+  getBooks,
+  friendsWhoRead,
+  readNowPartners,
+  rowEnabled,
+  shelfLocation,
+} from '../data'
 
 const isMagazine = (book) => book.formats.includes('magazine') && !book.formats.includes('print')
 
-// Partners with an in-app reader — "Read now" opens it, branded for that partner.
-const READABLE_PARTNERS = ['comicsplus', 'scholastic']
+/* One row's own answer: an app with a reader, a format you read, and a licence
+   in hand. `readNowPartners` asks the same question of a whole book. */
+const canOpen = (a) =>
+  a.certainty === 'own' &&
+  (a.format === 'ebook' || a.format === 'magazine') &&
+  a.partner !== 'library' &&
+  a.partner !== 'classroom'
 const fmtMins = (m) =>
   m >= 60 ? `${Math.floor(m / 60)}h ${m % 60 ? `${m % 60}m` : ''}`.trim() : `${m}m`
 
@@ -66,42 +85,29 @@ function readProgress(book, sessions) {
   }
 }
 
-// What this title comes in. A rail card rather than a line under the credits:
-// it is a fact about the book, like its stats and where to read it, not part of
-// what the book is called.
-function FormatChips({ formats }) {
-  return (
-    <SectionCard header="divider" title="Available as">
-      <span className="bk-formatchips">
-        {formats.map((f) => (
-          <span key={f} className="bk-formatchip">
-            <Icon name={FORMATS[f].icon} size={14} />
-            {FORMATS[f].label}
-          </span>
-        ))}
-      </span>
-    </SectionCard>
-  )
-}
-
 // Per-book reading stats — a compact card in the rail.
 function StatStrip({ book, sessions, status }) {
   const totalMin = sessions.reduce((a, s) => a + s.minutes, 0)
+  /* `icon` as a name rather than a node: `StatCard` draws a name with the
+     Plumpy pack, which is full-colour Icons8 art — a tile of one figure and
+     one label is mostly empty until something sits beside it, and a flat
+     stroked glyph on a tinted card reads as a missing image. */
   const stats = [
-    { value: totalMin ? fmtMins(totalMin) : '0m', label: 'Minutes read', c: '#0B6B78' },
-    { value: status === 'finished' ? 1 : 0, label: 'Times read', c: '#0F7A55' },
+    { value: totalMin ? fmtMins(totalMin) : '0m', label: 'Minutes read', c: '#0B6B78', i: 'clock' },
+    { value: status === 'finished' ? 1 : 0, label: 'Times read', c: '#0F7A55', i: 'check' },
     {
       value: sessions.length,
       label: sessions.length === 1 ? 'Session' : 'Sessions',
       c: '#1A6DD5',
+      i: 'calendar',
     },
-    { value: book.readersAtSchool, label: 'Readers at school', c: '#5B21B6' },
+    { value: book.readersAtSchool, label: 'Readers at school', c: '#5B21B6', i: 'people' },
   ]
   return (
     <SectionCard header="divider" title="Your stats">
       <div className="bk-statgrid">
         {stats.map((s) => (
-          <StatCard key={s.label} value={s.value} label={s.label} color={s.c} />
+          <StatCard key={s.label} value={s.value} label={s.label} color={s.c} icon={s.i} />
         ))}
       </div>
     </SectionCard>
@@ -143,31 +149,24 @@ function ReadingLogTab({ book, sessions, status, onEditSession, onRemoveSession 
           value={sessions.length}
           label={sessions.length === 1 ? 'Session' : 'Sessions'}
           color="#B45309"
-          icon={<Icon name="calendar" size={20} />}
+          icon="calendar"
         />
-        <StatCard
-          value={fmtMins(total)}
-          label="Minutes"
-          color="#0B6B78"
-          icon={<Icon name="clock" size={20} />}
-        />
-      </div>
-
-      {/* How far through the book those sessions have got — the one thing a
-          list of dates can't say, on the system's own bar and in a card of its
-          own rather than a hairline floating between two blocks. */}
-      {prog && (
-        <SectionCard className="bk-progresscard">
-          <ProgressBar
+        <StatCard value={fmtMins(total)} label="Minutes" color="#0B6B78" icon="clock" />
+        {/* How far through the book those sessions have got — a tile like the
+            two beside it rather than a bar in a card of its own, which read as
+            a different kind of thing sitting under them. The house shape for
+            progress on a tile is a ring in the mark's slot, and the page count
+            is the figure's denominator. */}
+        {prog && (
+          <StatCard
             value={prog.toPage}
-            max={book.pageCount}
+            unit={`/${book.pageCount}`}
+            label="Pages read"
             color="#0D9488"
-            label="How far you’ve got"
-            subLabel={`Page ${prog.toPage} of ${book.pageCount}`}
-            valueLabel={`${prog.pct}%`}
+            progress={{ value: prog.toPage, max: book.pageCount }}
           />
-        </SectionCard>
-      )}
+        )}
+      </div>
 
       <Table
         className="bkp-sessions"
@@ -198,23 +197,11 @@ function ReadingLogTab({ book, sessions, status, onEditSession, onRemoveSession 
                 fmtMins(s.minutes)
               ),
           },
-          {
-            key: 'pages',
-            label: 'Pages',
-            width: 130,
-            render: (_v, s) => (s.fromPage && s.toPage ? `p. ${s.fromPage}–${s.toPage}` : '—'),
-          },
-          {
-            key: 'format',
-            label: 'Format',
-            width: 130,
-            render: (_v, s) => (
-              <span className="bk-session-fmt">
-                <Icon name={FORMATS[s.format]?.icon || 'book-2'} size={15} />
-                {FORMATS[s.format]?.label}
-              </span>
-            ),
-          },
+          /* No page range and no format. A session is a date and an amount;
+             which pages it covered is what the progress tile above already
+             says, and what you happened to read it on is a fact about the
+             copy, not about the reading. Four columns of it made a log of two
+             sessions read like a spreadsheet. */
           {
             key: 'id',
             label: '',
@@ -299,7 +286,7 @@ function ReadingLogTab({ book, sessions, status, onEditSession, onRemoveSession 
   )
 }
 
-function OverviewTab({ book }) {
+function OverviewTab({ book, onOpenProfile }) {
   const { synopsis, about } = splitDescription(book.description)
   return (
     <div className="bk-overview">
@@ -316,7 +303,7 @@ function OverviewTab({ book }) {
       </div>
 
       <div className="bk-section">
-        <h3 className="bk-section-h">Synopsis</h3>
+        <h3 className="bk-section-h">Quick Synopsis</h3>
         <p className="bk-synopsis">{synopsis}</p>
       </div>
 
@@ -326,7 +313,7 @@ function OverviewTab({ book }) {
       </div>
 
       <div className="bk-section">
-        <h3 className="bk-section-h">Genres + Themes</h3>
+        <h3 className="bk-section-h">Themes</h3>
         <div className="bk-themes">
           {book.genres.map((g) => {
             const c = GENRES[g] || { bg: '#EAEAEA', color: '#424242' }
@@ -340,25 +327,39 @@ function OverviewTab({ book }) {
               </span>
             )
           })}
-          {book.themes.map((t, i) => {
-            const c = THEME_COLORS[i % THEME_COLORS.length]
-            return (
-              <span
-                key={`t-${t}`}
-                className="bk-theme"
-                style={{ background: c.bg, color: c.color }}
-              >
-                {t}
-              </span>
-            )
-          })}
+          {/* A word can be both a genre and a theme — Hatchet is filed under
+              Survival and is about survival — and listed from both it appeared
+              twice in the same row. The genre chip wins, since it is the one
+              with its own colour. */}
+          {book.themes
+            .filter((t) => !book.genres.includes(t))
+            .map((t, i) => {
+              const c = THEME_COLORS[i % THEME_COLORS.length]
+              return (
+                <span
+                  key={`t-${t}`}
+                  className="bk-theme"
+                  style={{ background: c.bg, color: c.color }}
+                >
+                  {t}
+                </span>
+              )
+            })}
         </div>
       </div>
+
+      <FriendsWhoRead book={book} onOpenProfile={onOpenProfile} />
     </div>
   )
 }
 
-function DetailsTab({ book }) {
+/* `availability` is the list this *site* offers, already filtered by which
+   title sources it has on — so the formats listed here are the ones the reader
+   can actually get, and the row can't name a format the Where-to-read rail has
+   no line for. */
+function DetailsTab({ book, availability }) {
+  const formats = Object.keys(FORMATS).filter((f) => availability.some((a) => a.format === f))
+
   const facts = [
     book.series && ['Series', `${book.series.name} · Book ${book.series.number}`],
     ['Genre', book.genres.join(', ')],
@@ -375,7 +376,7 @@ function DetailsTab({ book }) {
     ],
     ['Language', book.language],
     book.isbn && ['ISBN', book.isbn],
-    ['Formats', book.formats.map((f) => FORMATS[f].label).join(', ')],
+    formats.length && ['Formats', formats.map((f) => FORMATS[f].label).join(', ')],
     book.awards?.length && ['Recognition', book.awards.join(', ')],
   ].filter(Boolean)
 
@@ -394,56 +395,83 @@ function DetailsTab({ book }) {
   )
 }
 
-// Friends who logged this title — derived from their own reading records, so it
-// always matches what their profile shows.
+/* Friends who logged this title — derived from their own reading records, so it
+   always matches what their profile shows.
+ *
+ * A section of the Overview rather than a rail card: who you know that read it
+ * is part of deciding whether to read it, which is what the Overview is for.
+ * The rail beside it is the book's standing facts — your stats, where to get
+ * it — and this is neither. */
 function FriendsWhoRead({ book, onOpenProfile }) {
   const friends = friendsWhoRead(book.id)
   if (!friends.length) return null
   return (
-    <SectionCard header="divider" title="Friends who read this">
-      <div className="bk-fwr-list">
+    <div className="bk-section">
+      <h3 className="bk-section-h">Friends who read this</h3>
+      {/* The Friends page's own card, not a list of rows: these are the same
+          people, and a reader who has just learned what a card of theirs looks
+          like shouldn't have to learn a second shape for it here. No kebab —
+          there is nothing to remove from a list of who read a book — and the
+          streak pill gives way to what this list is about. */}
+      <div className="fr-grid bk-fwr-grid">
         {friends.map((f) => (
-          <button key={f.id} className="bk-fwr-row" onClick={() => onOpenProfile?.(f.id)}>
-            <Avatar initials={f.initials} color={f.color} size="sm" />
-            <span className="bk-fwr-info">
-              <span className="bk-fwr-name">{f.name}</span>
-              <span className="bk-fwr-meta">Logged {f.loggedOn}</span>
-            </span>
-            <Icon name="chevron-right" size={15} className="bk-fwr-chev" />
-          </button>
+          <FriendCard
+            key={f.id}
+            person={f}
+            onOpen={() => onOpenProfile?.(f.id)}
+            tag={`Logged ${f.loggedOn}`}
+          />
         ))}
       </div>
-    </SectionCard>
+    </div>
   )
 }
 
-function WhereToRead({ availability, onRead }) {
+/**
+ * Where to read — the same three claims the Collection Engine makes to staff,
+ * made to the reader.
+ *
+ * The button used to carry a per-record string (`action`), which had drifted to
+ * five different words for three different situations. It carries the verb the
+ * engine's `CERTAINTY` model gives instead — Read now for a licence we own,
+ * Borrow for a queue we can't see, Find it for a copy the school owns — so the
+ * same claim reaches staff and reader through one definition.
+ */
+function WhereToRead({ book, availability, onRead }) {
   if (!availability.length) return null
   return (
     <SectionCard header="divider" title="Where to read">
       <div className="bk-where-list">
         {availability.map((a, i) => {
           const p = PARTNERS[a.partner]
-          const isAudio = a.format === 'audiobook'
-          const readable =
-            READABLE_PARTNERS.includes(a.partner) &&
-            (a.format === 'ebook' || a.format === 'magazine')
+          /* The row's own certainty, not its partner's: a Sora copy with
+             nobody waiting opens now, and the same app's next title doesn't. */
+          const readable = canOpen(a)
+          /* Where this particular copy is. A classroom shelf names whose room
+             it is in; the library's names the run and what's on the spine. */
+          const shelf = a.certainty === 'shelf' ? shelfLocation(book, a.partner) : null
           return (
             <div key={i} className="bk-where-row" style={{ '--p': p.accent, '--p-soft': p.soft }}>
               <PartnerMark id={a.partner} size={34} />
               <div className="bk-where-info">
-                <span className="bk-where-name">{p.name}</span>
-                <span className="bk-where-meta">
-                  <Icon name={isAudio ? 'headphones' : FORMATS[a.format].icon} size={12} />
-                  {FORMATS[a.format].label}
-                </span>
+                <span className="bk-where-name">{shelf?.name ?? p.name}</span>
               </div>
-              <button
-                className="bk-where-cta"
-                onClick={readable ? () => onRead(a.partner) : undefined}
-              >
-                {a.action}
-              </button>
+              {/* A shelf has nothing to press — what it owes the reader is the
+                  walk, so the button gives way to the location and the call
+                  number off the holdings record. */}
+              {shelf ? (
+                <span className="bk-where-loc">
+                  <span className="bk-where-area">{shelf.area}</span>
+                  {shelf.callNumber && <span className="bk-where-call">{shelf.callNumber}</span>}
+                </span>
+              ) : (
+                <button
+                  className="bk-where-cta"
+                  onClick={readable ? () => onRead(a.partner) : undefined}
+                >
+                  {readable ? CERTAINTY_CTA.own : CERTAINTY_CTA[a.certainty]}
+                </button>
+              )}
             </div>
           )
         })}
@@ -461,7 +489,9 @@ export function BookDetail({
   onRemoveSession,
   shelf,
   onWish,
-  onFinish,
+  /* Logging this book rather than picking it out of a search: the flow opens
+     on this title's form. Left off, the button isn't offered. */
+  onLog,
   onPlay,
   onOpen,
   onOpenProfile,
@@ -469,28 +499,26 @@ export function BookDetail({
   backLabel = 'Back to Discover',
   userReviews,
   onAddReview,
-  settings = { sora: true, scholastic: true, audiobooks: true, libby: false },
+  settings = { sora: true, scholastic: false, audiobooks: false, libby: false },
 }) {
   const [tab, setTab] = useState('overview')
   const [readerVia, setReaderVia] = useState(null) // partner id the reader is open on
   const status = shelf[book.id] || null
   const wished = !!status
-  // Feature flags hide Sora borrowing + audiobooks from availability + formats.
-  const availability = (book.availability || []).filter(
-    (a) =>
-      (a.partner !== 'sora' || settings.sora) &&
-      (a.partner !== 'libby' || settings.libby) &&
-      (a.format !== 'audiobook' || settings.audiobooks),
-  )
-  const formats = book.formats.filter((f) => f !== 'audiobook' || settings.audiobooks)
+  // Feature flags hide Sora borrowing and audiobooks from the ways in.
+  /* One rule for which ways in this site actually offers, shared with the
+     shelves so a mark on a jacket and a row in this rail can't disagree — and
+     so Scholastic, which was never checked here, stops appearing on a site
+     that has it switched off. */
+  const availability = (book.availability || []).filter((a) => rowEnabled(a, settings))
   const similar = getBooks(book.similar)
   const reviewCount = (userReviews?.length || 0) + book.reviews.length
-  // Read now = an ebook/magazine on an in-app reader (Comics Plus / Scholastic).
-  // Keep the partner, not just a boolean — the reader brands itself with it.
-  const readNowVia = availability.find(
-    (a) =>
-      READABLE_PARTNERS.includes(a.partner) && (a.format === 'ebook' || a.format === 'magazine'),
-  )?.partner
+  /* Which apps can open it, from the catalog's own rule so the button, the
+     rail and the mark on every shelf agree. Every one of them, not just the
+     first: a title carried by two apps the reader has is a choice, and picking
+     it for them sent them to whichever happened to be listed first. */
+  const readNowVias = readNowPartners(book, settings)
+  const readNowVia = readNowVias[0]
   // Listen now = an audiobook borrowable from a library app (Sora / Libby).
   const hasAudio = availability.some(
     (a) => a.format === 'audiobook' && (a.partner === 'sora' || a.partner === 'libby'),
@@ -506,49 +534,97 @@ export function BookDetail({
       <ReaderBack onClick={onBack}>{backLabel}</ReaderBack>
 
       <article className="bkp-card">
-        {/* Its own cell rather than the rail's first child: stacked, the cover
-            belongs at the top with the title, not after the rail. */}
-        <div className="bkp-cover">
-          <BookCover book={book} size="fill" />
-        </div>
-
         <div className="bkp-main">
-          <header className="bkp-head">
-            {book.issue && <span className="bk-dhero-series">{book.issue}</span>}
-            <h1 className="bkp-title">{book.title}</h1>
-            <p className="bkp-credits">
-              <span className="bkp-person">{book.author}</span>
-              <span className="bkp-role">(Author)</span>
-            </p>
+          {/* The cover belongs beside what names the book — the title, the
+              rating and the buttons — not off in the rail with the stats. The
+              tabs and the panel start under the pair of them. */}
+          <div className="bkp-top">
+            {/* No "read now" mark here: this page already says it twice, on
+                the button and in the rail. The mark belongs on the shelves,
+                where a jacket is all there is to go on. */}
+            <div className="bkp-cover">
+              <BookCover book={book} size="fill" />
+            </div>
 
-            <button
-              className="bk-dhero-rating"
-              onClick={() => setTab('reviews')}
-              aria-label="See reviews"
-            >
-              <RatingInline value={book.rating} count={book.ratingCount} size={18} />
-            </button>
-          </header>
+            <div className="bkp-topmain">
+              <header className="bkp-head">
+                {book.issue && <span className="bk-dhero-series">{book.issue}</span>}
+                <h1 className="bkp-title">{book.title}</h1>
+                <p className="bkp-credits">
+                  <span className="bkp-person">{book.author}</span>
+                  <span className="bkp-role">(Author)</span>
+                </p>
 
-          {/* The app's own button row, in the app's own place — under the
+                <button
+                  className="bk-dhero-rating"
+                  onClick={() => setTab('reviews')}
+                  aria-label="See reviews"
+                >
+                  <RatingInline value={book.rating} count={book.ratingCount} size={18} />
+                </button>
+              </header>
+
+              {/* The app's own button row, in the app's own place — under the
               credits rather than split between a hero and a rail card. */}
-          <div className="bkp-buttons">
-            {readNowVia && <Button onClick={() => setReaderVia(readNowVia)}>Read now</Button>}
-            {hasAudio && (
-              <Button
-                variant={readNowVia ? 'secondary' : 'primary'}
-                onClick={() => onPlay(book.id)}
-              >
-                Listen now
-              </Button>
-            )}
-            <Button
-              variant={wished || readNowVia || hasAudio ? 'secondary' : 'primary'}
-              onClick={() => onWish(book.id)}
-            >
-              {wished ? 'On your shelf' : 'Add to shelf'}
-            </Button>
-            <Button variant="secondary">Log reading</Button>
+              <div className="bkp-buttons">
+                {/* One source opens straight away. Several ask which — the same
+                flyout menu the log flow's tiles use, so "where do I read this"
+                is answered the same way wherever it's asked. */}
+                {readNowVias.length === 1 && (
+                  <Button onClick={() => setReaderVia(readNowVia)}>Read now</Button>
+                )}
+                {readNowVias.length > 1 && (
+                  <Flyout
+                    placement="bottom"
+                    arrow
+                    trigger={({ toggle }) => <Button onClick={toggle}>Read now</Button>}
+                  >
+                    {({ close }) => (
+                      <FlyoutMenu>
+                        {readNowVias.map((id) => (
+                          <FlyoutMenuItem
+                            key={id}
+                            onClick={() => {
+                              close()
+                              setReaderVia(id)
+                            }}
+                          >
+                            Read in {PARTNERS[id].name}
+                          </FlyoutMenuItem>
+                        ))}
+                      </FlyoutMenu>
+                    )}
+                  </Flyout>
+                )}
+                {/* Nothing here opens the book? Then the one thing the reader can
+                always do leads, and it leads from the left — a row whose first
+                button was "Add to Wish List" made saving it for later the
+                headline action on a title they may have just finished. */}
+                {!readNowVias.length && onLog && (
+                  <Button onClick={() => onLog(book)}>Log reading</Button>
+                )}
+                {hasAudio && (
+                  <Button variant="secondary" onClick={() => onPlay(book.id)}>
+                    Listen now
+                  </Button>
+                )}
+                <Button
+                  variant={
+                    wished || readNowVias.length || hasAudio || onLog ? 'secondary' : 'primary'
+                  }
+                  onClick={() => onWish(book.id)}
+                >
+                  {wished ? 'On your Wish List' : 'Add to Wish List'}
+                </Button>
+                {/* Where something *does* open the book, logging is one of the ways
+                out rather than the way in. */}
+                {readNowVias.length > 0 && onLog && (
+                  <Button variant="secondary" onClick={() => onLog(book)}>
+                    Log reading
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="bkp-tabs">
@@ -557,6 +633,12 @@ export function BookDetail({
               onChange={setTab}
               variant="pill"
               size="md"
+              block
+              /* Five labels don't fit this column once the rail and the cover
+                 have taken their share, and a pill group that wraps to two rows
+                 reads as two controls. `collapse` renders the select; the
+                 container query below decides when it shows. */
+              collapse
               ariaLabel="About this book"
               items={[
                 { id: 'overview', label: 'Overview' },
@@ -569,7 +651,7 @@ export function BookDetail({
           </div>
 
           <div className="bkp-panel bk-tabpanel">
-            {tab === 'overview' && <OverviewTab book={book} />}
+            {tab === 'overview' && <OverviewTab book={book} onOpenProfile={onOpenProfile} />}
             {tab === 'reading' && (
               <ReadingLogTab
                 book={book}
@@ -586,13 +668,14 @@ export function BookDetail({
                 onAdd={(r) => onAddReview(book.id, r)}
               />
             )}
-            {tab === 'details' && <DetailsTab book={book} />}
+            {tab === 'details' && <DetailsTab book={book} availability={availability} />}
             {tab === 'similar' && (
               <div className="bk-similar">
                 <h3 className="bk-section-h">Readers also liked</h3>
                 <div className="bk-similar-grid">
                   {similar.map((b) => (
                     <BookCard
+                      settings={settings}
                       key={b.id}
                       book={b}
                       onOpen={onOpen}
@@ -607,10 +690,11 @@ export function BookDetail({
         </div>
 
         <aside className="bkp-aside">
-          <FormatChips formats={formats} />
+          {/* No "Available as" card: Where to read already names every format,
+              beside the place it comes from and what can honestly be said about
+              getting it. On its own, a row of format chips said less twice. */}
           <StatStrip book={book} sessions={sessions} status={status} />
-          <FriendsWhoRead book={book} onOpenProfile={onOpenProfile} />
-          <WhereToRead availability={availability} onRead={setReaderVia} />
+          <WhereToRead book={book} availability={availability} onRead={setReaderVia} />
         </aside>
       </article>
 
@@ -619,7 +703,13 @@ export function BookDetail({
           book={book}
           partner={readerVia}
           onClose={() => setReaderVia(null)}
-          onFinish={() => onFinish(book.id)}
+          /* Reaching the last page isn't the same as saying you read it: the
+             reader hands off to the log form, where the minutes go in and
+             Finished is confirmed. Marking the shelf is that form's job now. */
+          onFinish={() => {
+            setReaderVia(null)
+            onLog?.(book, { finished: true })
+          }}
         />
       )}
     </div>

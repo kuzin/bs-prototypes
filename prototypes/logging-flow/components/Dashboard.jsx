@@ -678,7 +678,16 @@ export function Dashboard({
                 {communityGoal && showGoal && (
                   <CommunityGoalBanner {...communityGoal} onDismiss={() => setShowGoal(false)} />
                 )}
-                <StreakBanner streak={streak} onLog={onLog} />
+                <StreakBanner
+                  streak={streak}
+                  onLog={onLog}
+                  /* The streak is the reading log's calendar — every day you
+                     logged, with the goal's star on the ones that met it. */
+                  onViewStreaks={() => {
+                    setView('log')
+                    onLogTab?.('log')
+                  }}
+                />
               </BannerStack>
               <div className="wa-layout">
                 <section className="wa-content">

@@ -11,7 +11,7 @@ import '@components/Modal/Modal.css'
 import '@components/Button/Button.css'
 import '@components/Form/Form.css'
 import '@components/Pill/Pill.css'
-import { IconButton } from '@components/Primitives/Primitives'
+import { Banner, IconButton } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 import './SessionModal.css'
 
@@ -422,10 +422,13 @@ export function SessionModal({
         <span className="sm2-section-title">Conversation</span>
       </div>
       {d.status === 'unfinished' && (
-        <div className="sm2-unfinished-banner">
-          <Icon name="clock" size={14} />
+        <Banner
+          level="warning"
+          className="sm2-unfinished-banner"
+          icon={<Icon name="clock" size={20} />}
+        >
           Student left this conversation unfinished — Benny is still waiting.
-        </div>
+        </Banner>
       )}
       <div className="sm2-conversation">
         {d.conversation

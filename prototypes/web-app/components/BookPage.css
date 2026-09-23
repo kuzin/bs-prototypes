@@ -75,6 +75,15 @@
   border-top: 1px solid var(--c-border);
 }
 
+/* The strip is a flex *item* here, so it shrinks to its pills unless it says
+   otherwise. A bar that asked to be full width is the only one stretched —
+   `.tabs--block`, not every strip in this slot, so a page whose tabs hug still
+   hugs. */
+.bkp-tabs > .tabs--block {
+  flex: 1;
+  min-width: 0;
+}
+
 .bkp-section {
   padding-top: 20px;
   margin-top: 20px;

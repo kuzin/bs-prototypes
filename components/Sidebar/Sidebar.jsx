@@ -31,6 +31,7 @@ import './Sidebar.css'
 // ── Icon set ─────────────────────────────────────────────────────────────
 const NAV_ICONS = {
   overview: 'layout-grid',
+  setup: 'gear',
   habits: 'notebook',
   lexile: 'trending-up',
   flame: 'flame',

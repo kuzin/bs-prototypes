@@ -45,7 +45,16 @@ import '@components/Tabs/Tabs.css'
  * "Friends" | "Leaderboard"), and they are two views of the same people.
  */
 
-function FriendCard({ person, onRemove, onOpen }) {
+/**
+ * One person, as a card — the shape the Friends page is built from, and the
+ * one every other "here are some readers" list should wear.
+ *
+ * `onRemove` is what puts the kebab on it: a list that can't remove anybody
+ * (the readers who logged a particular book, say) has nothing to put in that
+ * menu, and an empty one is worse than none. `tag` swaps the streak pill for
+ * whatever that list is actually about.
+ */
+export function FriendCard({ person, onRemove, onOpen, tag }) {
   const pending = Boolean(person.pending)
 
   return (
@@ -54,47 +63,49 @@ function FriendCard({ person, onRemove, onOpen }) {
 
       {/* The Flyout's own wrapper is in normal flow, so the corner placement
           goes on a slot around it rather than on the trigger itself. */}
-      <span className="fr-card-menuslot">
-        <Flyout
-          placement="bottom-end"
-          trigger={({ toggle }) => (
-            <button
-              type="button"
-              className="fr-card-kebab"
-              onClick={toggle}
-              aria-label={`Options for ${person.name}`}
-            >
-              <Icon name="dots" size={17} />
-            </button>
-          )}
-        >
-          {({ close }) => (
-            <div className="fr-menu">
-              {!pending && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    close()
-                    onOpen(person.id)
-                  }}
-                >
-                  View Friend
-                </button>
-              )}
+      {onRemove && (
+        <span className="fr-card-menuslot">
+          <Flyout
+            placement="bottom-end"
+            trigger={({ toggle }) => (
               <button
                 type="button"
-                className="fr-menu-danger"
-                onClick={() => {
-                  close()
-                  onRemove(person.id)
-                }}
+                className="fr-card-kebab"
+                onClick={toggle}
+                aria-label={`Options for ${person.name}`}
               >
-                {pending ? 'Cancel this Invitation' : 'Remove Friend'}
+                <Icon name="dots" size={17} />
               </button>
-            </div>
-          )}
-        </Flyout>
-      </span>
+            )}
+          >
+            {({ close }) => (
+              <div className="fr-menu">
+                {!pending && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      close()
+                      onOpen(person.id)
+                    }}
+                  >
+                    View Friend
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="fr-menu-danger"
+                  onClick={() => {
+                    close()
+                    onRemove(person.id)
+                  }}
+                >
+                  {pending ? 'Cancel this Invitation' : 'Remove Friend'}
+                </button>
+              </div>
+            )}
+          </Flyout>
+        </span>
+      )}
 
       {/* The whole card opens the profile, the way the app's does; a pending
           invite has no profile to open yet. */}
@@ -121,7 +132,11 @@ function FriendCard({ person, onRemove, onOpen }) {
             same object: a soft pill, the streak in flame red and the invite in
             grey. A bare red number beside a pill read as two different kinds of
             thing in the same place. */}
-        {pending ? (
+        {tag ? (
+          <Pill color="#656565" variant="soft" size="sm" className="fr-card-tag">
+            {tag}
+          </Pill>
+        ) : pending ? (
           <Pill color="#656565" variant="soft" size="sm" className="fr-card-tag">
             Pending Invite
           </Pill>

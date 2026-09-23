@@ -1697,11 +1697,11 @@ function ActivityBadgeEditor({
                     />
                   </Field>
                   {repeatable ? (
-                    <div className="cc-warn-note">
+                    <Banner level="warning" className="cc-warn-note">
                       Completing repeatable activities can earn points for readers (and thus points
                       badges), but the repeatable activity badge itself can never be earned or
                       completed.
-                    </div>
+                    </Banner>
                   ) : (
                     <div className="cc-ab-settings">
                       <Field label="Earn after">
@@ -2643,9 +2643,9 @@ export function BadgesStep({ screen, challenge, role, type, update, errors = {} 
           {isPoints && (
             <div className="cc-panel">
               <h3 className="cc-panel-title">Earnable point types</h3>
-              <div className="cc-warn-note">
+              <Banner level="warning" className="cc-warn-note">
                 If you turn off one of the types below, points will no longer be awarded for it.
-              </div>
+              </Banner>
               <div className="cc-settings">
                 {POINT_TYPES.map((pt) => {
                   const on = pointTypes[pt.key] !== false
@@ -2783,10 +2783,10 @@ export function BadgesStep({ screen, challenge, role, type, update, errors = {} 
                   onCreate={() => setAbEditor({ index: null, repeatable: true })}
                 />
               </div>
-              <div className="cc-warn-note">
+              <Banner level="warning" className="cc-warn-note">
                 Completing repeatable activities earns points (and thus points badges), but the
                 repeatable activity badges themselves can never be earned or completed.
-              </div>
+              </Banner>
               {repeatableActivities.length ? (
                 <div className="cc-badge-rows">
                   {repeatableActivities.map((ab, i) => {

@@ -54,6 +54,7 @@ import {
   // ── reading / domain ──
   IconBook,
   IconBook2,
+  IconBookFilled,
   IconVocabulary,
   IconBlockquote,
   IconBarcode,
@@ -294,6 +295,7 @@ const REGISTRY = {
   // reading / domain
   book: IconBook,
   'book-2': IconBook2,
+  'book-filled': IconBookFilled,
   vocabulary: IconVocabulary,
   blockquote: IconBlockquote,
   barcode: IconBarcode,

@@ -35,6 +35,10 @@ export function Tabs({
   size = 'md',
   block = false,
   plain = false,
+  /* A segmented control drawn as glyphs — List / Cards, Day / Week / Month.
+     The label stays as the button's accessible name and its tooltip, so an
+     icon-only control still says what it is to a screen reader and on hover. */
+  iconOnly = false,
   /* A darker track, for a group sitting on a tinted page rather than white —
      the default #f2f2f2 all but disappears on the admin's grey. */
   onTint = false,
@@ -88,7 +92,7 @@ export function Tabs({
     <div
       ref={scrollRef}
       onScroll={updateScrollFade}
-      className={`tabs tabs--${variant} tabs--${size}${plain ? ' tabs--plain' : ''}${onTint ? ' tabs--on-tint' : ''}${center ? ' tabs--center' : ''}${block ? ' tabs--block' : ''}${canScrollLeft ? ' tabs--scroll-left' : ''}${canScrollRight ? ' tabs--scroll-right' : ''} ${className}`.trim()}
+      className={`tabs tabs--${variant} tabs--${size}${plain ? ' tabs--plain' : ''}${onTint ? ' tabs--on-tint' : ''}${center ? ' tabs--center' : ''}${block ? ' tabs--block' : ''}${iconOnly ? ' tabs--icon-only' : ''}${canScrollLeft ? ' tabs--scroll-left' : ''}${canScrollRight ? ' tabs--scroll-right' : ''} ${className}`.trim()}
       role={collapses ? undefined : 'tablist'}
       aria-label={collapses ? undefined : ariaLabel}
       style={style}
@@ -138,12 +142,13 @@ export function Tabs({
           type="button"
           aria-selected={active === item.id}
           disabled={item.disabled}
-          title={item.title}
+          title={item.title ?? (iconOnly ? item.label : undefined)}
+          aria-label={iconOnly ? item.label : undefined}
           className={`tab${active === item.id ? ' tab--active' : ''}${item.disabled ? ' tab--disabled' : ''}`}
           onClick={() => !item.disabled && onChange?.(item.id)}
         >
           {item.icon && <span className="tab-icon">{item.icon}</span>}
-          <span>{item.label}</span>
+          <span className="tab-label">{item.label}</span>
           {item.count != null && (
             <span className={`tab-count${item.danger ? ' tab-count--danger' : ''}`}>
               {item.count}

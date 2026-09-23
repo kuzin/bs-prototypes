@@ -1314,20 +1314,32 @@
   gap: 4px;
   align-items: center;
   height: 32px;
-  padding: 0 10px 0 6px;
+  padding: 0 12px 0 8px;
   margin: 8px 0 18px;
   font: inherit;
   font-size: 14px;
   font-weight: 800;
   color: var(--c-text-light);
   cursor: pointer;
-  background: none;
+  /* A ground at rest, not only on hover: the padding is what makes this read as
+     a control rather than as a stray line of bold text, and with nothing behind
+     it there was nothing to see the padding against. */
+  background: var(--c-gray-100);
   border: 0;
   border-radius: 8px;
 }
 .wa-back:hover {
   color: var(--c-text-dark);
-  background: var(--c-gray-100);
+  background: var(--c-gray-200);
+}
+
+/* A back link is the page's first line, so the header under it doesn't open a
+   second gap on top of the one the link already leaves. `.wa-back` is an
+   inline-flex, so its 18px never collapsed into the header's 26px — they added
+   up to 44, and a page whose next block isn't a header (a book's card) sat at
+   18. One gap on every page, and it's the link's. */
+.wa-back + .wa-pagehead {
+  margin-top: 0;
 }
 
 /* ─── Fundraiser bar ─────────────────────────────────────────────────────────

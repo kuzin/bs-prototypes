@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import { useToasts, ToastStack } from '@components/Toast/Toast'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 import { badgeSrc } from '@components/ReaderApp/ReaderApp'
 import { BadgeModal } from '@components/BadgeModal/BadgeModal'
 import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerConnect'
+import { ReadNow } from '@components/ReadNow/ReadNow'
 
 import { Dashboard } from '../logging-flow/components/Dashboard'
 import { LogFlow } from '@components/LogFlow/LogFlow'
@@ -72,7 +74,7 @@ import '@components/PreviewBar/PreviewBar.css'
 //  * **The vocabulary round.** `LogFlow` offers it when handed `onOpenWord`,
 //    which is Words with Benny's hook; without that prop the success step is a
 //    plain "Done" — the logging flow on its own.
-//  * **Discover / My Shelf** (Book Discovery) and **the Gameboard** (Gameboard
+//  * **Discover / Wish List** (Book Discovery) and **the Gameboard** (Gameboard
 //    Reader) stay in their own prototypes.
 //  * **Scholastic.** The partner list and its titles are filtered out.
 
@@ -251,7 +253,11 @@ const FEATURE_DEFAULTS = {
   challengeCode: true,
   connectedSite: true,
   registrationQuestions: true,
-  fundraiser: true,
+  /* Off by default: a fundraiser is a campaign a school runs for a few weeks,
+     not a standing part of the app. On for everyone it put a nav tab and a
+     welcome modal in front of every reader of every site that has never run
+     one. Turn it on in Site settings to see that flow. */
+  fundraiser: false,
   bookMachine: true,
   comicsPlus: true,
   beeverso: true,
@@ -275,6 +281,23 @@ export function App() {
   const [connections, setConnections] = useState({})
   const [linking, setLinking] = useState(null) // partner id mid-handoff
   const [visiting, setVisiting] = useState(null) // partner id whose catalog is open
+  // The title being read in a partner's app, and which app that is.
+  const [reading, setReading] = useState(null)
+  /* A title handed over by the reader's last page — the flow opens on its
+     form with Finished already answered. */
+  const [finishing, setFinishing] = useState(null)
+
+  /* Every way into the flow goes through these two, so a title handed over
+     by the reader can't outlive the trip it was handed over for. */
+  const openFlow = (book = null) => {
+    setFinishing(book)
+    setFlowOpen(true)
+  }
+  const closeFlow = () => {
+    setFlowOpen(false)
+    setFinishing(null)
+  }
+  const { toasts, push: pushToast, dismiss } = useToasts()
   const [challenge, setChallenge] = useState(() => CHALLENGE_BY_ID[loadNav().challenge] ?? null)
   // The dashboard's view is driven from here so that leaving for another tab
   // also closes an open challenge — `page` replaces the main column, so
@@ -470,7 +493,7 @@ export function App() {
         <BookListPage
           list={top.list}
           onBack={pop}
-          onLog={() => setFlowOpen(true)}
+          onLog={() => openFlow()}
           onWish={toggleWish}
           onOpenBook={(book) => openBook(book, `Back to ${top.list.name}`)}
         />
@@ -482,7 +505,7 @@ export function App() {
         backLabel={top.back}
         sessions={log.filter((e) => e.kind === 'log' && e.title === top.book.title)}
         onBack={pop}
-        onLog={() => setFlowOpen(true)}
+        onLog={() => openFlow()}
         onFilter={(initial) => push({ kind: 'browse', initial, back: `Back to ${top.book.title}` })}
         onOpenBook={(book) => openBook(book, `Back to ${top.book.title}`)}
         wished={wished(top.book.id)}
@@ -555,7 +578,7 @@ export function App() {
       <Dashboard
         streak={streak}
         dailyGoal={dailyGoal}
-        onLog={() => setFlowOpen(true)}
+        onLog={() => openFlow()}
         onReview={() => {
           setView('log')
           setLogTab('reviews')
@@ -601,7 +624,7 @@ export function App() {
               onRemove={(id) => setWish((ws) => ws.filter((w) => w.book !== id))}
               onFindBooks={() => push({ kind: 'browse', back: 'Back to Wish List' })}
               onOpenBook={(book) => openBook(book, 'Back to Wish List')}
-              onLog={() => setFlowOpen(true)}
+              onLog={() => openFlow()}
             />
           )
         }
@@ -676,7 +699,7 @@ export function App() {
               tab={challengeTab}
               onTab={setChallengeTab}
               entries={shownLog}
-              onLog={() => setFlowOpen(true)}
+              onLog={() => openFlow()}
               /* A badge's own modal offers whatever that badge is earned by —
                  a review badge sends you to write one, an activity badge to
                  its activities. */
@@ -717,8 +740,22 @@ export function App() {
       />
 
       <LogFlow
+        /* A tile's "Read in …" leaves the flow for the partner's own app, which
+
+           is this page's to open. */
+
+        book={finishing}
+        startFinished={Boolean(finishing)}
+        onReadInPartner={(b) => setReading({ book: b, partner: b.partner })}
+        /* This page keeps the reader's real Wish List, so Benny's pick joins it
+           the same way a book page's does — and says so, since the list is a
+           tab away. */
+        onAddToWishlist={(b) => {
+          if (!wished(b.id)) toggleWish(b)
+          pushToast({ title: 'Added to your Wish List', body: b.title })
+        }}
         open={flowOpen}
-        onClose={() => setFlowOpen(false)}
+        onClose={() => closeFlow()}
         onLogged={handleLogged}
         connections={connections}
         {...LOG_FIXTURES}
@@ -762,6 +799,18 @@ export function App() {
         }}
       />
 
+      {reading && (
+        <ReadNow
+          book={reading.book}
+          partner={reading.partner}
+          onClose={() => setReading(null)}
+          onFinish={() => {
+            setReading(null)
+            openFlow(reading.book)
+          }}
+        />
+      )}
+
       {visiting && connections[visiting] && (
         <PartnerCatalog
           partner={CONNECTIONS[visiting]}
@@ -794,6 +843,12 @@ export function App() {
           setStack([])
         }}
       />
+
+      {/* One stack for the page, not one per thing that can raise a
+
+          toast. */}
+
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
 
       <PrototypeNav currentHref="/bs-prototypes/web-app/" />
     </>

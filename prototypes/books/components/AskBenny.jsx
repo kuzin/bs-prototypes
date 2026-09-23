@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { CoverShelf } from '@components/CoverShelf/CoverShelf'
 import { Button } from '@components/Button/Button'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import '@components/SearchInput/SearchInput.css'
@@ -8,7 +9,7 @@ import { recommend } from '../data'
 
 // A working (simulated) recommendation prompt: type a request and — after a
 // short "Benny is thinking" beat — Benny answers with a message + matching books.
-export function AskBenny({ onOpen, onWish, wishlist }) {
+export function AskBenny({ onOpen, onWish, wishlist, settings }) {
   const [query, setQuery] = useState('')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -61,6 +62,9 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
             <SearchInput
               value={query}
               onChange={setQuery}
+              /* Sparkles, not a loupe: you are describing a mood to Benny, not
+                 looking up a title you already know the name of. */
+              icon="sparkles"
               placeholder="e.g. funny graphic novels, or something like The Wild Robot…"
               ariaLabel="Ask Benny for a recommendation"
             />
@@ -90,7 +94,12 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
               </span>
             </p>
           </div>
-          <div className="bk-ask-track" aria-hidden="true">
+          {/* The same rail shape the answer lands in, so the panel doesn't
+              change size when the covers arrive. It was still on the class the
+              results used before they moved to `CoverShelf`, and with that
+              class gone the skeletons had no row to sit in and stacked down
+              the page. */}
+          <div className="bk-ask-skelrow" aria-hidden="true">
             {[0, 1, 2, 3, 4].map((i) => (
               <div key={i} className="bk-ask-skel">
                 <span className="bk-ask-skel-cover" />
@@ -111,9 +120,10 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
               <Icon name="x" size={14} /> Clear
             </button>
           </div>
-          <div className="bk-ask-track">
+          <CoverShelf className="bk-ask-shelf">
             {result.books.map((b) => (
               <BookCard
+                settings={settings}
                 key={b.id}
                 book={b}
                 onOpen={onOpen}
@@ -121,7 +131,7 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
                 wished={wishlist.has(b.id)}
               />
             ))}
-          </div>
+          </CoverShelf>
         </div>
       )}
     </section>

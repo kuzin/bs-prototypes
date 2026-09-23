@@ -1,93 +1,91 @@
-/* The icon and the actions centre against the whole box, not against the
-   title — an announcement's message runs to two or three lines, and the ends
-   are the only fixed points it has. `.bnr` already centres; this only has to
-   undo the per-consumer overrides that used to pin the glyph to the first
-   line. */
-.ibx {
-  align-items: center;
-  /* The tiled glyph needs more air than a bare 18px icon did. */
-  gap: 14px;
-}
+/* `lib/_infobox.scss`. The shared <Banner> is already the app's `.infobox` to
+   the pixel — 12/16 padding, 10px radius, a 12px gap, 15/1.5 on `$gray800`,
+   and the same `$blue50` / `$green50` / `$yellow200` grounds. So this file adds
+   only what the app itself adds for an announcement: an outline button at the
+   end of the bar.
+ *
+ * It used to add three things the app has no trace of — a 44px white tile
+ * behind the glyph, a filled primary button, and a `nowrap` that clipped the
+ * message — which is what made an InfoBox look like a different object
+ * depending on where you met it. */
 
-/* The glyph sits on its own tile rather than loose against the tint — at 26px
-   it is art, not a status dot, and the tile gives it an edge on a ground only
-   a shade lighter than itself. */
+/* `.infobox-icon { flex-shrink: 0 }` and nothing else: a 20px glyph tinted to
+   the level, loose on the tint. Banner's own colours already do the tinting. */
 .ibx > .bnr-icon {
-  margin-top: 0;
   align-self: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #fff;
-  color: var(--ibx-ink, #196dd5);
+  margin-top: 0;
 }
+
 .ibx > .bnr-icon svg {
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
 }
 
-/* An announcement is one line high whatever it is handed: wrapped to four
-   lines it pushes the whole dashboard down and still doesn't say enough to act
-   on, so the detail lives behind the action and the hook gets clipped instead.
-   A bare notice — no headline, no action — *is* the whole message, and a
-   sentence that has nowhere else to go wraps rather than losing its end. */
-.ibx .bnr-title,
-.ibx:has(.bnr-title) .bnr-msg,
-.ibx:has(.ibx-actions) .bnr-msg {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* `.infobox-text { flex: 1; font-weight: 500 }` with `h4 { 15px/800 }`. */
+.ibx .bnr-title {
+  font-size: 15px;
+  font-weight: 800;
 }
 
-/* Both actions sit at the end of the bar as one block, side by side while
-   there is room and stacked once the message has taken the width. */
+.ibx .bnr-msg {
+  font-weight: 500;
+}
+
+/* `margin: 0 0 0 auto` — the actions take the end of the bar. */
 .ibx-actions {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
+/* `.helpbox .button.button--outline`: a 2px border in the level's light tint
+   over the box's own ground, never a filled button. 36px and 14px, which is the
+   `sm` rung of our own ladder. */
+.ibx .ibx-actions .btn {
+  height: 36px;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: 2px solid var(--ibx-edge, #8cbdfa);
+  color: var(--ibx-ink, #196dd5);
+}
+
+.ibx .ibx-actions .btn:hover {
+  background: transparent;
+  border-color: var(--ibx-edge-hover, #67a5f8);
+  color: var(--ibx-ink, #196dd5);
+}
+
+.ibx.bnr--success {
+  --ibx-ink: #017841;
+  --ibx-edge: #8ef0c0;
+  --ibx-edge-hover: #5fe5a5;
+}
+
+.ibx.bnr--warning {
+  --ibx-ink: #895a04;
+  --ibx-edge: #f5c65a;
+  --ibx-edge-hover: #edb636;
+}
+
+.ibx.bnr--danger,
+.ibx.bnr--error {
+  --ibx-ink: #b3271a;
+  --ibx-edge: #f7a79e;
+  --ibx-edge-hover: #f2887c;
+}
+
+/* The bar stacks rather than squeezing the message to nothing. */
 @media (max-width: 699px) {
   .ibx {
     flex-wrap: wrap;
   }
+
   .ibx-actions {
     flex-basis: 100%;
-    margin-top: 4px;
-  }
-}
-
-/* A secondary button is a light-grey outline on white, which all but vanishes
-   on the box's tinted ground — so inside an InfoBox it takes a white ground
-   and the level's own ink instead. Still quieter than the primary, still
-   legibly a button. */
-.ibx .ibx-actions .btn--secondary {
-  background: #fff;
-  border-color: #fff;
-  color: var(--ibx-ink, #196dd5);
-}
-.ibx .ibx-actions .btn--secondary:hover {
-  border-color: currentColor;
-}
-.ibx.bnr--success {
-  --ibx-ink: #017841;
-}
-.ibx.bnr--warning {
-  --ibx-ink: #895a04;
-}
-.ibx.bnr--danger {
-  --ibx-ink: #b3271a;
-}
-
-/* Banner stacks at 560px and reserves `100% - 30px` for its 18px glyph. This
-   bar's glyph is a 44px tile with a 14px gap beside it, so that basis was wider
-   than the line had left and the message dropped underneath the icon. Take
-   what's left of the row instead of a number, and the glyph stays on the left. */
-@media (max-width: 560px) {
-  .ibx > .bnr-body {
-    flex: 1;
-    flex-basis: auto;
-    min-width: 0;
+    margin: 4px 0 0;
   }
 }

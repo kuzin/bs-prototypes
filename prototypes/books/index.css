@@ -53,6 +53,112 @@ button {
   padding-bottom: 8px;
 }
 
+/* ─── The book page wears the book ──────────────────────────────────────────
+   Outside the card, the page takes its ground from the *jacket* — sampled from
+   the cover image by `useCoverColor`, not read off the catalog's `color`, which
+   is the tint for the placeholder tile and rarely matches the real cover.
+
+   Registered so it can be animated: a plain custom property is a string as far
+   as transitions go, and a gradient built from one jumps. Declared with a
+   `<color>` syntax it interpolates, and the gradient recomputes each frame — so
+   the page opens white and takes the colour on as the sample lands. The initial
+   value is white for the same reason: before a sample there is nothing to say.
+
+   The wash goes on `.wa-main`, which is `flex: 1` and therefore the full page
+   area; on the book page's own wrapper it could only be as tall as the card and
+   stopped dead under it. Each ramp ends on white rather than on `transparent` —
+   sRGB interpolates that through transparent *black* and greys the middle. */
+@property --bk-theme {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ffffff;
+}
+
+.bk-root {
+  /* Short enough to read as the page catching up with the cover rather than as
+     something loading. The jacket is almost always already in the browser's
+     cache — the shelf the reader clicked from just drew it — so the sample
+     lands in a frame or two and this ramp is the whole of the wait. */
+  transition: --bk-theme 240ms ease-out;
+}
+
+.bk-root:has(.bk-detail) .wa-main {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bk-theme) 20%, #fff) 0,
+    color-mix(in srgb, var(--bk-theme) 7%, #fff) 460px,
+    color-mix(in srgb, var(--bk-theme) 7%, #fff) 100%
+  );
+}
+
+/* The way out belongs to the themed page rather than to the grey one it used
+   to sit on — mixed over that grey, so it still has a ground while the page is
+   white and waiting. */
+.bk-detail .wa-back {
+  background: color-mix(in srgb, var(--bk-theme) 16%, var(--c-gray-100));
+}
+
+.bk-detail .wa-back:hover {
+  background: color-mix(in srgb, var(--bk-theme) 30%, var(--c-gray-200));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bk-root {
+    transition: none;
+  }
+}
+
+/* ─── The book page's header row ───────────────────────────────────────────
+   The cover sits beside what names the book — title, credits, rating, buttons
+   — rather than in the rail with the stats. So the card is two columns, not
+   three cells: the page and the rail. */
+.bk-detail .bkp-card {
+  grid-template-areas: 'main aside';
+  /* Wider than web-app's 280: this rail carries stat tiles one per line and the
+     Where-to-read rows, both of which are a figure or a mark beside a label. */
+  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-rows: auto;
+}
+
+.bk-detail .bkp-top {
+  display: flex;
+  gap: 24px;
+  /* Centred on the cover, not hung from its top edge: the block beside it is
+     four short lines and a row of buttons, and top-aligned it left the jacket
+     running on alone under them. */
+  align-items: center;
+}
+
+.bk-detail .bkp-cover {
+  position: relative;
+  flex: 0 0 136px;
+  width: 136px;
+}
+
+.bk-detail .bkp-topmain {
+  flex: 1;
+  min-width: 0;
+}
+
+/* A title a linked app can open right now wears that app's mark on the jacket,
+   on every shelf that shows one. No label — a shelf is scanned rather than
+   read, and "Read now" under a dozen covers is a wall of words where a mark is
+   a glance. The bookmark owns the top-right corner, so this takes the bottom
+   left. */
+.bk-card-now,
+.bk-shelftile-now {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 12px;
+  height: 12px;
+  background: #0ba85f;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+  pointer-events: none;
+}
+
 /* ─── Ask Benny — working recommendation prompt ────────────────────────────── */
 
 /* Benny's panel, on the brand's own teal rather than a colour of its own: the
@@ -64,7 +170,7 @@ button {
   margin-bottom: 30px;
   background: var(--c-teal-wash);
   border: 1px solid color-mix(in srgb, var(--c-teal) 28%, #fff);
-  border-radius: 14px;
+  border-radius: 16px;
 }
 .bk-ask .bk-ask-title {
   color: var(--c-teal-ink);
@@ -81,23 +187,27 @@ button {
   background: #fff;
   border-color: color-mix(in srgb, var(--c-teal) 22%, #fff);
 }
+/* The mark in the well is Benny's sparkle, so it takes his colour rather than
+   the muted grey a loupe sits in. */
+.bk-ask .search-input-ic {
+  color: var(--c-teal);
+}
 
-/* Prompt state, one row: Benny introduces himself on the left and the field he
-   is asking you to fill sits on the right. Stacked, the panel was twice as tall
-   as the one thing it wants. */
+/* Benny introduces himself, and the field he is asking you to fill runs the
+   whole width underneath. Beside him it was a 380px box sharing a row with two
+   lines of copy — the one thing the panel is for, given the smaller half of
+   it, and a placeholder that had to be cut off to fit. */
 .bk-ask-prompt {
   display: flex;
-  gap: 24px;
-  align-items: center;
+  flex-direction: column;
+  gap: 14px;
 }
 .bk-ask-prompt .bk-ask-head {
-  flex: 0 1 auto;
   margin-bottom: 0;
 }
-/* The field takes the rest of the row and the button keeps its own width. */
+/* The field takes the row and the button keeps its own width. */
 .bk-ask-prompt .bk-ask-form {
-  flex: 1 1 380px;
-  min-width: 0;
+  width: 100%;
 }
 .bk-ask-prompt .bk-ask-form .search-input {
   flex: 1;
@@ -110,13 +220,14 @@ button {
   align-items: center;
   margin-bottom: 14px;
 }
+/* White on the wash — the disc is what lifts Benny off the panel behind him. */
 .bk-ask-avatar {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  flex: 0 0 auto;
   background: #fff;
   border: 1px solid #d3ece6;
-  flex: 0 0 auto;
+  border-radius: 50%;
 }
 .bk-ask-headtext {
   flex: 1;
@@ -138,10 +249,11 @@ button {
   color: var(--bk-muted);
   margin: 1px 0 0;
 }
+/* No rule and no gap above it: the answer *replaces* the prompt rather than
+   following it, so the divider was separating Benny's reply from the top edge
+   of his own panel. */
 .bk-ask-result {
-  margin-top: 18px;
-  border-top: 1px solid #d3ece6;
-  padding-top: 16px;
+  margin-top: 0;
 }
 .bk-ask-answer {
   display: flex;
@@ -180,15 +292,41 @@ button {
   border-color: #0d9488;
   color: #0f766e;
 }
-.bk-ask-track {
+/* Benny's answers are a rail, not a row that happens to overflow: eight cards
+   never fit, and the old track scrolled with nothing to say so — the last
+   jacket was clipped and that was the only hint. `CoverShelf` brings the
+   arrows, the snapping and the hidden bar; this just gives it the shelf's own
+   spacing.
+
+   `--shelf-cover-h` is what the arrows centre on. The shelf publishes it by
+   measuring a `.cshelf-cover`, which a `BookCard` isn't — but a card here is a
+   fixed 158px on a 2:3 jacket, so the number is knowable: 158 × 1.5 ≈ 237. */
+.bk-ask-shelf {
+  --shelf-cover-h: 237px;
+
+  margin-top: 4px;
+}
+
+.bk-ask-shelf .cshelf-rail,
+.bk-ask-skelrow {
   display: flex;
   gap: 18px;
-  overflow-x: auto;
   padding: 8px 2px 4px;
-  scrollbar-width: none;
+  overflow: hidden;
 }
-.bk-ask-track::-webkit-scrollbar {
-  display: none;
+
+/* The placeholders are a hint that covers are coming, not a thing to scroll —
+   whatever doesn't fit is simply clipped. */
+.bk-ask-skelrow {
+  margin-top: 4px;
+}
+
+/* On Benny's own panel the rating pill takes his colour: the card's default
+   grey is the page's neutral, and on the teal wash it read as a smudge rather
+   than as the same chip these cards wear everywhere else. */
+.bk-ask .bk-card-rate {
+  color: var(--c-teal-ink);
+  background: color-mix(in srgb, var(--c-teal) 16%, #fff);
 }
 
 /* Benny thinking */
@@ -274,12 +412,14 @@ button {
   }
 }
 
-/* book-detail hero rating on the soft (light) hero wash */
-.bk-dhero-rating .bk-rating-count {
+/* book-detail hero rating on the soft (light) hero wash — the empty star's
+   default grey is a shade off the wash, so it is lifted here rather than in the
+   shared component. */
+.bk-dhero-rating .rating-count {
   color: var(--c-gray-700);
 }
-.bk-dhero-rating .bk-star-bg {
-  color: #eaeaea;
+.bk-dhero-rating .stars {
+  --star-off: #eaeaea;
 }
 
 /* ─── Shelves ──────────────────────────────────────────────────────────────── */
@@ -288,10 +428,11 @@ button {
   margin-bottom: 0;
   padding-bottom: 36px;
 }
-/* Hairline divider between consecutive shelf rows */
+/* The gap is the divider. A rule between every shelf drew six lines down a
+   page whose shelves are already separated by their own headings and 36px of
+   air. */
 .bk-shelf + .bk-shelf {
   padding-top: 36px;
-  border-top: 1px solid var(--bk-line);
 }
 .bk-shelf-head {
   margin-bottom: 18px;
@@ -305,8 +446,11 @@ button {
   letter-spacing: -0.015em;
   line-height: 1.15;
 }
+/* 15, the next rung up from 14 on the app's own ladder — a shelf's line says
+   why the shelf is there, which is the one thing on the row a reader reads
+   rather than scans. */
 .bk-shelf-sub {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--bk-muted);
   margin-top: 3px;
 }
@@ -335,7 +479,14 @@ button {
   gap: var(--bk-book-gap);
   align-items: start;
 }
-.bk-shelf-row .bk-card {
+/* A card is sized for a rail — `flex: 0 0 auto` at a fixed 158px, which is what
+   the Ask Benny shelf and the log flow's rows want. In a grid that fixed width
+   fights the track: at 158 in a 132px cell the jackets overflowed into the gap
+   and ended up touching. Every grid that holds one says so here, so the next
+   one doesn't have to find out. */
+.bk-shelf-row .bk-card,
+.bk-similar-grid .bk-card,
+.bk-results-grid .bk-card {
   width: 100%;
 }
 
@@ -454,21 +605,23 @@ button {
   margin-top: auto;
   padding-top: 4px;
 }
+/* A pill, now that it is the only thing on the line: a bare figure under a
+   jacket read as a caption of the cover rather than a fact about the book. The
+   star keeps its gold; the pill is the neutral ground every other soft pill in
+   the system uses. */
 .bk-card-rate {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  font-size: 15px;
-  font-weight: 800;
+  gap: 4px;
+  padding: 2px 9px 2px 7px;
+  border-radius: 99px;
+  background: var(--c-gray-150);
+  font-size: var(--text-tag);
+  font-weight: var(--fw-extrabold);
   color: var(--c-gray-800);
 }
 .bk-card-star {
   color: #f5a524;
-}
-.bk-card-formats {
-  display: inline-flex;
-  gap: 4px;
-  color: var(--c-gray-500);
 }
 .bk-card-readers {
   display: inline-flex;
@@ -532,63 +685,6 @@ button {
   flex: 0 0 auto;
   margin-top: 1px;
   color: #14b8a6;
-}
-
-/* ─── Stars ────────────────────────────────────────────────────────────────── */
-
-.bk-stars {
-  display: inline-flex;
-  gap: 1px;
-  vertical-align: middle;
-}
-.bk-star {
-  position: relative;
-  display: inline-block;
-}
-.bk-star-bg {
-  color: #dfe3e8;
-  display: block;
-}
-.bk-star-fill {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  display: flex;
-}
-.bk-star-fg {
-  color: #f5a524;
-}
-.bk-rating-inline {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 14px;
-}
-.bk-rating-inline strong {
-  font-weight: 800;
-}
-.bk-rating-count {
-  color: var(--bk-muted);
-}
-.bk-star-input {
-  display: inline-flex;
-  gap: 3px;
-}
-.bk-star-btn {
-  background: none;
-  border: 0;
-  padding: 0;
-  color: #d8dde3;
-  line-height: 0;
-  transition:
-    transform 0.1s,
-    color 0.1s;
-}
-.bk-star-btn:hover {
-  transform: scale(1.12);
-}
-.bk-star-btn.is-on {
-  color: #f5a524;
 }
 
 /* ─── Partner brand bits ───────────────────────────────────────────────────── */
@@ -848,14 +944,6 @@ button {
   font-weight: 800;
   color: var(--bk-ink);
 }
-.bk-where-meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  color: var(--bk-muted);
-  font-weight: 600;
-}
 .bk-where-cta {
   flex: 0 0 auto;
   border: 0;
@@ -871,9 +959,13 @@ button {
 }
 
 /* Per-book reading stats — 2×2 grid inside a rail card */
+/* One tile per line. Two across, a stat card's figure, its label and its mark
+   were sharing about 120px — "Readers at school" wrapped to three lines and the
+   row of tiles read at four different heights. Down the rail each one gets the
+   full width and the same shape. */
 .bk-statgrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
@@ -882,6 +974,50 @@ button {
    here — the row already owns the avatar, the tail and the type. */
 .bk-benny-take .cht-bubble {
   max-width: 100%;
+}
+/* Benny's take sits on the book page's own white card, where a white bubble
+   inside a hairline read as an empty field rather than as somebody talking. A
+   grey ground gives it a voice; the notch still says whose. Two classes deep so
+   it beats `ChatBubble`'s own rule on specificity rather than on import
+   order. */
+.bk-benny-take .cht-bubble--benny {
+  position: relative;
+  background: var(--c-gray-100);
+  /* The ground carries the shape, so the hairline has nothing left to do — and
+     a bordered bubble can't have a clean tail without the border crossing it. */
+  border-color: transparent;
+  /* Evenly rounded: the 4px corner is the transcript's way of saying whose turn
+     it is, and with a pointer there it read as a clipped corner instead. */
+  border-radius: 12px;
+}
+
+/* A transcript marks the speaker with that notch, which works down a run of
+   turns. This is one remark beside one face, so it points at the face — the
+   same triangle `BennyBubble` uses, in this bubble's own grey. */
+.bk-benny-take .cht-bubble--benny::before {
+  position: absolute;
+  top: 16px;
+  left: -11px;
+  border: 11px solid transparent;
+  border-right: 11px solid var(--c-gray-100);
+  border-left: 0;
+  content: '';
+}
+
+/* Benny is the one face on this page and the thing that says who is speaking,
+   so he gets a size you can read an expression at — the transcript's 30px is
+   sized to a column of turns, not to a single remark on a book page. */
+.bk-benny-take .cht-avatar {
+  width: 40px;
+  height: 40px;
+  margin-top: 0;
+}
+
+/* The transcript's 8px is the gap between a face and a bubble that touches it.
+   This bubble has a pointer reaching back across that gap, so it needs room for
+   the pointer *and* a gap — at 8 the tip was sitting on Benny's cheek. */
+.bk-benny-take .cht-row {
+  gap: 18px;
 }
 .bk-section {
   margin-bottom: 0;
@@ -1115,13 +1251,15 @@ button {
 }
 
 /* Composer */
+/* No card. It sits inside the book page's own card, between the rating
+   breakdown and the list — a second white box with its own hairline made a
+   card inside a card, and the panel read as three stacked boxes rather than
+   one page about reviews. */
 .bk-composer {
   display: flex;
   gap: 13px;
-  background: #fff;
-  border: 1px solid var(--bk-line);
-  border-radius: 16px;
-  padding: 16px 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--bk-line);
 }
 .bk-composer-main {
   flex: 1;
@@ -1188,38 +1326,77 @@ button {
 }
 .bk-review-sort {
   display: inline-flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
+  padding: 6px 10px;
+  font: inherit;
   font-size: 13px;
   font-weight: 700;
   color: var(--c-gray-700);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 8px;
 }
+
+.bk-review-sort:hover {
+  color: var(--c-text-dark);
+  background: var(--c-gray-100);
+}
+/* A thread, not a table of rows. The hairlines between reviews were ruling a
+   list into records; what a page of readers talking about a book actually
+   reads like is a run of comments — a face, a bubble with the words in it, and
+   the small print underneath. So the rule goes and the body gets a ground. */
 .bk-review {
   display: flex;
-  gap: 13px;
-  padding: 18px 0;
-  border-bottom: 1px solid #f1f3f5;
+  gap: 12px;
+  padding: 0 0 20px;
+}
+
+/* The comment itself. Ranged with the name above it and the actions below, so
+   a reader's whole turn is one shape you can take in at a glance. */
+.bk-review .bk-review-body {
+  padding: 11px 15px;
+  background: var(--c-gray-100);
+  border-radius: 4px 14px 14px;
+}
+
+/* A picture review's art sits in the bubble's place rather than under it — the
+   drawing *is* the comment. */
+.bk-review-pic {
+  margin-top: 8px;
 }
 .bk-review-main {
   flex: 1;
   min-width: 0;
 }
+/* Two ends of one line: who wrote it, and what they gave it. The rating at the
+   far right puts a column of stars down the list that you can read without
+   reading any of the names. */
 .bk-review-head {
   display: flex;
+  gap: 12px;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.bk-review-who {
+  display: flex;
+  min-width: 0;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 6px;
+  align-items: center;
+}
+
+/* The stars keep their width when a name wraps. */
+.bk-review-stars {
+  flex: none;
 }
 .bk-review-name {
+  font-size: 15px;
   font-weight: 800;
-  font-size: 14.5px;
   color: var(--bk-ink);
-}
-.bk-review-grade {
-  font-size: 12.5px;
-  color: var(--bk-muted);
-  font-weight: 600;
 }
 .bk-review-dot {
   color: var(--c-gray-350);
@@ -1228,38 +1405,38 @@ button {
   font-size: 12.5px;
   color: var(--bk-muted);
 }
-.bk-review-stars {
-  margin-bottom: 7px;
-}
 .bk-review-body {
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.55;
   color: var(--c-gray-800);
 }
+/* Helpful at one end, the date at the other — the foot carries everything
+   about the review that isn't the review. */
 .bk-review-actions {
   display: flex;
-  align-items: center;
   gap: 14px;
-  margin-top: 10px;
-}
-.bk-helpful,
-.bk-review-reply {
-  display: inline-flex;
   align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.bk-helpful {
+  display: inline-flex;
   gap: 6px;
-  border: 1px solid var(--bk-line);
-  background: #fff;
-  border-radius: 999px;
+  align-items: center;
   padding: 6px 13px;
   font-size: 12.5px;
   font-weight: 700;
   color: var(--c-gray-750);
+  background: #fff;
+  border: 1px solid var(--bk-line);
+  border-radius: 999px;
   transition: all 0.12s;
 }
-.bk-helpful:hover,
-.bk-review-reply:hover {
-  border-color: #0d9488;
+
+.bk-helpful:hover {
   color: #0d9488;
+  border-color: #0d9488;
 }
 .bk-helpful.is-on {
   background: #e8f7f2;
@@ -1282,30 +1459,19 @@ button {
   background: #e6f8ef;
   border: 1px solid #bfe9d8;
 }
-.bk-tag--educator {
-  color: #656565;
-  background: #eef1f5;
-  border: 1px solid #d8dee6;
+/* `Review::STATES`, worn by your own review while it isn't on the book yet.
+   Pending is a wait, not a problem, so it is the page's neutral grey; rejected
+   is the one that needs the reader to do something about it. */
+.bk-review-state--pending {
+  color: var(--c-gray-750);
+  background: var(--c-gray-100);
+  border: 1px solid var(--c-gray-200);
 }
 
-/* Replies */
-.bk-replies {
-  margin-top: 12px;
-  padding-left: 14px;
-  border-left: 2px solid #eef0f3;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.bk-reply {
-  display: flex;
-  gap: 10px;
-}
-.bk-reply-head {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  margin-bottom: 3px;
+.bk-review-state--rejected {
+  color: #b3401a;
+  background: #fdeee7;
+  border: 1px solid #f6cdba;
 }
 
 .bk-readlog-pbar {
@@ -1340,19 +1506,17 @@ button {
   gap: 10px;
   padding: 24px 0 12px;
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--bk-ink);
   border-bottom: 1px solid var(--c-border);
 }
-.bk-shelfgroup-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: color-mix(in srgb, var(--c) 14%, #fff);
-  color: var(--c);
+
+/* The first group clears the filter bar above it — 24px read as the heading
+   hanging off the tabs rather than opening the shelf under them. The groups
+   after it keep the tighter gap, because what's above them is a shelf of
+   books, not a control. */
+.bk-shelfgroup:first-child .bk-shelfgroup-head {
+  padding-top: 38px;
 }
 .bk-shelfgroup-count {
   font-size: 13px;
@@ -1369,26 +1533,17 @@ button {
 .bk-shelfgrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
-  align-items: end;
-  /* A row of these stands on a cast shadow, so the rows take a little more than
-     the columns — that extra is the shadow's own room, not a second gap. */
-  gap: calc(var(--bk-book-gap) + 8px) var(--bk-book-gap);
+  /* Covers line up along their tops. Bottom-aligned, a tile carrying a progress
+     bar pushed every tile beside it down by the height of the bar, so a shelf
+     of books stood on a crooked floor. */
+  align-items: start;
+  gap: var(--bk-book-gap);
   margin: 24px 0 0;
   padding: 0;
   list-style: none;
 }
 .bk-shelftile {
   position: relative;
-}
-.bk-shelftile::before {
-  content: '';
-  position: absolute;
-  right: 10px;
-  bottom: -6px;
-  left: 10px;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.07);
-  border-radius: 20px;
 }
 .bk-shelftile-hit {
   position: relative;
@@ -1448,278 +1603,6 @@ button {
   font-weight: 800;
   color: #0f766e;
 }
-/* ═══ Read Now reader ═══════════════════════════════════════════════════════ */
-
-.bk-reader {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  background:
-    radial-gradient(900px 500px at 50% -10%, #20242f, transparent 70%),
-    linear-gradient(180deg, #14161e, #0c0e14);
-  color: #fff;
-}
-.bk-reader-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  flex: 0 0 auto;
-}
-.bk-reader-close {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-  font-weight: 800;
-  font-size: 13.5px;
-  padding: 8px 14px;
-  border-radius: 999px;
-}
-.bk-reader-close:hover {
-  background: rgba(255, 255, 255, 0.14);
-}
-.bk-reader-title {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  min-width: 0;
-}
-.bk-reader-title strong {
-  font-size: 15px;
-  font-weight: 800;
-}
-.bk-reader-title span {
-  font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.6);
-}
-.bk-reader-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 13px;
-  font-weight: 800;
-}
-.bk-reader-brand span {
-  color: rgba(255, 255, 255, 0.55);
-  font-weight: 600;
-}
-.bk-reader-brand img {
-  width: 22px;
-  height: 22px;
-}
-.bk-reader-stage {
-  flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 22px;
-  min-height: 0;
-}
-.bk-reader-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 52px;
-  height: 52px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(4px);
-  transition: background 0.12s;
-}
-.bk-reader-nav:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.22);
-}
-.bk-reader-nav:disabled {
-  opacity: 0.25;
-  cursor: default;
-}
-.bk-reader-nav--prev {
-  left: 24px;
-}
-.bk-reader-nav--next {
-  right: 24px;
-}
-.bk-reader-sheet {
-  height: min(80vh, 760px);
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-}
-
-.bk-reader-coverwrap {
-  height: 100%;
-  aspect-ratio: 2 / 3;
-}
-/* On the reader's sheet the placeholder is the whole page rather than a
-   jacket on a shelf, so the masthead sits in the middle of it — bottom-left is
-   where a title goes on a 132px tile, and on a 507px sheet it read as a caption
-   fallen to the floor. */
-.bk-reader-coverwrap .bkcov {
-  justify-content: center;
-  text-align: center;
-  height: 100%;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
-}
-
-/* comic page */
-.bk-reader-comic {
-  height: 100%;
-  aspect-ratio: 3 / 4;
-  background: #fff;
-  border-radius: 6px;
-  padding: 16px;
-  display: grid;
-  gap: 12px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
-}
-.bk-reader-comic.l-a {
-  grid-template:
-    'a a' 1.2fr
-    'b c' 1fr / 1fr 1fr;
-}
-.bk-reader-comic.l-b {
-  grid-template:
-    'a b' 1fr
-    'c d' 1fr / 1fr 1fr;
-}
-.bk-reader-comic.l-c {
-  grid-template:
-    'a' 1fr
-    'b' 1.3fr / 1fr;
-}
-.bk-reader-comic > .bk-panel:nth-child(1) {
-  grid-area: a;
-}
-.bk-reader-comic > .bk-panel:nth-child(2) {
-  grid-area: b;
-}
-.bk-reader-comic > .bk-panel:nth-child(3) {
-  grid-area: c;
-}
-.bk-reader-comic > .bk-panel:nth-child(4) {
-  grid-area: d;
-}
-.bk-panel {
-  position: relative;
-  border: 3px solid #14161e;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.bk-panel-bubble {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  background: #fff;
-  border: 2px solid #14161e;
-  border-radius: 12px;
-  padding: 9px 11px;
-  max-width: 56%;
-}
-.bk-panel-bubble.is-right {
-  left: auto;
-  right: 12px;
-}
-.bk-panel-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -7px;
-  left: 16px;
-  width: 11px;
-  height: 11px;
-  background: #fff;
-  border-right: 2px solid #14161e;
-  border-bottom: 2px solid #14161e;
-  transform: rotate(35deg) skew(-8deg);
-}
-.bk-panel-bubble i {
-  display: block;
-  height: 4px;
-  border-radius: 3px;
-  background: #c2c7d0;
-}
-.bk-panel-bubble i:nth-child(1) {
-  width: 46px;
-}
-.bk-panel-bubble i:nth-child(2) {
-  width: 64px;
-}
-.bk-panel-bubble i:nth-child(3) {
-  width: 38px;
-}
-.bk-panel-caption {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  background: #fff7da;
-  border: 2px solid #14161e;
-  border-radius: 3px;
-  padding: 6px 8px;
-}
-.bk-panel-caption i {
-  display: block;
-  height: 4px;
-  border-radius: 3px;
-  background: #9a8a4a;
-}
-.bk-panel-caption i:nth-child(1) {
-  width: 52px;
-}
-.bk-panel-caption i:nth-child(2) {
-  width: 34px;
-}
-.bk-panel-sfx {
-  position: absolute;
-  right: 9%;
-  top: 28%;
-  font-size: clamp(22px, 4vw, 40px);
-  font-weight: 900;
-  font-style: italic;
-  color: #ffe14d;
-  -webkit-text-stroke: 2.5px #14161e;
-  letter-spacing: -0.02em;
-  transform: rotate(-9deg);
-  text-shadow: 3px 3px 0 #14161e;
-}
-
-/* text page */
-.bk-reader-text {
-  height: 100%;
-  aspect-ratio: 3 / 4;
-  background: #fffdf7;
-  border-radius: 6px;
-  padding: 54px 52px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-}
-.bk-reader-dropcap {
-  float: left;
-  font-size: 62px;
-  font-weight: 900;
-  line-height: 0.78;
-  color: #14161e;
-  margin: 4px 12px 0 0;
-}
 .bk-text-para {
   margin-bottom: 18px;
   display: flex;
@@ -1731,101 +1614,6 @@ button {
   height: 7px;
   border-radius: 4px;
   background: #e4dfd2;
-}
-
-/* end page */
-.bk-reader-end {
-  width: min(440px, 82vw);
-  background: #fff;
-  border-radius: 20px;
-  padding: 32px 30px;
-  text-align: center;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.bk-reader-end-benny {
-  width: 70px;
-  height: 70px;
-}
-.bk-reader-end h2 {
-  font-size: 22px;
-  font-weight: 900;
-  color: #18324a;
-  margin-top: 8px;
-}
-.bk-reader-end p {
-  font-size: 14.5px;
-  color: #707070;
-  margin-bottom: 14px;
-}
-.bk-reader-finish {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border: 0;
-  border-radius: 12px;
-  padding: 12px 20px;
-  font-weight: 800;
-  font-size: 15px;
-  color: #fff;
-  background: linear-gradient(120deg, #0ba85f, #0f9268);
-}
-.bk-reader-finish:hover {
-  filter: brightness(1.05);
-}
-.bk-reader-backbtn {
-  border: 0;
-  background: none;
-  color: #707070;
-  font-weight: 700;
-  font-size: 13.5px;
-  margin-top: 10px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.bk-reader-backbtn:hover {
-  color: #18324a;
-}
-
-/* bottom bar */
-.bk-reader-bottom {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  flex: 0 0 auto;
-}
-.bk-reader-count {
-  font-size: 13px;
-  font-weight: 800;
-  white-space: nowrap;
-  min-width: 92px;
-}
-.bk-reader-progress {
-  flex: 1;
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
-  overflow: hidden;
-}
-.bk-reader-progress span {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #14b8a6, #0d9488);
-  transition: width 0.25s ease;
-}
-.bk-reader-hint {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-  white-space: nowrap;
 }
 
 /* ─── Responsive ───────────────────────────────────────────────────────────── */
@@ -1849,6 +1637,19 @@ button {
   }
 }
 @media (max-width: 720px) {
+  /* The rail goes under the page, and the cover goes above the credits rather
+     than squeezing them into half a column. */
+  .bk-detail .bkp-card {
+    grid-template-areas: 'main' 'aside';
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bk-detail .bkp-top {
+    flex-direction: column;
+  }
+  .bk-detail .bkp-cover {
+    flex: none;
+    width: 150px;
+  }
 }
 
 /* ═══ Audiobook player — immersive "now playing" ════════════════════════════ */
@@ -2247,4 +2048,152 @@ button {
   .bk-shelf-title {
     font-size: 19px;
   }
+}
+
+/* The friends who read a title use the Friends page's own card, but not its
+   column width: a whole friends list is the page, and this is a block inside a
+   panel — at the Friends page's 250px minimum only two fit and the third sat
+   alone on a second row.
+
+   Qualified by `.bk-detail` on purpose. `.fr-grid` and `.bk-fwr-grid` are the
+   same specificity, and `Friends.css` is imported from inside the component, so
+   it lands after this file and wins the tie on order alone. */
+.bk-detail .bk-fwr-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  gap: 22px 18px;
+}
+
+/* A shelf source's row ends in the walk rather than a button — the shelving
+   area off MARC 852 $c over the call number off $h$i, which is what a reader
+   actually carries to the stacks. Ranged right, where the button was, so the
+   rows still line up down the rail. */
+.bk-where-loc {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+
+.bk-where-area {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--p);
+}
+
+/* A call number is a string you read off a spine, so it is set like one. */
+.bk-where-call {
+  padding: 1px 6px;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c-text-light);
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 5px;
+}
+
+/* ─── The book page's tabs, when the column runs out ───────────────────────
+   `Tabs` already carries a select for the phone; what it keys off is the
+   viewport, and this strip runs out of room long before the window does — the
+   rail and the cover take their share first. So the switch is a container
+   query on the column itself, and it fires wherever that column gets narrow:
+   a laptop with the window half-width, the desktop app beside a chat panel, or
+   a phone.
+
+   The rules below are the same swap `Tabs.css` makes at its own breakpoint,
+   asked a different question. */
+.bk-detail .bkp-main {
+  container: bkp-main / inline-size;
+}
+
+@container bkp-main (max-width: 560px) {
+  .bkp-tabs .tabs--pill:has(> .tabs-select) {
+    display: block;
+    padding: 0;
+    overflow: visible;
+    background: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .bkp-tabs .tabs--pill:has(> .tabs-select) .tab {
+    display: none;
+  }
+
+  .bkp-tabs .tabs--pill > .tabs-select {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+  }
+}
+
+/* The progress tile takes the whole row. Its bar is a length you read across,
+   and in a third of the row it was a 120px stub under a figure — the two tiles
+   beside it are single numbers and sit happily at that width. */
+.bkp-readnums .rc-stat:has(.rc-stat-bar) {
+  grid-column: 1 / -1;
+}
+
+/* ─── Picture reviews ───────────────────────────────────────────────────────
+   `PictureReview` is a real subclass of `Review` in the app, sitting beside
+   `WrittenReview` — a reader can answer a book with a drawing instead of, or
+   as well as, words. The picture is the review, so it gets room. */
+.bk-review-pic {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 10px;
+  overflow: hidden;
+  background: var(--c-gray-100);
+  border: 1px solid var(--bk-line);
+  border-radius: 12px;
+}
+
+.bk-review-pic img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* What the composer has attached, before it is posted. */
+.bk-composer-pic {
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.bk-composer-pic img {
+  display: block;
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border: 1px solid var(--bk-line);
+  border-radius: 10px;
+}
+
+.bk-composer-pic-off {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--c-gray-750);
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--bk-line);
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgb(15 23 42 / 14%);
+}
+
+.bk-composer-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
 }

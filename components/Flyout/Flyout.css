@@ -157,34 +157,45 @@
 .flyout-menu {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  /* Each row is its own surface now, so they need air between them — at 2px
+     they read as one block cut by hairlines. */
+  gap: 6px;
 }
 
-/* 14px / 600 on a 15px-tall padding, which is what the app's own menus run at
-   (`.ms-drop label` is 14px / 600 on `12px 20px`; the profile's Actions list is
-   14px / 1.4). 13px read as fine print for a list of things you're choosing
-   between. */
+/* These are choices, not labels — "Read in Comics Plus" or "Log Reading" on a
+   cover is the same decision a button would be asking for, and at 14 / 600 on
+   9px of padding it read as a caption you might not be able to press. A rung up
+   the ladder (15 / 700) on a taller row gives each one the weight of the thing
+   it does. The app's own menus sit at 14 / 600 on `12px 20px`, so this stays
+   inside the family: it trades their width for height. */
 .flyout-menu-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  border-radius: 6px;
-  background: none;
-  border: none;
+  gap: 10px;
+  /* Its own ground and hairline: these rows are the same decision a button
+     asks for, and bare text on a panel read as a list you might not be able to
+     press. Given a surface they look like what they are. */
+  width: 100%;
+  padding: 11px 14px;
   font: inherit;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--c-gray-900);
   text-align: left;
   cursor: pointer;
-  width: 100%;
-  transition: background 0.1s;
+  background: var(--c-gray-100);
+  border: 1px solid var(--c-gray-200);
+  border-radius: 10px;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
 }
 
 .flyout-menu-item:hover {
-  background: var(--c-accent-wash);
   color: var(--c-accent);
+  background: var(--c-accent-wash);
+  border-color: color-mix(in srgb, var(--c-accent) 30%, #fff);
 }
 
 .flyout-menu-item--active {

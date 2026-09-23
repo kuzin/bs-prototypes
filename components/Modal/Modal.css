@@ -28,7 +28,11 @@
   bottom: var(--chrome-bottom);
   left: 0;
   background: rgba(15, 23, 42, 0.42);
-  z-index: 199;
+  /* `--modal-layer` steps a stacked modal above the one it opened over — two
+     per level, so the scrim of the upper one lands *between* the two panels and
+     the lower one reads as behind rather than beside. Set by Modal from its
+     place in the open stack; unset for the only modal on screen. */
+  z-index: calc(199 + var(--modal-layer, 0));
   animation: modal-fade-in 0.22s ease-out;
 }
 
@@ -42,10 +46,10 @@
    page with nothing dimmed behind it. Anything that isn't the flow goes above
    the flow. */
 .modal-backdrop:not(.modal-backdrop--full) {
-  z-index: 201;
+  z-index: calc(201 + var(--modal-layer, 0));
 }
 .modal:not(.modal--full) {
-  z-index: 202;
+  z-index: calc(202 + var(--modal-layer, 0));
 }
 
 @keyframes modal-fade-in {
@@ -68,7 +72,7 @@
 .modal {
   position: fixed;
   background: #fff;
-  z-index: 200;
+  z-index: calc(200 + var(--modal-layer, 0));
   box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
   overflow: hidden;
 }

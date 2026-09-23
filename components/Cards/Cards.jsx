@@ -1,3 +1,4 @@
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import { Icon } from '@components/Icon/Icon'
 import { Tooltip } from '@components/Primitives/Primitives'
 import { TrendChip } from '@components/TrendChip/TrendChip'
@@ -70,6 +71,11 @@ export function StatCard({
   footerColor,
   color,
   icon,
+  /* `{ value, max }` — the figure drawn again as a bar under the label, for a
+     tile whose number is a position in something rather than a total. A ring in
+     the mark's slot says the same thing, but small and to one side; a bar says
+     it at the tile's full width, which is what "how far through" wants. */
+  progress,
   trend,
   action,
   onClick,
@@ -82,6 +88,12 @@ export function StatCard({
   // A tile that goes somewhere puts the whole card in the button, so the hit
   // area is the card rather than the four words in it.
   const Tag = onClick ? 'button' : 'div'
+  /* A name draws the house glyph rather than whatever the caller imported —
+     Plumpy on an admin surface, the stroked `<Icon>` only where the pack has
+     nothing, which is the contract `RowAction` already keeps. A node is still
+     accepted for the reader-facing cards, whose icon language is the stroked
+     one by design. */
+  const glyph = typeof icon === 'string' ? <PlumpyIcon name={icon} size={22} /> : icon
 
   return (
     <Tag
@@ -90,7 +102,7 @@ export function StatCard({
       type={onClick ? 'button' : undefined}
       onClick={onClick}
     >
-      {icon && <span className="rc-stat-ico">{icon}</span>}
+      {glyph && <span className="rc-stat-ico">{glyph}</span>}
       <div className="rc-stat-main">
         <div className="rc-stat-val">
           {value}
@@ -106,6 +118,16 @@ export function StatCard({
           )}
         </div>
         <div className="rc-stat-lbl">{label}</div>
+        {progress && (
+          <span className="rc-stat-bar">
+            <span
+              className="rc-stat-bar-fill"
+              style={{
+                width: `${Math.min(100, Math.round(((progress.value || 0) / (progress.max || 1)) * 100))}%`,
+              }}
+            />
+          </span>
+        )}
         {footer && (
           <div className="rc-stat-foot" style={footerColor ? { color: footerColor } : undefined}>
             {footer}

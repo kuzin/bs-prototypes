@@ -1,0 +1,248 @@
+/* ─── Collection Engine ─────────────────────────────────────────────────────
+   The page frame, sidebar and cards are all shared components that carry their
+   own CSS. What is here is the base every prototype states for itself, then
+   the arrangements this one adds on top. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: #f3f4f6;
+  color: var(--c-text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* The page column owns the vertical rhythm, the way the two profiles and the
+   Pattern Library's own frame do — `--admin-section-gap` between sections,
+   stated once here rather than as a bottom margin on every kind of block.
+   Doing it per-child meant guessing each component's root class, and two of
+   those guesses (`.sec-card`, `.infobox`) matched nothing, so whole pages sat
+   flush at 0px. A gap can't miss.
+   `--ce-gap` is the tighter intra-group rhythm: tiles within the stat row,
+   cards within a grid. Two levels, not one.
+   And a container, so those grids respond to the width the column actually
+   has — the sidebar takes ~280px and can collapse, so this page is ~1000px
+   wide at a 1280px viewport and a media query would measure the wrong thing. */
+.ce-shell {
+  --ce-gap: 16px;
+}
+
+/* The back link scrolls with the page rather than floating above it. AppShell
+   renders it as a sibling *above* the scrolling column, so the scroll moves up
+   one level: the content column scrolls and the page column inside it grows.
+   `container-type` still works on a column that isn't the scroller, so the
+   tile and card queries below are unaffected.
+
+   Scoped to this prototype on purpose — the floating bar is the shared shell's
+   shipped behaviour and every other admin surface still has it. */
+.ce-shell .app-shell-content {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.ce-shell .app-shell-page {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--admin-section-gap);
+  flex: 1 0 auto;
+  overflow: visible;
+  scrollbar-gutter: auto;
+}
+
+/* BackBar supplies the page's top padding itself and zeroes the column's, so a
+   page whose first child carries no top margin — ours is a PageHeader, which
+   deliberately has none — ends up with its title sitting flush against the back
+   link. The bar leaves that spacing to the consumer; this is ours. */
+.ce-shell .app-shell-content > .back-bar + .app-shell-page {
+  padding-top: var(--admin-section-gap);
+}
+
+/* The same flex trap the profiles document: children of a *scrolling* column
+   must not shrink, or a long page compresses to fit instead of scrolling. */
+.ce-shell .app-shell-page > * {
+  flex-shrink: 0;
+}
+
+/* The shell fills the viewport above the 48px prototype nav, the way every
+   other admin prototype does — the page scrolls inside it, not behind it.
+   Two classes on purpose: AppShell.css lands after this file (the component
+   imports its own stylesheet, and that import is resolved after main.jsx's),
+   so a bare `.app-shell` here loses the tie on order and the shell grows to
+   its content instead of being pinned. */
+.app-shell.ce-shell {
+  position: fixed;
+  inset: 0 0 48px 0;
+  height: auto;
+  overflow: hidden;
+}
+
+/* As many tiles across as fit, rather than a fixed four: the Overview carries
+   four and the Collection three, and a fixed track count strands the odd one
+   out at half width beside an empty column. 205px is the width four tiles
+   already ran at inside the admin content column — measured off the shipped
+   row, not guessed — so four still fit on a desktop and three fill the page on
+   the narrower one. */
+.ce-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  gap: var(--ce-gap);
+}
+
+.ce-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ce-gap);
+}
+
+.ce-grid > * {
+  min-width: 0;
+}
+
+/* Cards down one column, on the same gap as the grid beside it — for a card
+   whose content is a row (a cover rail) rather than a figure, where half the
+   page is half a row. */
+.ce-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ce-gap);
+  min-width: 0;
+}
+
+.ce-stack > * {
+  min-width: 0;
+}
+
+/* A tab bar, its filters and the panel they drive are one block. Inside it the
+   tighter intra-group rhythm; the page's own gap sits above the whole thing. */
+.ce-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ce-gap);
+  min-width: 0;
+}
+
+/* Two cards side by side stretch to the taller one, and the shorter one's
+   content was dropping all of the slack in a single hole above its footer.
+   Splitting it centres the content in the space the row gives it, which reads
+   as breathing room rather than as something missing. */
+.ce-grid > .rc-card > .rc-card-body {
+  justify-content: center;
+}
+
+/* Below this the row can't hold four tiles at a readable width, so it drops to
+   two — and a lone third tile takes the whole row rather than sitting stranded
+   at half width beside a hole. (Above it `.ce-stats` packs itself: four across
+   on the Overview, three on the Collection.)
+
+   Two cards side by side want ~430px each before their bar labels start
+   truncating. Measured, not guessed. */
+@container (max-width: 960px) {
+  .ce-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ce-stats > :nth-child(3):last-child {
+    grid-column: span 2;
+  }
+
+  .ce-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── A title in a table row ────────────────────────────────────────────────── */
+
+/* ── Holdings, call numbers, freshness ─────────────────────────────────────── */
+
+/* ── The nudge list ────────────────────────────────────────────────────────── */
+
+.ce-reason {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.ce-reason-hint {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+  max-width: 280px;
+}
+
+.ce-dim {
+  color: var(--c-text-light);
+}
+
+.ce-bad {
+  color: var(--c-red-ink);
+}
+
+/* ── Setup: one card per catalog source ────────────────────────────────────── */
+
+/* ── A Book Talk opened from the book panel ──────────────────────────────────
+   SfR's session modal is 980px because there it *is* the page — you work a
+   review queue in it all morning. Reached from a book panel it is one thing you
+   stepped into and will step back out of, and at 980 it swallowed the panel it
+   opened over. Narrower here; SfR's own is untouched. */
+.ce-shell .modal--center:has(.sm2-shell) {
+  width: min(840px, calc(100vw - var(--modal-gutter) * 2));
+}
+
+/* The title cell carries a state pill beside the book when there is one — a
+   hidden title still belongs in All Titles, and the row is where you would
+   notice it. */
+.ce-titlecell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* ── AI mark ───────────────────────────────────────────────────────────────
+   The sparkle beside a Setup heading, saying a model does the work in that
+   card. Quiet on purpose: it is a fact about the card, not a badge selling a
+   feature, so it sits at label weight in the muted tone the rest of the page
+   uses for asides — and carries its explanation in the tooltip rather than on
+   the heading, which has a job already. */
+.ce-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 99px;
+  background: var(--c-gray-150);
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.02em;
+  color: var(--c-gray-750);
+  vertical-align: middle;
+  cursor: help;
+}
+
+/* The glyph takes the accent; the word stays quiet beside it. */
+.ce-ai .plumpy-icon {
+  color: #b43dd0;
+}

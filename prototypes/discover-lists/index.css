@@ -1,0 +1,273 @@
+/* Discover Lists — the staff side of the reader's Discover page.
+   The admin frame's own tokens do the page geometry (see --admin-content-max
+   in tokens.css); everything here is what this screen adds on top. */
+
+/* The shell fills the viewport between the preview bar and the 48px prototype
+   nav, the way every other admin prototype does — the page scrolls inside it,
+   not behind it. Two classes on purpose: AppShell.css lands after this file
+   (the component imports its own stylesheet, and that import resolves after
+   main.jsx's), so a bare `.app-shell` here loses the tie on order and the shell
+   grows to its content instead of being pinned.
+
+   `--preview-bar-h` is published by the bar itself and is measured, so this
+   holds when the bar wraps to two rows on a narrow window. */
+.app-shell.dl-shell {
+  position: fixed;
+  inset: var(--preview-bar-h, 61px) 0 48px 0;
+  height: auto;
+  overflow: hidden;
+}
+
+/* The page is a column of sections on the shared admin gap, the same way the
+   Collection Engine's is — every block here (header, notice, filter, table)
+   sits one step from the next, rather than each one carrying a margin of its
+   own and the header carrying none. */
+.dl-shell .app-shell-page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--admin-section-gap);
+}
+
+/* The same flex trap the profiles document: children of a *scrolling* column
+   must not shrink, or a long page compresses to fit instead of scrolling. */
+.dl-shell .app-shell-page > * {
+  flex-shrink: 0;
+}
+
+/* One line saying what this role may do. It answers the question the role
+   switcher raises, so it sits directly under the header. */
+.dl-rolenote {
+  margin: 0;
+}
+
+/* ── The index ─────────────────────────────────────────────────────────────
+   A list's row leads with its books: three jackets overlapped, because that is
+   how you recognise a shelf you built. */
+.dl-namecell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dl-strip {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.dl-strip .bkcov {
+  width: 26px;
+  height: 39px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 90%);
+}
+
+/* Overlapped, not spaced — a row of three separate thumbnails read as three
+   books rather than as one list's worth. */
+.dl-strip .bkcov + .bkcov {
+  margin-left: -11px;
+}
+
+.dl-strip .bkcov-title,
+.dl-strip .bkcov-author {
+  display: none;
+}
+
+/* A list with no books keeps the column's width, so the names stay in line. */
+.dl-strip--empty {
+  width: 48px;
+  height: 39px;
+  border-radius: 3px;
+  border: 1px dashed var(--c-gray-250);
+}
+
+.dl-nametext {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dl-name {
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+}
+
+.dl-sub,
+.dl-muted {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}
+
+/* ── The editor ────────────────────────────────────────────────────────────
+   Cards down one column. The form is short enough that two columns would put
+   half of it below the fold on one side and leave the other side empty. */
+.dl-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-section-gap);
+}
+
+.dl-card .fld + .fld {
+  margin-top: 16px;
+}
+
+/* The count beside "Books on this list" — the same pill the group heads use. */
+.dl-count {
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 99px;
+  background: var(--c-gray-150);
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-light);
+}
+
+/* The books are a list, so they run the card's full width with a hairline
+   between them — the same shape every other row list in the system has. */
+.dl-books {
+  list-style: none;
+  margin: 0 -18px -16px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 0 0 12px 12px;
+}
+
+/* The header's own rule is the list's first divider, so it gives up the gap
+   below itself. Written at SectionCard's weight plus one, because its
+   stylesheet lands after this file and would otherwise win on order. */
+.section-card--divider:not(.section-card--flush)
+  > .section-card-title:first-child:has(+ .dl-books) {
+  margin-bottom: 0;
+}
+
+.dl-book {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+}
+
+.dl-book + .dl-book {
+  border-top: 1px solid var(--c-border);
+}
+
+.dl-book .bkcov {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 45px;
+  border-radius: 4px;
+}
+
+.dl-book .bkcov-title,
+.dl-book .bkcov-author {
+  display: none;
+}
+
+.dl-book-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.dl-book-title {
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+}
+
+.dl-book-author {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}
+
+/* Deleting a list is the one thing here you can't take back, so it sits apart
+   from the cards rather than inside one of them. */
+.dl-danger {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+/* ── Sections ──────────────────────────────────────────────────────────────
+   The order gets a heading of its own, because the page is the order and the
+   heading is what says so. */
+.dl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dl-group-sub {
+  margin-left: 6px;
+  font-size: var(--text-tag);
+  font-weight: var(--fw-normal);
+  color: var(--c-text-light);
+}
+
+/* The classroom slot is a position, not a list — no covers behind it, so the
+   strip's place is held by a mark that says what fills it. */
+.dl-strip--slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 39px;
+  flex: 0 0 auto;
+  border-radius: 3px;
+  border: 1px dashed var(--c-gray-250);
+  color: var(--c-text-light);
+}
+
+.dl-namecell--slot .dl-name {
+  color: var(--c-text-light);
+}
+
+/* ── The classroom page ────────────────────────────────────────────────────
+   The teacher's side is the real classroom page, so the only thing this
+   prototype adds is the room it sits in: full height between the preview bar
+   and the prototype nav, the way the admin shell is pinned. */
+.dl-classroom {
+  position: fixed;
+  inset: var(--preview-bar-h, 61px) 0 48px 0;
+  overflow: hidden;
+}
+
+.dl-classroom > .bp-adm {
+  height: 100%;
+}
+
+/* The tab's body is a page of the classroom, so it takes the profile's own
+   section padding rather than sitting flush in the tab panel. */
+.dl-classtab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-section-gap);
+  padding: 18px 0 8px;
+}
+
+/* ── Locked ────────────────────────────────────────────────────────────────
+   A partner's list is part of the subscription: there is no state of the site
+   where it is off, so the column says so instead of drawing a switch that
+   would do nothing. */
+.dl-locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-light);
+  cursor: help;
+}
+
+/* The partner's mark beside the list's name, so whose list it is reads before
+   the owner line under it does. */
+.dl-name .pb-mark {
+  margin-left: 6px;
+  vertical-align: -3px;
+}

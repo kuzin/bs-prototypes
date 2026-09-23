@@ -399,7 +399,10 @@ export function EmptyState({
   title,
   description,
   action,
-  variant = 'plain',
+  /* `panel` is the app's own `.no-results` — a tinted block, which is what an
+     empty table or list gets. `plain` drops the ground for a state that is
+     already inside something tinted, `dashed` is our placeholder card. */
+  variant = 'panel',
   className = '',
 }) {
   return (

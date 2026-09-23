@@ -1,0 +1,108 @@
+/* The two colours a rating is drawn in — the filled star's amber and the empty
+   star's grey — named once so a consumer never picks its own. */
+.stars {
+  --star-on: #f5a524;
+  --star-off: #dfe3e8;
+
+  display: inline-flex;
+  gap: 1px;
+  vertical-align: middle;
+}
+
+.star {
+  position: relative;
+  display: inline-block;
+}
+
+/* The empty star is drawn whole underneath and the filled one clipped over it,
+   which is what lets the last star be a fraction. */
+.star-bg {
+  display: block;
+  color: var(--star-off);
+}
+
+.star-fill {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.star-fg {
+  color: var(--star-on);
+}
+
+/* ── Inline ────────────────────────────────────────────────────────────────── */
+
+.rating-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--text-label);
+}
+
+.rating-inline strong {
+  font-weight: var(--fw-extrabold);
+}
+
+.rating-count {
+  color: var(--c-text-light);
+}
+
+/* ── Block ─────────────────────────────────────────────────────────────────── */
+
+.rating-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rating-score {
+  font-size: var(--text-head);
+  font-weight: var(--fw-extrabold);
+  line-height: 1;
+  color: var(--c-text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.rating-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rating-meta .rating-count {
+  font-size: var(--text-micro);
+}
+
+.rating-empty {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}
+
+/* ── Input ─────────────────────────────────────────────────────────────────── */
+
+.star-input {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.star-btn {
+  padding: 0;
+  background: none;
+  border: 0;
+  line-height: 0;
+  color: #d8dde3;
+  transition:
+    transform 0.1s,
+    color 0.1s;
+}
+
+.star-btn:hover {
+  transform: scale(1.12);
+}
+
+.star-btn.is-on {
+  color: #f5a524;
+}

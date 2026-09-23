@@ -18,7 +18,7 @@ import {
 } from '../data'
 
 import '@components/Button/Button.css'
-import { IconButton } from '@components/Primitives/Primitives'
+import { Banner, IconButton } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 // The real Sessions for Review modal chrome: two-column shell, reader sidebar,
 // main tabs, section headers, review cards, conversation bubbles and footer.
@@ -242,10 +242,13 @@ export function SessionModal({ session, onSelectSession, onClose }) {
                   <span className="sm2-section-title">Conversation</span>
                 </div>
                 {unfinished && (
-                  <div className="sm2-unfinished-banner">
-                    <Icon name="clock" size={14} />
+                  <Banner
+                    level="warning"
+                    className="sm2-unfinished-banner"
+                    icon={<Icon name="clock" size={20} />}
+                  >
                     Student left this conversation unfinished — Benny is still waiting.
-                  </div>
+                  </Banner>
                 )}
                 <div className="sm2-conversation">
                   {session.messages.map((m, i) => (

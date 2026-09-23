@@ -1,6 +1,6 @@
 import { Icon } from '@components/Icon/Icon'
 import { BookCover } from '@components/BookCover/BookCover'
-import { FORMATS } from '../data'
+import { isReadNow } from '../data'
 
 // Cover-forward card, everywhere this prototype shelves a book.
 //   'reason' → adds Benny's "why" line  |  'rank' → trending: readers count
@@ -10,8 +10,21 @@ import { FORMATS } from '../data'
 // name already — setting it again under every cover turned each row into a
 // block of text and left the ratings on a ragged line, because a one-line title
 // and a three-line one end at different heights.
-export function BookCard({ book, onOpen, onWish, wished, variant = 'default', reason, onPlay }) {
+export function BookCard({
+  book,
+  onOpen,
+  onWish,
+  wished,
+  variant = 'default',
+  reason,
+  onPlay,
+  /* Which title sources this site has on — the mark can only promise what the
+     site actually offers. Left off, every app is assumed on. */
+  settings,
+}) {
   const isAudio = variant === 'audio'
+  // A title a linked app can open right now wears that app's mark.
+  const now = isReadNow(book, settings)
 
   return (
     <button
@@ -36,6 +49,12 @@ export function BookCard({ book, onOpen, onWish, wished, variant = 'default', re
             <Icon name="play-filled" size={16} />
           </span>
         )}
+        {/* No label and no brand: a shelf is scanned, not read, and the reader
+            is being told one thing — this one opens. *Which* app opens it is a
+            question the book's own page answers, and putting five different
+            logos down a shelf made the marks look like five different
+            statuses. */}
+        {now && <span className="bk-card-now" title="Read it now" />}
         <span
           className={`bk-card-wish ${wished ? 'is-on' : ''}`}
           role="button"
@@ -62,16 +81,15 @@ export function BookCard({ book, onOpen, onWish, wished, variant = 'default', re
               <Icon name="star-filled" size={15} className="bk-card-star" />
               {book.rating.toFixed(1)}
             </span>
-            {isAudio ? (
+            {/* No format row: three grey glyphs under every jacket said what
+                the book comes in, which is a question you ask after you have
+                chosen it — the book page answers it, beside the place each
+                format comes from. The audio shelf keeps its running time,
+                which is the one format fact that helps you choose. */}
+            {isAudio && (
               <span className="bk-card-audiolen">
                 <Icon name="headphones" size={15} />
                 {book.audioLength}
-              </span>
-            ) : (
-              <span className="bk-card-formats">
-                {book.formats.slice(0, 3).map((f) => (
-                  <Icon key={f} name={FORMATS[f].icon} size={15} title={FORMATS[f].label} />
-                ))}
               </span>
             )}
           </span>

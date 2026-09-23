@@ -1,0 +1,255 @@
+/* Styles for the pieces in Bits.jsx.
+   They used to live in collection-engine/index.css, which meant a consumer
+   outside that prototype — the Teacher view imports HoldingPills and TitleCell
+   — rendered them completely unstyled: a row of pills with no gap, a title cell
+   with no layout. A component carries its own CSS, per the folder-component
+   convention. */
+
+.ce-title-cell,
+.ce-reader-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* A thumbnail, not a poster. `sm` is BookCover's smallest at 68x102, which
+   made every row of these tables 135px tall — five titles on screen where a
+   scan wants a dozen. Sized down to a jacket you can recognise at a glance.
+   The flat fallback's title and author are set for the full-size cover and
+   are illegible at this width, so a coverless book shows its colour alone —
+   the title is two centimetres to the right either way. */
+.ce-title-cell .bkcov {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 54px;
+  border-radius: 4px;
+}
+
+.ce-title-cell .bkcov-title,
+.ce-title-cell .bkcov-author,
+.ce-title-cell .bkcov-magname,
+.ce-title-cell .bkcov-issue {
+  display: none;
+}
+
+.ce-title-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  /* A scrolling table sizes to `max-content`, so a nowrap cell with no ceiling
+     grows to the longest title in the set and pushes every other column off
+     the card. The ellipsis only works once there is a width to run out of. */
+  max-width: 190px;
+}
+
+.ce-title-name {
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ce-title-sub {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ce-holdings {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ce-shelf {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+  font-variant-numeric: tabular-nums;
+}
+
+.ce-shelf-sep {
+  opacity: 0.5;
+}
+
+.ce-asof {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}
+
+.ce-asof--bad {
+  color: var(--c-warning);
+  font-weight: var(--fw-bold);
+}
+
+/* One catalog to a row. Four of them side by side made each one a column of
+   cramped label/value pairs; full width lets the facts run across in one line
+   and gives the brand mark somewhere to lead from. */
+.ce-feeds {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* A plain bordered card — no coloured rule down the side. The brand mark at
+   the head of the row already says which catalog this is, and a second colour
+   on the edge only repeats it. */
+.ce-feed {
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  /* The frame's card padding, the same 16/18 SectionCard uses — a nested card
+     on its own measurements is the thing that makes a page look hand-placed. */
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* A catalog that is switched off, or was never connected, stays readable but
+   stops claiming the page — it isn't feeding the engine, so it shouldn't look
+   like it is. */
+.ce-feed--off .ce-feed-name,
+.ce-feed--off .ce-feed-mark,
+.ce-feed--off .ce-feed-facts {
+  opacity: 0.55;
+}
+
+.ce-feed-switch {
+  flex: 0 0 auto;
+}
+
+.ce-feed-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ce-feed-mark {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.ce-feed-name {
+  font-size: var(--text-body);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+}
+
+/* One fact a row, the full width of the card: the field on the left, what it
+   says on the right, a hairline between. Two hugging columns left the values in
+   a ragged band down the middle with half the card empty beside them. */
+.ce-feed-facts {
+  display: flex;
+  flex-direction: column;
+  margin: 4px 0 0;
+}
+
+.ce-feed-facts > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 9px 0;
+}
+
+.ce-feed-facts > div + div {
+  border-top: 1px solid var(--c-border);
+}
+
+.ce-feed-facts dt {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}
+
+.ce-feed-facts dd {
+  margin: 0;
+  font-size: var(--text-label);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+  text-align: right;
+}
+
+/* The actions sit at the end of the head row, before the switch — what you do
+   to a catalog belongs beside its name, not under its statistics. */
+.ce-feed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* The disclosure for a catalog's dates and counts. A quiet text button, not a
+   third control competing with the actions and the switch. */
+.ce-feed-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border: 0;
+  border-radius: var(--radius-sm, 6px);
+  background: none;
+  font: inherit;
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+  cursor: pointer;
+}
+
+.ce-feed-more:hover {
+  background: var(--c-gray-100);
+  color: var(--c-text);
+}
+
+/* ── A sync in flight ──────────────────────────────────────────────────────── */
+
+/* The control's own slot, so the card doesn't reflow when a button becomes a
+   progress bar and back. */
+.ce-feed-run {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 190px;
+}
+
+.ce-feed-run-step {
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
+  color: var(--c-text);
+}
+
+.ce-feed-track {
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  background: var(--c-gray-150);
+  border-radius: 99px;
+}
+
+.ce-feed-fill {
+  display: block;
+  height: 100%;
+  background: var(--c-blue);
+  border-radius: 99px;
+  transition: width 0.12s linear;
+}
+
+/* What the run did, under the head row — a result belongs after the thing that
+   produced it, and above the reference facts it has just changed. */
+.ce-feed-result {
+  margin-top: 12px;
+}
+
+.ce-good {
+  color: var(--c-green, #0ba85f);
+  font-weight: var(--fw-bold);
+}

@@ -38,6 +38,7 @@ export const BOOKS = {
     title: 'She Gets the Girl',
     author: 'Rachel Lippincott and Alyson Derrick',
     cover: ['#9DC7F0', '#F4A98B'],
+    coverId: 13195498,
     measure: 'minutes',
     pages: 400,
   },
@@ -46,6 +47,7 @@ export const BOOKS = {
     title: 'Rump',
     author: 'Liesl Shurtliff',
     cover: ['#3B4A3A', '#6E7A53'],
+    coverId: 7303733,
     isbn: '9780307977939',
     measure: 'pages',
     pages: 272,
@@ -55,6 +57,7 @@ export const BOOKS = {
     title: 'Lucky Cap',
     author: 'Patrick Jennings',
     cover: ['#3FA9E0', '#E23B3B'],
+    coverId: 10783462,
     measure: 'minutes',
     pages: 176,
   },
@@ -63,6 +66,7 @@ export const BOOKS = {
     title: "The Lesbiana's Guide to Catholic School",
     author: 'Sonora Reyes',
     cover: ['#2BB3C0', '#F2B705'],
+    coverId: 12791802,
     isbn: '9780062981066',
     measure: 'minutes',
     pages: 336,
@@ -72,6 +76,7 @@ export const BOOKS = {
     title: 'Last Night at the Telegraph Club',
     author: 'Malinda Lo',
     cover: ['#1A2433', '#3A506B'],
+    coverId: 15254093,
     isbn: '9780525555254',
     measure: 'minutes',
     pages: 416,
@@ -81,9 +86,20 @@ export const BOOKS = {
     title: 'Darius the Great Is Not Okay',
     author: 'Adib Khorram',
     cover: ['#C0432F', '#E87A2C'],
-    isbn: '9780735231856',
+    coverId: 9274780,
+    isbn: '9780525552963',
     measure: 'minutes',
     pages: 316,
+  },
+  amari: {
+    id: 'amari',
+    title: 'Amari and the Night Brothers',
+    author: 'B. B. Alston',
+    cover: ['#6D28D9', '#2E1065'],
+    coverId: 12714908,
+    isbn: '9780062975171',
+    measure: 'minutes',
+    pages: 407,
   },
 
   // ── Titles that come from a linked reading partner ─────────────────────────
@@ -94,6 +110,7 @@ export const BOOKS = {
     title: 'Dog Man',
     author: 'Dav Pilkey',
     cover: ['#F0A024', '#D9822B'],
+    coverId: 7894142,
     isbn: '9780545581608',
     measure: 'minutes',
     pages: 240,
@@ -104,6 +121,7 @@ export const BOOKS = {
     title: 'Amulet: The Stonekeeper',
     author: 'Kazu Kibuishi',
     cover: ['#5B21B6', '#312E81'],
+    coverId: 2420582,
     isbn: '9780439846806',
     measure: 'minutes',
     pages: 192,
@@ -274,6 +292,7 @@ BOOKS['wonder'] = {
   title: 'Wonder',
   author: 'R. J. Palacio',
   cover: ['#3FA9E0', '#1B5E8C'],
+  coverId: 8223160,
   measure: 'minutes',
   pages: 320,
 }
@@ -282,6 +301,7 @@ BOOKS['crossover'] = {
   title: 'The Crossover',
   author: 'Kwame Alexander',
   cover: ['#F26430', '#A34320'],
+  coverId: 7336870,
   measure: 'minutes',
   pages: 240,
 }
@@ -290,6 +310,7 @@ BOOKS['front-desk'] = {
   title: 'Front Desk',
   author: 'Kelly Yang',
   cover: ['#E0457B', '#F5A623'],
+  coverId: 8803949,
   measure: 'minutes',
   pages: 286,
 }
@@ -298,6 +319,7 @@ BOOKS['new-kid'] = {
   title: 'New Kid',
   author: 'Jerry Craft',
   cover: ['#2BB3C0', '#F2B705'],
+  coverId: 12355597,
   measure: 'minutes',
   pages: 256,
 }
@@ -306,6 +328,7 @@ BOOKS['ghost'] = {
   title: 'Ghost',
   author: 'Jason Reynolds',
   cover: ['#1A2433', '#6B4FA8'],
+  coverId: 9257673,
   measure: 'minutes',
   pages: 192,
 }
@@ -314,6 +337,7 @@ BOOKS['esperanza'] = {
   title: 'Esperanza Rising',
   author: 'Pam Muñoz Ryan',
   cover: ['#C1272D', '#F7941E'],
+  coverId: 275937,
   measure: 'minutes',
   pages: 262,
 }
@@ -322,6 +346,7 @@ BOOKS['holes'] = {
   title: 'Holes',
   author: 'Louis Sachar',
   cover: ['#B06A00', '#F2B705'],
+  coverId: 19797,
   measure: 'minutes',
   pages: 233,
 }
@@ -330,6 +355,7 @@ BOOKS['refugee'] = {
   title: 'Refugee',
   author: 'Alan Gratz',
   cover: ['#0B6B78', '#22B8CF'],
+  coverId: 9122402,
   measure: 'minutes',
   pages: 352,
 }
@@ -338,6 +364,7 @@ BOOKS['merci-suarez'] = {
   title: 'Merci Suárez Changes Gears',
   author: 'Meg Medina',
   cover: ['#00AEEF', '#7C4DA8'],
+  coverId: 9312852,
   measure: 'minutes',
   pages: 368,
 }
@@ -346,6 +373,7 @@ BOOKS['trap-a-tiger'] = {
   title: 'When You Trap a Tiger',
   author: 'Tae Keller',
   cover: ['#F2B705', '#E8443A'],
+  coverId: 9256649,
   measure: 'minutes',
   pages: 304,
 }
@@ -354,6 +382,7 @@ BOOKS['last-cuentista'] = {
   title: 'The Last Cuentista',
   author: 'Donna Barba Higuera',
   cover: ['#3C0458', '#00AEEF'],
+  coverId: 12579345,
   measure: 'minutes',
   pages: 336,
 }
@@ -362,6 +391,7 @@ BOOKS['show-me-a-sign'] = {
   title: 'Show Me a Sign',
   author: 'Ann Clare LeZotte',
   cover: ['#1E7A5A', '#8DC63F'],
+  coverId: 9294651,
   measure: 'minutes',
   pages: 288,
 }
@@ -370,6 +400,7 @@ BOOKS['other-words'] = {
   title: 'Other Words for Home',
   author: 'Jasmine Warga',
   cover: ['#EC4899', '#7C5CFA'],
+  coverId: 8737138,
   measure: 'minutes',
   pages: 352,
 }
@@ -378,6 +409,7 @@ BOOKS['brown-girl'] = {
   title: 'Brown Girl Dreaming',
   author: 'Jacqueline Woodson',
   cover: ['#7C4DA8', '#EC7C3C'],
+  coverId: 7435102,
   measure: 'minutes',
   pages: 336,
 }
@@ -386,6 +418,7 @@ BOOKS['wild-robot'] = {
   title: 'The Wild Robot',
   author: 'Peter Brown',
   cover: ['#1E9E6A', '#0B5F3E'],
+  coverId: 7443301,
   measure: 'minutes',
   pages: 288,
 }
@@ -394,6 +427,7 @@ BOOKS['roll-of-thunder'] = {
   title: 'Roll of Thunder, Hear My Cry',
   author: 'Mildred D. Taylor',
   cover: ['#8A1C16', '#E8443A'],
+  coverId: 12632397,
   measure: 'minutes',
   pages: 288,
 }
@@ -402,6 +436,7 @@ BOOKS['hatchet'] = {
   title: 'Hatchet',
   author: 'Gary Paulsen',
   cover: ['#334155', '#22B8CF'],
+  coverId: 11240448,
   measure: 'minutes',
   pages: 208,
 }
@@ -1008,6 +1043,138 @@ export const READING_LIST_CHALLENGES = [
  *
  *   <LogFlow {...LOG_FIXTURES} partners={CONNECTION_LIST} … />
  */
+/* ── What to read next ─────────────────────────────────────────────────────
+   Finishing a title is the one moment the reader is guaranteed to be between
+   books, so it's the one moment a recommendation is useful rather than an
+   interruption. Keyed by the title just finished, because the reason is about
+   the pair — "another X, now that you've read Y" is not a fact about either
+   book on its own, which is why it doesn't live on the recommended one the way
+   the `books` prototype's `bennyReason` does.
+
+   Every target is in this catalog, so the shelf it lands on can draw it. */
+const NEXT_UP = {
+  'she-gets-the-girl': {
+    id: 'lesbianas-guide',
+    reason: 'Another funny, messy, big-hearted romance — and Yamilet has a voice you won’t forget.',
+  },
+  'lesbianas-guide': {
+    id: 'telegraph-club',
+    reason:
+      'If you loved Yami finding her people, wait until you meet Lily. Same courage, 1950s San Francisco.',
+  },
+  'telegraph-club': {
+    id: 'darius',
+    reason: 'Quieter and warmer, and just as honest about working out who you are.',
+  },
+  darius: {
+    id: 'other-words',
+    reason:
+      'Another kid caught between two homes — this one told in poems you can read in a sitting.',
+  },
+  rump: {
+    id: 'amari',
+    reason:
+      'You just backed a hero nobody believed in. Amari is the same, with a magical Bureau behind her.',
+  },
+  'lucky-cap': {
+    id: 'ghost',
+    reason:
+      'Another kid with more talent than he knows what to do with — and a coach who spots it.',
+  },
+  'dog-man': {
+    id: 'amulet',
+    reason: 'Epic graphic-novel fantasy — perfect after Dog Man, with a much bigger adventure.',
+  },
+  amulet: {
+    id: 'new-kid',
+    reason:
+      'A graphic novel about real life this time — funny, honest, and the art is so expressive.',
+  },
+  'new-kid': {
+    id: 'front-desk',
+    reason: 'Another kid working out where he fits — Mia runs a whole motel while she’s at it.',
+  },
+  amari: {
+    id: 'last-cuentista',
+    reason: 'More magic and a bigger mystery, out past the edge of the solar system.',
+  },
+  wonder: {
+    id: 'merci-suarez',
+    reason:
+      'Another school year, another kid holding a lot together — Merci’s family will stay with you.',
+  },
+  crossover: {
+    id: 'ghost',
+    reason: 'Another kid with a gift and a temper, and a coach worth listening to.',
+  },
+  'front-desk': {
+    id: 'other-words',
+    reason: 'Another new-country story, this one in poems — short lines, big feelings.',
+  },
+  ghost: {
+    id: 'crossover',
+    reason: 'Fast, rhythmic and full of heart — try this one as an audiobook.',
+  },
+  esperanza: {
+    id: 'refugee',
+    reason: 'Three kids, three escapes, three eras — gripping from the first page.',
+  },
+  holes: {
+    id: 'hatchet',
+    reason: 'Pure survival tension: one boy, one hatchet and a great deal of forest.',
+  },
+  refugee: {
+    id: 'esperanza',
+    reason: 'A moving story of courage and starting over.',
+  },
+  'merci-suarez': {
+    id: 'front-desk',
+    reason: 'Another kid doing grown-up work and still being a kid about it.',
+  },
+  'trap-a-tiger': {
+    id: 'last-cuentista',
+    reason: 'More folklore turned into something strange and beautiful.',
+  },
+  'last-cuentista': {
+    id: 'wild-robot',
+    reason: 'A gentler kind of strange — a robot working out how to belong on a wild island.',
+  },
+  'show-me-a-sign': {
+    id: 'other-words',
+    reason: 'Another girl finding her own language for the world.',
+  },
+  'other-words': {
+    id: 'brown-girl',
+    reason: 'A memoir in verse — try it on audiobook for the full magic.',
+  },
+  'brown-girl': {
+    id: 'esperanza',
+    reason: 'Another childhood you can feel the heat and the dust of.',
+  },
+  'wild-robot': {
+    id: 'last-cuentista',
+    reason: 'If you liked Roz learning to be alive, wait until you meet Petra.',
+  },
+  'roll-of-thunder': {
+    id: 'brown-girl',
+    reason: 'The same history, told from inside one family’s memory.',
+  },
+  hatchet: {
+    id: 'holes',
+    reason: 'A clever mystery where every last detail pays off.',
+  },
+}
+
+for (const [id, next] of Object.entries(NEXT_UP)) {
+  BOOKS[id].nextUp = next
+}
+
+/* No `bennyPicks` here. The shelf is the Recommendation Engine speaking, and
+   that belongs to the prototype that has an engine behind it — Book Discovery
+   passes its own `BENNY_PICKS`, drawn from the same list its Discover page
+   uses. Handed out with the shared fixtures, every prototype that spread them
+   grew a recommendation shelf it had nothing to recommend from. `LogFlow`
+   still takes the prop; it just defaults to none. */
 export const LOG_FIXTURES = {
   books: BOOKS,
   recentlyLogged: RECENTLY_LOGGED,

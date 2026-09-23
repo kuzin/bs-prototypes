@@ -1,0 +1,59 @@
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--c-gray-100);
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* ─── Shell ────────────────────────────────────────────────────────────── */
+/* The classroom page is the whole prototype, so the shell is just a
+   full-height stage for it with the profile panel over the top — the same
+   arrangement Engagement Signals uses over the same two surfaces.
+   The height stops short of the prototype nav rather than running under it:
+   the bar is `position: fixed` at the bottom and publishes `--proto-nav-h`
+   for exactly this, so a scrolling stage that claims the whole viewport hides
+   its own last row behind it. */
+.cet-root {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - var(--proto-nav-h, 48px));
+}
+
+.cet-stage {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* The classroom page is a two-column admin layout that expects to own the
+   viewport; inside the stage it fills the stage instead. */
+.cet-stage .bp-adm {
+  min-height: 100%;
+}

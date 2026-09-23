@@ -126,3 +126,24 @@
     width: auto;
   }
 }
+
+/* The one way on from a toast — a link in the strip's own voice rather than a
+   button with a ground, because the toast is already the emphasis. */
+.toast-action {
+  flex: 0 0 auto;
+  align-self: center;
+  margin-left: 4px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
+  color: var(--c-blue);
+  cursor: pointer;
+}
+
+.toast-action:hover {
+  background: var(--c-gray-100);
+}

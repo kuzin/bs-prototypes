@@ -19,7 +19,7 @@ const SHOWN = 5
  * five books or twenty — the track it replaced left the last book half cut off
  * as a hint that there was more, and needed a pair of arrows to say so.
  */
-export function Shelf({ shelf, books, onOpen, onWish, wishlist, onPlay, onViewAll }) {
+export function Shelf({ shelf, books, onOpen, onWish, wishlist, onPlay, onViewAll, settings }) {
   const partner = shelf.partner ? PARTNERS[shelf.partner] : null
   const accent = partner ? partner.accent : shelf.accent || '#0D9488'
   const more = onViewAll && books.length > SHOWN
@@ -44,6 +44,7 @@ export function Shelf({ shelf, books, onOpen, onWish, wishlist, onPlay, onViewAl
       <div className="bk-shelf-row">
         {shown.map((book) => (
           <BookCard
+            settings={settings}
             key={book.id}
             book={book}
             onOpen={onOpen}

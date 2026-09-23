@@ -5,7 +5,7 @@ import { Modal } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
-import { Spinner } from '@components/Primitives/Primitives'
+import { Banner, Spinner } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
@@ -508,15 +508,10 @@ function ScheduleSection() {
       footer={footer}
       bodyPad="padded"
     >
-      <div className="rost-info-banner">
-        <div className="rost-info-icon">
-          <Icon name="info" size={16} />
-        </div>
-        <div>
-          Share rostering data up to the pause date and again on the restart date, so no logs are
-          lost.
-        </div>
-      </div>
+      <Banner level="info" className="rost-banner">
+        Share rostering data up to the pause date and again on the restart date, so no logs are
+        lost.
+      </Banner>
 
       <div className="rost-field">
         <label className="rost-field-label">Pause date</label>
@@ -568,22 +563,17 @@ function ScheduleSection() {
         </div>
       </div>
 
-      <div className="rost-warn-banner" style={{ marginTop: 16 }}>
-        <div style={{ flexShrink: 0 }}>
-          <Icon name="alert-triangle" size={16} />
-        </div>
-        <div>
-          No syncs will run from{' '}
-          <strong>
-            {dates.pauseDay + 1} of {dates.pauseMonth}
-          </strong>{' '}
-          through{' '}
-          <strong>
-            {dates.restartDay - 1 || 31} of {dates.restartMonth}
-          </strong>
-          .
-        </div>
-      </div>
+      <Banner level="warning" className="rost-banner rost-banner--after">
+        No syncs will run from{' '}
+        <strong>
+          {dates.pauseDay + 1} of {dates.pauseMonth}
+        </strong>{' '}
+        through{' '}
+        <strong>
+          {dates.restartDay - 1 || 31} of {dates.restartMonth}
+        </strong>
+        .
+      </Banner>
     </ChartCard>
   )
 }

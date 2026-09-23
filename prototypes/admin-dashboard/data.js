@@ -1,21 +1,3 @@
-// ─── Fixed top banners (admin-defined, not user-editable) ─────────────────────
-export const NOTIFICATIONS = [
-  {
-    id: 'n-maint',
-    tone: 'warn',
-    title: 'Server Maintenance',
-    body: 'Beanstack will be unavailable between 11:00 PM and 1:00 AM ET on Saturday, Aug 17 for scheduled maintenance.',
-    action: null,
-  },
-  {
-    id: 'n-webinar',
-    tone: 'info',
-    title: "[Webinar] What's New for Back to School",
-    body: 'Discover the latest Beanstack features—Book Talks with Benny, daily reading tracking, rewards, editable badges & more! Join us Aug 12 at 2 PM ET and get ready to supercharge student engagement this year!',
-    action: 'Register Here',
-  },
-]
-
 // ─── Fixed right rail — Goal options (community vs district) ─────────────────
 export const GOAL_OPTIONS = {
   community: {

@@ -5,11 +5,32 @@ import { Icon } from '@components/Icon/Icon'
 import '@components/SettingRow/SettingRow.css'
 import { PartnerMark } from './PartnerBits'
 
+/* Every way the Collection Engine knows a school can put a book in a reader's
+   hands, in the engine's own order — what it owns outright, what it borrows,
+   and the two shelves it can walk to — plus the one switch that is a format
+   rather than a source.
+
+   The engine's four `SOURCES` are Comics Plus (`own`), Sora (`hold`), Follett
+   Destiny (`shelf`, from a MARC drop) and the Classroom Library (`shelf`,
+   scanned by teachers). Libby and Scholastic are this app's, and sit with the
+   ones they behave like. The list used to be four rows that happened to be the
+   integrations somebody had wired up, which meant a school could not turn off
+   the two shelves the engine was quietly counting. */
 const FEATURES = [
+  {
+    key: 'comicsplus',
+    title: 'Comics Plus',
+    desc: 'Unlimited comics, graphic novels & magazines — no holds, no waitlists.',
+  },
+  {
+    key: 'scholastic',
+    title: 'Scholastic Magazines',
+    desc: 'Classroom magazines — fresh issues every month, leveled for your grade.',
+  },
   {
     key: 'sora',
     title: 'Sora Borrowing',
-    desc: 'Borrow ebooks & audiobooks free from your public library, via Sora.',
+    desc: 'Ebooks and audiobooks borrowed through OverDrive.',
   },
   {
     key: 'libby',
@@ -17,9 +38,14 @@ const FEATURES = [
     desc: 'Borrow ebooks & audiobooks free from your public library, via Libby.',
   },
   {
-    key: 'scholastic',
-    title: 'Scholastic Magazines',
-    desc: 'Show Scholastic classroom magazines on Discover.',
+    key: 'library',
+    title: 'School Library',
+    desc: 'Print holdings from the school library catalog, via a MARC drop.',
+  },
+  {
+    key: 'classroom',
+    title: 'Classroom Library',
+    desc: 'Books teachers have scanned onto their own classroom shelves.',
   },
   {
     key: 'audiobooks',
@@ -45,8 +71,12 @@ function FeatureMark({ feature }) {
 }
 
 /**
- * Which reading apps this site has turned on — a reviewer's switch rather than
- * a reader's, which is why it lives on the preview bar.
+ * Which title sources this site has turned on — a reviewer's switch rather
+ * than a reader's, which is why it lives on the preview bar.
+ *
+ * "Reading apps" named half of what is in here: two of these are shelves, not
+ * apps, and one is a format. A source is what they have in common — every way
+ * a title can reach this reader.
  *
  * The modal's own chrome: a header bar with a rule under it, a body that
  * scrolls, and the answer on a footer — the shape every other modal in the
@@ -55,13 +85,13 @@ function FeatureMark({ feature }) {
  */
 export function SettingsModal({ open, onClose, settings, onToggle }) {
   return (
-    <Modal open={open} onClose={onClose} variant="center" closeBadge ariaLabel="Reading apps">
+    <Modal open={open} onClose={onClose} variant="center" closeBadge ariaLabel="Title sources">
       <ModalClose onClick={onClose} />
 
       <div className="modal-header">
         <div className="modal-header-text">
-          <h2 className="modal-title">Reading apps</h2>
-          <p className="modal-sub">Turn discovery features on or off for this reader.</p>
+          <h2 className="modal-title">Title sources</h2>
+          <p className="modal-sub">Which ways a title can reach this reader.</p>
         </div>
       </div>
 

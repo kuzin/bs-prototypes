@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useToasts, ToastStack } from '@components/Toast/Toast'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerConnect'
+import { ReadNow } from '@components/ReadNow/ReadNow'
 import { LogFlow } from '@components/LogFlow/LogFlow'
 
 import { Dashboard } from './components/Dashboard'
@@ -41,6 +43,23 @@ export function App() {
   const [connections, setConnections] = useState({})
   const [linking, setLinking] = useState(null) // partner id mid-handoff
   const [visiting, setVisiting] = useState(null) // partner id whose catalog is open
+  // The title being read in a partner's app, and which app that is.
+  const [reading, setReading] = useState(null)
+  /* A title handed over by the reader's last page — the flow opens on its
+     form with Finished already answered. */
+  const [finishing, setFinishing] = useState(null)
+
+  /* Every way into the flow goes through these two, so a title handed over
+     by the reader can't outlive the trip it was handed over for. */
+  const openFlow = (book = null) => {
+    setFinishing(book)
+    setFlowOpen(true)
+  }
+  const closeFlow = () => {
+    setFlowOpen(false)
+    setFinishing(null)
+  }
+  const { toasts, push, dismiss } = useToasts()
   const [flowOpen, setFlowOpen] = useState(false)
   // What she logs herself while the prototype is open, so a hand-typed session
   // lands in the same month as the imported ones and the contrast is visible.
@@ -98,7 +117,7 @@ export function App() {
         dailyGoal={dailyGoal}
         connections={connections}
         logged={logged}
-        onLog={() => setFlowOpen(true)}
+        onLog={() => openFlow()}
         onLinkPartner={setLinking}
         onDisconnectPartner={handleDisconnect}
         onVisitPartner={setVisiting}
@@ -109,8 +128,16 @@ export function App() {
           catalog in it and the parts of the logger this site doesn't run —
           scanning, Epic, book reviews — left off. */}
       <LogFlow
+        /* A tile's "Read in …" leaves the flow for the partner's own app, which
+           is this page's to open. */
+        book={finishing}
+        startFinished={Boolean(finishing)}
+        onReadInPartner={(b) => setReading({ book: b, partner: b.partner })}
+        /* This page keeps no shelf of its own, so saving Benny's pick is a
+           confirmation rather than a place to go. */
+        onAddToWishlist={(b) => push({ title: 'Added to your Wish List', body: b.title })}
         open={flowOpen}
-        onClose={() => setFlowOpen(false)}
+        onClose={() => closeFlow()}
         onLogged={handleLogged}
         connections={connections}
         partners={PARTNERS}
@@ -124,6 +151,18 @@ export function App() {
         earnedCards={EARNED_CARDS}
         site={{ epic: false, bookReviews: false }}
       />
+      {reading && (
+        <ReadNow
+          book={reading.book}
+          partner={reading.partner}
+          onClose={() => setReading(null)}
+          onFinish={() => {
+            setReading(null)
+            openFlow(reading.book)
+          }}
+        />
+      )}
+
       {visitingPartner && connections[visiting] && (
         <PartnerCatalog
           partner={visitingPartner}
@@ -147,6 +186,10 @@ export function App() {
           onLinked={handleLinked}
         />
       )}
+      {/* One stack for the page, not one per thing that can raise a
+          toast. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+
       <PrototypeNav currentHref="/bs-prototypes/beeverso/" />
     </>
   )

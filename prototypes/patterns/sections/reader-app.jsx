@@ -658,7 +658,7 @@ export const readerAppSections = [
     name: 'StreakBanner',
     usage: `import { StreakBanner } from '@components/ReaderApp/ReaderApp'
 
-<StreakBanner streak={{ current: 4 }} onLog={openLogFlow} />`,
+<StreakBanner streak={{ current: 4 }} onLog={openLogFlow} onViewStreaks={goToCalendar} />`,
     desc: (
       <>
         The reading-streak banner across the top of the reader dashboard. Reads its own copy and its

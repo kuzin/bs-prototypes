@@ -1,5 +1,4 @@
 import {
-  NOTIFICATIONS,
   STAT_TILES,
   DAILY_TRACKER,
   LEADERBOARDS,
@@ -48,28 +47,6 @@ export const WIDTH_FIELD = {
     { value: 'lg', label: '2/3' },
     { value: 'full', label: 'Full width' },
   ],
-}
-
-// ─── Notifications ───────────────────────────────────────────────────────
-export function AdmNotifications() {
-  return (
-    <div className="adm-w" style={{ padding: 14 }}>
-      <div className="adm-banners">
-        {NOTIFICATIONS.map((n) => (
-          <div key={n.id} className={`adm-banner adm-banner--${n.tone}`}>
-            <div className="adm-banner-ico">
-              {n.tone === 'warn' ? '⚠' : n.tone === 'danger' ? '✕' : n.tone === 'good' ? '✓' : '🔥'}
-            </div>
-            <div className="adm-banner-text">
-              <div className="adm-banner-title">{n.title}</div>
-              <div className="adm-banner-body">{n.body}</div>
-            </div>
-            <button className="adm-banner-cta">{n.action}</button>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
 }
 
 // ─── Stat tiles ──────────────────────────────────────────────────────────

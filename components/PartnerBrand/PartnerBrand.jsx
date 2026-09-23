@@ -104,6 +104,20 @@ export const PARTNER_BRANDS = {
     // Libby is the borrowing app: ebooks and audiobooks from your own library.
     glyph: 'headphones',
   },
+  follett: {
+    id: 'follett',
+    dark: '#0A2B3D',
+    name: 'Follett Destiny',
+    // Follett's own blue and the tint it takes on light chrome. No official
+    // asset is vendored — same position as Libby, so rather than draw a
+    // lookalike this takes the registry's glyph badge in Follett's colours.
+    // Drop `Mark.svg` and `Wordmark.svg` into `public/follett/` and it renders
+    // like the rest.
+    accent: '#00629B',
+    soft: '#E3EEF5',
+    // Destiny is the library catalog: the shelf a school's print stock lives on.
+    glyph: 'building-community',
+  },
   overdrive: {
     id: 'overdrive',
     dark: '#00293C',

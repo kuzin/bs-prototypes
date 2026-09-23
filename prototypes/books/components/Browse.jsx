@@ -285,6 +285,7 @@ export function Browse({
             <div className="bk-results-grid">
               {results.map((b) => (
                 <BookCard
+                  settings={settings}
                   key={b.id}
                   book={b}
                   onOpen={onOpen}

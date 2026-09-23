@@ -1081,11 +1081,11 @@ function ActivityBadgeEditor({
                     />
                   </Field>
                   {repeatable ? (
-                    <div className="gb-warn-note">
+                    <Banner level="warning" className="gb-warn-note">
                       Completing repeatable activities can earn points for readers (and thus points
                       badges), but the repeatable activity badge itself can never be earned or
                       completed.
-                    </div>
+                    </Banner>
                   ) : (
                     <div className="gb-ab-settings">
                       <Field label="Earn after">
@@ -1976,9 +1976,9 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
       {isPoints && (
         <div className="gb-panel">
           <h3 className="gb-panel-title">Earnable point types</h3>
-          <div className="gb-warn-note">
+          <Banner level="warning" className="gb-warn-note">
             If you turn off one of the types below, points will no longer be awarded for it.
-          </div>
+          </Banner>
           <div className="gb-settings">
             {POINT_TYPES.map((pt) => {
               const on = pointTypes[pt.key] !== false
@@ -2237,10 +2237,10 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
               onCreate={() => setAbEditor({ index: null, repeatable: true })}
             />
           </div>
-          <div className="gb-warn-note">
+          <Banner level="warning" className="gb-warn-note">
             Completing repeatable activities earns points (and thus points badges), but the
             repeatable activity badges themselves can never be earned or completed.
-          </div>
+          </Banner>
           {repeatableActivities.length ? (
             <div className="gb-badge-rows">
               {repeatableActivities.map((ab, i) => {

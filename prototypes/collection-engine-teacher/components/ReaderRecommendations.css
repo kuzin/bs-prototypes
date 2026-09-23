@@ -1,0 +1,150 @@
+/* ── Why these books ───────────────────────────────────────────────────────── */
+
+/* ── A group of titles ─────────────────────────────────────────────────────── */
+
+.crr-group-count {
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-light);
+  background: var(--c-gray-150);
+  border-radius: 20px;
+  padding: 1px 8px;
+}
+
+/* The two pill groups share a line: what to show on the left, how to show it on
+   the right. The left one is `block`, so it takes the room the switcher leaves.
+*/
+.crr-viewbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.crr-viewbar > :first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* The list is the working view, so it is a list: rows edge to edge in the card,
+   a hairline between them, no inset pills. Bled out over the card's own padding
+   and clipped back to its corners — which is what makes the first row's hover
+   round off with the card, the last one's too, and a middle row's a plain band.
+*/
+.crr-list {
+  list-style: none;
+  /* Starts at the heading's own rule — that rule is the list's first divider,
+     the same way a stat list sits under a card head. A 14px band between them
+     read as a seam once the rows ran the card's full width. */
+  margin: 0 -18px -16px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 0 0 12px 12px;
+}
+
+.crr-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+}
+
+.crr-title + .crr-title {
+  border-top: 1px solid var(--c-border);
+}
+
+/* The pills and the day count keep their size; the title column gives. */
+.crr-title .pill,
+.crr-title:hover {
+  background: var(--c-gray-100);
+}
+
+/* A thumbnail, not a poster — same reason the Collection tables size it down.
+   The flat fallback's own text is set for the full-size cover, so a coverless
+   book shows its colour alone. */
+.crr-title .bkcov {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 51px;
+  border-radius: 4px;
+}
+
+.crr-title .bkcov-title,
+.crr-title .bkcov-author {
+  display: none;
+}
+
+.crr-title-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.crr-title-name {
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+}
+
+/* The author alone, so one line is enough — it used to carry the genre too,
+   which is what the two-line clamp was for. */
+.crr-title-sub {
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Why the engine suggested these ────────────────────────────────────────── */
+/* One line per signal: the name of the input, and what it actually has to work
+   with for this reader. A muted row has nothing behind it, which is itself the
+   argument for switching that signal's source on. */
+.crr-readout {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.crr-readout-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.crr-readout-row .pill {
+  flex: 0 0 auto;
+  min-width: 132px;
+  justify-content: center;
+}
+
+.crr-readout-value {
+  font-size: var(--text-cell);
+  color: var(--c-text);
+  min-width: 0;
+}
+
+.crr-readout-row--muted .crr-readout-value {
+  color: var(--c-text-light);
+  font-style: italic;
+}
+
+/* The tab bar belongs to the section below it, not the hero above. */
+.crr .tabs {
+  margin-bottom: 4px;
+}
+
+/* The cover grid takes the same step off the card's heading that the row list
+   does, and stays inside the card's padding — a shelf of tiles is content, not
+   a table. */
+.crr .tcard-grid {
+  margin-top: 14px;
+}
+
+/* The heading's rule does the separating, so it gives up the gap below it. */
+.crr .section-card--divider > .section-card-title:first-child:has(+ .crr-list) {
+  margin-bottom: 0;
+}
