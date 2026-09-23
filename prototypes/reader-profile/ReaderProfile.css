@@ -1630,22 +1630,13 @@
   background: var(--cell-bg, transparent);
 }
 
-/* Read, but short of the goal — a tint of the accent, so the two states read
-   as degrees of the same thing rather than two different colours. */
-.rp-heatmap-cell--read:not(.rp-heatmap-cell--goal)::before {
-  background: color-mix(in srgb, var(--cell-bg) 38%, #fff);
-}
-
 .rp-heatmap-daynum {
   font-size: 15px;
   font-weight: 700;
   line-height: 1;
   position: relative;
   z-index: 1;
-  /* One ink for every scored day. Reversing it out white on the goal-met fill
-     looked better but only cleared ~3:1 against the accent, and the fill
-     already carries the state — the date just has to be readable on all
-     three of them (grey, tint, accent), which this is. */
+  /* Dark on a white day; a read day reverses it out white (below). */
   color: var(--c-gray-900);
 }
 
@@ -1663,13 +1654,6 @@
    underline bolted on beneath the calendar rather than as the days being
    joined. The run still caps round wherever it stops: the week's edge, where
    the grid wraps, and the month's, where there is nothing on the other side. */
-/* The colour a multi-day run is outlined in: the app's own `$yellow400`
-   (`lib/_colors.scss`). Bright enough to read over both the full-accent goal
-   fill and the 38% tint a read-only day gets. */
-.rp-heatmap {
-  --hm-streak-line: #ffbc42;
-}
-
 .rp-heatmap-cell--streak-r::before {
   right: calc(-1 * var(--hm-gap, 4px));
   border-top-right-radius: 0;
@@ -1679,29 +1663,6 @@
 .rp-heatmap-cell--streak-l::before {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-}
-
-/* A run of two or more days is outlined, so a streak is a shape you can see
-   rather than something you have to infer from where the gaps aren't. Only a
-   multi-day run carries a join class — a lone streak day has neither — so
-   these two selectors are exactly "longer than one day".
-   The tone is a warm line rather than a cut of the green: a run mixes
-   full-accent goal days with 38% tint read days, and one bright yellow reads
-   against both where a darker green only showed over the lighter cells. The
-   border draws inside the `::before` (`border-box`), so nothing shifts. */
-.rp-heatmap-cell--streak-l::before,
-.rp-heatmap-cell--streak-r::before {
-  border: 2px solid var(--hm-streak-line);
-}
-
-/* No vertical rule mid-run: each cell drops the border on whichever side the
-   run carries on, so the outline closes only at the two ends. */
-.rp-heatmap-cell--streak-r::before {
-  border-right: 0;
-}
-
-.rp-heatmap-cell--streak-l::before {
-  border-left: 0;
 }
 
 /* A cell that continues the run paints a full gap of extra fill past its own
@@ -1715,18 +1676,19 @@
   margin-left: var(--hm-gap, 4px);
 }
 
-/* The legend's Streak swatch is a single box standing in for a run, so it
-   takes the outline whole. */
-/* The literal colour, not `--hm-streak-line`: the legend is the ChartCard's
-   `footer`, outside `.rp-heatmap`, so it never sees that variable and fell back
-   to the legend's own grey text colour. Keep it in step with the run above. */
-.rp-heatmap-legend-item .rp-heatmap-cell--streak::before {
-  border: 2px solid #ffbc42;
+/* A day with reading on it is the solid green, so its date reverses out white. */
+.rp-heatmap-cell--read .rp-heatmap-daynum {
+  color: #fff;
+}
+
+.rp-heatmap-legend-star {
+  flex-shrink: 0;
+  color: #ffbc42;
 }
 
 .rp-heatmap-legend {
   display: flex;
-  gap: 10px;
+  gap: 18px;
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
@@ -4777,6 +4739,15 @@
   margin-bottom: calc(-1 * var(--row-pad-y));
 }
 
+/* A summary row list runs to the card's bottom edge instead: the last row
+   keeps its own 11px under its content, the same as every row above it, and
+   the card adds nothing below. Handing back only the row's padding left the
+   card's 16px against it — a 5px strip under the last row that read as a
+   stray gap. */
+.rp-card:not(.rp-card--flush):not(.rp-statlist) > .rp-statrow--static:last-child {
+  margin-bottom: -16px;
+}
+
 /* The title rule is the first row's divider, so the row drops its own and the
    heading drops the gap it would leave above the list. */
 .rp-card > .rp-section-heading + .rp-statrow--static {
@@ -4918,39 +4889,6 @@
   white-space: nowrap;
   color: var(--c-text-light);
   flex-shrink: 0;
-}
-
-/* ─── The figures read as a column ────────────────────────────────────────────
-   Whatever annotates a figure — a trend chip, a caption — sits in a lane of its
-   own beside it, and a row with nothing to annotate reserves that same lane.
-   Otherwise the annotated rows push their figure left and the bare ones run on
-   to the card's edge, so the figures no longer line up down the card. The lane
-   only exists in a card that has an annotation somewhere. */
-.rp-card:has(.rp-statrow > .trend-tip) {
-  --stat-trail: 26px; /* a chip */
-}
-
-/* A caption is wider than a chip, so one caption sets the lane for every row in
-   that card — the alternative is a column that steps in and out. */
-.rp-card:has(.rp-statrow > .rp-statrow-note) {
-  --stat-trail: 58px;
-}
-
-/* A caption fills the lane; a chip is 26px and stays 26px. Sizing the chip's
-   box to the lane made a 26px pill as wide as the figure it annotates, so the
-   slack is a margin *after* the chip instead: the chip keeps its own width and
-   sits against its figure, and the figures still end on one line. */
-.rp-statrow > .rp-statrow-note {
-  flex: 0 0 var(--stat-trail, auto);
-}
-
-.rp-statrow > .trend-tip {
-  flex: 0 0 auto;
-  margin-right: calc(var(--stat-trail, 26px) - 26px);
-}
-
-.rp-statrow:not(:has(> .trend-tip, > .rp-statrow-note)) .rp-statrow-value {
-  margin-right: calc(var(--stat-trail, 0px) + 12px);
 }
 
 /* ─── Find a Person ───────────────────────────────────────────────────────────
@@ -6558,7 +6496,9 @@
 /* A goal-met day shows a star rather than its date — see `ReadingHeatmap`.
    Every cell paints its fill through a `::before` that covers the whole box,
    so the star needs the same lift `.rp-heatmap-daynum` has or the fill hides
-   it. White, because it sits on the saturated goal colour. */
+   it. The app's `$yellow400` with a white outline traced round it, so the
+   mark stands off the reading green. The stroke paints under the fill, so the
+   outline adds to the star's edge rather than eating into it. */
 .rp-heatmap-star {
   position: relative;
   z-index: 1;
@@ -6566,7 +6506,15 @@
      legs down — so a geometrically centred one reads low against the day
      numbers beside it. Nudged up by its own optical offset. */
   transform: translateY(-1px);
-  color: #fff;
+  color: #ffbc42;
+  overflow: visible;
+}
+
+.rp-heatmap-star path {
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linejoin: round;
+  paint-order: stroke;
 }
 
 /* ── Filter bar ──────────────────────────────────────────────────────────────

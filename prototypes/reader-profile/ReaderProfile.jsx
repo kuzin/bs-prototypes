@@ -3006,21 +3006,12 @@ function BadgeSeal({ badge, size = 68 }) {
 
 // Show/hide search matches the real pages, which start with the field hidden
 // behind a toggle rather than spending a row on it by default.
-// The Hero's action slot. The label collapses on a phone — a 110px button beside
-// a 150px title floor is what was pushing the whole action onto a second row —
-// leaving the glyph, which is the whole message anyway.
+// The Hero's action slot. Text only, like every full-size button.
 function SearchToggle({ open, onToggle }) {
   const label = open ? 'Hide search' : 'Show search'
   return (
-    <Button
-      variant="secondary"
-      size="msm"
-      onClick={onToggle}
-      aria-label={label}
-      title={label}
-      icon={<Icon name={open ? 'x' : 'search'} size={16} stroke={2.1} />}
-    >
-      <span className="rp-btn-label">{label}</span>
+    <Button variant="secondary" size="msm" onClick={onToggle}>
+      {label}
     </Button>
   )
 }

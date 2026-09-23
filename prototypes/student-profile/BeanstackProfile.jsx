@@ -2,7 +2,9 @@ import { useState, useEffect, useRef, cloneElement } from 'react'
 import './BeanstackProfile.css'
 import '../ris/components/SchoolDashboard.css'
 import { C, LABEL, Ic } from '@components/ui'
-import { Card, SectionHeading, GoalRing, CoverImage } from './components/kit'
+import { Card, SectionHeading, CoverImage } from './components/kit'
+import { GoalMeter } from '@components/ReaderApp/ReaderApp'
+import '@components/ReaderApp/ReaderApp.css'
 import {
   DonutChart,
   SplitDonutChart,
@@ -1539,10 +1541,9 @@ function countFlags(talks, key) {
     .sort((a, b) => b.count - a.count)
 }
 
-// The card shows what to look at first, not a full tally — the table below is
-// the tally. The *filter* gets the uncapped lists: an option that vanished
-// past the fifth flag would just look broken.
-const TOP_FLAGS_SHOWN = 5
+// The card leads with what to look at first; the rest of the tally is one
+// click away behind its "Show N more". The *filter* gets the uncapped lists.
+const TOP_FLAGS_SHOWN = 3
 
 function IntegrityDetail({ sec, student }) {
   const [openSession, setOpenSession] = useState(null)
@@ -1552,6 +1553,10 @@ function IntegrityDetail({ sec, student }) {
   )
   const [kindFilter, setKindFilter] = useState('all')
   const [flagFilter, setFlagFilter] = useState(FLAG_FILTER_ANY)
+  // The top three, with the rest behind a "Show N more" under the card — the
+  // card is a summary above the table, not a second list of it.
+  const [showAllFlags, setShowAllFlags] = useState(false)
+  const topFlagsInfo = `Most common flags in ${student.name.split(' ')[0]}'s book talks.`
 
   // The table's Engagement and positive-flag columns are derived per talk, so
   // a fixture that predates them still fills them (see `talkRating`).
@@ -1562,7 +1567,9 @@ function IntegrityDetail({ sec, student }) {
   }))
   const concerns = countFlags(talks, 'flags')
   const positives = countFlags(talks, 'posFlags')
-  const flags = concerns.slice(0, TOP_FLAGS_SHOWN)
+  const flags = concerns
+  const shownFlags = showAllFlags ? flags : flags.slice(0, TOP_FLAGS_SHOWN)
+  const hiddenFlags = Math.max(flags.length - TOP_FLAGS_SHOWN, 0)
 
   const shown = talks.filter((t) => {
     if (kindFilter !== 'all' && t.kind !== kindFilter) return false
@@ -1589,9 +1596,19 @@ function IntegrityDetail({ sec, student }) {
   return (
     <>
       <Card>
-        <SectionHeading>Top flags</SectionHeading>
+        <SectionHeading
+          actions={
+            <Tooltip content={topFlagsInfo}>
+              <button type="button" className="rc-card-info" aria-label={topFlagsInfo}>
+                i
+              </button>
+            </Tooltip>
+          }
+        >
+          Top flags
+        </SectionHeading>
         {flags.length > 0 ? (
-          flags.map((f) => (
+          shownFlags.map((f) => (
             <StatRow
               key={f.type}
               icon={f.icon}
@@ -1605,6 +1622,16 @@ function IntegrityDetail({ sec, student }) {
           <EmptyState title="No flags raised" />
         )}
       </Card>
+      {hiddenFlags > 0 && (
+        <button
+          type="button"
+          className="bp-showmore bp-showmore--before-filters"
+          onClick={() => setShowAllFlags((v) => !v)}
+        >
+          {showAllFlags ? 'Show less' : `Show ${hiddenFlags} more`}
+          <Icon name={showAllFlags ? 'chevron-up' : 'chevron-down'} size={14} stroke={2.4} />
+        </button>
+      )}
 
       <FilterBar compact>
         <FilterItem label="Talk type">
@@ -1766,23 +1793,24 @@ function HabitsDetail({ sec, c, goal }) {
       {/* Daily goal */}
       <Card>
         <SectionHeading>Daily goal</SectionHeading>
-        <div className="bp-goal-hero">
-          <GoalRing minutes={todayMins} goal={goal} color={c.bar} />
-          <div className="bp-goal-hero-main">
-            <div className="bp-goal-title">{goal} minutes a day</div>
-            <div
-              className={`bp-goal-hero-status${met ? ' bp-goal-hero-status--met' : ''}`}
-              style={met ? { '--goal-c': c.bar } : undefined}
-            >
-              {met ? (
-                <>
-                  <Icon name="check" size={14} stroke={2.6} />
-                  Goal met today
-                </>
-              ) : (
-                `${remaining} min to go today`
-              )}
-            </div>
+        {/* The web app's own goal bar (`GoalMeter`, the reader dashboard's
+            `reading_goal_banner`), so staff see today's goal the way the
+            student does. The status line under it says what the bar leaves
+            implicit: met, or how much of today is left. */}
+        <div className="bp-goal-bar">
+          <GoalMeter minutes={todayMins} goal={goal} />
+          <div
+            className={`bp-goal-hero-status${met ? ' bp-goal-hero-status--met' : ''}`}
+            style={met ? { '--goal-c': c.bar } : undefined}
+          >
+            {met ? (
+              <>
+                <Icon name="check" size={14} stroke={2.6} />
+                Goal met today
+              </>
+            ) : (
+              `${remaining} min to go today`
+            )}
           </div>
         </div>
       </Card>
@@ -1794,23 +1822,27 @@ function HabitsDetail({ sec, c, goal }) {
         footer={
           <div className="bp-heatmap-legend">
             {[
-              { bg: '#EAECF0', label: 'No reading' },
-              { bg: c.bar, label: 'Read', read: true },
-              { bg: c.bar, label: 'Goal met', read: true, goal: true },
-              { bg: c.bar, label: 'Streak', read: true, goal: true, streak: true },
+              { bg: c.bar, label: 'Logged Reading', read: true },
+              { label: 'Goal met', goal: true },
+              { bg: c.bar, label: 'Streak', read: true, streak: true },
             ].map((item, i) => (
               <div key={i} className="bp-heatmap-legend-item">
-                <div
-                  className={[
-                    'bp-heatmap-cell',
-                    item.read && 'bp-heatmap-cell--read',
-                    item.goal && 'bp-heatmap-cell--goal',
-                    item.streak && 'bp-heatmap-cell--streak',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  style={{ '--cell-bg': item.bg }}
-                />
+                {/* Goal met is the star alone — on the calendar it's the one
+                    mark on top of the reading green, so the key shows just it. */}
+                {item.goal ? (
+                  <Icon name="star-filled" size={13} className="bp-heatmap-legend-star" />
+                ) : (
+                  <div
+                    className={[
+                      'bp-heatmap-cell',
+                      item.read && 'bp-heatmap-cell--read',
+                      item.streak && 'bp-heatmap-cell--streak',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    style={{ '--cell-bg': item.bg }}
+                  />
+                )}
                 <span>{item.label}</span>
               </div>
             ))}
@@ -5330,21 +5362,12 @@ function BadgeSeal({ badge, size = 68 }) {
 
 // Show/hide search matches the real pages, which start with the field hidden
 // behind a toggle rather than spending a row on it by default.
-// The Hero's action slot. The label collapses on a phone — a 110px button beside
-// a 150px title floor is what was pushing the whole action onto a second row —
-// leaving the glyph, which is the whole message anyway.
+// The Hero's action slot. Text only, like every full-size button.
 function SearchToggle({ open, onToggle }) {
   const label = open ? 'Hide search' : 'Show search'
   return (
-    <Button
-      variant="secondary"
-      size="msm"
-      onClick={onToggle}
-      aria-label={label}
-      title={label}
-      icon={<Icon name={open ? 'x' : 'search'} size={16} stroke={2.1} />}
-    >
-      <span className="bp-btn-label">{label}</span>
+    <Button variant="secondary" size="msm" onClick={onToggle}>
+      {label}
     </Button>
   )
 }
