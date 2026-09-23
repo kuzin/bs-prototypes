@@ -1581,11 +1581,12 @@ function IntegrityDetail({ sec, student }) {
     return true
   })
 
-  // The row you clicked opens *its* session.
-  function openRow(rowIdx) {
-    const talk = shown[rowIdx]
-    const idx = sec.bookTalks.indexOf(talk)
-    setOpenSession(sessions[idx] ?? null)
+  // The row you clicked opens *its* session. Callers pass the talk's index in
+  // `talks`, which is `sec.bookTalks` one-for-one — and so is `sessions`. It
+  // used to look the talk up again in `sec.bookTalks`, but `talks` holds
+  // copies, so that search always came back -1 and no row opened anything.
+  function openRow(talkIdx) {
+    setOpenSession(sessions[talkIdx] ?? null)
   }
 
   function handleUpdateSession(updated) {
