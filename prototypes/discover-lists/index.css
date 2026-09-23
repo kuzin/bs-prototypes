@@ -52,14 +52,23 @@
 }
 
 .dl-strip {
+  /* One jacket's size, how far the next sits over it, and what three of them
+     come to. The placeholders below measure themselves from these, so a strip
+     of covers and the dashed box standing in for one can't drift apart — they
+     were 56px and 48px. `3` is `STRIP` in ListsPage. */
+  --dl-cover-w: 26px;
+  --dl-cover-h: 39px;
+  --dl-cover-lap: 11px;
+  --dl-strip-w: calc(var(--dl-cover-w) * 3 - var(--dl-cover-lap) * 2);
+
   display: flex;
   flex: 0 0 auto;
   align-items: center;
 }
 
 .dl-strip .bkcov {
-  width: 26px;
-  height: 39px;
+  width: var(--dl-cover-w);
+  height: var(--dl-cover-h);
   border-radius: 3px;
   box-shadow: 0 0 0 1px rgb(255 255 255 / 90%);
 }
@@ -67,7 +76,7 @@
 /* Overlapped, not spaced — a row of three separate thumbnails read as three
    books rather than as one list's worth. */
 .dl-strip .bkcov + .bkcov {
-  margin-left: -11px;
+  margin-left: calc(var(--dl-cover-lap) * -1);
 }
 
 .dl-strip .bkcov-title,
@@ -77,8 +86,8 @@
 
 /* A list with no books keeps the column's width, so the names stay in line. */
 .dl-strip--empty {
-  width: 48px;
-  height: 39px;
+  width: var(--dl-strip-w);
+  height: var(--dl-cover-h);
   border-radius: 3px;
   border: 1px dashed var(--c-gray-250);
 }
@@ -216,8 +225,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 39px;
+  width: var(--dl-strip-w);
+  height: var(--dl-cover-h);
   flex: 0 0 auto;
   border-radius: 3px;
   border: 1px dashed var(--c-gray-250);
