@@ -28,6 +28,13 @@
   width: min(980px, calc(100vw - 96px));
 }
 
+/* Without the reader list (a reader's own profile) it's one column of detail
+   cards, and at the queue's 980px their lines ran long enough to lose your
+   place. Capped at a reading width instead. */
+.modal--center.sm2-modal--single:has(.sm2-shell) {
+  width: min(760px, calc(100vw - 96px));
+}
+
 /* View-profile button — lives in the sidebar's reader card */
 /* The way to the reader's own page — the shared icon button, in the app's blue.
    It was a text link, which on the phone strip took as much room as the name it
@@ -288,48 +295,66 @@
 /* ── Session Details card — book (cover/title/author/Lexile) tied in with
    the date/unit table, since both describe this one session. ── */
 .sm2-details-card {
+  /* `.book-talk-review-modal__session-details` (admin/_admin_profile.scss):
+     cover and summary side by side, centred on each other. Set on the same
+     grey block the Conversation sits in, so the two record blocks — what was
+     logged, what was said — read as a pair. */
   display: flex;
+  align-items: center;
   gap: 16px;
-  border: 1.5px solid #eaeaea;
+  background: #f8f8f8;
+  border: 1px solid #eef2f6;
   border-radius: 12px;
-  padding: 16px 18px;
+  padding: 18px;
 }
 
-/* The jacket art fills the same 72px slot the colour block did, cropped to it
-   — covers come in every aspect ratio and a row of ragged heights reads worse
-   than a crop. */
-.sm2-book-cover--art {
-  object-fit: cover;
-}
-
+/* The app's `.cover`: an 82px jacket at 6px. The plain box is what the btwb
+   modal draws its own jacket into; the `.bkcov` one is the shared BookCover. */
 .sm2-book-cover {
-  width: 72px;
-  align-self: stretch;
+  width: 82px;
+  flex-shrink: 0;
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 1px 3px 8px rgba(0, 0, 0, 0.16);
-  flex-shrink: 0;
+}
+
+.sm2-book-cover.bkcov {
+  flex: 0 0 82px;
+  width: 82px;
+  border-radius: 6px;
+  box-shadow: 1px 3px 8px rgba(0, 0, 0, 0.16);
+}
+
+.sm2-book-cover.bkcov--flat {
+  padding: 8px;
 }
 
 .sm2-details-card-body {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
 .sm2-book-title {
+  margin: 0 0 4px;
   font-size: 16px;
   font-weight: 800;
-  color: #2a2a2a;
-  line-height: 1.3;
-  margin-bottom: 2px;
+  line-height: 1.25;
+  color: var(--c-gray-800);
 }
 
 .sm2-book-author {
-  font-size: 14px;
-  color: #707070;
-  margin-bottom: 8px;
+  font-size: 15px;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+
+/* The flag art beside a Flags heading, centred on the title's line. */
+.sm2-section-title:has(.sm2-section-flag) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* ── Right main panel ── */
@@ -337,7 +362,9 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 36px;
+  /* Between sections. 36px was more than the blocks needed once the details
+     sat on a grey ground of their own — the block's edge already ends it. */
+  gap: 28px;
   min-width: 0;
   padding: 22px 24px 32px;
   overflow-y: auto;
@@ -347,13 +374,21 @@
 .sm2-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 
 .sm2-section-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+/* One gap between every heading and what it heads — the section's own. The
+   review cards and the flag stack carried a 10px top margin of their own on
+   top of it, so those headings sat twice as far from their content as the
+   rest. */
+.sm2-section > .sm2-section-head + * {
+  margin-top: 0;
 }
 
 .sm2-section-title {
@@ -368,37 +403,45 @@
 }
 
 /* ── Date Read / Unit rows — folded into the Session Details book card ── */
+/* The summary's `dl`: 16px under the author, rows 8px apart split by a
+   $gray200 rule, label left and value right, both 14/500. */
 .sm2-detail-rows {
   display: flex;
   flex-direction: column;
-  margin-top: 4px;
+  margin-top: 12px;
+  /* A small white card on the block's grey, so the date and unit read as the
+     session's facts rather than more lines under the author. */
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 8px;
 }
 
 .sm2-detail-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  gap: 16px;
   padding: 8px 0;
-  border-bottom: 1px solid #f5f5f5;
-  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+.sm2-detail-row:first-child {
+  padding-top: 0;
 }
 .sm2-detail-row:last-child {
-  border-bottom: none;
+  padding-bottom: 0;
+}
+.sm2-detail-row:not(:first-child) {
+  border-top: 1px solid var(--c-gray-200);
 }
 
 .sm2-detail-row span:first-child {
-  font-size: 13px;
-  font-weight: 700;
-  color: #acacac;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  flex-shrink: 0;
+  color: var(--c-gray-750);
 }
 
 .sm2-detail-row span:last-child {
-  font-size: 14px;
-  font-weight: 600;
-  color: #424242;
+  color: var(--c-gray-800);
   text-align: right;
 }
 

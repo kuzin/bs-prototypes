@@ -3014,7 +3014,9 @@
   align-items: center;
   gap: 2px;
   flex-shrink: 0;
-  margin: -4px -4px -3px 0;
+  /* 32px of buttons beside a 21px title: -4 above and -7 below hands back
+     exactly the difference, so the title alone sets the row's height. */
+  margin: -4px -4px -7px 0;
 }
 
 .bp-rl-entry-author {
@@ -3022,7 +3024,7 @@
   color: #6b7280;
   font-weight: 600;
   margin-top: 2px;
-  margin-bottom: 7px;
+  margin-bottom: 10px;
 }
 
 /* A pill, like the Lexile chip beside it and the Completed marker that stands
@@ -4762,8 +4764,13 @@
   gap: 6px;
 }
 
+/* On a calendar card the Lexile takes the tile's own tint, like the minutes
+   beside it, so the chips read as the card's rather than grey stickers on it.
+   The table keeps the neutral chip: its rows have no tile colour to take. */
 .bp-rl-entry-foot .bp-rl-entry-lexile {
   margin-left: 0;
+  background: color-mix(in srgb, var(--rl-bar) 26%, #fff);
+  color: var(--rl-title);
 }
 
 /* The partner mark is a real logo, so it keeps its brand plate — but scaled
@@ -5638,7 +5645,7 @@
      wraps; the negative block margins are the same ones the base rule uses, so
      the cluster still doesn't set the row's height. */
   .bp-rl-entry-menu {
-    margin: -4px -4px -3px auto;
+    margin: -4px -4px -7px auto;
   }
 }
 

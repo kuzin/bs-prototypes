@@ -2,8 +2,10 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
+import { BookCover } from '@components/BookCover/BookCover'
 import { Pill } from '@components/Pill/Pill'
-import { FlagIcon } from '@components/BsIcons/BsIcons'
+import { BsIcon, FlagIcon } from '@components/BsIcons/BsIcons'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import { ChatBubble, AnnotationBlock } from '@components/ChatBubble/ChatBubble'
 import { SAFETY_SEVERITY } from './SessionsTable'
 import { talkKind, sessionConfidence, CONFIDENCE_META, CONFIDENCE_BLURB } from '../data'
@@ -81,7 +83,7 @@ function ReviewCard({ icon, color, bg, border, label, desc, action, className = 
     >
       <div className="sm2-review-card-main">
         <span className="sm2-review-badge" style={{ background: bg, color }}>
-          <Icon name={icon} size={17} stroke={2} />
+          <PlumpyIcon name={icon} size={18} />
         </span>
         <div className="sm2-review-card-text">
           <div className="sm2-review-card-label" style={{ color }}>
@@ -121,35 +123,10 @@ function FlagCard({ flag, polarity, onRequestRemove }) {
       </div>
       {onRequestRemove && (
         <button className="sm2-review-remove" onClick={onRequestRemove} title="Remove flag">
-          <Icon name="trash" size={15} />
+          <PlumpyIcon name="trash" size={16} />
         </button>
       )}
     </div>
-  )
-}
-
-// The book's real jacket where Open Library has one, the colour block where it
-// doesn't. `naturalWidth <= 1` is Open Library's "no cover" answer — it serves
-// a 1px image rather than a 404.
-function BookCover({ book }) {
-  const [failed, setFailed] = useState(false)
-  if (!book.isbn || failed) {
-    return (
-      <div className="sm2-book-cover" style={{ background: book.color }}>
-        <Icon name="book" size={28} color="rgba(255,255,255,0.65)" />
-      </div>
-    )
-  }
-  return (
-    <img
-      className="sm2-book-cover sm2-book-cover--art"
-      src={`https://covers.openlibrary.org/b/isbn/${book.isbn.replace(/-/g, '')}-M.jpg`}
-      alt=""
-      onLoad={(e) => {
-        if (e.target.naturalWidth <= 1) setFailed(true)
-      }}
-      onError={() => setFailed(true)}
-    />
   )
 }
 
@@ -384,7 +361,14 @@ export function SessionModal({
         <span className="sm2-section-title">Session Details</span>
       </div>
       <div className="sm2-details-card">
-        <BookCover book={d.book} />
+        {/* The shared cover, as the app's `BookCover` is here: the jacket where
+            Open Library has one, the product's own placeholder where it
+            doesn't, tinted with the book's colour. */}
+        <BookCover
+          book={{ ...d.book, cover: [d.book.color] }}
+          size="fill"
+          className="sm2-book-cover"
+        />
         <div className="sm2-details-card-body">
           <div className="sm2-book-title">{d.book.title}</div>
           <div className="sm2-book-author">{d.book.author}</div>
@@ -451,6 +435,7 @@ export function SessionModal({
       variant="center"
       ariaLabel="Session detail"
       closeBadge
+      className={showReaderList ? '' : 'sm2-modal--single'}
     >
       <ModalClose onClick={onClose} />
       <div className="sm2-shell">
@@ -655,11 +640,13 @@ export function SessionModal({
                 <div className="sm2-section">
                   <div className="sm2-section-head">
                     <span className="sm2-section-title sm2-section-title--pos">
-                      <Icon
-                        name="flag"
-                        size={13}
-                        color="#16A97A"
-                        style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
+                      {/* The app heads its Flags section with its own flag art
+                          (`.flagged-icon`), the same family as each row's. */}
+                      <BsIcon
+                        set="flags"
+                        name="positive-flag"
+                        size={20}
+                        className="sm2-section-flag"
                       />
                       Flags
                     </span>
@@ -685,11 +672,13 @@ export function SessionModal({
                 <div className="sm2-section">
                   <div className="sm2-section-head">
                     <span className="sm2-section-title sm2-section-title--neg">
-                      <Icon
-                        name="flag"
-                        size={13}
-                        color="#DC2626"
-                        style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
+                      {/* The app heads its Flags section with its own flag art
+                          (`.flagged-icon`), the same family as each row's. */}
+                      <BsIcon
+                        set="flags"
+                        name="negative-flag"
+                        size={20}
+                        className="sm2-section-flag"
                       />
                       Flags
                     </span>
