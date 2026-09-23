@@ -51,7 +51,12 @@ export function TitleCard({ title, meta, onOpen, badge }) {
           </span>
         }
       >
-        <button type="button" onClick={onOpen} aria-label={`${title.title} — ${title.author}`}>
+        <button
+          type="button"
+          className="tcard-open"
+          onClick={onOpen}
+          aria-label={`${title.title} — ${title.author}`}
+        >
           <span className="tcard-cover">
             <BookCover book={{ coverId: title.coverId, title: title.title }} size="fill" />
           </span>

@@ -42,6 +42,12 @@ import './RowAction.css'
  * drawing, a partner mark. Pass `as="span"` for a mark that reports rather than
  * acts (a flag, a partner logo): same 32px cell, no button semantics.
  *
+ * `done` is the switched-on state of an action that toggles — the title is on
+ * the list, the row is starred. It fills: a green disc with a white mark in it,
+ * and pressing it switches back off the way a bookmark does. Don't reach for
+ * `disabled` to say this; grey reads as "you can't", which on a book already
+ * added said the title had been refused when in fact it had worked.
+ *
  * `tooltip={false}` keeps the accessible name and drops the bubble — for a
  * dots menu, where the label says nothing the glyph doesn't, and a bubble that
  * fires on every row follows the cursor down the table.
@@ -51,6 +57,7 @@ import './RowAction.css'
  * @param {function} onClick
  * @param {'button'|'span'} as
  * @param {boolean}  disabled
+ * @param {boolean}  done      switched on for this row — a filled green disc
  * @param {boolean}  tooltip   set false for a self-evident control
  */
 export function RowAction({
@@ -59,6 +66,7 @@ export function RowAction({
   onClick,
   as = 'button',
   disabled = false,
+  done = false,
   tooltip = true,
   className = '',
   children,
@@ -70,7 +78,7 @@ export function RowAction({
     ) : (
       <Icon name={icon} size={20} stroke={1.9} />
     ))
-  const cls = `row-action ${className}`.trim()
+  const cls = `row-action${done ? ' row-action--done' : ''} ${className}`.trim()
 
   // A mark, not a control: it says what's on the row, so it takes the same cell
   // but no button role and no pointer.

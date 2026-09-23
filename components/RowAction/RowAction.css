@@ -39,6 +39,23 @@
   cursor: default;
 }
 
+/* Done, not unavailable — and still a control. A disabled action greys out
+   because there is nothing to press; this one is switched *on*, and pressing it
+   switches it back off, the way a bookmark does. So it fills: a green disc with
+   a white mark in it, which reads as a state rather than as a glyph that
+   happens to be a different colour. The grey it replaces said the title had
+   been refused when in fact it had been added. */
+.row-action--done {
+  background: var(--c-green);
+  color: #fff;
+}
+
+/* The hover tint would paint over the fill, so it deepens it instead. */
+.row-action--done:hover:not(:disabled) {
+  background: var(--c-green-ink);
+  color: #fff;
+}
+
 /* A mark rather than a control — it reports, so it doesn't invite a press. */
 .row-action--static {
   cursor: default;
