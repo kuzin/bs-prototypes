@@ -92,18 +92,6 @@ button {
   flex: 1 1 auto;
   min-height: 0;
 }
-/* Panel head carries a title + sub line, so top-align it. */
-.bt-create .cc-panel-head {
-  align-items: flex-start;
-}
-.bt-panel-sub {
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: var(--c-text-light);
-  max-width: 60ch;
-  line-height: 1.45;
-}
-
 .bt-field-row {
   display: flex;
   gap: 14px;
