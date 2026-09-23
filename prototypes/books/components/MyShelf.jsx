@@ -9,13 +9,7 @@ import { EmptyState } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 import '@components/Cards/Cards.css'
 import '@components/Tabs/Tabs.css'
-import { getBook, getSessions, PARTNERS, readNowPartner, SHELF_STATUS, SHELF_ORDER } from '../data'
-
-function readingPct(book) {
-  const s = getSessions(book.id).find((x) => x.toPage)
-  if (!s || !book.pageCount) return null
-  return Math.min(100, Math.round((s.toPage / book.pageCount) * 100))
-}
+import { getBook, PARTNERS, readNowPartner, SHELF_STATUS, SHELF_ORDER } from '../data'
 
 /**
  * The Wish List — everything the reader has saved, on the shelf the Reading Log's
@@ -119,7 +113,6 @@ export function MyShelf({ shelf, onOpen, onWish, onDiscover, settings }) {
           </h2>
           <ul className="bk-shelfgrid">
             {g.books.map((b) => {
-              const pct = g.id === 'reading' ? readingPct(b) : null
               return (
                 <li key={b.id} className="bk-shelftile">
                   <button
@@ -150,14 +143,6 @@ export function MyShelf({ shelf, onOpen, onWish, onDiscover, settings }) {
                   >
                     <Icon name="bookmark-filled" size={15} />
                   </button>
-                  {pct != null && (
-                    <div className="bk-shelfprog" title={`${pct}% read`}>
-                      <div className="bk-readlog-pbar">
-                        <span style={{ width: `${pct}%` }} />
-                      </div>
-                      <span className="bk-shelfprog-text">{pct}%</span>
-                    </div>
-                  )}
                 </li>
               )
             })}

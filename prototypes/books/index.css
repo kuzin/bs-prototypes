@@ -1256,21 +1256,25 @@ button {
   padding: 18px 0;
   border-bottom: 1px solid var(--bk-line);
 }
+/* A short form, laid out as one: the prompt, then a labelled field per thing
+   the reader has to give. The rating used to sit ranged right of the prompt,
+   where it read as an ornament beside a heading rather than as the required
+   input it is. */
 .bk-composer-main {
-  flex: 1;
-  min-width: 0;
-}
-.bk-composer-top {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
 }
 .bk-composer-prompt {
   font-weight: 800;
   font-size: 15px;
   color: var(--bk-ink);
+}
+/* Stars are their own control; the field's chrome is the label above them. */
+.bk-composer-main .star-input {
+  padding-top: 1px;
 }
 .bk-composer-text {
   width: 100%;
@@ -1312,7 +1316,9 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  /* Room enough that the head reads as the list's heading rather than as the
+     first review's own line. */
+  margin-bottom: 14px;
 }
 .bk-review-listhead h3 {
   font-size: 16px;
@@ -1323,9 +1329,11 @@ button {
   display: inline-flex;
   gap: 4px;
   align-items: center;
-  padding: 6px 10px;
+  /* Sits beside a 16px heading and does a real job, so it takes the rung under
+     it rather than the caption size it had. */
+  padding: 7px 12px;
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--c-gray-700);
   cursor: pointer;
@@ -1469,20 +1477,6 @@ button {
   border: 1px solid #f6cdba;
 }
 
-.bk-readlog-pbar {
-  flex: 1;
-  height: 8px;
-  border-radius: 999px;
-  background: #dcebe7;
-  overflow: hidden;
-}
-.bk-readlog-pbar span {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #14b8a6, #0d9488);
-}
-
 /* The three filters sit over the shelf, and the segmented control leads —
    which shelf is the question a reader arrives with; genre and format narrow
    the answer. */
@@ -1582,21 +1576,6 @@ button {
 .bk-shelftile-off:hover {
   color: #b3271a;
   transform: scale(1.08);
-}
-.bk-shelfprog {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-}
-.bk-shelfprog .bk-readlog-pbar {
-  background: #eef0f3;
-  height: 6px;
-}
-.bk-shelfprog-text {
-  font-size: 11.5px;
-  font-weight: 800;
-  color: #0f766e;
 }
 .bk-text-para {
   margin-bottom: 18px;
@@ -2074,6 +2053,16 @@ button {
   gap: 22px 18px;
 }
 
+/* One or two friends hug a card's own width rather than being stretched across
+   the whole column — `auto-fit` collapses the tracks nobody is standing in and
+   hands their width to whoever is left, which turned a single reader into a
+   744px banner. Three is where a row of them starts reading as a row, so that
+   is where the stretching starts. `:has(> :nth-child(3))` is "three or more". */
+.bk-detail .bk-fwr-grid:not(:has(> :nth-child(3))) {
+  grid-template-columns: repeat(auto-fit, min(240px, 100%));
+  justify-content: start;
+}
+
 /* A shelf source's row ends in the walk rather than a button — the shelving
    area off MARC 852 $c over the call number off $h$i, which is what a reader
    actually carries to the stacks. Ranged right, where the button was, so the
@@ -2114,12 +2103,17 @@ button {
    a phone.
 
    The rules below are the same swap `Tabs.css` makes at its own breakpoint,
-   asked a different question. */
+   asked a different question.
+
+   592px, not 560: the five pills hold one line down to 583px and wrap at 582,
+   so a 560px switch left a band where the strip was two rows deep before the
+   select ever appeared. The extra nine pixels are headroom — a longer count or
+   a different font metric shouldn't reopen it. */
 .bk-detail .bkp-main {
   container: bkp-main / inline-size;
 }
 
-@container bkp-main (max-width: 560px) {
+@container bkp-main (max-width: 592px) {
   .bkp-tabs .tabs--pill:has(> .tabs-select) {
     display: block;
     padding: 0;

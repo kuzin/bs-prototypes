@@ -65,13 +65,7 @@ export function ListPreview({ list, onClose }) {
           </header>
 
           <div className="dlv-stage bk-app">
-            {list.external ? (
-              <EmptyState
-                icon={<Icon name="external-link" size={26} />}
-                title="This list links out"
-                description={list.externalUrl || 'Add the address and readers will follow it.'}
-              />
-            ) : books.length ? (
+            {books.length ? (
               <Shelf
                 shelf={shelf}
                 books={books}

@@ -3,7 +3,6 @@ import { PageHeader } from '@components/PageHeader/PageHeader'
 import { BackBar } from '@components/BackBar/BackBar'
 import { SectionCard } from '@components/SectionCard/SectionCard'
 import { Field, Input, Textarea, Select, MultiSelect } from '@components/Form/Form'
-import { Toggle } from '@components/Toggle/Toggle'
 import { Button } from '@components/Button/Button'
 import { RowAction, RowActions } from '@components/RowAction/RowAction'
 import { BookCover } from '@components/BookCover/BookCover'
@@ -11,7 +10,6 @@ import { EmptyState, Banner } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
 import '@components/SectionCard/SectionCard.css'
 import '@components/Form/Form.css'
-import '@components/Toggle/Toggle.css'
 import '@components/Button/Button.css'
 import '@components/RowAction/RowAction.css'
 import '@components/BookCover/BookCover.css'
@@ -69,13 +67,10 @@ export function ListEditor({
     <>
       {!embedded && <BackBar label="Back to Book Lists" onClick={onDone} />}
 
+      {/* No subtitle: the instructional half told an editor what a form already
+          shows, and the read-only half repeated the banner underneath it. */}
       <PageHeader
         title={list.name || 'New book list'}
-        subtitle={
-          readOnly
-            ? `${list.ownerName}’s list — you can read it, but only they can change it.`
-            : 'A list is a shelf on Discover. Give it a name, pick who it’s for, then add the books.'
-        }
         actions={
           <>
             <Button variant="secondary" onClick={() => onPreview(list.id)}>
@@ -113,14 +108,6 @@ export function ListEditor({
               disabled={readOnly}
             />
           </Field>
-
-          {/* The app's Active toggle, which is the whole of "is this on
-              Discover" — a hidden list is still a list, it just isn't a shelf. */}
-          <Field label="On Discover">
-            <Toggle checked={list.active} onChange={(v) => set({ active: v })} disabled={readOnly}>
-              {list.active ? 'Shown to readers' : 'Hidden'}
-            </Toggle>
-          </Field>
         </SectionCard>
 
         <SectionCard header="divider" title="Who it’s for" className="dl-card">
@@ -154,34 +141,7 @@ export function ListEditor({
           </Field>
         </SectionCard>
 
-        <SectionCard header="divider" title="Where the list lives" className="dl-card">
-          <Field label="Where will this list be located?">
-            <Select
-              value={list.external ? 'true' : 'false'}
-              onChange={(e) => set({ external: e.target.value === 'true' })}
-              disabled={readOnly}
-            >
-              <option value="false">The list will exist on this site.</option>
-              <option value="true">The list will exist on another site.</option>
-            </Select>
-          </Field>
-
-          {list.external && (
-            <Field label="List URL" required error={showErr('externalUrl')}>
-              <Input
-                value={list.externalUrl}
-                onChange={(e) => set({ externalUrl: e.target.value })}
-                placeholder="https://…"
-                maxLength={255}
-                disabled={readOnly}
-              />
-            </Field>
-          )}
-        </SectionCard>
-
-        {/* The second half of the app's pair, folded in. An external list has
-            no books of its own — it's a link out — so the card says so instead
-            of offering a picker that would go nowhere. */}
+        {/* The second half of the app's pair, folded in. */}
         <SectionCard
           header="divider"
           className="dl-card dl-card--books"
@@ -194,21 +154,14 @@ export function ListEditor({
             </>
           }
           actions={
-            !readOnly &&
-            !list.external && (
+            !readOnly && (
               <Button disabled={isFull(list)} onClick={() => setPicking(true)}>
                 Add a book
               </Button>
             )
           }
         >
-          {list.external ? (
-            <EmptyState
-              icon={<Icon name="external-link" size={26} />}
-              title="This list lives somewhere else"
-              description="Readers follow the link out, so there are no books to pick here."
-            />
-          ) : books.length ? (
+          {books.length ? (
             <ul className="dl-books">
               {books.map((b, i) => (
                 <li key={b.id} className="dl-book">

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Field } from '@components/Form/Form'
 import { Icon } from '@components/Icon/Icon'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Button } from '@components/Button/Button'
@@ -60,17 +61,24 @@ function ReviewComposer({ onAdd }) {
   return (
     <div className="bk-composer">
       <div className="bk-composer-main">
-        <div className="bk-composer-top">
-          <span className="bk-composer-prompt">What did you think?</span>
-          <StarInput value={stars} onChange={setStars} size={22} />
-        </div>
-        <textarea
-          className="bk-composer-text"
-          rows={3}
-          value={body}
-          placeholder="Share your review — no spoilers! What would you tell a friend?"
-          onChange={(e) => setBody(e.target.value)}
-        />
+        <span className="bk-composer-prompt">What did you think?</span>
+        {/* The rating is a field, not an ornament. Ranged right of the prompt it
+            read as decoration next to a heading, and nothing said a review
+            can't be posted without it — which is exactly what Post review
+            enforces. A label on the left with the form system's required mark
+            says so before the button refuses. */}
+        <Field label="Your rating" required>
+          <StarInput value={stars} onChange={setStars} size={26} />
+        </Field>
+        <Field label="Your review" required>
+          <textarea
+            className="bk-composer-text"
+            rows={3}
+            value={body}
+            placeholder="Share your review — no spoilers! What would you tell a friend?"
+            onChange={(e) => setBody(e.target.value)}
+          />
+        </Field>
         {image && (
           <span className="bk-composer-pic">
             <img src={pictureSrc(image)} alt="" />
@@ -205,7 +213,7 @@ export function Reviews({ book, userReviews, onAdd }) {
             placement="bottom-end"
             trigger={({ toggle }) => (
               <button type="button" className="bk-review-sort" onClick={toggle}>
-                {SORTS[sort].label} <Icon name="chevron-down" size={14} />
+                {SORTS[sort].label} <Icon name="chevron-down" size={16} />
               </button>
             )}
           >

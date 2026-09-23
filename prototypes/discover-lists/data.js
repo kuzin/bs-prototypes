@@ -10,8 +10,6 @@
 //   name               1–100 chars, required    "Title"
 //   description        free text
 //   reading_list_image ≥625px wide              the shelf's art
-//   external_list      on this site / another   a list that lives elsewhere
-//   external_list_url  http(s)://, ≤255 chars
 //   grade_levels       many, REQUIRED           "Suggested grade levels"
 //   genres             many
 //   keywords           comma-separated          "Searchable Keywords"
@@ -164,8 +162,6 @@ export const SEED_LISTS = [
     scope: 'class',
     classroomId: 'class-a',
     active: true,
-    external: false,
-    externalUrl: '',
     grades: ['4th Grade'],
     genres: ['Realistic Fiction'],
     keywords: 'class picks, read next, fourth grade',
@@ -195,8 +191,6 @@ export const SEED_LISTS = [
     locked: true,
     scope: 'site',
     active: true,
-    external: false,
-    externalUrl: '',
     grades: ['3rd Grade', '4th Grade', '5th Grade', '6th Grade'],
     genres: ['Graphic Novel', 'Humor', 'Adventure'],
     keywords: 'comics plus, graphic novels, included',
@@ -213,8 +207,6 @@ export const SEED_LISTS = [
     ownerWho: 'Media Specialist',
     scope: 'site',
     active: true,
-    external: false,
-    externalUrl: '',
     grades: ['3rd Grade', '4th Grade', '5th Grade'],
     genres: ['Graphic Novel', 'Humor'],
     keywords: 'graphic novels, comics, dog man',
@@ -231,8 +223,6 @@ export const SEED_LISTS = [
     ownerWho: 'Media Specialist',
     scope: 'site',
     active: true,
-    external: false,
-    externalUrl: '',
     grades: ['4th Grade', '5th Grade', '6th Grade'],
     genres: ['Nonfiction'],
     keywords: 'nonfiction, true stories, biography',
@@ -249,33 +239,12 @@ export const SEED_LISTS = [
     ownerWho: 'Media Specialist Plus',
     scope: 'site',
     active: false,
-    external: false,
-    externalUrl: '',
     grades: ['3rd Grade', '4th Grade', '5th Grade'],
     genres: ['Adventure', 'Fantasy'],
     keywords: 'summer, summer reading, sora',
     books: ['wild-robot', 'matilda', 'pax', 'lightning-thief', 'holes', 'hatchet'],
     accent: '#E8553A',
     updated: 'Jun 2, 2026',
-  },
-  {
-    id: 'newbery',
-    name: 'Newbery Medal Winners',
-    description: 'The ALA’s full list of medal winners, kept up to date on their site.',
-    owner: 'media_specialist',
-    ownerName: 'Ms. Rivera',
-    ownerWho: 'Media Specialist',
-    scope: 'site',
-    active: true,
-    // The real form's second question: a list can live somewhere else entirely.
-    external: true,
-    externalUrl: 'https://www.ala.org/alsc/awardsgrants/bookmedia/newbery',
-    grades: ['4th Grade', '5th Grade', '6th Grade'],
-    genres: ['Realistic Fiction', 'Historical'],
-    keywords: 'newbery, award winners, medal',
-    books: [],
-    accent: '#B45309',
-    updated: 'Sep 1, 2026',
   },
   {
     id: 'reyes-poetry',
@@ -287,8 +256,6 @@ export const SEED_LISTS = [
     scope: 'class',
     classroomId: 'class-b',
     active: false,
-    external: false,
-    externalUrl: '',
     grades: ['4th Grade'],
     genres: ['Novel in Verse'],
     keywords: 'poetry, read aloud, novels in verse',
@@ -314,8 +281,6 @@ export const blankList = (role, classroom = null) => ({
   classroomId: classroom?.id ?? null,
   // `HasState`'s INITIAL_STATE is active, so a new list starts on.
   active: true,
-  external: false,
-  externalUrl: '',
   grades: classroom ? [classroom.grade] : [],
   genres: [],
   keywords: '',
@@ -365,19 +330,12 @@ export const isLocked = (list) => Boolean(list?.locked)
 
 /* `name` is the only required text on the real form, and `grade_levels` is the
    only required collection (`validates_presence_of [:name, :grade_levels,
-   :microsite]`). An external list needs its URL on top of that. */
+   :microsite]`). */
 export function listErrors(list) {
   const errors = {}
   if (!list.name.trim()) errors.name = 'Give the list a title.'
   else if (list.name.length > 100) errors.name = 'A title runs to 100 characters.'
   if (!list.grades.length) errors.grades = 'Pick at least one grade level.'
-  if (list.external) {
-    if (!list.externalUrl.trim()) errors.externalUrl = 'A list on another site needs its address.'
-    else if (!/^https?:\/\//i.test(list.externalUrl))
-      errors.externalUrl = 'Start the address with http:// or https://'
-    else if (list.externalUrl.length > 255)
-      errors.externalUrl = 'An address runs to 255 characters.'
-  }
   return errors
 }
 

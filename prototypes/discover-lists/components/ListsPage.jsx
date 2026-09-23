@@ -79,9 +79,10 @@ export function ListsPage({ role, lists, onOpen, onCreate, onToggleActive, onMov
 
   return (
     <>
+      {/* No subtitle: the role banner directly under it already says what this
+          page is and what you may do to it. */}
       <PageHeader
         title="Book Lists"
-        subtitle="The lists readers browse on Discover."
         actions={
           role.ownOnly ? undefined : <Button onClick={() => onCreate(null)}>Create a list</Button>
         }
@@ -154,7 +155,7 @@ function ListTable({ rows, all, role, onOpen, onToggleActive, onMove, onPreview,
             </span>
             <div className="dl-nametext">
               <span className="dl-name">{l.name}</span>
-              <span className="dl-sub">Whichever list their class keeps, if it keeps one</span>
+              <span className="dl-sub">Set by each reader’s own teacher</span>
             </div>
           </div>
         ) : (
@@ -166,11 +167,7 @@ function ListTable({ rows, all, role, onOpen, onToggleActive, onMove, onPreview,
                 {l.partner && <PartnerMark id={l.partner} size={16} />}
               </span>
               <span className="dl-sub">
-                {l.external
-                  ? 'Lives on another site'
-                  : `${l.books.length} ${l.books.length === 1 ? 'book' : 'books'}`}
-                {' · '}
-                {l.ownerName}
+                {l.books.length} {l.books.length === 1 ? 'book' : 'books'} · {l.ownerName}
               </span>
             </div>
           </div>
