@@ -161,12 +161,13 @@ export function ClassRecommendations({ onOpenStudent, onAddToList, listed, listF
                 icon={on ? 'check' : 'bookmark'}
                 label={
                   on
-                    ? 'Already on the class list'
+                    ? 'Take off the class Book List'
                     : listFull
                       ? 'The class list is full'
                       : 'Add to the class Book List'
                 }
-                disabled={on || listFull}
+                disabled={!on && listFull}
+                done={on}
                 onClick={(e) => {
                   e?.stopPropagation?.()
                   onAddToList(row.title.id)
@@ -251,12 +252,13 @@ export function ClassRecommendations({ onOpenStudent, onAddToList, listed, listF
                     icon={listed?.includes(row.title.id) ? 'check' : 'bookmark'}
                     label={
                       listed?.includes(row.title.id)
-                        ? 'Already on the class list'
+                        ? 'Take off the class Book List'
                         : listFull
                           ? 'The class list is full'
                           : 'Add to the class Book List'
                     }
-                    disabled={listed?.includes(row.title.id) || listFull}
+                    disabled={!listed?.includes(row.title.id) && listFull}
+                    done={listed?.includes(row.title.id)}
                     onClick={() => onAddToList(row.title.id)}
                   />
                 )

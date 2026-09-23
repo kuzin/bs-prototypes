@@ -1589,7 +1589,10 @@ import { Icon } from '@components/Icon/Icon'
 <RowActions>
   <RowAction icon="gift" label="Redeem" onClick={redeem} />
   <RowAction as="link" label="View" onClick={open} />
-</RowActions>`,
+</RowActions>
+
+/* Switched on for this row — a filled green disc you can press to switch off */
+<RowAction icon="check" label="Take off the class Book List" done onClick={remove} />`,
     desc: (
       <>
         The one control that sits at the end of a table row. The app has exactly two shapes for this
@@ -1624,12 +1627,26 @@ import { Icon } from '@components/Icon/Icon'
         <code>RowActions</code> is the cell they sit in — <code>.row-actions</code> right-aligns in
         the app&apos;s table Sass, so several of them line up on one grid however many a given row
         has.
+        <br />
+        <br />
+        <code>done</code> is the switched-on state of an action that toggles — the title is on the
+        list, the row is starred. It fills: a green disc with a white mark in it, and pressing it
+        switches back off the way a bookmark does. Don&apos;t reach for <code>disabled</code> to say
+        this — grey reads as &ldquo;you can&apos;t&rdquo;, which on a book already added said the
+        title had been refused when in fact it had worked.
       </>
     ),
     render: () => (
       <>
         <Variant label="one action per row">
           <RowAction icon="dots" label="Actions for The Hobbit" onClick={() => {}} />
+        </Variant>
+        <Variant label="done — the switched-on half of a toggle, beside off and unavailable">
+          <RowActions>
+            <RowAction icon="bookmark" label="Add to the class Book List" onClick={() => {}} />
+            <RowAction icon="check" label="Take off the class Book List" done onClick={() => {}} />
+            <RowAction icon="bookmark" label="The class list is full" disabled />
+          </RowActions>
         </Variant>
         <Variant label="a cluster — RowActions right-aligns them on one grid">
           <RowActions>

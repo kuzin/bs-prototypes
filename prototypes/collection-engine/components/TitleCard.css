@@ -21,7 +21,11 @@
   width: 100%;
 }
 
-.tcard button {
+/* The card's own button — the jacket you press to open the panel. Named rather
+   than `.tcard button`, which is a type selector and so outranked anything a
+   control *inside* the card set on itself: it was quietly stripping the fill
+   off the badge in the corner. */
+.tcard-open {
   display: block;
   width: 100%;
   padding: 0;
@@ -59,12 +63,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgb(255 255 255 / 92%);
   border-radius: 999px;
   box-shadow: 0 1px 3px rgb(15 23 42 / 18%);
 }
+/* The white disc is the unset state's. Excluded rather than overridden, so the
+   green fill `.row-action--done` carries never depends on which stylesheet the
+   consumer imported last. */
+.tcard-badge .row-action:not(.row-action--done) {
+  background: rgb(255 255 255 / 92%);
+}
 
-.tcard button:hover .tcard-cover {
+.tcard-open:hover .tcard-cover {
   transform: translateY(-3px);
 }
 
