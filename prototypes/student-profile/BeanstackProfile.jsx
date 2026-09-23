@@ -730,7 +730,7 @@ function TitleRow({ title: t }) {
   return (
     <div className="bp-title-row">
       <a href={href} target="_blank" rel="noreferrer" className="bp-title-cover-link">
-        <CoverImage isbn={t.isbn} title={t.title} />
+        <CoverImage isbn={t.isbn} title={t.title} author={t.author} />
       </a>
       <div className="bp-title-row-main">
         <div className="bp-title-row-top">
@@ -1009,7 +1009,7 @@ function TitleShelf({ titles, onNavigate }) {
               // which book it is (`title` carries it for anyone who needs it).
               <div key={i} className="bp-latest-item" title={`${t.title} — ${t.author}`}>
                 <div className="bp-latest-cover">
-                  <CoverImage isbn={t.isbn} title={t.title} />
+                  <CoverImage isbn={t.isbn} title={t.title} author={t.author} />
                   <span className="bp-latest-lexile">{t.lexile}L</span>
                 </div>
               </div>

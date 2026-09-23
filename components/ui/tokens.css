@@ -283,12 +283,14 @@
 
    The admin shells pin to the viewport and scroll an inner column instead, so
    a permanent gutter there is dead width beside their own scrollbar — `:has()`
-   stands the rule down when one of those is on the page. */
+   stands the rule down when one of those is on the page. The two profiles'
+   shells (`.bp-adm`, `.rp-adm`) are built the same way without the class,
+   so they're named here too — missing them drew a second bar beside theirs. */
 html {
   scrollbar-width: thin;
   scrollbar-color: var(--c-gray-350) transparent;
 }
-html:not(:has(.app-shell)) {
+html:not(:has(.app-shell, .bp-adm, .rp-adm)) {
   overflow-y: scroll;
   scrollbar-gutter: stable;
 }

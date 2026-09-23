@@ -835,7 +835,7 @@ function TitleShelf({ titles, onNavigate }) {
               // which book it is (`title` carries it for anyone who needs it).
               <div key={i} className="rp-latest-item" title={`${t.title} — ${t.author}`}>
                 <div className="rp-latest-cover">
-                  <CoverImage isbn={t.isbn} title={t.title} />
+                  <CoverImage isbn={t.isbn} title={t.title} author={t.author} />
                 </div>
               </div>
             ))}
@@ -4876,7 +4876,7 @@ function RecommendedPage({ student }) {
                 minWidth: 220,
                 render: (v, r) => (
                   <div className="rp-reco-cell">
-                    <CoverImage isbn={r.isbn} title={v} />
+                    <CoverImage isbn={r.isbn} title={v} author={r.author} />
                     <span>
                       <span className="rp-tbl-name">{v}</span>
                       <span className="rp-tbl-sub">{r.author}</span>

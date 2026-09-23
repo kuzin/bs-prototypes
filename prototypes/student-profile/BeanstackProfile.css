@@ -3628,6 +3628,13 @@
 }
 
 /* Bigger than the list-row cover — this is the visual anchor of the card */
+/* A placeholder cover's title and author stack from the bottom, which is
+   where the shelf's Lexile badge sits (the student shelf's; the reader one
+   has none but takes the same room so the two shelves match). Room for it under the text. */
+.bp-latest-cover .bkcov--flat {
+  padding-bottom: 38px;
+}
+
 .bp-latest-cover .bp-title-cover {
   width: 100%;
   height: auto;
@@ -4363,8 +4370,14 @@
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  /* motivation accent from the `C` palette — the names are always RMI factors */
-  color: #993c1d;
+  /* Grey, like the rest of the row's furniture — the factor's name is the
+     figure, and the motivation accent on its glyph competed with it. */
+  color: var(--c-gray-500);
+  /* The glyphs are centred in their boxes and the boxes on the line, but a
+     factor name is mostly lowercase: its mass sits on the x-height, 1.5px
+     under the cap-height middle the flex centring lines up with. Dropped to
+     meet it. */
+  transform: translateY(1px);
 }
 
 /* The stat list's head and rows carry their own horizontal insets, so the card
