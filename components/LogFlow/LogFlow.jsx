@@ -8,7 +8,8 @@ import { Avatar } from '@components/Avatar/Avatar'
 import { Icon } from '@components/Icon/Icon'
 
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
-import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
+import { PARTNER_BRANDS, PartnerMark } from '@components/PartnerBrand/PartnerBrand'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import { PARTNER_PRESETS } from '@components/PartnerConnect/partners'
 import { Flyout, FlyoutMenu, FlyoutMenuItem } from '@components/Flyout/Flyout'
 import { Modal, ModalClose } from '@components/Modal/Modal'
@@ -172,6 +173,10 @@ export function LogFlow({
      flow has no shelf of its own, so the surface that keeps one handles it;
      left off, the recommendation isn't offered at all. */
   onAddToWishlist,
+  /* Which titles are on that shelf already, so Benny's picks open on the right
+     label. Ids, in anything a `Set` can be made from; left off, every pick
+     starts unsaved. */
+  wishlist,
   /* The catalog this flow searches and the shelves it offers. All demo data,
      so all of it comes in — a shared component doesn't get to know about any
      one prototype's fixtures. */
@@ -187,6 +192,10 @@ export function LogFlow({
      reader hands them here to confirm it — so the form arrives with **Finished**
      already answered. They can still say otherwise. */
   startFinished = false,
+  /* Minutes the surface already knows about — the partner reader counts how
+     long it was open, so the form arrives with the one number it would
+     otherwise ask the reader to remember. */
+  startMinutes,
   readingList,
   /* `reading_list_challenges#index` — the book-list challenges this reader is
      enrolled in. Given any, the search screen offers them. */
@@ -268,7 +277,7 @@ export function LogFlow({
     // A title-less type opens straight on its form, so it needs its stand-in
     // book in place before the step renders.
     setBook(bookProp ?? (siteType.withoutTitle ? untitledFor(siteType) : null))
-    setMinutesInput('')
+    setMinutesInput(startMinutes ? `${startMinutes}m` : '')
     setCountInput('')
     setDates([])
     setDateOpen(false)
@@ -283,7 +292,7 @@ export function LogFlow({
     // every render, so listing it here would reset the flow under the reader's
     // hands.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, bookProp, startFinished])
+  }, [open, bookProp, startFinished, startMinutes])
 
   // The flow covers the window, so the page behind it holds still.
   useLockScroll(open)
@@ -622,14 +631,15 @@ export function LogFlow({
               /* Only a finished book has a "what next" — a log that left the
                  reader mid-book already has its answer. */
               nextUp={
-                result?.finished && books[result.book?.id]?.nextUp
-                  ? {
-                      book: books[books[result.book.id].nextUp.id],
-                      reason: books[result.book.id].nextUp.reason,
-                    }
+                result?.finished
+                  ? [].concat(books[result.book?.id]?.nextUp ?? []).flatMap((pick) => {
+                      const found = books[pick.id]
+                      return found ? [{ book: found, reason: pick.reason }] : []
+                    })
                   : null
               }
               onAddToWishlist={onAddToWishlist}
+              wishlist={wishlist}
               onTalkToBenny={onTalkToBenny}
               /* A word waiting is one more screen, not a second offer crammed
                  onto this one — the success screen ends in Next. */
@@ -888,7 +898,13 @@ function CoverTile({
               title opens, and *which* app opens it is what the menu is for.
               Gated on `onRead` for the same reason the menu item is: without
               somewhere to go it would be a promise the tile can't keep. */}
-          {partner && onRead && <span className="lf-tile-now" title="Read it now" />}
+          {partner && onRead && (
+            <span
+              className="lf-tile-now"
+              title={`Read it now in ${PARTNER_NAMES[partner] ?? 'the app'}`}
+              style={{ '--now': PARTNER_BRANDS[partner]?.accent }}
+            />
+          )}
           {/* `.completed-checkmarker-wrapper` */}
           {done && (
             <span className="lf-tile-mark lf-tile-mark--done">
@@ -909,8 +925,12 @@ function CoverTile({
           <FlyoutMenu>
             {/* Only where there is somewhere to go: the host has to own the
                 partner's app, so without a handler the choice isn't offered. */}
+            {/* The partner's own mark on the row that names it, and the log's
+                glyph on the row that logs — two choices that read the same
+                are told apart faster by a picture than by their first word. */}
             {partner && onRead && (
               <FlyoutMenuItem
+                icon={<PartnerMark id={partner} size={18} />}
                 onClick={() => {
                   close()
                   onRead?.(book)
@@ -920,6 +940,7 @@ function CoverTile({
               </FlyoutMenuItem>
             )}
             <FlyoutMenuItem
+              icon={<PlumpyIcon name="reading-log" size={18} />}
               onClick={() => {
                 close()
                 onLog?.(book)
@@ -1077,12 +1098,12 @@ function SearchStep({
             <div className="lf-actions">
               {cfg.scanIsbn && (
                 <button type="button" className="lf-action" onClick={() => setScanOpen(true)}>
-                  <Icon name="barcode" size={40} stroke={1.6} />
+                  <PlumpyIcon name="barcode" size={40} />
                   <span>Scan ISBN</span>
                 </button>
               )}
               <button type="button" className="lf-action" onClick={onManual}>
-                <Icon name="pencil" size={40} stroke={1.6} />
+                <PlumpyIcon name="pencil" size={40} />
                 <span>Manually Enter Title</span>
               </button>
               {/* Not another way to find a title but another way to log: Epic
@@ -1101,7 +1122,7 @@ function SearchStep({
       {scanOpen && (
         <div className="lf-scanner">
           <div className="lf-scanner-frame">
-            <Icon name="barcode" size={104} stroke={1.3} />
+            <PlumpyIcon name="barcode" size={104} />
             <span className="lf-scanner-line" />
           </div>
           <div className="lf-scanner-actions">
@@ -1531,7 +1552,10 @@ function DetailsStep({
         {!book.withoutTitle && (
           <div className="lf-field">
             <div className="lf-label">Did you finish the book?</div>
-            <Toggle checked={finished} onChange={setFinished}>
+            {/* The one yes/no on this form, and the one that decides whether
+                the log finishes the book — it takes the ladder's top rung
+                rather than sitting at the size of a filter switch. */}
+            <Toggle checked={finished} onChange={setFinished} size="lg">
               Finished
             </Toggle>
           </div>
@@ -1762,6 +1786,7 @@ export function LogSuccess({
      only for a finished title. */
   nextUp,
   onAddToWishlist,
+  wishlist,
   onDone,
   onAnother,
   onViewBadge,
@@ -1823,10 +1848,10 @@ export function LogSuccess({
             .
           </>
         )}
-        {/* The streak takes its own line: it's a different fact from what was
-            just logged, and a long title pushed it into an awkward wrap. */}
         {/* The app's own line, and the one thing it asks of the reader on the
-            way out — come back tomorrow. */}
+            way out — come back tomorrow. It carries on from the sentence above
+            rather than taking a line of its own: the log and the streak it kept
+            alive are one piece of news. */}
         <span className="lf-success-streak">
           Your streak is now <strong>1 day</strong>. Come back and log tomorrow to keep it alive.
         </span>
@@ -1863,12 +1888,8 @@ export function LogSuccess({
       {/* Finishing a book is the one moment the reader is certainly between
           books, so it's the one moment a recommendation helps rather than
           interrupts. Benny makes it himself, the way he says everything else. */}
-      {nextUp?.book && onAddToWishlist && (
-        <NextUp
-          book={nextUp.book}
-          reason={nextUp.reason}
-          onAdd={() => onAddToWishlist(nextUp.book)}
-        />
+      {nextUp?.length > 0 && onAddToWishlist && (
+        <NextUp picks={nextUp} onAdd={onAddToWishlist} wishlist={wishlist} />
       )}
 
       {/* Benny catches the reader here, while the book is still in mind. */}
@@ -1912,37 +1933,61 @@ export function LogSuccess({
  * headed card, because it is him talking — and the one thing it asks for is a
  * yes: the title goes on the reader's Wish List and the screen carries on to
  * wherever it was going.
+ *
+ * Three picks, not one. A single recommendation is a verdict the reader can
+ * only accept or ignore; three is a shelf to choose from, which is what being
+ * between books actually feels like.
  */
-function NextUp({ book, reason, onAdd }) {
-  const [added, setAdded] = useState(false)
+function NextUp({ picks, onAdd, wishlist }) {
+  const saved = new Set(wishlist ?? [])
 
   return (
     <section className="lf-nextup">
       {/* The excited face, not the neutral one: which portrait he is wearing is
-          part of what he is saying. */}
+          part of what he is saying. Only the sentence is in the bubble — the
+          bubble is Benny talking, and the books are things on a shelf rather
+          than words out of his mouth. They take the column's full measure
+          underneath, the same as the earned cards above. */}
       <BennyBubble avatar="/bs-prototypes/benny-excited.svg">
-        <strong>You finished it! Here’s what I’d read next.</strong> {reason}
+        <strong>You finished it! Here’s what I’d read next.</strong>
       </BennyBubble>
-
-      <div className="lf-nextup-book">
-        <BookCover book={book} size="sm" />
-        <div className="lf-nextup-meta">
-          <span className="lf-nextup-title">{book.title}</span>
-          {book.author && <span className="lf-nextup-author">{book.author}</span>}
-        </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          disabled={added}
-          onClick={() => {
-            setAdded(true)
-            onAdd?.()
-          }}
-        >
-          {added ? 'On your Wish List' : 'Add to Wish List'}
-        </Button>
+      <div className="lf-nextup-list">
+        {picks.map((pick) => (
+          <NextUpBook
+            key={pick.book.id}
+            book={pick.book}
+            reason={pick.reason}
+            onAdd={onAdd}
+            saved={saved.has(pick.book.id)}
+          />
+        ))}
       </div>
     </section>
+  )
+}
+
+/* One pick. The button is a toggle, not a one-way door: saying yes by accident
+   is easy at the end of a log, and the way back has to be the button that just
+   moved. It holds no state of its own — the shelf belongs to whoever passed
+   `wishlist`, so an undo from anywhere else (a toast, another screen) moves
+   this button too. */
+function NextUpBook({ book, reason, onAdd, saved }) {
+  return (
+    <div className="lf-nextup-book">
+      <BookCover book={book} size="sm" />
+      <div className="lf-nextup-meta">
+        <span className="lf-nextup-title">{book.title}</span>
+        {book.author && <span className="lf-nextup-author">{book.author}</span>}
+        {reason && <span className="lf-nextup-reason">{reason}</span>}
+      </div>
+      <Button
+        variant={saved ? 'primary' : 'secondary'}
+        size="sm"
+        onClick={() => onAdd?.(book, !saved)}
+      >
+        {saved ? 'On your Wish List' : 'Add to Wish List'}
+      </Button>
+    </div>
   )
 }
 

@@ -3152,16 +3152,18 @@
   min-width: 0;
 }
 
-/* Tinted card with a left accent bar; `--rl-*` swap per state. */
+/* Tinted card, `--rl-*` swapping per state. No accent bar down the side: the
+   ground and the title are already the state's colour, and the rule was a third
+   mark for the same fact. `--rl-bar` stays — the row's hover and its marks are
+   mixed out of it. */
 .rp-rl-entry {
   --rl-bg: #e8f1fe;
   --rl-bar: #2563eb;
   --rl-title: #196dd5;
 
   background: var(--rl-bg);
-  border-left: 4px solid var(--rl-bar);
   border-radius: 8px;
-  padding: 12px 13px 12px 14px;
+  padding: 12px 14px;
 }
 
 .rp-rl-entry--flagged {

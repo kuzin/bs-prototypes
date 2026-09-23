@@ -6,7 +6,7 @@ import { Flyout } from '@components/Flyout/Flyout'
 import { Modal } from '@components/Modal/Modal'
 import { ReaderBanner, ReaderBannerAction } from '@components/ReaderApp/ReaderApp'
 
-import { BeamingFace } from '@components/FriendRequests/FriendRequestArt'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import '@components/FriendRequests/FriendRequests.css'
 
 import '@components/Avatar/Avatar.css'
@@ -45,17 +45,18 @@ export function FriendRequests({ requests, onAccept, onDecline }) {
 
   return (
     <div className="fq">
-      {/* The bar is the reader app's own — only the beaming face is this
-          one's. The queue behind "View Requests" is a `Flyout` on its row
-          style: each request is a subject with two answers, not an item you
-          pick. */}
+      {/* The bar is the reader app's own — only the mark is this one's, and it
+          is the same Plumpy pack every other icon here comes from rather than
+          a one-off emoji. The queue behind "View Requests" is a `Flyout` on
+          its row style: each request is a subject with two answers, not an item
+          you pick. */}
       <Flyout
         placement="bottom-end"
         trigger={({ toggle, open }) => (
           <ReaderBanner
             tone="amber"
             className="fq-bar"
-            mark={<BeamingFace />}
+            mark={<PlumpyIcon name="happy" size={24} className="fq-face" />}
             title={
               <strong>
                 You have {requests.length} new friend request{plural}!

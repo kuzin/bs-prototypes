@@ -1150,9 +1150,10 @@
 .lf-success-sub strong {
   color: var(--c-text-dark);
 }
+/* Reads straight on from the sentence before it — the log and the streak it
+   kept alive are one piece of news, and a line of their own made two. */
 .lf-success-streak {
-  display: block;
-  margin-top: 2px;
+  margin-left: 0.25em;
 }
 /* Stands on its own now the figure block it used to sit beside is gone, so it
    carries its own ground instead of a divider rule. */
@@ -1361,10 +1362,6 @@
   display: contents;
 }
 
-.lf-shelves:not(.is-open) > *:nth-child(n + 3) {
-  display: none;
-}
-
 /* The way to the shelves the step keeps back — and the way to put them away
    again. A disc rather than a line of text, centred under the last shelf where
    the next one would have started. */
@@ -1402,43 +1399,51 @@
 }
 
 /* The shelves that were held back arrive rather than appear — each a beat
-   after the one above it, so the eye follows them down the page. They can only
-   be animated in: closing them is a `display: none`, which has nothing to
-   animate. */
-@keyframes lf-shelf-in {
-  from {
+   after the one above it, so the eye follows them down the page — and they
+   leave the same way rather than blinking out.
+
+   Both directions come off one transition. `display` is a discrete property, so
+   it normally flips at the start and there is nothing left to fade;
+   `allow-discrete` holds it until the end, which is what makes the *closing*
+   animate. `@starting-style` supplies the other half: an element arriving from
+   `display: none` has no previous value to transition from unless one is
+   declared. */
+.lf-shelves > *:nth-child(n + 3) {
+  transition:
+    opacity 0.26s ease,
+    transform 0.26s ease,
+    display 0.26s allow-discrete;
+}
+
+.lf-shelves > *:nth-child(4) {
+  transition-delay: 0.06s;
+}
+
+.lf-shelves > *:nth-child(5) {
+  transition-delay: 0.12s;
+}
+
+.lf-shelves > *:nth-child(n + 6) {
+  transition-delay: 0.18s;
+}
+
+.lf-shelves:not(.is-open) > *:nth-child(n + 3) {
+  display: none;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+@starting-style {
+  .lf-shelves.is-open > *:nth-child(n + 3) {
     opacity: 0;
     transform: translateY(-10px);
   }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.lf-shelves.is-open > *:nth-child(n + 3) {
-  animation: lf-shelf-in 0.28s ease both;
-}
-
-.lf-shelves.is-open > *:nth-child(4) {
-  animation-delay: 0.06s;
-}
-
-.lf-shelves.is-open > *:nth-child(5) {
-  animation-delay: 0.12s;
-}
-
-.lf-shelves.is-open > *:nth-child(n + 6) {
-  animation-delay: 0.18s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lf-moreshelves-btn {
+  .lf-moreshelves-btn,
+  .lf-shelves > *:nth-child(n + 3) {
     transition: none;
-  }
-
-  .lf-shelves.is-open > *:nth-child(n + 3) {
-    animation: none;
   }
 }
 
@@ -1447,25 +1452,53 @@
    centred column on purpose: the bubble is him leaning in with a suggestion,
    not another announcement, and a book with an author and an action reads as a
    row rather than as a poster. */
+/* Full width. Benny is recommending one book and the book is in what he says,
+   so the bubble is the block — capped at 440 it was a column of its own inside
+   a wider screen. */
+/* One more card in the column the earned cards and the goal make — same
+   measure, same white ground, same 2px rule and 10px corners. Benny's line and
+   the three picks are one thing he is offering, so one card holds them. */
 .lf-nextup {
-  width: min(440px, 100%);
-  margin: 4px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(560px, 100%);
+  margin: 0 auto;
+  padding: 20px;
   text-align: left;
+  background: #fff;
+  border: 2px solid var(--c-gray-200);
+  border-radius: 10px;
+}
+
+/* Three picks, stacked, each on the column's full measure. */
+.lf-nextup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lf-nextup .benny-bubble-body {
+  flex: 1;
+  min-width: 0;
 }
 
 .lf-nextup .benny-bubble {
   text-wrap: pretty;
 }
 
+/* A row inside the card, not a card of its own: a hairline rather than the
+   card's own 2px rule, which is the step down that keeps it from reading as a
+   card in a card. Its grey can't be the flow's tile grey either — that is a
+   shade off Benny's bubble above it, and the two would read as one object. */
 .lf-nextup-book {
   display: flex;
-  align-items: center;
   gap: 12px;
-  margin-top: 10px;
+  align-items: center;
   padding: 12px;
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius-md, 10px);
   background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 10px;
 }
 
 .lf-nextup-meta {
@@ -1474,6 +1507,12 @@
   flex: 1;
   flex-direction: column;
   gap: 2px;
+}
+
+/* The bubble sets a reading line-height; the block inside it is a row of
+   labels, not prose. */
+.lf-nextup-book {
+  line-height: 1.35;
 }
 
 .lf-nextup-title {
@@ -1496,10 +1535,27 @@
   white-space: nowrap;
 }
 
-/* The button keeps its width when its label changes, so confirming doesn't
-   shuffle the row it sits in. */
+/* Benny's reason for this one. With three picks the argument moves off his
+   opening line and onto each book, since it is about the pair rather than
+   about him. Three lines at most, which is what the cover beside it is worth —
+   past that it stops being an aside. */
+.lf-nextup-reason {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 3px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--c-text-light);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* The button keeps its width when its label changes, so saying yes doesn't
+   shuffle the row it sits in — `On your Wish List` is 9px wider than
+   `Add to Wish List`, which was enough to reflow the reason beside it. */
 .lf-nextup-book .btn {
   flex: none;
+  min-width: 141px;
 }
 
 @media (max-width: 520px) {
@@ -1529,7 +1585,7 @@
   left: 8px;
   width: 12px;
   height: 12px;
-  background: #0ba85f;
+  background: var(--now, #0ba85f);
   border: 2px solid #fff;
   border-radius: 999px;
   box-shadow: 0 1px 3px rgb(0 0 0 / 30%);

@@ -1,6 +1,6 @@
 import { Icon } from '@components/Icon/Icon'
 import { BookCover } from '@components/BookCover/BookCover'
-import { isReadNow } from '../data'
+import { PARTNERS, readNowPartner } from '../data'
 
 // Cover-forward card, everywhere this prototype shelves a book.
 //   'reason' → adds Benny's "why" line  |  'rank' → trending: readers count
@@ -23,8 +23,8 @@ export function BookCard({
   settings,
 }) {
   const isAudio = variant === 'audio'
-  // A title a linked app can open right now wears that app's mark.
-  const now = isReadNow(book, settings)
+  // Which app can open this right now — the dot wears that app's colour.
+  const now = readNowPartner(book, settings)
 
   return (
     <button
@@ -54,7 +54,13 @@ export function BookCard({
             question the book's own page answers, and putting five different
             logos down a shelf made the marks look like five different
             statuses. */}
-        {now && <span className="bk-card-now" title="Read it now" />}
+        {now && (
+          <span
+            className="bk-card-now"
+            title={`Read it now on ${PARTNERS[now]?.name ?? 'a linked app'}`}
+            style={{ '--now': PARTNERS[now]?.accent }}
+          />
+        )}
         <span
           className={`bk-card-wish ${wished ? 'is-on' : ''}`}
           role="button"

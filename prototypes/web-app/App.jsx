@@ -289,13 +289,16 @@ export function App() {
 
   /* Every way into the flow goes through these two, so a title handed over
      by the reader can't outlive the trip it was handed over for. */
-  const openFlow = (book = null) => {
+  const [finishedMinutes, setFinishedMinutes] = useState(null)
+  const openFlow = (book = null, minutes = null) => {
     setFinishing(book)
+    setFinishedMinutes(minutes)
     setFlowOpen(true)
   }
   const closeFlow = () => {
     setFlowOpen(false)
     setFinishing(null)
+    setFinishedMinutes(null)
   }
   const { toasts, push: pushToast, dismiss } = useToasts()
   const [challenge, setChallenge] = useState(() => CHALLENGE_BY_ID[loadNav().challenge] ?? null)
@@ -746,13 +749,18 @@ export function App() {
 
         book={finishing}
         startFinished={Boolean(finishing)}
+        startMinutes={finishedMinutes}
         onReadInPartner={(b) => setReading({ book: b, partner: b.partner })}
         /* This page keeps the reader's real Wish List, so Benny's pick joins it
            the same way a book page's does — and says so, since the list is a
            tab away. */
-        onAddToWishlist={(b) => {
-          if (!wished(b.id)) toggleWish(b)
-          pushToast({ title: 'Added to your Wish List', body: b.title })
+        wishlist={wish.map((w) => w.book)}
+        onAddToWishlist={(b, on) => {
+          if (wished(b.id) !== on) toggleWish(b)
+          pushToast({
+            title: on ? 'Added to your Wish List' : 'Removed from your Wish List',
+            body: b.title,
+          })
         }}
         open={flowOpen}
         onClose={() => closeFlow()}
@@ -804,9 +812,9 @@ export function App() {
           book={reading.book}
           partner={reading.partner}
           onClose={() => setReading(null)}
-          onFinish={() => {
+          onFinish={(minutes) => {
             setReading(null)
-            openFlow(reading.book)
+            openFlow(reading.book, minutes)
           }}
         />
       )}

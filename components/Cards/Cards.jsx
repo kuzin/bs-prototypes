@@ -1,4 +1,4 @@
-import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
+import { PlumpyIcon, hasPlumpy } from '@components/PlumpyIcon/PlumpyIcon'
 import { Icon } from '@components/Icon/Icon'
 import { Tooltip } from '@components/Primitives/Primitives'
 import { TrendChip } from '@components/TrendChip/TrendChip'
@@ -88,12 +88,18 @@ export function StatCard({
   // A tile that goes somewhere puts the whole card in the button, so the hit
   // area is the card rather than the four words in it.
   const Tag = onClick ? 'button' : 'div'
-  /* A name draws the house glyph rather than whatever the caller imported —
-     Plumpy on an admin surface, the stroked `<Icon>` only where the pack has
-     nothing, which is the contract `RowAction` already keeps. A node is still
-     accepted for the reader-facing cards, whose icon language is the stroked
-     one by design. */
-  const glyph = typeof icon === 'string' ? <PlumpyIcon name={icon} size={22} /> : icon
+  /* Every stat tile draws Plumpy, wherever it is. A name is looked up
+     directly; a `<Icon name="…">` node — which is how most callers still pass
+     one — is read for its name and swapped, so a tile doesn't depend on which
+     of the two spellings its author happened to use. The stroked glyph is the
+     fallback for a name the pack has nothing for, and any other node (a
+     progress ring, a partner's mark) is passed through untouched.
+
+     This used to be admin-only, with the reader app deliberately left on the
+     stroked set. One icon language on a stat tile beat two. */
+  const named = typeof icon === 'string' ? icon : icon?.props?.name
+  const glyph =
+    typeof named === 'string' && hasPlumpy(named) ? <PlumpyIcon name={named} size={22} /> : icon
 
   return (
     <Tag

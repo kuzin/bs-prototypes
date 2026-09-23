@@ -9,7 +9,7 @@ import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Banner, IconButton } from '@components/Primitives/Primitives'
 import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 
-import { BOOKS, READING_LOG, LOG_STREAK, LOG_MONTH } from '../data'
+import { BOOKS, READING_LOG, STREAK_SEED, LOG_MONTH } from '../data'
 
 /* Is the window phone-width right now? Not just at mount — a view that a phone
    can't draw has to go the moment the window gets there, however it got there.
@@ -66,6 +66,47 @@ const iso = (d) =>
 
 const entriesOn = (entries, key) => entries.filter((e) => e.date === key)
 
+/* A streak is a run of consecutive days with a log in them, which makes it a
+   fact about the whole log rather than a field on any one entry. Returns
+   `{ byDay, current, longest }`: the running count on each logged day, the run
+   the most recent log sits in, and the longest run anywhere.
+ *
+ * `seed` is how many consecutive days the reader had already logged on the day
+ * before the first entry — the part of the run that happened before this log
+ * window opens, which nothing in the entries can tell us.
+ */
+function streakRuns(entries, seed = 0) {
+  const days = [...new Set(entries.map((e) => e.date))].sort()
+  const byDay = new Map()
+  let run = seed
+  let prev = null
+  let longest = 0
+  for (const day of days) {
+    const at = new Date(`${day}T00:00:00`)
+    const consecutive = prev && Math.round((at - prev) / 86400000) === 1
+    // The seed only carries into the very first day; after that the log speaks.
+    run = prev ? (consecutive ? run + 1 : 1) : seed + 1
+    byDay.set(day, run)
+    longest = Math.max(longest, run)
+    prev = at
+  }
+  /* The runs themselves, so the calendar can draw one bar across a streak
+     rather than a chip repeated in every cell it covers. A run of one day is
+     not a streak and isn't listed. */
+  const runs = []
+  for (const day of days) {
+    const n = byDay.get(day)
+    if (n === 1 || !runs.length) runs.push([])
+    runs[runs.length - 1].push(day)
+  }
+  return {
+    byDay,
+    runs: runs.filter((r) => byDay.get(r[r.length - 1]) > 1),
+    current: days.length ? byDay.get(days[days.length - 1]) : 0,
+    longest,
+  }
+}
+
 /** The calendar grid always shows whole weeks, so it spills into both neighbours. */
 function monthGrid(year, month) {
   const first = new Date(year, month, 1)
@@ -109,7 +150,7 @@ function GoalStarMark({ met }) {
   const label = met ? 'Goal met' : 'Goal not met'
   return (
     <span className={`rl-goalstar${met ? ' is-met' : ''}`} title={label} aria-label={label}>
-      <Icon name={met ? 'star-filled' : 'star'} size={13} />
+      <Icon name={met ? 'star-filled' : 'star'} size={16} />
     </span>
   )
 }
@@ -192,8 +233,24 @@ function EntryChip({ entry, dense, showImported = true, onOpenBook, bookFor }) {
   )
 }
 
-function CalendarView({ entries, showImported, onOpenBook, bookFor, goalMet, month }) {
+function CalendarView({ entries, showImported, onOpenBook, bookFor, goalMet, month, streaks }) {
   const weeks = monthGrid(month.year, month.month)
+  /* A streak is one stretch of days, so it is drawn as one bar across them —
+     the same count repeated in six cells read as six separate facts. A run that
+     crosses a Saturday gets a segment in each week, the way any calendar draws
+     something spanning more than a week. */
+  const barsFor = (week) => {
+    const keys = week.map(iso)
+    return (streaks?.runs ?? [])
+      .map((run) => {
+        const cols = run.map((d) => keys.indexOf(d)).filter((i) => i >= 0)
+        if (!cols.length) return null
+        const from = Math.min(...cols)
+        const to = Math.max(...cols)
+        return { from, span: to - from + 1, days: streaks.byDay.get(keys[to]) }
+      })
+      .filter(Boolean)
+  }
   return (
     <div className="rl-cal">
       <div className="rl-cal-head">
@@ -204,46 +261,52 @@ function CalendarView({ entries, showImported, onOpenBook, bookFor, goalMet, mon
         ))}
       </div>
       <div className="rl-cal-body">
-        {weeks.map((week, wi) => (
-          <div key={wi} className="rl-cal-week">
-            {week.map((day) => {
-              const key = iso(day)
-              const rows = entriesOn(entries, key)
-              const outside = day.getMonth() !== month.month
-              const streak = rows.find((r) => r.streak)?.streak
-              return (
-                <div key={key} className={`rl-cal-cell${outside ? ' is-outside' : ''}`}>
-                  <div className="rl-cal-date">
-                    {day.getDate()}
-                    {goalMet && !outside && <GoalStarMark met={goalMet.has(key)} />}
-                  </div>
-                  {streak && (
-                    <div className="rl-cal-streak">
-                      {streak} day streak
-                      <Icon name="flame-filled" size={13} />
-                    </div>
-                  )}
-                  {rows.map((e) => (
-                    <EntryChip
-                      key={e.id}
-                      entry={e}
-                      dense
-                      showImported={showImported}
-                      onOpenBook={onOpenBook}
-                      bookFor={bookFor}
-                    />
-                  ))}
+        {weeks.map((week, wi) => {
+          const bars = barsFor(week)
+          return (
+            <div key={wi} className={`rl-cal-week${bars.length ? ' has-streak' : ''}`}>
+              {bars.map((bar) => (
+                <div
+                  key={bar.from}
+                  className="rl-cal-streak"
+                  style={{ '--from': bar.from, '--span': bar.span }}
+                >
+                  {bar.days} day streak
+                  <Icon name="flame-filled" size={13} />
                 </div>
-              )
-            })}
-          </div>
-        ))}
+              ))}
+              {week.map((day) => {
+                const key = iso(day)
+                const rows = entriesOn(entries, key)
+                const outside = day.getMonth() !== month.month
+                return (
+                  <div key={key} className={`rl-cal-cell${outside ? ' is-outside' : ''}`}>
+                    <div className="rl-cal-date">
+                      {day.getDate()}
+                      {goalMet && !outside && <GoalStarMark met={goalMet.has(key)} />}
+                    </div>
+                    {rows.map((e) => (
+                      <EntryChip
+                        key={e.id}
+                        entry={e}
+                        dense
+                        showImported={showImported}
+                        onOpenBook={onOpenBook}
+                        bookFor={bookFor}
+                      />
+                    ))}
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
 }
 
-function ListView({ entries, showImported, onOpenBook, bookFor, goalMet, month }) {
+function ListView({ entries, showImported, onOpenBook, bookFor, goalMet, month, streaks }) {
   const weeks = monthGrid(month.year, month.month)
   return (
     <div className="rl-list">
@@ -262,7 +325,7 @@ function ListView({ entries, showImported, onOpenBook, bookFor, goalMet, month }
             {/* Most recent day first, matching the product. */}
             {[...days].reverse().map((day) => {
               const rows = entriesOn(entries, iso(day))
-              const streak = rows.find((r) => r.streak)?.streak
+              const streak = streaks?.byDay.get(iso(day))
               return (
                 <div key={iso(day)} className="rl-day">
                   <div className="rl-day-when">
@@ -271,9 +334,9 @@ function ListView({ entries, showImported, onOpenBook, bookFor, goalMet, month }
                       {goalMet && <GoalStarMark met={goalMet.has(iso(day))} />}
                     </div>
                     <div className="rl-day-name">{DAY_NAMES[day.getDay()]}</div>
-                    {streak && (
+                    {streak > 1 && (
                       <div className="rl-day-streak">
-                        <Icon name="flame-filled" size={12} /> {streak}
+                        <Icon name="flame-filled" size={14} /> {streak}
                       </div>
                     )}
                   </div>
@@ -426,8 +489,8 @@ function TitleStats({ entries }) {
 }
 
 /** One shelf tile: the cover, a completed check, and the app it came from. */
-function TitleTile({ row, index, onOpen, book }) {
-  const [source] = [...row.sources]
+function TitleTile({ row, index, onOpen, book, readNow }) {
+  const opensIn = readNow?.(book)
   return (
     <li className="rl-tile">
       <button
@@ -437,6 +500,17 @@ function TitleTile({ row, index, onOpen, book }) {
         aria-label={`${row.title}${row.completed ? ' — completed' : ''}`}
       >
         <BookCover book={coverBook(row.title, row.author, index, book)} size="fill" />
+        {/* One dot, in the colour of the app that opens the title — the same
+            mark the Discover shelves draw. `readNow` answers with a partner id
+            rather than a yes: the log knows what you read, not what your site
+            can open, and the colour is the whole of what the dot says. */}
+        {opensIn && (
+          <span
+            className="rl-tile-now"
+            title={`Read it now in ${PARTNER_BRANDS[opensIn]?.name ?? 'a linked app'}`}
+            style={{ '--now': PARTNER_BRANDS[opensIn]?.accent }}
+          />
+        )}
         {/* Both marks stack in one corner rather than taking a corner each: a
             magazine's masthead runs left-to-right across the top of its tile,
             and a mark in the opposite corner cut the front off its name. */}
@@ -444,11 +518,6 @@ function TitleTile({ row, index, onOpen, book }) {
           {row.completed && (
             <span className="rl-tile-check">
               <Icon name="check" size={20} stroke={3} />
-            </span>
-          )}
-          {source && (
-            <span className="rl-tile-src">
-              <PartnerMark id={source} size={16} />
             </span>
           )}
         </span>
@@ -530,7 +599,7 @@ function TitleDetail({ row, index, onClose }) {
 }
 
 /** "All Titles" — every logged title as a cover, grouped by month. */
-function TitlesView({ entries, stats = true, onOpenBook, bookFor }) {
+function TitlesView({ entries, stats = true, onOpenBook, bookFor, readNow }) {
   // The app's own pair of tabs on this page: everything, or just what's done.
   const [filter, setFilter] = useState('all')
   const [open, setOpen] = useState(null)
@@ -585,6 +654,7 @@ function TitlesView({ entries, stats = true, onOpenBook, bookFor }) {
                   row={row}
                   index={at}
                   book={book}
+                  readNow={readNow}
                   onOpen={() =>
                     book && onOpenBook ? onOpenBook(book) : setOpen({ row, index: at })
                   }
@@ -648,10 +718,18 @@ export function ReadingLog({
   onTab,
   onOpenBook,
   bookFor = (title) => BOOK_BY_TITLE.get(title),
+  /* `(book) => boolean` — whether this site can open that title right now, for
+     the dot on an All Titles tile. The log knows what was read; which of it
+     opens is the surface's question. Left off, no tile carries one. */
+  readNow,
   /* The month the calendar draws. logging-flow's own log is a fixed June 2026
      fixture, so that's the default; a prototype whose entries are counted back
      from today passes `currentMonth()` and its log lands where its reader is. */
   month = LOG_MONTH,
+  /* How many consecutive days the reader had already logged the day before this
+     log's first entry — the part of a run that happened before the window the
+     entries cover. Everything else about a streak is derived from them. */
+  streakSeed = STREAK_SEED,
 }) {
   const [ownTab, setOwnTab] = useState(defaultTab)
   const tab = tabProp ?? ownTab
@@ -681,6 +759,9 @@ export function ReadingLog({
 
   const imported = partners.length ? entries.filter((e) => e.source).length : 0
   const goalMet = goalMetDates(entries, goal)
+  /* Every streak number on this page — the two tiles and the chip on each day —
+     comes from one pass over the entries, so they can't disagree. */
+  const streaks = streakRuns(entries, streakSeed)
 
   return (
     <div className="rl-page">
@@ -755,14 +836,14 @@ export function ReadingLog({
                   the same tile the All Titles shelf puts its numbers on. */}
               <div className="rl-streaks">
                 <StatCard
-                  value={LOG_STREAK.current}
+                  value={streaks.current}
                   unit="Days"
                   label="Current streak"
                   color="#DC493A"
                   icon={<Icon name="flame-filled" size={20} />}
                 />
                 <StatCard
-                  value={LOG_STREAK.longest}
+                  value={streaks.longest}
                   unit="Days"
                   label="Longest streak"
                   color="#F0A024"
@@ -815,6 +896,7 @@ export function ReadingLog({
               bookFor={bookFor}
               goalMet={goalMet}
               month={month}
+              streaks={streaks}
             />
           )}
           {view === 'list' && (
@@ -825,10 +907,17 @@ export function ReadingLog({
               bookFor={bookFor}
               goalMet={goalMet}
               month={month}
+              streaks={streaks}
             />
           )}
           {view === 'titles' && (
-            <TitlesView entries={entries} stats={stats} onOpenBook={onOpenBook} bookFor={bookFor} />
+            <TitlesView
+              entries={entries}
+              stats={stats}
+              onOpenBook={onOpenBook}
+              bookFor={bookFor}
+              readNow={readNow}
+            />
           )}
         </>
       )}

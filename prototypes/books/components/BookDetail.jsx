@@ -93,23 +93,61 @@ function StatStrip({ book, sessions, status }) {
      one label is mostly empty until something sits beside it, and a flat
      stroked glyph on a tinted card reads as a missing image. */
   const stats = [
-    { value: totalMin ? fmtMins(totalMin) : '0m', label: 'Minutes read', c: '#0B6B78', i: 'clock' },
-    { value: status === 'finished' ? 1 : 0, label: 'Times read', c: '#0F7A55', i: 'check' },
+    { value: totalMin, show: fmtMins(totalMin), label: 'Minutes read', c: '#0B6B78', i: 'clock' },
+    {
+      value: status === 'finished' ? 1 : 0,
+      show: status === 'finished' ? 1 : 0,
+      label: 'Times read',
+      c: '#0F7A55',
+      i: 'check',
+    },
     {
       value: sessions.length,
+      show: sessions.length,
       label: sessions.length === 1 ? 'Session' : 'Sessions',
       c: '#1A6DD5',
       i: 'calendar',
     },
-    { value: book.readersAtSchool, label: 'Readers at school', c: '#5B21B6', i: 'people' },
   ]
+
+  /* A zero is not a statistic. Four tiles reading 0m / 0 / 0 said only that you
+     haven't started, which is one sentence, not a grid — so the zeros drop out
+     and, with nothing left, the card says that sentence instead.
+
+     "Readers at school" goes with them: it is true either way, but this card is
+     headed *Your* stats, and one tile about everybody else standing where your
+     reading should be is the wrong answer to "what have I done with this
+     book". */
+  const shown = stats.filter((s) => s.value > 0)
+
+  /* No card around it. An empty state is already a bordered block with its own
+     heading, and inside a section card it was a box in a box saying the same
+     thing twice — "Your stats" over "Nothing logged yet". */
+  if (shown.length === 0)
+    return (
+      <EmptyState
+        variant="dashed"
+        icon={<Icon name="reading-log" size={24} />}
+        title="Nothing logged yet"
+        description="Log some reading for this title and your minutes, sessions and finishes show up here."
+      />
+    )
+
   return (
     <SectionCard header="divider" title="Your stats">
-      <div className="bk-statgrid">
-        {stats.map((s) => (
-          <StatCard key={s.label} value={s.value} label={s.label} color={s.c} icon={s.i} />
-        ))}
-      </div>
+      {
+        <div className="bk-statgrid">
+          {shown.map((s) => (
+            <StatCard key={s.label} value={s.show} label={s.label} color={s.c} icon={s.i} />
+          ))}
+          <StatCard
+            value={book.readersAtSchool}
+            label="Readers at school"
+            color="#5B21B6"
+            icon="users"
+          />
+        </div>
+      }
     </SectionCard>
   )
 }
@@ -548,7 +586,9 @@ export function BookDetail({
 
             <div className="bkp-topmain">
               <header className="bkp-head">
-                {book.issue && <span className="bk-dhero-series">{book.issue}</span>}
+                {/* No issue line above the title. A magazine's issue is on its
+                    cover, right beside this, and set as an eyebrow it read as
+                    the page's heading with the title demoted under it. */}
                 <h1 className="bkp-title">{book.title}</h1>
                 <p className="bkp-credits">
                   <span className="bkp-person">{book.author}</span>
@@ -706,9 +746,9 @@ export function BookDetail({
           /* Reaching the last page isn't the same as saying you read it: the
              reader hands off to the log form, where the minutes go in and
              Finished is confirmed. Marking the shelf is that form's job now. */
-          onFinish={() => {
+          onFinish={(minutes) => {
             setReaderVia(null)
-            onLog?.(book, { finished: true })
+            onLog?.(book, { finished: true, minutes })
           }}
         />
       )}
