@@ -257,7 +257,7 @@ export function ReadingHeatmap({ goalMinutes, color, data }) {
                 .filter(Boolean)
                 .join(' ')}
               style={{
-                '--cell-bg': cell.future ? 'transparent' : cell.mins > 0 ? color : '#EAECF0',
+                '--cell-bg': !cell.future && cell.mins > 0 ? color : 'transparent',
               }}
               data-tooltip={
                 cell.future
@@ -271,7 +271,7 @@ export function ReadingHeatmap({ goalMinutes, color, data }) {
                   The date is still in the tooltip, and on the goal fill the
                   digit was the least interesting thing in the cell. */}
               {goalMet ? (
-                <Icon name="star-filled" size={15} className="bp-heatmap-star" />
+                <Icon name="star-filled" size={17} className="bp-heatmap-star" />
               ) : (
                 <span className="bp-heatmap-daynum">{cell.day}</span>
               )}

@@ -6,6 +6,7 @@ import { useId, useState } from 'react'
 import { Ic, COVER_PALETTES } from '@components/ui'
 import { Icon } from '@components/Icon/Icon'
 import { SectionCard, SectionCardTitle } from '@components/SectionCard/SectionCard'
+import { BookCover } from '@components/BookCover/BookCover'
 
 // ─── Status badge ──────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
@@ -155,19 +156,21 @@ export function GoalRing({ minutes, goal, color }) {
 }
 
 // ─── Cover image ──────────────────────────────────────────────────────────────
-export function CoverImage({ isbn, title }) {
+// No jacket falls back to the shared BookCover's own placeholder — the flat
+// pastel with the bean mark, title and author — so a missing cover here looks
+// the way it does everywhere else in the product rather than a tinted box.
+export function CoverImage({ isbn, title, author }) {
   const [failed, setFailed] = useState(false)
   const seed = title.charCodeAt(0) + (title.charCodeAt(1) || 0)
-  const [bg, fg] = COVER_PALETTES[seed % COVER_PALETTES.length]
+  const [, hue] = COVER_PALETTES[seed % COVER_PALETTES.length]
 
   if (failed) {
     return (
-      <div
+      <BookCover
+        book={{ title, author, cover: [hue] }}
+        size="fill"
         className="rp-title-cover rp-title-cover--placeholder"
-        style={{ background: bg, color: fg }}
-      >
-        <Icon name="book" size={18} style={{ opacity: 0.6 }} />
-      </div>
+      />
     )
   }
   return (

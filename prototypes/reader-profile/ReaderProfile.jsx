@@ -835,7 +835,7 @@ function TitleShelf({ titles, onNavigate }) {
               // which book it is (`title` carries it for anyone who needs it).
               <div key={i} className="rp-latest-item" title={`${t.title} — ${t.author}`}>
                 <div className="rp-latest-cover">
-                  <CoverImage isbn={t.isbn} title={t.title} />
+                  <CoverImage isbn={t.isbn} title={t.title} author={t.author} />
                 </div>
               </div>
             ))}
@@ -3006,21 +3006,12 @@ function BadgeSeal({ badge, size = 68 }) {
 
 // Show/hide search matches the real pages, which start with the field hidden
 // behind a toggle rather than spending a row on it by default.
-// The Hero's action slot. The label collapses on a phone — a 110px button beside
-// a 150px title floor is what was pushing the whole action onto a second row —
-// leaving the glyph, which is the whole message anyway.
+// The Hero's action slot. Text only, like every full-size button.
 function SearchToggle({ open, onToggle }) {
   const label = open ? 'Hide search' : 'Show search'
   return (
-    <Button
-      variant="secondary"
-      size="msm"
-      onClick={onToggle}
-      aria-label={label}
-      title={label}
-      icon={<Icon name={open ? 'x' : 'search'} size={16} stroke={2.1} />}
-    >
-      <span className="rp-btn-label">{label}</span>
+    <Button variant="secondary" size="msm" onClick={onToggle}>
+      {label}
     </Button>
   )
 }
@@ -4885,7 +4876,7 @@ function RecommendedPage({ student }) {
                 minWidth: 220,
                 render: (v, r) => (
                   <div className="rp-reco-cell">
-                    <CoverImage isbn={r.isbn} title={v} />
+                    <CoverImage isbn={r.isbn} title={v} author={r.author} />
                     <span>
                       <span className="rp-tbl-name">{v}</span>
                       <span className="rp-tbl-sub">{r.author}</span>

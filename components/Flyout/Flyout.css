@@ -160,9 +160,9 @@
 .flyout-menu {
   display: flex;
   flex-direction: column;
-  /* Each row is its own surface now, so they need air between them — at 2px
-     they read as one block cut by hairlines. */
-  gap: 6px;
+  /* Rows sit flush: at rest they're the panel's own white, so a gap between
+     them was just empty panel. The hover wash marks the one you're on. */
+  gap: 0;
 }
 
 /* These are choices, not labels — "Read in Comics Plus" or "Log Reading" on a
@@ -175,10 +175,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  /* Its own ground: these rows are the same decision a button asks for, and
-     bare text on a panel read as a list you might not be able to press. The
-     ground alone carries that — a rule around every row as well turned a short
-     menu into a stack of framed boxes. */
+  /* White at rest, on the panel's own ground — a grey fill on every row read
+     as a stack of disabled buttons. The hover wash is what says pressable. */
   width: 100%;
   padding: 11px 14px;
   font: inherit;
@@ -187,7 +185,7 @@
   color: var(--c-gray-900);
   text-align: left;
   cursor: pointer;
-  background: var(--c-gray-100);
+  background: #fff;
   border: 0;
   border-radius: 10px;
   transition:
@@ -232,6 +230,7 @@
   color: var(--c-red);
 }
 .flyout-menu-item--danger:hover {
+  color: var(--c-red);
   background: #fef2f2;
 }
 .flyout-menu-item--danger .flyout-menu-icon {

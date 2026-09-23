@@ -680,12 +680,12 @@
 
 /* Goal met: the bar, the waist and the star's disc are one amber run, and the
    star reverses out of it. */
-.wa-goalcard--done .wa-goalcard-curve svg,
-.wa-goalcard--done .wa-goalcard-marker {
+.wa-goalcard-meter--done .wa-goalcard-curve svg,
+.wa-goalcard-meter--done .wa-goalcard-marker {
   fill: #ffbc42;
   background: #ffbc42;
 }
-.wa-goalcard--done .wa-goalcard-marker svg {
+.wa-goalcard-meter--done .wa-goalcard-marker svg {
   fill: #fff;
 }
 

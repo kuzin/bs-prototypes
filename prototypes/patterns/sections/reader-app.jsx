@@ -15,6 +15,7 @@ import {
   ChallengeCard,
   ChallengeScope,
   GoalCard,
+  GoalMeter,
   LeaderboardCard,
   MotivationCard,
   ReaderPill,
@@ -1124,6 +1125,33 @@ export const readerAppSections = [
         </Variant>
         <Variant label="goal met — and overshot">
           <GoalCard dailyGoal={{ minutes: 42, goal: 20 }} />
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
+    sub: 'rail',
+    id: 'reader-goal-meter',
+    name: 'GoalMeter',
+    usage: `import { GoalMeter } from '@components/ReaderApp/ReaderApp'
+
+<GoalMeter minutes={14} goal={20} />`,
+    desc: (
+      <>
+        <code>GoalCard</code>&apos;s meter on its own: the count over the amber bar that ends in a
+        star, without the card or its encouragement copy. For a surface that frames the goal in its
+        own words. The student profile&apos;s Daily goal card uses it so staff see the goal the way
+        the student does. It carries its own met state, so the star goes amber without the card.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="part-way">
+          <GoalMeter minutes={14} goal={20} />
+        </Variant>
+        <Variant label="goal met">
+          <GoalMeter minutes={35} goal={30} />
         </Variant>
       </>
     ),

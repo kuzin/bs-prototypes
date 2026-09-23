@@ -923,8 +923,6 @@ export function GoalCard({ dailyGoal }) {
   // shows a full bar, not an overrun one.
   const pct = Math.min(Math.floor((minutes / goal) * 100), 100)
   const copy = GOAL_COPY[done ? 'completed' : pct >= 50 ? 'keep_going' : 'reach_goal']
-  const unit = goal === 1 ? 'minute' : 'minutes'
-
   return (
     <aside
       className={`wa-card wa-goalcard${done ? ' wa-goalcard--done' : ''}`}
@@ -935,17 +933,34 @@ export function GoalCard({ dailyGoal }) {
         <p className="wa-goalcard-sub">{copy.subheader}</p>
       </div>
 
-      <div className="wa-goalcard-meter" aria-label={`${minutes} of ${goal} ${unit}`}>
-        <span className="wa-goalcard-count">
-          <span className="wa-goalcard-num">{minutes}</span> / {goal} {unit}
-        </span>
-        <div className="wa-goalcard-bar">
-          <ProgressBar value={minutes} max={goal} color="#FFBC42" className="wa-goalcard-pgb" />
-          <GoalCurve />
-          <GoalStar />
-        </div>
-      </div>
+      <GoalMeter minutes={minutes} goal={goal} />
     </aside>
+  )
+}
+
+/**
+ * The goal card's meter on its own — the count over the bar that ends in a
+ * star — for a surface that frames the goal in its own words (the staff
+ * profile's Daily goal card). Carries its own met state, so it goes amber
+ * without the card around it.
+ */
+export function GoalMeter({ minutes, goal }) {
+  const done = minutes >= goal
+  const unit = goal === 1 ? 'minute' : 'minutes'
+  return (
+    <div
+      className={`wa-goalcard-meter${done ? ' wa-goalcard-meter--done' : ''}`}
+      aria-label={`${minutes} of ${goal} ${unit}`}
+    >
+      <span className="wa-goalcard-count">
+        <span className="wa-goalcard-num">{minutes}</span> / {goal} {unit}
+      </span>
+      <div className="wa-goalcard-bar">
+        <ProgressBar value={minutes} max={goal} color="#FFBC42" className="wa-goalcard-pgb" />
+        <GoalCurve />
+        <GoalStar />
+      </div>
+    </div>
   )
 }
 
