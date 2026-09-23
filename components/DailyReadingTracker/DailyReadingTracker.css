@@ -12,14 +12,15 @@
   width: 100%;
 }
 
-/* `.daily-reading__week-selector`: padding 10px 20px, split ends, $gray250
-   bottom rule. */
+/* `.daily-reading__week-selector`: split ends, $gray250 bottom rule. The app
+   pads it 10px 20px; here it's one inset all round, so the arrows sit as far
+   from the card's side as from its top. */
 .drt-week-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 20px;
+  padding: 12px;
   border-bottom: 1px solid var(--c-gray-250);
 }
 
@@ -398,7 +399,7 @@
   }
 
   .drt-week-nav {
-    padding: 10px 14px;
+    padding: 10px;
   }
 
   .drt-week-label {
