@@ -2978,6 +2978,27 @@
   min-width: 0;
 }
 
+/* Each row stacks a title, an author and a line of pills, so the compact
+   table's 10px left it reading as one long block. A little more air per row. */
+.rp-rl-tbl.tbl--compact .tbl-td {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+/* The table sits under the month header, inset in the card rather than at its
+   top edge, so its top corners are square. The bottom ones stay rounded: the
+   last row still ends on the card's own corner. */
+.rp-rl-tbl.tbl--flush {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.rp-rl-tbl.tbl--flush thead tr:first-child .tbl-th:first-child,
+.rp-rl-tbl.tbl--flush thead tr:first-child .tbl-th:last-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
 /* Table view — title and author stack in one cell. The cell is the one column
    that gives way: Date and the mark cluster are fixed widths, so a long title
    wraps inside its own column instead of widening the table and pushing the
@@ -3009,10 +3030,13 @@
   text-decoration: underline;
 }
 
+/* The author and the pills match the calendar card's: 14px in its grey,
+   with 10px between the author and the pills (1px row gap + 9). At 13px in
+   $gray500 the name read as a caption to the caption. */
 .rp-rl-tbl-author {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--c-gray-500);
+  color: #6b7280;
 }
 
 .rp-rl-tbl-tags {
@@ -3020,7 +3044,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 3px;
+  margin-top: 9px;
 }
 
 .rp-rl-tbl-tags .rp-rl-entry-lexile {
