@@ -1,8 +1,7 @@
 /* Toasts — the app's own `#toast-container > div` (bs-product
-   lib/_toastr.scss): radius 12, 15px, `padding: 18px 38px 18px 18px` with the
-   glyph inset 18px from the left (so a toned toast pads to 52px), `max-width:
-   500px`, a 6px gap between them, and a flat pastel ground per tone with the
-   matching dark text — `$pastelGreen`/`$darkGreen`, `$pastelDenim`/`$darkDenim`,
+   lib/_toastr.scss): radius 12, 15px, `padding: 18px 38px 18px 18px`,
+   `max-width: 500px`, a 6px gap between them, and a flat pastel ground per
+   tone with the matching dark text — `$pastelGreen`/`$darkGreen`, `$pastelDenim`/`$darkDenim`,
    `$pastelYellow`/`$darkYellow`. No white card, no shadow: the app's toast is a
    solid tinted block.
 
@@ -25,6 +24,8 @@
   pointer-events: none;
 }
 
+/* No glyph: the tone is already carried by the ground and the words, and the
+   icon beside them only said the same thing a third time. */
 .toast {
   display: flex;
   align-items: flex-start;
@@ -52,16 +53,6 @@
 .toast--warning {
   background: #ffecc8;
   color: #826022;
-}
-
-/* The app insets its glyph 18px from the left edge and pads the text past it;
-   here the glyph is a flex child, which lands in the same place without a
-   background-image. */
-.toast-icon {
-  display: inline-flex;
-  flex-shrink: 0;
-  margin-top: 1px;
-  color: inherit;
 }
 
 .toast-text {
@@ -127,23 +118,28 @@
   }
 }
 
-/* The one way on from a toast — a link in the strip's own voice rather than a
-   button with a ground, because the toast is already the emphasis. */
+/* The one way on from a toast, and the only thing in it you can press — as a
+   12px link it read as a footnote and got missed. A white pill on the strip's
+   own tint is unmistakably a button without introducing a colour the toast
+   doesn't already have: the label keeps the strip's dark tone, so an Undo on
+   the green toast is green and on the yellow one is yellow. */
 .toast-action {
   flex: 0 0 auto;
   align-self: center;
   margin-left: 4px;
-  padding: 4px 8px;
+  padding: 9px 16px;
   border: 0;
-  border-radius: 6px;
-  background: none;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.72);
   font: inherit;
-  font-size: var(--text-tag);
+  font-size: 14px;
   font-weight: var(--fw-bold);
-  color: var(--c-blue);
+  color: inherit;
+  white-space: nowrap;
   cursor: pointer;
+  transition: background 0.14s ease;
 }
 
 .toast-action:hover {
-  background: var(--c-gray-100);
+  background: #fff;
 }

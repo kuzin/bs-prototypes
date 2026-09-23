@@ -9,7 +9,7 @@ import { EmptyState } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 import '@components/Cards/Cards.css'
 import '@components/Tabs/Tabs.css'
-import { getBook, getSessions, isReadNow, SHELF_STATUS, SHELF_ORDER } from '../data'
+import { getBook, getSessions, PARTNERS, readNowPartner, SHELF_STATUS, SHELF_ORDER } from '../data'
 
 function readingPct(book) {
   const s = getSessions(book.id).find((x) => x.toPage)
@@ -131,8 +131,12 @@ export function MyShelf({ shelf, onOpen, onWish, onDiscover, settings }) {
                     <BookCover book={b} size="fill" />
                     {/* The same mark the Discover shelves put on a jacket that
                         opens right now. */}
-                    {isReadNow(b, settings) && (
-                      <span className="bk-shelftile-now" title="Read it now" />
+                    {readNowPartner(b, settings) && (
+                      <span
+                        className="bk-shelftile-now"
+                        title={`Read it now on ${PARTNERS[readNowPartner(b, settings)]?.name}`}
+                        style={{ '--now': PARTNERS[readNowPartner(b, settings)]?.accent }}
+                      />
                     )}
                   </button>
                   {/* The only control a shelf tile needs: the way back off

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import { Button } from '@components/Button/Button'
@@ -98,7 +99,7 @@ export function Discover({ onOpen, onWish, wishlist, settings, onBrowse, onPlay,
               style={{ '--c': b.color }}
               onClick={() => onBrowse({ filter: b.filter })}
             >
-              <Icon name={b.icon} size={22} />
+              <PlumpyIcon name={b.icon} size={22} />
               <span>{b.label}</span>
             </button>
           ))}

@@ -15,7 +15,10 @@
   box-shadow:
     0 3px 10px 0 rgba(0, 0, 0, 0.06),
     0 0 0 1px var(--c-gray-200);
-  min-width: 200px;
+  /* 200 was set when a row was 14/600 with no icon in front of it. At 15/700
+     behind an 18px mark, "Read in Comics Plus" wrapped to two lines — a menu
+     whose whole job is a short instruction shouldn't break it in half. */
+  min-width: 232px;
   padding: 6px;
   animation: flyout-in 0.12s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -204,19 +207,22 @@
   font-weight: 700;
 }
 
+/* Sized to the row, which went up a rung with the label. A brand mark keeps
+   whatever size it was asked for — only a glyph is pinned, so a partner's logo
+   isn't squeezed to the size of a chevron. */
 .flyout-menu-icon {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   color: var(--c-text-light);
-  flex-shrink: 0;
 }
 
-.flyout-menu-icon svg {
-  width: 14px;
-  height: 14px;
+.flyout-menu-icon > svg {
+  width: 17px;
+  height: 17px;
 }
 
 .flyout-menu-item--active .flyout-menu-icon {

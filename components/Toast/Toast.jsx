@@ -27,12 +27,6 @@ import './Toast.css'
 
 const TOAST_MS = 4000
 
-const TONES = {
-  success: { icon: 'circle-check' },
-  info: { icon: 'info' },
-  warning: { icon: 'alert-triangle' },
-}
-
 /**
  * Owns the queue. Kept as a hook rather than a context so a page can hold its
  * own toasts without the whole prototype needing a provider.
@@ -56,7 +50,6 @@ export function useToasts() {
 
 function Toast({ toast, onDismiss }) {
   const { id, title, body, tone, action } = toast
-  const cfg = TONES[tone] ?? TONES.success
 
   useEffect(() => {
     const t = setTimeout(() => onDismiss(id), TOAST_MS)
@@ -67,9 +60,6 @@ function Toast({ toast, onDismiss }) {
     // `polite`, not `assertive`: a confirmation shouldn't interrupt whatever a
     // screen reader is in the middle of saying.
     <div className={`toast toast--${tone ?? 'success'}`} role="status" aria-live="polite">
-      <span className="toast-icon">
-        <Icon name={cfg.icon} size={18} stroke={2.2} />
-      </span>
       <span className="toast-text">
         <span className="toast-title">{title}</span>
         {body && <span className="toast-body">{body}</span>}

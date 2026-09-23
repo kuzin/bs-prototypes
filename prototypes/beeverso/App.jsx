@@ -51,13 +51,16 @@ export function App() {
 
   /* Every way into the flow goes through these two, so a title handed over
      by the reader can't outlive the trip it was handed over for. */
-  const openFlow = (book = null) => {
+  const [finishedMinutes, setFinishedMinutes] = useState(null)
+  const openFlow = (book = null, minutes = null) => {
     setFinishing(book)
+    setFinishedMinutes(minutes)
     setFlowOpen(true)
   }
   const closeFlow = () => {
     setFlowOpen(false)
     setFinishing(null)
+    setFinishedMinutes(null)
   }
   const { toasts, push, dismiss } = useToasts()
   const [flowOpen, setFlowOpen] = useState(false)
@@ -132,10 +135,16 @@ export function App() {
            is this page's to open. */
         book={finishing}
         startFinished={Boolean(finishing)}
+        startMinutes={finishedMinutes}
         onReadInPartner={(b) => setReading({ book: b, partner: b.partner })}
         /* This page keeps no shelf of its own, so saving Benny's pick is a
            confirmation rather than a place to go. */
-        onAddToWishlist={(b) => push({ title: 'Added to your Wish List', body: b.title })}
+        onAddToWishlist={(b, on) =>
+          push({
+            title: on ? 'Added to your Wish List' : 'Removed from your Wish List',
+            body: b.title,
+          })
+        }
         open={flowOpen}
         onClose={() => closeFlow()}
         onLogged={handleLogged}
@@ -156,9 +165,9 @@ export function App() {
           book={reading.book}
           partner={reading.partner}
           onClose={() => setReading(null)}
-          onFinish={() => {
+          onFinish={(minutes) => {
             setReading(null)
-            openFlow(reading.book)
+            openFlow(reading.book, minutes)
           }}
         />
       )}

@@ -721,7 +721,15 @@ export const TOP_GRADES = [
 //
 // `kind`: log | badge | achievement. `tone` picks the row colour.
 
-export const LOG_STREAK = { current: 2, longest: 5 }
+/* How long the run already was on the day before this log's first entry.
+   A streak is a run of consecutive logged days, so every number the log shows
+   is derived from the entries themselves — except the part of the run that
+   happened before the window starts, which the entries can't know about. This
+   is that part, and it is the only hand-set streak number left: the two that
+   used to sit on individual entries stopped the count wherever they happened
+   to be, so the first week climbed 4, 5 and then said nothing for four more
+   logged days. */
+export const STREAK_SEED = 3
 
 export const LOG_MONTH = { label: 'June 2026', year: 2026, month: 5 } // month is 0-based
 
@@ -741,7 +749,6 @@ export const READING_LOG = [
     author: 'Kat Leyh',
     minutes: 20,
     tone: 'blue',
-    streak: 4,
   },
   {
     id: 'l2',
@@ -753,7 +760,6 @@ export const READING_LOG = [
     pages: 32,
     completed: true,
     tone: 'pink',
-    streak: 5,
   },
   {
     id: 'l3',
@@ -1053,118 +1059,201 @@ export const READING_LIST_CHALLENGES = [
 
    Every target is in this catalog, so the shelf it lands on can draw it. */
 const NEXT_UP = {
-  'she-gets-the-girl': {
-    id: 'lesbianas-guide',
-    reason: 'Another funny, messy, big-hearted romance — and Yamilet has a voice you won’t forget.',
-  },
-  'lesbianas-guide': {
-    id: 'telegraph-club',
-    reason:
-      'If you loved Yami finding her people, wait until you meet Lily. Same courage, 1950s San Francisco.',
-  },
-  'telegraph-club': {
-    id: 'darius',
-    reason: 'Quieter and warmer, and just as honest about working out who you are.',
-  },
-  darius: {
-    id: 'other-words',
-    reason:
-      'Another kid caught between two homes — this one told in poems you can read in a sitting.',
-  },
-  rump: {
-    id: 'amari',
-    reason:
-      'You just backed a hero nobody believed in. Amari is the same, with a magical Bureau behind her.',
-  },
-  'lucky-cap': {
-    id: 'ghost',
-    reason:
-      'Another kid with more talent than he knows what to do with — and a coach who spots it.',
-  },
-  'dog-man': {
-    id: 'amulet',
-    reason: 'Epic graphic-novel fantasy — perfect after Dog Man, with a much bigger adventure.',
-  },
-  amulet: {
-    id: 'new-kid',
-    reason:
-      'A graphic novel about real life this time — funny, honest, and the art is so expressive.',
-  },
-  'new-kid': {
-    id: 'front-desk',
-    reason: 'Another kid working out where he fits — Mia runs a whole motel while she’s at it.',
-  },
-  amari: {
-    id: 'last-cuentista',
-    reason: 'More magic and a bigger mystery, out past the edge of the solar system.',
-  },
-  wonder: {
-    id: 'merci-suarez',
-    reason:
-      'Another school year, another kid holding a lot together — Merci’s family will stay with you.',
-  },
-  crossover: {
-    id: 'ghost',
-    reason: 'Another kid with a gift and a temper, and a coach worth listening to.',
-  },
-  'front-desk': {
-    id: 'other-words',
-    reason: 'Another new-country story, this one in poems — short lines, big feelings.',
-  },
-  ghost: {
-    id: 'crossover',
-    reason: 'Fast, rhythmic and full of heart — try this one as an audiobook.',
-  },
-  esperanza: {
-    id: 'refugee',
-    reason: 'Three kids, three escapes, three eras — gripping from the first page.',
-  },
-  holes: {
-    id: 'hatchet',
-    reason: 'Pure survival tension: one boy, one hatchet and a great deal of forest.',
-  },
-  refugee: {
-    id: 'esperanza',
-    reason: 'A moving story of courage and starting over.',
-  },
-  'merci-suarez': {
-    id: 'front-desk',
-    reason: 'Another kid doing grown-up work and still being a kid about it.',
-  },
-  'trap-a-tiger': {
-    id: 'last-cuentista',
-    reason: 'More folklore turned into something strange and beautiful.',
-  },
-  'last-cuentista': {
-    id: 'wild-robot',
-    reason: 'A gentler kind of strange — a robot working out how to belong on a wild island.',
-  },
-  'show-me-a-sign': {
-    id: 'other-words',
-    reason: 'Another girl finding her own language for the world.',
-  },
-  'other-words': {
-    id: 'brown-girl',
-    reason: 'A memoir in verse — try it on audiobook for the full magic.',
-  },
-  'brown-girl': {
-    id: 'esperanza',
-    reason: 'Another childhood you can feel the heat and the dust of.',
-  },
-  'wild-robot': {
-    id: 'last-cuentista',
-    reason: 'If you liked Roz learning to be alive, wait until you meet Petra.',
-  },
-  'roll-of-thunder': {
-    id: 'brown-girl',
-    reason: 'The same history, told from inside one family’s memory.',
-  },
-  hatchet: {
-    id: 'holes',
-    reason: 'A clever mystery where every last detail pays off.',
-  },
+  'she-gets-the-girl': [
+    {
+      id: 'lesbianas-guide',
+      reason: 'Another funny, messy, big-hearted romance — Yamilet has a voice you won’t forget.',
+    },
+    { id: 'telegraph-club', reason: 'The same courage, quieter, in 1950s San Francisco.' },
+    { id: 'darius', reason: 'Warm and honest about working out who you are.' },
+  ],
+  'lesbianas-guide': [
+    {
+      id: 'telegraph-club',
+      reason: 'If you loved Yami finding her people, wait until you meet Lily.',
+    },
+    { id: 'she-gets-the-girl', reason: 'Lighter and funnier — two girls, one very bad plan.' },
+    { id: 'darius', reason: 'Another kid caught between two families and two languages.' },
+  ],
+  'telegraph-club': [
+    { id: 'darius', reason: 'Quieter and warmer, and just as honest about who you are.' },
+    {
+      id: 'she-gets-the-girl',
+      reason: 'Something lighter next — a romance that keeps tripping over itself.',
+    },
+    { id: 'lesbianas-guide', reason: 'Funny and sharp, with a lot going on underneath.' },
+  ],
+  darius: [
+    {
+      id: 'other-words',
+      reason: 'Another kid caught between two homes, in poems you can read in a sitting.',
+    },
+    {
+      id: 'front-desk',
+      reason: 'Another family making a life in a country that keeps testing it.',
+    },
+    { id: 'telegraph-club', reason: 'Careful and quiet, about finding the room where you fit.' },
+  ],
+  rump: [
+    {
+      id: 'amari',
+      reason: 'You just backed a hero nobody believed in — Amari has a magical Bureau behind her.',
+    },
+    { id: 'wild-robot', reason: 'Another underdog working out what it’s actually for.' },
+    { id: 'trap-a-tiger', reason: 'More folklore, and a bargain you should probably not take.' },
+  ],
+  'lucky-cap': [
+    {
+      id: 'ghost',
+      reason:
+        'Another kid with more talent than he knows what to do with, and a coach who spots it.',
+    },
+    { id: 'crossover', reason: 'The same sport-sized feelings, told in verse that moves.' },
+    { id: 'new-kid', reason: 'Middle school, drawn — funny and uncomfortably accurate.' },
+  ],
+  'dog-man': [
+    {
+      id: 'amulet',
+      reason: 'Epic graphic-novel fantasy — perfect after Dog Man, with a much bigger adventure.',
+    },
+    { id: 'new-kid', reason: 'More comics, this time about surviving a new school.' },
+    { id: 'wild-robot', reason: 'Short chapters and a lot of heart, if you want words next.' },
+  ],
+  amulet: [
+    {
+      id: 'new-kid',
+      reason: 'A graphic novel about real life this time — funny, honest, expressive art.',
+    },
+    { id: 'amari', reason: 'Another kid handed a world nobody warned her about.' },
+    { id: 'dog-man', reason: 'Something ridiculous, to clear your head.' },
+  ],
+  'new-kid': [
+    {
+      id: 'front-desk',
+      reason: 'Another kid working out where he fits — Mia runs a whole motel while she’s at it.',
+    },
+    { id: 'wonder', reason: 'The same school year, from a very different desk.' },
+    { id: 'amulet', reason: 'More comics, with a whole world to get lost in.' },
+  ],
+  amari: [
+    {
+      id: 'last-cuentista',
+      reason: 'More magic and a bigger mystery, out past the edge of the solar system.',
+    },
+    { id: 'amulet', reason: 'Another kid in over her head, drawn rather than described.' },
+    { id: 'rump', reason: 'A funnier kind of magic, and a name worth arguing about.' },
+  ],
+  wonder: [
+    {
+      id: 'merci-suarez',
+      reason: 'Another kid holding a lot together — Merci’s family will stay with you.',
+    },
+    { id: 'new-kid', reason: 'The same middle-school feeling, in panels.' },
+    { id: 'front-desk', reason: 'A kid carrying far more than a kid should, and funny about it.' },
+  ],
+  crossover: [
+    {
+      id: 'ghost',
+      reason: 'Another kid with a gift and a temper, and a coach worth listening to.',
+    },
+    { id: 'brown-girl', reason: 'More verse — a whole childhood in short lines.' },
+    { id: 'other-words', reason: 'Poems again, and a girl learning a country one word at a time.' },
+  ],
+  'front-desk': [
+    {
+      id: 'other-words',
+      reason: 'Another new-country story, this one in poems — short lines, big feelings.',
+    },
+    { id: 'merci-suarez', reason: 'Another kid doing grown-up work and still being a kid.' },
+    { id: 'refugee', reason: 'The journey Mia’s family is on the far side of.' },
+  ],
+  ghost: [
+    {
+      id: 'crossover',
+      reason: 'Fast, rhythmic and full of heart — try this one as an audiobook.',
+    },
+    { id: 'lucky-cap', reason: 'Another kid whose luck and talent get tangled up.' },
+    { id: 'new-kid', reason: 'Another kid sizing up a school that wasn’t built for him.' },
+  ],
+  esperanza: [
+    {
+      id: 'refugee',
+      reason: 'Three kids, three escapes, three eras — gripping from the first page.',
+    },
+    { id: 'brown-girl', reason: 'Another childhood you can feel the heat and the dust of.' },
+    {
+      id: 'roll-of-thunder',
+      reason: 'The same country, from inside one family holding its ground.',
+    },
+  ],
+  holes: [
+    {
+      id: 'hatchet',
+      reason: 'Pure survival tension: one boy, one hatchet and a great deal of forest.',
+    },
+    { id: 'wild-robot', reason: 'Another castaway working out the rules of somewhere new.' },
+    { id: 'amari', reason: 'Another kid dropped somewhere impossible, with a lot more magic.' },
+  ],
+  refugee: [
+    { id: 'esperanza', reason: 'A moving story of courage and starting over.' },
+    { id: 'front-desk', reason: 'What arriving looks like once the journey is over.' },
+    { id: 'other-words', reason: 'The same arrival, told in short poems.' },
+  ],
+  'merci-suarez': [
+    {
+      id: 'front-desk',
+      reason: 'Another kid doing grown-up work and still being a kid about it.',
+    },
+    { id: 'wonder', reason: 'Another school year that asks a lot of one kid.' },
+    { id: 'new-kid', reason: 'The same middle school, drawn.' },
+  ],
+  'trap-a-tiger': [
+    { id: 'last-cuentista', reason: 'More folklore turned into something strange and beautiful.' },
+    { id: 'amari', reason: 'More magic, more family, and a mystery to pull at.' },
+    { id: 'wild-robot', reason: 'Quiet and strange — a robot learning a wild island.' },
+  ],
+  'last-cuentista': [
+    {
+      id: 'wild-robot',
+      reason: 'A gentler kind of strange — a robot working out how to belong on a wild island.',
+    },
+    { id: 'trap-a-tiger', reason: 'Folklore again, with a tiger who wants something back.' },
+    { id: 'amari', reason: 'More magic and a bigger mystery, closer to home.' },
+  ],
+  'show-me-a-sign': [
+    { id: 'other-words', reason: 'Another girl finding her own language for the world.' },
+    { id: 'esperanza', reason: 'Another girl whose whole world changes in a season.' },
+    { id: 'roll-of-thunder', reason: 'Another family holding a line, and a girl watching them.' },
+  ],
+  'other-words': [
+    { id: 'brown-girl', reason: 'A memoir in verse — try it on audiobook for the full magic.' },
+    { id: 'crossover', reason: 'More verse, faster on its feet.' },
+    { id: 'front-desk', reason: 'The same arriving, told straight through.' },
+  ],
+  'brown-girl': [
+    { id: 'esperanza', reason: 'Another childhood you can feel the heat and the dust of.' },
+    { id: 'other-words', reason: 'More verse, and another girl between two languages.' },
+    { id: 'roll-of-thunder', reason: 'The same history, told from inside one family.' },
+  ],
+  'wild-robot': [
+    {
+      id: 'last-cuentista',
+      reason: 'If you liked Roz learning to be alive, wait until you meet Petra.',
+    },
+    { id: 'hatchet', reason: 'Surviving the woods again, this time with no circuitry.' },
+    { id: 'amulet', reason: 'Another world to work out, drawn rather than described.' },
+  ],
+  'roll-of-thunder': [
+    { id: 'brown-girl', reason: 'The same history, told from inside one family’s memory.' },
+    { id: 'esperanza', reason: 'Another family pushed off its own land.' },
+    { id: 'refugee', reason: 'Three escapes, three eras, one long run for safety.' },
+  ],
+  hatchet: [
+    { id: 'holes', reason: 'A clever mystery where every last detail pays off.' },
+    { id: 'wild-robot', reason: 'Another castaway learning the ground it landed on.' },
+    { id: 'refugee', reason: 'Survival again, with people on the other side of it.' },
+  ],
 }
-
 for (const [id, next] of Object.entries(NEXT_UP)) {
   BOOKS[id].nextUp = next
 }

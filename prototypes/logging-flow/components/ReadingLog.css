@@ -100,7 +100,9 @@
   gap: 8px;
   padding: 10px 12px;
   border-radius: 8px;
-  border-left: 4px solid var(--rl-c);
+  /* No rule down the side and none along the bottom: the tinted ground and the
+     matching text are already saying which kind of entry this is, and an edge
+     on top of that was a third mark for the same fact. */
   background: var(--rl-bg);
   color: var(--rl-c);
 }
@@ -168,11 +170,15 @@
   background: none;
   border: 0;
   cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: rgba(0, 0, 0, 0.25);
+  /* The underline is the hover state, not the resting one: a calendar cell is
+     mostly titles, and a permanent rule under every one of them made the month
+     read as a page of links rather than a record of what was read. */
+  text-decoration: none;
   text-underline-offset: 2px;
 }
-.rl-entry-link:hover {
+.rl-entry-link:hover,
+.rl-entry-link:focus-visible {
+  text-decoration: underline;
   text-decoration-color: currentcolor;
 }
 .rl-entry-author {
@@ -271,6 +277,9 @@
 .rl-cal-week {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
+  /* The streak bar is laid over the row rather than in any one cell, so it can
+     run across the days it covers. */
+  position: relative;
 }
 .rl-cal-dow {
   padding: 10px 10px;
@@ -303,23 +312,59 @@
 .rl-cal-cell.is-outside .rl-cal-date {
   color: var(--c-gray-600);
 }
+/* A day from the neighbouring month is context, not this month's record, so its
+   entries keep their shape and drop their colour — the same thing the date
+   above them already does. The chip is driven by two custom properties, so
+   greying it is redefining those rather than restating the chip. */
+.rl-cal-cell.is-outside .rl-entry {
+  --rl-c: var(--c-text-light);
+  --rl-bg: #f1f3f5;
+}
+/* The pills inside carry their own colour rather than the chip's. */
+.rl-cal-cell.is-outside .rl-entry-pill {
+  filter: grayscale(1);
+  opacity: 0.75;
+}
 .rl-cal-date {
   font-size: 18px;
   font-weight: 800;
   color: var(--c-text-light);
 }
+/* One bar for the whole run, laid across the columns it covers — the same
+   count repeated in every cell read as six separate facts rather than one
+   stretch of days. `--from` is the first column it touches in this week and
+   `--span` how many; a run crossing a Saturday simply gets a second bar in the
+   next week, the way any calendar draws something longer than a week.
+
+   The 9px insets are the cell's own padding, so the bar starts and ends where
+   the entries under it do. */
 .rl-cal-streak {
+  position: absolute;
+  z-index: 1;
+  /* Clear of the date line above it (18px type on its default leading). */
+  top: 40px;
+  left: calc(var(--from) / 7 * 100% + 9px);
+  width: calc(var(--span) / 7 * 100% - 18px);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* Label and flame together at the start: spread apart, a six-column bar left
+     the flame stranded at the far end with nothing to do. */
+  justify-content: flex-start;
   gap: 6px;
-  padding: 5px 8px;
+  padding: 6px 10px;
   border-radius: 6px;
-  border-left: 4px solid #e2825d;
   background: #fdece5;
   color: #a13a22;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
+}
+
+/* The band the bar sits in, held open across the whole row so every cell's
+   entries start at the same height whether or not that day is in the run. It
+   is the bar's height plus the room it needs underneath, since the bar is
+   positioned over the row and pushes nothing down itself. */
+.rl-cal-week.has-streak .rl-cal-date {
+  margin-bottom: 44px;
 }
 
 /* ─── List view ──────────────────────────────────────────────────────────── */
@@ -366,7 +411,7 @@
   border-radius: 999px;
   background: #fdece5;
   color: #a13a22;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 800;
 }
 .rl-day-rows {
@@ -414,10 +459,15 @@
   }
 }
 
+/* The same month heading the calendar and the list put above their own
+   month — it is the same fact in the same log, and at 16/900 it read as a
+   different kind of label. The rule under it stays: All Titles stacks its
+   months in one scroll, so the heading is also where one ends and the next
+   begins. */
 .rl-titlemonth-label {
   padding: 24px 0 12px;
-  font-size: 16px;
-  font-weight: 900;
+  font-size: 20px;
+  font-weight: 800;
   color: var(--c-text);
   border-bottom: 1px solid var(--c-border);
 }
@@ -488,17 +538,6 @@
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
 }
 /* The app marks an imported title with the partner's own roundel. */
-.rl-tile-src {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  background: #fff;
-  border-radius: 999px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
-}
-
 /* ─── One title's detail ─────────────────────────────────────────────────── */
 /* Where the old table's columns went: the app links a tile through to that
    book's own log page, so the numbers live one click in rather than spread
@@ -638,4 +677,42 @@
   .rl-detail-source {
     grid-column: 1 / -1;
   }
+}
+
+/* The read-now dot, in the corner every other surface puts it in. The tile's
+   own marks stack top-right, so this keeps the left. */
+.rl-tile-now {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  left: 8px;
+  width: 12px;
+  height: 12px;
+  background: var(--now, #0ba85f);
+  border: 2px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+  pointer-events: none;
+}
+
+/* ─── List view type ────────────────────────────────────────────────────────
+   The entry's parts are sized for a calendar cell — about 80px wide, where
+   13.5 and 12.5 are what fits. A list row is the full width of the page, and at
+   those sizes a title, its author and its minutes all read as fine print. The
+   whole rungs of the app's ladder, and only here: the calendar keeps its own. */
+.rl-list .rl-entry-title {
+  font-size: 15px;
+}
+
+.rl-list .rl-entry-author,
+.rl-list .rl-entry-amounts {
+  font-size: 14px;
+}
+
+.rl-list .rl-week-range {
+  font-size: 14px;
+}
+
+.rl-list .rl-day-name {
+  font-size: 13px;
 }

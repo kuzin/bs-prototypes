@@ -131,9 +131,11 @@ export function App() {
   /* `finished` comes from the partner reader's last page: the form opens with
      the answer already given, and the reader confirms it. */
   const [logFinished, setLogFinished] = useState(false)
-  const openLog = (b, { finished = false } = {}) => {
+  const [logMinutes, setLogMinutes] = useState(null)
+  const openLog = (b, { finished = false, minutes = null } = {}) => {
     setLogBook(b ? toLogBook(b) : null)
     setLogFinished(finished)
+    setLogMinutes(minutes)
     setFlowOpen(true)
   }
 
@@ -197,23 +199,14 @@ export function App() {
      toast is what closes that loop — it names the book, says where it went, and
      offers the way there. Taking one back says so too, or "undo" is the only
      way to tell the tap registered. */
-  const toggleWant = (id) => {
-    /* The status it had, not just whether it had one: a book taken off the
-       shelf could have been on it as want, reading or finished, and an undo
-       that put everything back as `want` would quietly lose the difference. */
-    const was = shelf[id] ?? null
-    setStatus(id, was ? null : 'want')
-    const book = getBook(id)
-    if (!book) return
+  /* The one wish-list toast, wherever the saving happened. Benny recommends out
+     of the log's catalog, which is wider than this app's, so some of his picks
+     have a page here and some only have a record — but a reader pressing three
+     identical buttons should not get two different toasts back. */
+  const wishToast = (book, on, undo) =>
     push(
-      was
+      on
         ? {
-            title: 'Taken off your Wish List',
-            body: book.title,
-            tone: 'info',
-            action: { label: 'Undo', onClick: () => setStatus(id, was) },
-          }
-        : {
             title: 'Added to your Wish List',
             body: book.title,
             action: {
@@ -224,17 +217,50 @@ export function App() {
                 setLogTab('shelf')
               },
             },
+          }
+        : {
+            title: 'Taken off your Wish List',
+            body: book.title,
+            tone: 'info',
+            action: { label: 'Undo', onClick: undo },
           },
     )
+
+  const toggleWant = (id) => {
+    /* The status it had, not just whether it had one: a book taken off the
+       shelf could have been on it as want, reading or finished, and an undo
+       that put everything back as `want` would quietly lose the difference. */
+    const was = shelf[id] ?? null
+    setStatus(id, was ? null : 'want')
+    const book = getBook(id)
+    if (!book) return
+    wishToast(book, !was, () => setStatus(id, was))
+  }
+
+  /* Benny's picks that this app has no page for. They still go on the list and
+     still come back off it — the set is what the button reads, so an undo from
+     the toast moves the button with it. */
+  const [offCatalog, setOffCatalog] = useState(() => new Set())
+  const toggleOffCatalog = (book, on) => {
+    setOffCatalog((ids) => {
+      const next = new Set(ids)
+      if (on) next.add(book.id)
+      else next.delete(book.id)
+      return next
+    })
+    wishToast(book, on, () => toggleOffCatalog(book, true))
   }
   const shelfIds = new Set(Object.keys(shelf))
 
-  // Finishing a book (from the in-app reader) earns its badge — celebrated once,
-  // only on the transition to finished.
-  const finishBook = (id) => {
+  /* Finishing a book earns its badge — celebrated once, only on the transition
+     to finished, and only where nothing else is already doing the celebrating.
+     A log ends on the flow's own success screen, which announces the badge and
+     hands over the earned card; the modal on top of it said the same thing
+     twice and had to be dismissed to read the screen underneath. */
+  const finishBook = (id, { celebrate = true } = {}) => {
     const already = shelf[id] === 'finished'
     setStatus(id, 'finished')
-    if (!already) setBadge({ id })
+    if (!already && celebrate) setBadge({ id })
   }
 
   const sessionsFor = (id) => sessionsByBook[id] ?? getSessions(id)
@@ -292,6 +318,29 @@ export function App() {
     { id: 'discover', label: 'Discover' },
     { id: 'shelf', label: 'Wish List', count: shelfIds.size || undefined },
   ]
+
+  /* The shared reading log is logging-flow's, and six of the titles in it are
+     books this catalog has never heard of — so their tiles drew a placeholder
+     cover and opened a roll-up modal instead of the book's own page, on the one
+     prototype whose whole premise is that it has a page for every book.
+
+     Each one is swapped for the nearest title this catalog does carry, keeping
+     the kind of reading it was: a graphic novel for a graphic novel, a sports
+     story for a sports story. The fixture itself is untouched — the other
+     prototypes that share it have their own catalogs and their own matches. */
+  const LOG_SWAPS = {
+    Snapdragon: 'el-deafo',
+    'The Bad Guys in Intergalactic Gas': 'cat-kid',
+    'Ada Twist, Scientist': 'wild-robot',
+    'Welcome to the Forest: The Harvest Party': 'investigators',
+    Rump: 'amari',
+    'Lucky Cap': 'ghost',
+  }
+
+  const logEntries = READING_LOG.map((e) => {
+    const swap = LOG_SWAPS[e.title] && getBook(LOG_SWAPS[e.title])
+    return swap ? { ...e, title: swap.title, author: swap.author } : e
+  })
 
   /* The log flow asks `connections` which partners this reader can open a title
      in. This app has no linked accounts — it has the site's title sources — so
@@ -428,7 +477,11 @@ export function App() {
         /* A logged title goes to that book's own page — the log names a title
            and this prototype is the one that has a page for it. */
         onOpenBook={(b) => open(b.id)}
+        logEntries={logEntries}
         bookFor={bookByTitle}
+        /* The All Titles shelf wears the same dot as the Discover shelves — a
+           jacket means the same thing wherever this app draws one. */
+        readNow={(b) => (b ? readNowPartner(b, settings) : null)}
         logTabs={LOG_TABS}
         logTab={logTab}
         /* Moving between the panes leaves whatever was layered over this one:
@@ -450,6 +503,7 @@ export function App() {
           setFlowOpen(false)
           setLogBook(null)
           setLogFinished(false)
+          setLogMinutes(null)
         }}
         /* Which apps can open a title, which here is just the site's own
            switches — so a jacket carries the same dot in the log flow as it
@@ -465,19 +519,18 @@ export function App() {
         bennyPicks={BENNY_PICKS}
         book={logBook}
         startFinished={logFinished}
+        startMinutes={logMinutes}
         /* Confirming a finished log is what actually moves the book on the
            shelf — the reader reaching the last page no longer does it alone. */
         onLogged={(entry) => {
-          if (entry.finished && entry.book?.id && getBook(entry.book.id)) finishBook(entry.book.id)
+          if (entry.finished && entry.book?.id && getBook(entry.book.id))
+            finishBook(entry.book.id, { celebrate: false })
         }}
         /* Benny's recommendation on the finished screen goes on the same Wish
            List as every other save. A title this catalog has no page for still
            gets its confirmation — it just can't offer a way there. */
-        onAddToWishlist={(b) =>
-          getBook(b.id)
-            ? toggleWant(b.id)
-            : push({ title: 'Added to your Wish List', body: b.title })
-        }
+        wishlist={[...shelfIds, ...offCatalog]}
+        onAddToWishlist={(b, on) => (getBook(b.id) ? toggleWant(b.id) : toggleOffCatalog(b, on))}
       />
 
       {reading && (
@@ -487,9 +540,9 @@ export function App() {
           onClose={() => setReading(null)}
           /* The last page hands off to the log form, the same as the book
              page's own reader does. */
-          onFinish={() => {
+          onFinish={(minutes) => {
             setReading(null)
-            openLog(getBook(reading.book.id) ?? reading.book, { finished: true })
+            openLog(getBook(reading.book.id) ?? reading.book, { finished: true, minutes })
           }}
         />
       )}

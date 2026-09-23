@@ -61,6 +61,33 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+/* The way out of the book, and whose book it is, share the bar's trailing end. */
+.rdn-reader-topright {
+  display: inline-flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Green, and the only filled control on the chrome: it is the one thing here
+   that changes anything. */
+.rdn-reader-done {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 14px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  background: #0ba85f;
+  border: 0;
+  border-radius: 999px;
+}
+
+.rdn-reader-done:hover {
+  background: #0d8f52;
+}
+
 .rdn-reader-brand {
   display: inline-flex;
   align-items: center;
@@ -313,17 +340,21 @@
 }
 
 /* end page */
+/* The sheet is as tall as a page of the book it follows, so the last word
+   sits in the middle of it rather than at the top of a column of nothing. */
 .rdn-reader-end {
-  width: min(440px, 82vw);
-  background: #fff;
-  border-radius: 20px;
-  padding: 32px 30px;
-  text-align: center;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 4px;
+  align-items: center;
+  justify-content: center;
+  width: min(440px, 82vw);
+  height: 100%;
+  padding: 32px 30px;
+  text-align: center;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
 }
 
 .rdn-reader-end-benny {
@@ -359,21 +390,6 @@
 
 .rdn-reader-finish:hover {
   filter: brightness(1.05);
-}
-
-.rdn-reader-backbtn {
-  border: 0;
-  background: none;
-  color: #707070;
-  font-weight: 700;
-  font-size: 13.5px;
-  margin-top: 10px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.rdn-reader-backbtn:hover {
-  color: #18324a;
 }
 
 /* bottom bar */

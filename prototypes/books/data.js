@@ -2118,7 +2118,27 @@ const BY_ID = Object.fromEntries(BOOKS.map((b) => [b.id, b]))
    is a string somebody typed. This is how a logged line finds the catalog
    record behind it, and so the book's own page. */
 const BY_TITLE = new Map(BOOKS.map((b) => [b.title.toLowerCase(), b]))
-export const bookByTitle = (title) => (title ? BY_TITLE.get(title.trim().toLowerCase()) : undefined)
+/* A logged title is a string somebody typed, and the shared reading-log fixture
+   spells several of them the way a catalogue record does — "Percy Jackson and
+   the Olympians #1: The Lightning Thief" for what this catalog files under "The
+   Lightning Thief". An exact match missed those and the log offered a roll-up
+   modal for a book it has a whole page for, so the lookup falls back to the
+   longest catalog title contained in what was logged. Longest, because "Dog
+   Man" is inside "Dog Man Unleashed" and the specific title is the right
+   answer. */
+export const bookByTitle = (title) => {
+  if (!title) return undefined
+  const key = title.trim().toLowerCase()
+  const exact = BY_TITLE.get(key)
+  if (exact) return exact
+  let best
+  for (const [name, book] of BY_TITLE) {
+    if (name.length > 6 && key.includes(name) && (!best || name.length > best.name.length)) {
+      best = { name, book }
+    }
+  }
+  return best?.book
+}
 export const getBook = (id) => BY_ID[id]
 export const getBooks = (ids) => ids.map((id) => BY_ID[id]).filter(Boolean)
 

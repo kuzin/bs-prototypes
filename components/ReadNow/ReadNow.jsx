@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { BookCover } from '@components/BookCover/BookCover'
 import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
@@ -82,7 +82,11 @@ function TextPage({ seed }) {
 /* The last page hands the reader on rather than finishing anything itself:
    reaching the end of the pages is not the same as saying you read it, and the
    log is where that is said. `onFinish` opens the log form on this title with
-   **Finished** already ticked, so all that's left is the amount and Log. */
+   **Finished** already ticked, so all that's left is the amount and Log.
+
+   One way on, and no "Back to book" under it: the Close in the corner is how
+   you leave the reader from any page, and a second exit on the last one read as
+   a choice between finishing and not. */
 function EndPage({ book, onFinish, onClose }) {
   return (
     <div className="rdn-reader-end">
@@ -97,9 +101,6 @@ function EndPage({ book, onFinish, onClose }) {
         }}
       >
         <Icon name="check" size={17} /> Log this reading
-      </button>
-      <button className="rdn-reader-backbtn" onClick={onClose}>
-        Back to book
       </button>
     </div>
   )
@@ -132,6 +133,12 @@ export function ReadNow({ book, partner = 'comicsplus', onClose, onFinish }) {
   const cur = pages[page]
   const p = PARTNER_BRANDS[partner] || PARTNER_BRANDS.comicsplus
 
+  /* How long this was open, which is the one number the log form would
+     otherwise ask the reader to remember. Floored at a minute: a reader who
+     flips through in forty seconds still read something. */
+  const opened = useRef(Date.now())
+  const minutesRead = () => Math.max(1, Math.round((Date.now() - opened.current) / 60000))
+
   return (
     <div
       className="rdn-reader"
@@ -147,10 +154,31 @@ export function ReadNow({ book, partner = 'comicsplus', onClose, onFinish }) {
           <strong>{book.title}</strong>
           <span>{book.author}</span>
         </div>
-        <div className="rdn-reader-brand">
-          <span>Reading on</span>
-          <PartnerMark id={p.id} size={22} />
-          <strong>{p.name}</strong>
+        <div className="rdn-reader-topright">
+          <div className="rdn-reader-brand">
+            <span>Reading on</span>
+            <PartnerMark id={p.id} size={22} />
+            <strong>{p.name}</strong>
+          </div>
+          {/* Last in the bar, so the one control that does something sits in
+              the corner your eye ends at — the partner's name beside it is a
+              label, not a thing to press.
+
+              You can finish a book without turning its last page: you put it
+              down knowing you're done. The last page offers this too, and both
+              land in the same place — the log form, with Finished answered. */}
+          {onFinish && (
+            <button
+              type="button"
+              className="rdn-reader-done"
+              onClick={() => {
+                onFinish(minutesRead())
+                onClose?.()
+              }}
+            >
+              <Icon name="check" size={15} stroke={2.4} /> Finish reading
+            </button>
+          )}
         </div>
       </div>
 
@@ -178,7 +206,9 @@ export function ReadNow({ book, partner = 'comicsplus', onClose, onFinish }) {
             />
           )}
           {cur.type === 'text' && <TextPage seed={cur.seed} />}
-          {cur.type === 'end' && <EndPage book={book} onFinish={onFinish} onClose={onClose} />}
+          {cur.type === 'end' && (
+            <EndPage book={book} onFinish={() => onFinish?.(minutesRead())} onClose={onClose} />
+          )}
         </div>
 
         <button
