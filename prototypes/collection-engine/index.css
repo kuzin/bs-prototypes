@@ -246,3 +246,11 @@ button {
 .ce-ai .plumpy-icon {
   color: #b43dd0;
 }
+
+/* Tooltips a step larger here. The bubble portals to <body>, so this can't be
+   scoped under .ce-shell — but this stylesheet only loads on the Collection
+   Engine pages. */
+.ttp-pop {
+  font-size: var(--text-label);
+  max-width: 240px;
+}

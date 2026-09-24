@@ -66,6 +66,7 @@ export function Table({
   loading = false,
   empty, // string | node — shown when rows is empty
   highlightRow, // (row) => bool — gives a row the highlight style
+  rowClassName, // (row) => string — a class of the caller's own on a row, e.g. a status tint
   pageSize, // number — enables pagination; omit to show all rows
   defaultSortKey, // initial sort column key
   defaultSortDir = 'asc',
@@ -214,6 +215,7 @@ export function Table({
                   'tbl-row',
                   onRowClick && 'tbl-row--clickable',
                   isHighlight && 'tbl-row--highlight',
+                  rowClassName?.(row),
                 ]
                   .filter(Boolean)
                   .join(' ')}

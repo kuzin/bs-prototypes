@@ -24,7 +24,7 @@ export function BennySummary({ summary, asOf }) {
 }
 
 /* `**…**` → <strong>. Odd indices are the captured runs. */
-function emphasize(text) {
+export function emphasize(text) {
   if (typeof text !== 'string' || !text.includes('**')) return text
   return text
     .split(/\*\*(.+?)\*\*/g)

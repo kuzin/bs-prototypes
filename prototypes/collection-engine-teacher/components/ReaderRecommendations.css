@@ -53,7 +53,10 @@
 }
 
 /* The pills and the day count keep their size; the title column gives. */
-.crr-title .pill,
+.crr-title .pill {
+  flex: 0 0 auto;
+}
+
 .crr-title:hover {
   background: var(--c-gray-100);
 }

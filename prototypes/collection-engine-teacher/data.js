@@ -106,6 +106,8 @@ function drawSignal(r) {
   return 'rmi'
 }
 
+const capital = (w) => w.charAt(0).toUpperCase() + w.slice(1)
+
 /** The sentence a teacher reads under a title. Names the one signal that made it. */
 export function reasonFor(entry, reader) {
   const first = reader.name.split(' ')[0]
@@ -119,7 +121,7 @@ export function reasonFor(entry, reader) {
     case 'history':
       return `${first} finishes books like this — same shelf, same kind of story`
     case 'rmi':
-      return `${first} reads for ${reader.factorLabel}, and ${t.genre} is one of the three genres the RMI names for it`
+      return `${capital(reader.factor)} is ${first}'s top motivation factor, and ${t.genre} is one of the three genres the RMI names for it`
     case 'ratings':
       return `Close to the books ${first} rates highest — ${reader.avgRating} average over ${reader.rated} ratings`
     case 'peers':
@@ -148,9 +150,17 @@ export function reasonFor(entry, reader) {
 const PROFILE_KEYS = ['marcus', 'anne', 'tyler']
 const standInProfile = (key) => pick(rng(`profile:${key}`), PROFILE_KEYS)
 
+/* The top motivation factor the Student Profile's own fixtures give the two
+   readers it has one for (its Overview's "Top motivation factor"), so the
+   reason a genre is recommended agrees with the profile it is shown in. The
+   rest keep a seeded draw. */
+const PROFILE_FACTOR = { marcus: 'enjoyment', anne: 'recognition' }
+
 function buildReader(row) {
   const r = rng(`teacher:${row.key}`)
-  const factor = pick(r, FACTOR_KEYS)
+  // Drawn either way, so the stream after it is the same for every reader.
+  const drawn = pick(r, FACTOR_KEYS)
+  const factor = PROFILE_FACTOR[row.key] ?? drawn
   const genres = new Set(factorGenres(factor))
   const fit = SCHOOL.catalog.filter((t) => genres.has(t.genre))
   const pool = fit.length ? fit : SCHOOL.catalog
@@ -516,3 +526,58 @@ export function classTotals() {
 }
 
 export { SCHOOL }
+
+// ─── The genres to point a reader at ─────────────────────────────────────────
+
+/* The reasons a genre can be on a reader's list — each one of the engine's own
+   signals, so a reason reads the same here as on a recommended title. Listed
+   strongest first: what a reader has actually finished, then what their
+   motivation profile points at, then what they have saved, then what their
+   classmates are reading. A genre shows the first that applies. */
+export const GENRE_REASON_ORDER = ['history', 'rmi', 'wishlist', 'peers']
+const REASON_WEIGHT = { history: 4, rmi: 3, wishlist: 2, peers: 1 }
+
+/**
+ * The genres we would point this reader at, and the one reason for each —
+ * strongest case first.
+ *
+ * Every applicable reason still counts toward where a genre ranks, so a genre
+ * that fits the reader three ways sorts above one that fits them once; the row
+ * just names the best of them.
+ */
+export function recommendedGenres(reader, limit = 6) {
+  const first = reader.name.split(' ')[0]
+  const classmates = READERS.filter((x) => x.key !== reader.key)
+  const names = new Set([
+    ...reader.genres,
+    ...reader.shelf.map((e) => e.title.genre).filter(Boolean),
+    ...classmates.flatMap((x) => x.shelf.map((e) => e.title.genre)).filter(Boolean),
+  ])
+  const rows = []
+  for (const genre of names) {
+    const mine = reader.shelf.filter((e) => e.title.genre === genre)
+    const finished = mine.filter((e) => e.state === 'finished').length
+    const wanted = mine.length - finished
+    const peers = classmates.filter((x) => x.shelf.some((e) => e.title.genre === genre)).length
+    const found = {}
+    if (finished) {
+      found.history = `${first} has finished ${finished} ${finished === 1 ? 'book' : 'books'} like this`
+    }
+    if (wanted) {
+      found.wishlist = `${wanted} ${wanted === 1 ? 'book' : 'books'} like this on ${first}'s Wish List`
+    }
+    if (reader.genres.includes(genre)) {
+      found.rmi = `${capital(reader.factor)} is ${first}'s top motivation factor, and the RMI names this genre for it`
+    }
+    if (peers >= 3) found.peers = `${peers} classmates have a book like this on their shelf`
+    const id = GENRE_REASON_ORDER.find((k) => found[k])
+    if (!id) continue
+    rows.push({
+      genre,
+      label: genre.replace(/\s*\([^)]*\)/g, '').trim(),
+      reason: { id, detail: found[id] },
+      score: Object.keys(found).reduce((n, k) => n + REASON_WEIGHT[k], 0) + finished,
+    })
+  }
+  return rows.sort((a, b) => b.score - a.score || a.label.localeCompare(b.label)).slice(0, limit)
+}

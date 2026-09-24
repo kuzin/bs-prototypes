@@ -349,10 +349,10 @@
   flex-direction: column;
   gap: 10px;
   overflow-y: auto;
-  /* The native bar is a light OS chrome laid over the blue gradient, and it
-     appears and disappears as sections expand — which shunted every label a few
-     pixels sideways. A thin translucent bar in a reserved gutter instead. */
-  scrollbar-gutter: stable;
+  /* No reserved gutter: a stable one left a strip down the right of every
+     row, so the active highlight stopped short of the sidebar's edge. The bar
+     is thin and translucent, and only takes room when the menu overflows. */
+  scrollbar-gutter: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
 }

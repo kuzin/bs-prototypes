@@ -48,6 +48,9 @@ export function StatCard({
   trend,
   action,
   onClick,
+  /* A tile that is also a filter: `active` rings it in its own colour and
+     reports the pressed state, so a row of them reads as one control. */
+  active,
 }) {
   // Explicit `color` wins by setting --rc-stat-color inline. Otherwise the
   // card inherits --rc-accent from the page / enclosing ChartCard via the
@@ -72,9 +75,10 @@ export function StatCard({
 
   return (
     <Tag
-      className={`rc-stat${onClick ? ' rc-stat--hit' : ''}${trend ? ' rc-stat--trend' : ''}`}
+      className={`rc-stat${onClick ? ' rc-stat--hit' : ''}${active ? ' rc-stat--active' : ''}${trend ? ' rc-stat--trend' : ''}`}
       style={style}
       type={onClick ? 'button' : undefined}
+      aria-pressed={onClick && active !== undefined ? Boolean(active) : undefined}
       onClick={onClick}
     >
       {glyph && <span className="rc-stat-ico">{glyph}</span>}

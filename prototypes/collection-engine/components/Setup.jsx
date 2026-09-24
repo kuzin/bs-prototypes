@@ -7,6 +7,8 @@ import { SettingRow, SettingList } from '@components/SettingRow/SettingRow'
 import { Button } from '@components/Button/Button'
 import { Pill } from '@components/Pill/Pill'
 import { Table } from '@components/Table/Table'
+import { RowAction, RowActions } from '@components/RowAction/RowAction'
+import '@components/RowAction/RowAction.css'
 import { InfoBox } from '@components/InfoBox/InfoBox'
 import { Select } from '@components/Form/Form'
 import { useStickyState } from '@components/useStickyState/useStickyState'
@@ -35,6 +37,7 @@ function SchoolSetup({ school }) {
     clc: true,
     sora: true,
     comicsplus: true,
+    epic: true,
   })
   const [scopeWide, setScopeWide] = useState(false)
   const [requireReview, setRequireReview] = useStickyState('ce:require-review', false)
@@ -54,8 +57,9 @@ function SchoolSetup({ school }) {
             <FeedCard
               key={feed.source}
               feed={feed}
-              on={pool[feed.source]}
-              onToggle={() => setPool((p) => ({ ...p, [feed.source]: !p[feed.source] }))}
+              // A catalog added after this session's pool was remembered is on.
+              on={pool[feed.source] ?? true}
+              onToggle={() => setPool((p) => ({ ...p, [feed.source]: !(p[feed.source] ?? true) }))}
               run={runs[feed.source]}
               onSync={() => start(feed)}
               onUpload={() => setUploading(feed)}
@@ -252,25 +256,16 @@ function DistrictSetup() {
               ),
             },
             {
-              key: 'fresh',
-              label: 'Library catalog',
-              render: (_, r) => <AsOf fresh={r.fresh} prefix="" />,
-            },
-            {
-              key: 'state',
-              label: 'Status',
-              render: (_, r) => (
-                <FeedState
-                  state={
-                    r.fresh.problems === 0
-                      ? 'ok'
-                      : r.fresh.asOf
-                        ? r.fresh.staleDays > 30
-                          ? 'stale'
-                          : 'ok'
-                        : 'off'
-                  }
-                />
+              key: 'open',
+              label: '',
+              align: 'right',
+              width: 56,
+              /* Inert: the school's own Setup is its own prototype page; the
+                 control says it is one step away without leaving for it. */
+              render: () => (
+                <RowActions>
+                  <RowAction icon="settings" label="School settings" onClick={() => {}} />
+                </RowActions>
               ),
             },
           ]}
