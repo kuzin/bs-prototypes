@@ -3,6 +3,7 @@ import { PageHeader } from '@components/PageHeader/PageHeader'
 import { StatCard, ChartCard } from '@components/Cards/Cards'
 import { Tabs } from '@components/Tabs/Tabs'
 import { useStickyState } from '@components/useStickyState/useStickyState'
+import { useTitleRequests } from '@components/useTitleRequests/useTitleRequests'
 import { InfoBox } from '@components/InfoBox/InfoBox'
 import { BennySummary } from './BennySummary'
 import '@components/Tabs/Tabs.css'
@@ -35,7 +36,9 @@ const TAB_IDS = ['health', 'collections', 'classrooms', 'titles']
 export function SchoolOverview({ school, onNavigate }) {
   const f = funnel(school.events)
   const fresh = freshness(school)
-  const health = collectionHealth(school)
+  // Readers' own title requests count as unanswered requests too.
+  const { requests: readerRequests } = useTitleRequests(school.id)
+  const health = collectionHealth(school, readerRequests)
   const actions = titleActions(school)
   const rooms = classroomBoard(school)
   const [openTitle, setOpenTitle] = useState(null)
@@ -129,7 +132,7 @@ export function SchoolOverview({ school, onNavigate }) {
             the health card said as sentences, so they sit together. */}
         {tab === 'health' && (
           <div className="ce-stack">
-            <BennySummary summary={bennySchool(school)} asOf={TODAY} />
+            <BennySummary summary={bennySchool(school, readerRequests)} asOf={TODAY} />
             <HealthCard health={health} onOpen={openFrom} />
             <GenreHealthCard genres={genreHealth(school)} onSeeAll={() => openFrom('gaps')} />
           </div>

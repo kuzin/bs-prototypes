@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { WhereTags } from '@components/WhereTags/WhereTags'
+import { ReadNowMark } from '@components/ReadNowMark/ReadNowMark'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
@@ -9,7 +11,7 @@ import { EmptyState } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 import '@components/Cards/Cards.css'
 import '@components/Tabs/Tabs.css'
-import { getBook, PARTNERS, readNowPartner, SHELF_STATUS, SHELF_ORDER } from '../data'
+import { getBook, PARTNERS, readNowPartner, whereTagsFor, SHELF_STATUS, SHELF_ORDER } from '../data'
 
 /**
  * The Wish List — everything the reader has saved, on the shelf the Reading Log's
@@ -122,16 +124,17 @@ export function MyShelf({ shelf, onOpen, onWish, onDiscover, settings }) {
                     aria-label={`${b.title} by ${b.author}`}
                   >
                     <BookCover book={b} size="fill" />
-                    {/* The same mark the Discover shelves put on a jacket that
-                        opens right now. */}
+                    {/* The same play mark the Discover shelves put on a jacket
+                        that opens right now. */}
                     {readNowPartner(b, settings) && (
-                      <span
-                        className="bk-shelftile-now"
+                      <ReadNowMark
+                        color={PARTNERS[readNowPartner(b, settings)]?.accent}
                         title={`Read it now on ${PARTNERS[readNowPartner(b, settings)]?.name}`}
-                        style={{ '--now': PARTNERS[readNowPartner(b, settings)]?.accent }}
                       />
                     )}
                   </button>
+                  {/* Where it is — the same tags the Discover shelves carry. */}
+                  <WhereTags tags={whereTagsFor(b, settings)} className="bk-shelftile-where" />
                   {/* The only control a shelf tile needs: the way back off
                         the shelf. Everything else about the book is one click
                         in, on its own page. */}

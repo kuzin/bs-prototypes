@@ -14,6 +14,9 @@ export const READER = {
   grade: 'Grade 4',
   color: '#F0966F',
   school: 'Lincoln Elementary',
+  /* The Collection Engine's id for that school — where a title this reader
+     requests lands, in the school's Requests view. */
+  schoolId: 'lincoln',
   streak: 12,
   booksThisYear: 27,
   justFinished: 'The Wild Robot',
@@ -30,6 +33,7 @@ export const READER = {
    `CERTAINTY` is the engine's three claims: a licence we own, a queue we can't
    see, a copy the school owns. None of them is *availability*, which nothing in
    any of these feeds actually knows. */
+import { PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 export { CERTAINTY } from '../collection-engine/data'
 
 /** The one word on the button, per claim. The caveat rides under the name. */
@@ -55,6 +59,17 @@ export const PARTNERS = {
     soft: '#FDECEC',
     kind: 'Magazines',
     blurb: 'Classroom magazines — fresh issues every month, leveled for your grade.',
+  },
+  /* Epic — the same fifth source the Collection Engine carries: a licence the
+     school holds, so a title on it opens straight away. */
+  epic: {
+    id: 'epic',
+    certainty: 'own',
+    name: 'Epic',
+    accent: '#0A96E6',
+    soft: '#E6F4FD',
+    kind: 'Read now',
+    blurb: 'Ebooks and read-to-me audiobooks for elementary readers — no holds, no waitlists.',
   },
   sora: {
     id: 'sora',
@@ -94,6 +109,17 @@ export const PARTNERS = {
     kind: 'On the shelf',
     blurb: 'Find it on the shelf at the Lincoln Elementary library.',
   },
+}
+
+/* One colour per service, wherever it shows — the tags, the play mark on a
+   jacket, Where to read. A partner the shared brand registry knows takes its
+   real colour from there, so this list and the log flow (which reads the
+   registry) can't paint the same service two ways. Sora had drifted to a plain
+   blue beside Epic's, which made the two read as one. */
+for (const [id, p] of Object.entries(PARTNERS)) {
+  const brand = PARTNER_BRANDS[id]
+  if (brand?.accent) p.accent = brand.accent
+  if (brand?.soft) p.soft = brand.soft
 }
 
 // ─── Genre palette (chips) ────────────────────────────────────────────────────
@@ -2058,6 +2084,12 @@ const BORROWED_FROM = ['sora', 'libby']
    teacher's shelf actually has with the stacks. */
 const inClassroom = (bookId) => hashOf(`${bookId}:clc`) % 100 < 32
 
+/* Epic carries a slice of what a school's shelves hold — the way the Collection
+   Engine models it, riding on titles the school already has rather than adding
+   new ones. Seeded, so the same books are on it every load. */
+const onEpic = (bookId) => hashOf(`${bookId}:epic`) % 100 < 30
+const epicAudio = (bookId) => hashOf(`${bookId}:epic-audio`) % 100 < 40
+
 const partnerCertainty = (bookId, partner) =>
   BORROWED_FROM.includes(partner)
     ? inStock(bookId, partner)
@@ -2077,8 +2109,6 @@ export const BOOKS = RAW.map((b) => {
 
      Ordered by `FORMATS` rather than by however the availability happens to be
      written, so every book lists them in the same order. */
-  const have = new Set((b.availability ?? []).map((a) => a.format))
-  const formats = Object.keys(FORMATS).filter((f) => have.has(f))
 
   /* Each way in gets the certainty the reader would actually meet. A partner's
      own certainty is the default; the two borrowing apps resolve per copy,
@@ -2096,6 +2126,19 @@ export const BOOKS = RAW.map((b) => {
   if (availability.some((a) => a.format === 'print') && inClassroom(b.id)) {
     availability.push({ partner: 'classroom', format: 'print', certainty: 'shelf' })
   }
+
+  /* Epic — an ebook, and for some of them the read-to-me audio too. Only on
+     books: a classroom magazine is Scholastic's. */
+  if (availability.some((a) => a.format === 'print') && onEpic(b.id)) {
+    availability.push({ partner: 'epic', format: 'ebook', certainty: 'own' })
+    if (epicAudio(b.id))
+      availability.push({ partner: 'epic', format: 'audiobook', certainty: 'own' })
+  }
+
+  /* Read off the finished list, so a format a derived source adds (Epic's
+     ebook) is one the book lists. */
+  const have = new Set(availability.map((a) => a.format))
+  const formats = Object.keys(FORMATS).filter((f) => have.has(f))
 
   return {
     ...b,
@@ -2186,6 +2229,15 @@ export const SHELVES = [
     books: ['dog-man', 'amulet', 'cat-kid', 'new-kid', 'investigators', 'smile', 'el-deafo'],
   },
   {
+    id: 'epic',
+    partner: 'epic',
+    title: 'Read free on Epic',
+    subtitle: 'Ebooks and read-to-me audiobooks — no holds, no waitlists',
+    // Whatever the catalog puts on Epic, rather than a hand-picked list that
+    // could name a book Epic doesn't carry.
+    books: BOOKS.filter((b) => b.availability.some((a) => a.partner === 'epic')).map((b) => b.id),
+  },
+  {
     id: 'scholastic',
     partner: 'scholastic',
     magazine: true,
@@ -2273,6 +2325,7 @@ export const AGE_BANDS = [
 export const AVAIL_FACETS = [
   { id: 'readnow', label: 'Read now in app' },
   { id: 'comicsplus', label: 'Comics Plus' },
+  { id: 'epic', label: 'Epic' },
   { id: 'sora', label: 'Sora (library)' },
   { id: 'libby', label: 'Libby (library)' },
   { id: 'library', label: 'School library' },
@@ -2322,7 +2375,11 @@ export const CLASSROOM = { teacher: 'Mr. Reyes', room: 'Room 12' }
    school library and files the same way whatever the genre chips say. */
 export const shelfLocation = (book, partner = 'library') => {
   if (partner === 'classroom')
-    return { name: `${CLASSROOM.teacher}’s class`, area: CLASSROOM.room, callNumber: null }
+    return {
+      name: `${CLASSROOM.teacher}’s Classroom`,
+      area: CLASSROOM.room,
+      callNumber: null,
+    }
   const hit = SHELF_AREAS.find((r) => (book.genres || []).includes(r.genre))
   const surname = (book.author || '')
     .split(' ')
@@ -2346,13 +2403,14 @@ export const shelfLocation = (book, partner = 'library') => {
    the most openable thing in the catalog. */
 
 /* Apps with a reader in them. The rest of the sources are shelves you walk to. */
-const IN_APP_READERS = ['comicsplus', 'scholastic', 'sora', 'libby']
+const IN_APP_READERS = ['comicsplus', 'epic', 'scholastic', 'sora', 'libby']
 
 /* The site setting that gates each source. Every one of the engine's ways in
    has a switch now — a school that has not scanned its classroom shelves
    should not be told a book is on one. */
 const PARTNER_SETTING = {
   comicsplus: 'comicsplus',
+  epic: 'epic',
   scholastic: 'scholastic',
   sora: 'sora',
   libby: 'libby',
@@ -2364,6 +2422,7 @@ const PARTNER_SETTING = {
    reviewer's switches should assume. */
 const ALL_ON = {
   comicsplus: true,
+  epic: true,
   scholastic: true,
   sora: true,
   libby: true,
@@ -2383,31 +2442,85 @@ export const rowEnabled = (row, settings = ALL_ON) => {
 /* Which linked app can open this title right now, if any. The partner rather
    than a yes/no, because what a shelf puts on the jacket is that partner's own
    mark — the reader recognises Comics Plus, not the word "available". */
-export const readNowPartner = (book, settings) =>
-  (book.availability || []).find(
-    (a) =>
-      a.certainty === 'own' &&
-      IN_APP_READERS.includes(a.partner) &&
-      (a.format === 'ebook' || a.format === 'magazine') &&
-      rowEnabled(a, settings),
-  )?.partner ?? null
+/* Every app that could open it, for the surfaces that offer the choice — in
+   the apps' own order, the one the where tags use, not the order the catalog
+   happened to list them in. So the first tag, the play mark on the jacket and
+   the colour of the Read now button all name the same app. */
+export const readNowPartners = (book, settings) =>
+  [
+    ...new Set(
+      (book.availability || [])
+        .filter(
+          (a) =>
+            a.certainty === 'own' &&
+            IN_APP_READERS.includes(a.partner) &&
+            (a.format === 'ebook' || a.format === 'magazine') &&
+            rowEnabled(a, settings),
+        )
+        .map((a) => a.partner),
+    ),
+  ].sort((x, y) => IN_APP_READERS.indexOf(x) - IN_APP_READERS.indexOf(y))
 
-/* Every app that could open it, for the surfaces that offer the choice. */
-export const readNowPartners = (book, settings) => [
-  ...new Set(
-    (book.availability || [])
-      .filter(
-        (a) =>
-          a.certainty === 'own' &&
-          IN_APP_READERS.includes(a.partner) &&
-          (a.format === 'ebook' || a.format === 'magazine') &&
-          rowEnabled(a, settings),
-      )
-      .map((a) => a.partner),
-  ),
-]
+export const readNowPartner = (book, settings) => readNowPartners(book, settings)[0] ?? null
 
 export const isReadNow = (book, settings) => Boolean(readNowPartner(book, settings))
+
+/* ─── Where a book is, as tags ───────────────────────────────────────────────
+   Every place this reader can get a title, one tag each, strongest claim
+   first: an app that opens it now, then one that lends it, then a shelf you
+   walk to — your own classroom's before the library's, because it is closer.
+   It is the long form of the dot a jacket used to wear, which could only say
+   "something opens this". */
+
+/* The one order places are listed in — the tags, the book page's rail, and
+   which app a Read now leads with. */
+export const PLACE_ORDER = [
+  'comicsplus',
+  'epic',
+  'scholastic',
+  'sora',
+  'libby',
+  'classroom',
+  'library',
+]
+const CERTAINTY_RANK = { own: 0, hold: 1, shelf: 2 }
+
+/** What a place is called on a tag — short enough to sit under a jacket. */
+export const placeLabel = (partner) =>
+  partner === 'classroom'
+    ? `${CLASSROOM.teacher}’s Class`
+    : partner === 'library'
+      ? 'School Library'
+      : (PARTNERS[partner]?.name ?? partner)
+
+export function whereTagsFor(book, settings) {
+  const now = new Set(readNowPartners(book, settings))
+  // One tag per place, carrying that place's best way in: a Sora ebook with
+  // nobody waiting outranks the same app's audiobook with a queue.
+  const best = new Map()
+  for (const a of (book.availability || []).filter((row) => rowEnabled(row, settings))) {
+    const cur = best.get(a.partner)
+    if (!cur || CERTAINTY_RANK[a.certainty] < CERTAINTY_RANK[cur.certainty]) best.set(a.partner, a)
+  }
+  const rank = (id) => (now.has(id) ? 0 : CERTAINTY_RANK[best.get(id).certainty] + 1)
+  return [...best.keys()]
+    .sort((a, b) => rank(a) - rank(b) || PLACE_ORDER.indexOf(a) - PLACE_ORDER.indexOf(b))
+    .map((id) => {
+      const a = best.get(id)
+      const p = PARTNERS[id]
+      const shelf = a.certainty === 'shelf' ? shelfLocation(book, id) : null
+      const title = now.has(id)
+        ? `Read it now on ${p.name}`
+        : a.certainty === 'own' && a.format === 'audiobook'
+          ? `Listen now on ${p.name}`
+          : a.certainty === 'hold'
+            ? `Borrow it on ${p.name} — there may be a wait`
+            : id === 'classroom'
+              ? `On the shelf in ${shelf.name}, ${shelf.area}`
+              : `On the shelf in the school library — ${shelf.area}`
+      return { id, label: placeLabel(id), color: p.accent, now: now.has(id), title }
+    })
+}
 
 // ─── The Wish List — the reader’s saved books ───────────────────────────────────────
 // id → status. Seeds App state; the bookmark + the detail Wish List chips edit it.

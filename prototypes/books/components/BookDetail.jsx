@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { Pill } from '@components/Pill/Pill'
+import '@components/Pill/Pill.css'
 import { ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { Button } from '@components/Button/Button'
 import { SectionCard } from '@components/SectionCard/SectionCard'
@@ -39,6 +41,7 @@ import {
   GENRES,
   FORMATS,
   PARTNERS,
+  PLACE_ORDER,
   CERTAINTY_CTA,
   getBooks,
   friendsWhoRead,
@@ -92,6 +95,7 @@ function StatStrip({ book, sessions, status }) {
      Plumpy pack, which is full-colour Icons8 art — a tile of one figure and
      one label is mostly empty until something sits beside it, and a flat
      stroked glyph on a tinted card reads as a missing image. */
+  const prog = status === 'reading' ? readProgress(book, sessions) : null
   const stats = [
     { value: totalMin, show: fmtMins(totalMin), label: 'Minutes read', c: '#0B6B78', i: 'clock' },
     {
@@ -137,6 +141,20 @@ function StatStrip({ book, sessions, status }) {
     <SectionCard header="divider" title="Your stats">
       {
         <div className="bk-statgrid">
+          {/* How far through it you are, while you're reading it — the one
+              figure here that's a length, so it carries its bar. A bookmark
+              for the mark (your place in it), in a colour none of the other
+              tiles use. */}
+          {prog && (
+            <StatCard
+              value={prog.toPage}
+              unit={`/${book.pageCount}`}
+              label="Pages read"
+              color="#C2410C"
+              icon="bookmark"
+              progress={{ value: prog.toPage, max: book.pageCount }}
+            />
+          )}
           {shown.map((s) => (
             <StatCard key={s.label} value={s.show} label={s.label} color={s.c} icon={s.i} />
           ))}
@@ -153,20 +171,18 @@ function StatStrip({ book, sessions, status }) {
 }
 
 /**
- * This title's reading log — web-app's `BookPage` Reading Log tab: two of the
- * reading log's own stat tiles over the design system's table.
+ * This title's reading log — web-app's `BookPage` Reading Log tab: the design
+ * system's table of sessions. The figures — minutes, sessions, pages read —
+ * are the rail's Your stats, right beside it, so the tab doesn't repeat them.
  *
  * It was a tinted panel with a list of rows inside it, which is a card where
  * the app has a table — a session is a date, an amount, what of the book it
  * covered and what it was read on, and none of those reads as a sentence.
  */
-function ReadingLogTab({ book, sessions, status, onEditSession, onRemoveSession }) {
+function ReadingLogTab({ sessions, onEditSession, onRemoveSession }) {
   const [editing, setEditing] = useState(null) // session index being corrected
   const [draft, setDraft] = useState('')
   const [removing, setRemoving] = useState(null) // session awaiting confirmation
-  const total = sessions.reduce((a, s) => a + s.minutes, 0)
-  const prog = status === 'reading' ? readProgress(book, sessions) : null
-
   if (sessions.length === 0) {
     return (
       <EmptyState
@@ -181,30 +197,6 @@ function ReadingLogTab({ book, sessions, status, onEditSession, onRemoveSession 
   return (
     <div className="bk-readlogtab">
       <h3 className="bk-section-h">Your reading</h3>
-
-      <div className="bkp-readnums">
-        <StatCard
-          value={sessions.length}
-          label={sessions.length === 1 ? 'Session' : 'Sessions'}
-          color="#B45309"
-          icon="calendar"
-        />
-        <StatCard value={fmtMins(total)} label="Minutes" color="#0B6B78" icon="clock" />
-        {/* How far through the book those sessions have got — a tile like the
-            two beside it rather than a bar in a card of its own, which read as
-            a different kind of thing sitting under them. The house shape for
-            progress on a tile is a ring in the mark's slot, and the page count
-            is the figure's denominator. */}
-        {prog && (
-          <StatCard
-            value={prog.toPage}
-            unit={`/${book.pageCount}`}
-            label="Pages read"
-            color="#0D9488"
-            progress={{ value: prog.toPage, max: book.pageCount }}
-          />
-        )}
-      </div>
 
       <Table
         className="bkp-sessions"
@@ -475,12 +467,23 @@ function FriendsWhoRead({ book, onOpenProfile }) {
  * Borrow for a queue we can't see, Find it for a copy the school owns — so the
  * same claim reaches staff and reader through one definition.
  */
+/* Strongest claim first, the order the tags under a jacket use: what opens
+   now, then what lends, then the shelves — your own classroom's before the
+   library's. Within a claim, the places' own order, so the rail leads with the
+   same app as the Read now button and the play mark on the jacket. */
+const WHERE_RANK = { own: 0, hold: 1, shelf: 2 }
+
 function WhereToRead({ book, availability, onRead }) {
   if (!availability.length) return null
+  const rows = [...availability].sort(
+    (a, b) =>
+      WHERE_RANK[a.certainty] - WHERE_RANK[b.certainty] ||
+      PLACE_ORDER.indexOf(a.partner) - PLACE_ORDER.indexOf(b.partner),
+  )
   return (
     <SectionCard header="divider" title="Where to read">
       <div className="bk-where-list">
-        {availability.map((a, i) => {
+        {rows.map((a, i) => {
           const p = PARTNERS[a.partner]
           /* The row's own certainty, not its partner's: a Sora copy with
              nobody waiting opens now, and the same app's next title doesn't. */
@@ -495,12 +498,12 @@ function WhereToRead({ book, availability, onRead }) {
                 <span className="bk-where-name">{shelf?.name ?? p.name}</span>
               </div>
               {/* A shelf has nothing to press — what it owes the reader is the
-                  walk, so the button gives way to the location and the call
-                  number off the holdings record. */}
+                  walk, so the button gives way to where in the room it is. */}
               {shelf ? (
                 <span className="bk-where-loc">
-                  <span className="bk-where-area">{shelf.area}</span>
-                  {shelf.callNumber && <span className="bk-where-call">{shelf.callNumber}</span>}
+                  <Pill color={p.accent} size="sm">
+                    {shelf.area}
+                  </Pill>
                 </span>
               ) : (
                 <button
@@ -610,14 +613,31 @@ export function BookDetail({
                 {/* One source opens straight away. Several ask which — the same
                 flyout menu the log flow's tiles use, so "where do I read this"
                 is answered the same way wherever it's asked. */}
+                {/* In the colour of the app it opens in — the same colour as
+                    that app's tag and its play mark on the shelves. Several
+                    apps: the first, which is the one the menu leads with. */}
                 {readNowVias.length === 1 && (
-                  <Button onClick={() => setReaderVia(readNowVia)}>Read now</Button>
+                  <Button
+                    variant="accent"
+                    accent={PARTNERS[readNowVia].accent}
+                    onClick={() => setReaderVia(readNowVia)}
+                  >
+                    Read now
+                  </Button>
                 )}
                 {readNowVias.length > 1 && (
                   <Flyout
                     placement="bottom"
                     arrow
-                    trigger={({ toggle }) => <Button onClick={toggle}>Read now</Button>}
+                    trigger={({ toggle }) => (
+                      <Button
+                        variant="accent"
+                        accent={PARTNERS[readNowVia].accent}
+                        onClick={toggle}
+                      >
+                        Read now
+                      </Button>
+                    )}
                   >
                     {({ close }) => (
                       <FlyoutMenu>
@@ -694,9 +714,7 @@ export function BookDetail({
             {tab === 'overview' && <OverviewTab book={book} onOpenProfile={onOpenProfile} />}
             {tab === 'reading' && (
               <ReadingLogTab
-                book={book}
                 sessions={sessions}
-                status={status}
                 onEditSession={onEditSession}
                 onRemoveSession={onRemoveSession}
               />
@@ -733,8 +751,10 @@ export function BookDetail({
           {/* No "Available as" card: Where to read already names every format,
               beside the place it comes from and what can honestly be said about
               getting it. On its own, a row of format chips said less twice. */}
-          <StatStrip book={book} sessions={sessions} status={status} />
+          {/* Where to read leads the rail: it is the one card here a reader
+              acts on — the stats under it are about what they already did. */}
           <WhereToRead book={book} availability={availability} onRead={setReaderVia} />
+          <StatStrip book={book} sessions={sessions} status={status} />
         </aside>
       </article>
 

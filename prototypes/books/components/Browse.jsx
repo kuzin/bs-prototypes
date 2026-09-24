@@ -7,12 +7,14 @@ import { SectionCard } from '@components/SectionCard/SectionCard'
 import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
 import { Button } from '@components/Button/Button'
 import { EmptyState } from '@components/Primitives/Primitives'
+import { useTitleRequests } from '@components/useTitleRequests/useTitleRequests'
 import '@components/SearchInput/SearchInput.css'
 import '@components/SectionCard/SectionCard.css'
 import '@components/ActiveFilters/ActiveFilters.css'
 import '@components/Primitives/Primitives.css'
 import { BookCard } from './BookCard'
 import {
+  READER,
   BOOKS,
   GENRES,
   FORMATS,
@@ -23,6 +25,10 @@ import {
   ageBounds,
   isReadNow,
 } from '../data'
+
+// What the search box matches against: the title, the author and the genres.
+const matchesQuery = (b, q) =>
+  `${b.title} ${b.author} ${b.genres.join(' ')}`.toLowerCase().includes(q)
 
 // All genres that actually appear in the catalog (keeps chips meaningful).
 const GENRE_OPTIONS = Object.keys(GENRES).filter((g) => BOOKS.some((b) => b.genres.includes(g)))
@@ -79,7 +85,7 @@ function FilterGroup({ title, options, selected, onToggle }) {
 }
 
 // Library facets are gated by the matching settings toggle (Libby defaults off).
-const GATED_FACETS = ['sora', 'libby', 'scholastic']
+const GATED_FACETS = ['epic', 'sora', 'libby', 'scholastic']
 
 export function Browse({
   initialQuery = '',
@@ -91,6 +97,7 @@ export function Browse({
   onBack,
 }) {
   const [query, setQuery] = useState(initialQuery)
+  const { request, isRequested } = useTitleRequests(READER.schoolId)
   // Only consulted on a phone, where the panel is a screen tall and would push
   // every result below the fold. On desktop the rail is always open and the
   // toggle that drives this is hidden.
@@ -170,8 +177,7 @@ export function Browse({
       [...filters.avail].filter((id) => !GATED_FACETS.includes(id) || settings[id]),
     )
     const list = BOOKS.filter((b) => {
-      if (q && !`${b.title} ${b.author} ${b.genres.join(' ')}`.toLowerCase().includes(q))
-        return false
+      if (q && !matchesQuery(b, q)) return false
       if (filters.genres.size && !b.genres.some((g) => filters.genres.has(g))) return false
       if (filters.formats.size && !b.formats.some((f) => filters.formats.has(f))) return false
       if (!bandHit(b, filters.levels)) return false
@@ -183,6 +189,14 @@ export function Browse({
     // Most-read at this school first — the order the catalog is browsed in.
     return [...list].sort((a, b) => b.readersAtSchool - a.readersAtSchool)
   }, [query, filters, settings])
+
+  /* Nothing in the whole catalog by that name — not a filter hiding it. Then
+     the page can't find it for them, but their school can get it: the empty
+     state offers a request, which lands in the school's Requests view. */
+  const asked = query.trim()
+  const unknown =
+    asked && !BOOKS.some((b) => matchesQuery(b, asked.toLowerCase())) && !results.length
+  const requested = unknown && isRequested(asked)
 
   return (
     <div className="bk-browse-page">
@@ -294,6 +308,27 @@ export function Browse({
                 />
               ))}
             </div>
+          ) : unknown ? (
+            requested ? (
+              <EmptyState
+                variant="dashed"
+                icon={<Icon name="circle-check" size={26} />}
+                title={`Requested! “${asked}” is on your library’s list`}
+                description="Your school librarian sees every request. If they get it, it’ll show up right here."
+              />
+            ) : (
+              <EmptyState
+                variant="dashed"
+                icon={<Icon name="search" size={26} />}
+                title={`We don’t have “${asked}” yet`}
+                description="Want to read it? Ask your school library to get it — your librarian sees every request."
+                action={
+                  <Button variant="primary" size="sm" onClick={() => request(asked)}>
+                    Request this title
+                  </Button>
+                }
+              />
+            )
           ) : (
             <EmptyState
               variant="dashed"

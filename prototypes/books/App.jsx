@@ -28,15 +28,20 @@ import { MyShelf } from './components/MyShelf'
 import { SettingsModal } from './components/SettingsModal'
 import { BadgeEarnedModal } from './components/BadgeEarnedModal'
 import { AudioPlayer } from './components/AudioPlayer'
+import { BookQuiz } from './components/BookQuiz'
 import {
   BENNY_PICKS,
   bookByTitle,
   getBook,
   getBooks,
   getSessions,
+  PARTNERS,
+  placeLabel,
   readNowPartner,
   READER,
+  rowEnabled,
   SHELF_SEED,
+  whereTagsFor,
 } from './data'
 import './index.css'
 
@@ -63,6 +68,10 @@ export function App() {
   const [sessionsByBook, setSessionsByBook] = useState({})
   const [badge, setBadge] = useState(null) // { id } of the just-finished book | null
   const [nowPlaying, setNowPlaying] = useState(null) // bookId being listened to | null
+  /* Benny's Book Quiz: whether it's open, and what the reader last answered —
+     sticky, so the picks it put on Discover survive a reload. */
+  const [quizOpen, setQuizOpen] = useState(false)
+  const [quizAnswers, setQuizAnswers] = useStickyState('bk:quiz', null)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [flowOpen, setFlowOpen] = useState(false)
   /* The title the log flow opens on, if it was opened from a book rather than
@@ -81,6 +90,7 @@ export function App() {
        audio shouldn't be offering a "Great on audio" shelf its readers can't
        listen to. */
     comicsplus: true,
+    epic: true,
     scholastic: false,
     sora: true,
     libby: false,
@@ -113,7 +123,7 @@ export function App() {
       pages: b.pageCount,
     }
     /* Which app can open it, so a tile in the log offers the same "Read in …"
-       and wears the same dot as the same jacket on the shelves outside it. */
+       and wears the same play mark as the same jacket on the shelves outside it. */
     const via = readNowPartner(b, settings)
     return via ? { ...base, partner: via } : base
   }
@@ -350,6 +360,20 @@ export function App() {
       .filter((id) => settings[id])
       .map((id) => [id, true]),
   )
+  /* Where a title is, for the reading log's All Titles — it carries the log's
+     own record, so it is looked up in this catalog by id, then by title; a
+     fixture title the catalog doesn't have is tagged with the one partner it
+     names. (Not the log flow: its tiles are too narrow for a row of tags.) */
+  const whereTagsHere = (b) => {
+    if (!b) return []
+    const rec = getBook(b.id) ?? bookByTitle(b.title)
+    if (rec) return whereTagsFor(rec, settings)
+    const p = b.partner && PARTNERS[b.partner]
+    return p && rowEnabled({ partner: b.partner, format: 'ebook' }, settings)
+      ? [{ id: b.partner, label: placeLabel(b.partner), color: p.accent }]
+      : []
+  }
+
   // The title being read in a partner's app, and which app that is.
   const [reading, setReading] = useState(null)
 
@@ -426,6 +450,9 @@ export function App() {
           onBrowse={openBrowse}
           onPlay={setNowPlaying}
           onViewAll={openList}
+          shelf={shelf}
+          quizAnswers={quizAnswers}
+          onQuiz={() => setQuizOpen(true)}
         />
       )
     if (id === 'shelf')
@@ -482,6 +509,9 @@ export function App() {
         /* The All Titles shelf wears the same dot as the Discover shelves — a
            jacket means the same thing wherever this app draws one. */
         readNow={(b) => (b ? readNowPartner(b, settings) : null)}
+        /* …and now the same tags the Discover shelves carry, which name every
+           place rather than colouring one. */
+        whereTags={whereTagsHere}
         logTabs={LOG_TABS}
         logTab={logTab}
         /* Moving between the panes leaves whatever was layered over this one:
@@ -559,6 +589,16 @@ export function App() {
         open={!!badge}
         onClose={() => setBadge(null)}
         book={badge ? getBook(badge.id) : null}
+      />
+      <BookQuiz
+        open={quizOpen}
+        onClose={() => setQuizOpen(false)}
+        onSave={setQuizAnswers}
+        shelf={shelf}
+        settings={settings}
+        onOpen={open}
+        onWish={toggleWant}
+        wishlist={shelfIds}
       />
       {nowPlaying && (
         <AudioPlayer

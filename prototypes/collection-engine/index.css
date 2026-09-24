@@ -199,6 +199,31 @@ button {
   color: var(--c-red-ink);
 }
 
+/* Requests: what was asked for, and a pill when a reader asked for it from
+   Discover rather than of Benny. */
+.ce-asked {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* A prototype-only reset, set as a link so it can't pass for a product
+   control. */
+.ce-proto-link {
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--c-blue);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.ce-proto-link:hover {
+  text-decoration: underline;
+}
+
 /* ── Setup: one card per catalog source ────────────────────────────────────── */
 
 /* ── A Book Talk opened from the book panel ──────────────────────────────────

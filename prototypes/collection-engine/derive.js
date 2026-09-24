@@ -685,8 +685,10 @@ export function districtMisses(n = 5) {
  * <strong>, the same convention the profile's summary uses.
  */
 
-export function bennySchool(school) {
-  const h = collectionHealth(school)
+export function bennySchool(school, readerRequests = []) {
+  // The same read the health card makes, readers' own requests included, so
+  // Benny never calls a collection healthy that the card beside him doesn't.
+  const h = collectionHealth(school, readerRequests)
   const fresh = freshness(school)
   const actions = [...titleActions(school).values()]
   const buy = actions.filter((a) => a.kind === 'buy').length
@@ -709,8 +711,8 @@ export function bennySchool(school) {
     h.level === 'green'
       ? `Your collection is keeping up with your readers: **${h.reach.read}** of your **${h.reach.total}** titles have been read off one of my recommendations, and nearly everyone still has plenty left to be handed.`
       : h.level === 'yellow'
-        ? `Your collection is mostly keeping up, but **${h.gapCount}** gaps are starting to show, and **${h.underserved}** readers are running low on books in the genres they read.`
-        : `Your collection is falling behind its readers: **${h.gapCount}** collection gaps, and **${h.underserved}** readers are running out of books in the genres they read.`,
+        ? `Your collection is mostly keeping up, but **${h.gapCount}** gaps are starting to show${h.underserved ? `, and **${h.underserved}** ${h.underserved === 1 ? 'reader is' : 'readers are'} running low on books in the genres they read` : ''}.`
+        : `Your collection is falling behind its readers: **${h.gapCount}** collection gaps${h.underserved ? `, and **${h.underserved}** ${h.underserved === 1 ? 'reader is' : 'readers are'} running out of books in the genres they read` : ''}.`,
   )
 
   // The biggest gap, stated as the thing it looks like from a reader's side.
@@ -981,12 +983,19 @@ export const HEALTH = {
  * it. Two things decide the colour — how many gaps the collection has, and how
  * many readers are running out of books — because those are the two ways a
  * collection fails a reader. Everything else is a reason, not a score.
+ *
+ * `readerRequests` are titles this school's readers asked for from Discover
+ * when a search found nothing (`useTitleRequests`) — each one a request the
+ * collection can't answer yet, so they count with Benny's unanswered ones.
  */
-export function collectionHealth(school) {
+export function collectionHealth(school, readerRequests = []) {
   const genres = genreHealth(school)
   const genreGaps = genres.filter((g) => g.verdict === 'gap')
   const strengths = genres.filter((g) => g.verdict === 'strength')
-  const reqGaps = requestGaps(school)
+  const reqGaps = [
+    ...readerRequests.map((r) => ({ q: r.q, asks: r.asks, hits: 0 })),
+    ...requestGaps(school),
+  ]
   const under = underserved(school)
   const underPct = pct(under.length, school.readers.length)
   const gapCount = genreGaps.length + reqGaps.length
@@ -1012,7 +1021,7 @@ export function collectionHealth(school) {
   if (reqGaps.length) {
     reasons.push({
       tone: 'bad',
-      text: `**${reqGaps.length}** Benny ${reqGaps.length === 1 ? 'request' : 'requests'} the collection can't answer, like “${reqGaps[0].q}”.`,
+      text: `**${reqGaps.length}** reader ${reqGaps.length === 1 ? 'request' : 'requests'} the collection can't answer, like “${reqGaps[0].q}”.`,
     })
   }
   if (under.length) {
