@@ -268,7 +268,7 @@ export const GROUPS = [
     id: 'books',
     kind: 'prototype',
     title: 'Book Discovery',
-    desc: 'Components for the Book Discovery prototype — book covers with gradient fallbacks, the star-rating family, shelf cards, the horizontal shelf, and partner branding.',
+    desc: 'Components for the Book Discovery prototype — the cover-forward book card and its four variants, the shelf grid that ends in View More, Ask Benny, the clamped blurb, and partner branding.',
     color: 'var(--c-green)',
   },
   {

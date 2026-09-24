@@ -575,17 +575,20 @@
 }
 
 .sb-picker-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 140px;
+  /* No fixed cap: the info column is already `min-width: 0` in a flex row, so
+     it ellipsises at whatever the picker has room for. 140px cut "Jefferson
+     Elementary" short with 70px to spare. */
+  max-width: 100%;
 }
 
 .sb-picker-grades {
-  font-size: 13px;
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.5);
 }
 

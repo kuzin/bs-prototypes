@@ -1201,6 +1201,11 @@
   align-items: center;
   gap: 10px;
   width: 100%;
+  /* The thumb's room above and below the track lives on the row, not as the
+     input's margins: a parent that zeroes its first child's top margin (the
+     Pattern Library frame does) left only the bottom one, and the track sat
+     4px above the value beside it. */
+  padding: 8px 0;
 }
 
 .rng-header {
@@ -1228,6 +1233,11 @@
   outline: none;
   cursor: pointer;
   border: none;
+  margin: 0;
+}
+
+/* Under a label there's no row to carry the room, so the input keeps it. */
+.frm-labeled > .rng-input {
   margin: 8px 0;
 }
 

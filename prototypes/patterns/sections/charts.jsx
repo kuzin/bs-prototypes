@@ -60,7 +60,7 @@ function BarListKnobs() {
   const [showBar, setShowBar] = useState(true)
   const [layout, setLayout] = useState('columns')
   const [showIcon, setShowIcon] = useState(true)
-  const [showSublabel, setShowSublabel] = useState(true)
+  const [showSublabel, setShowSublabel] = useState(false)
   const [showDelta, setShowDelta] = useState(true)
   const [showValueLabel, setShowValueLabel] = useState(true)
   const [showPrefix, setShowPrefix] = useState(true)
@@ -79,6 +79,7 @@ function BarListKnobs() {
     iconColor: f.color,
     label: f.name,
     sublabel: showSublabel ? f.desc : undefined,
+    tooltip: f.desc,
     value: f.score,
     max: f.max,
     color: f.color,
@@ -1682,9 +1683,9 @@ import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/charts/charts'
   ))}
 </GoalStats>
 
-/* a requirement with a denominator — a ring around the share done */
+/* a requirement with a denominator — a progress bar under the label */
 { label: 'Minutes Completed', have: 240, need: 300, tab: 'badges' }
-/* a total with nothing to reach — its own glyph and colour in the ring's place */
+/* a total with nothing to reach — its own glyph and colour instead */
 { label: 'Total Raised', value: '$95', icon: 'coin', accent: '#0F7A55', tab: 'donations' }`,
     desc: (
       <>
@@ -1696,20 +1697,19 @@ import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/charts/charts'
         The app has two shapes and this is both, on the design system&apos;s own{' '}
         <code>StatCard</code> rather than a second stat tile beside it.{' '}
         <strong>A progress tile has a denominator</strong> (<code>_progress_card</code>), so it
-        wears a <code>ProgressRing</code> in the icon slot and reads &ldquo;240 / 300&rdquo;; a{' '}
+        reads &ldquo;240 / 300&rdquo; with <code>StatCard</code>&apos;s own progress bar under the
+        label — the same tile Discover&apos;s &ldquo;Pages read&rdquo; is. A{' '}
         <strong>total tile has only a count</strong> (<code>_total_card</code>) — badges earned,
-        dollars raised — so it takes its own glyph and colour, because a ring around a figure with
-        nothing to reach is a decoration pretending to be data. The glyph gets the ring&apos;s cell
-        and the tone the ring&apos;s track carries, so a mixed strip lines up instead of alternating
-        a drawn disc and a bare glyph.
+        dollars raised — so it takes its own glyph and colour, on the tone its hue&apos;s bar track
+        carries.
         <br />
-        <br />A finished requirement goes green, ring and figure together. <code>onClick</code> puts
+        <br />A finished requirement goes green, bar and figure together. <code>onClick</code> puts
         the whole card in a button, which is what every one of these is in the app: a link to the
         tab that explains its number.
       </>
     ),
     render: () => (
-      <Variant label="a mixed strip — three totals and three with a ring" full>
+      <Variant label="a mixed strip — three totals and three with a bar" full>
         <div style={{ padding: 20, background: 'var(--c-gray-0)' }}>
           <GoalStats>
             <GoalStat
@@ -1769,8 +1769,7 @@ import '@components/Cards/Cards.css'
         is a light tint of it, and the icon and action take it at full strength, so a caller still
         states one colour. The <code>icon</code> is optional — without one the tile is just figure,
         label and action. A glyph is drawn on a white plate, the same one the reader banner&apos;s
-        mark wears, so the two read as the same object; a <code>ProgressRing</code> or an
-        illustrated <code>PlumpyIcon</code> fills the slot itself and gets no plate.
+        mark wears, so the two read as the same object.
         <br />
         <br />
         <code>action</code> puts a link at the foot of the tile ({'{ label, href }'}), for the stats
@@ -1793,17 +1792,9 @@ import '@components/Cards/Cards.css'
         <code>action</code>, not both.
         <br />
         <br />
-        <strong>
-          <code>ProgressRing</code>
-        </strong>{' '}
-        is the icon a requirement with a denominator wears —{' '}
-        <code>fundraisers/overview/_progress_card</code> and <code>_overview_list_goals</code>, the
-        &ldquo;Overall Progress&rdquo; strip a challenge and a fundraiser both open with. It fills
-        whatever the icon slot is, so a strip sizes it by sizing <code>.rc-stat-ico</code>; a
-        finished one goes green. It is inline SVG rather than a glyph because{' '}
-        <strong>the percentage is the reading</strong> — a number in a footer is not the same thing
-        as an arc you take in at a glance. A tile with no denominator gets its own glyph instead: a
-        ring around a figure with nothing to reach is a decoration pretending to be data.
+        <code>progress</code> (<code>{'{ value, max }'}</code>) draws the figure again as a bar
+        under the label, for a tile whose number is a position in something — pages through a book,
+        minutes toward a requirement.
       </>
     ),
     render: () => (

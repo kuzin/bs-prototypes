@@ -302,8 +302,11 @@
 .bnr {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+  /* The app's `.infobox` is 12px 16px with a 12px gap; this runs a little
+     wider on purpose, so the icon and the text have room at the sides rather
+     than sitting against the box's edges. */
+  gap: 14px;
+  padding: 12px 20px;
   border-radius: 10px;
   border: none;
   width: 100%;

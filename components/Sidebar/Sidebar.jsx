@@ -422,7 +422,7 @@ export function SchoolPicker({ schools = [], schoolId, onSchoolId, onAfterChange
           <span className="sb-picker-name">{school.name}</span>
           <span className="sb-picker-grades">{school.grades}</span>
         </div>
-        <Icon name="chevron-down" size={12} stroke={2} />
+        <Icon name="chevron-down" size={16} stroke={2.4} />
       </button>
 
       {open && (

@@ -546,6 +546,15 @@
   border-radius: 0;
 }
 
+/* A profile pane (`.bp-content` / `.rp-content`) is its page's scroll area,
+   so it reserves a scrollbar gutter. Shown here it never scrolls, and the
+   reserved gutter read as 15px of extra padding down its right side only. */
+.pt-variant-frame .bp-content,
+.pt-variant-frame .rp-content {
+  overflow: visible;
+  scrollbar-gutter: auto;
+}
+
 /* Forces the Table demo wide enough to overflow so the scrollX knob actually
    scrolls (and the pagination bar stays pinned below the scroll). */
 .pt-tbl-wide {

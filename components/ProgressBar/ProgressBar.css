@@ -1,7 +1,8 @@
 .pgb {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  /* Label and value over the track. At 6px the text sat on the bar. */
+  gap: 10px;
   width: 100%;
 }
 
