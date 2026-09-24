@@ -1,0 +1,25 @@
+/* ─── ReadNowMark ───────────────────────────────────────────────────────────
+   A small play button on a jacket's top-left corner, in the opening app's
+   colour, ringed in white so it reads over any cover art. */
+
+.rnm {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: #fff;
+  background: var(--now, #0ba85f);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 30%);
+  pointer-events: none;
+}
+
+/* A play triangle's weight sits left of its box; nudge it to look centred. */
+.rnm svg {
+  margin-left: 1px;
+}

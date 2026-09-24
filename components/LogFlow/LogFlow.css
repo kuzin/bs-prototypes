@@ -1578,16 +1578,3 @@
    magazine placeholder is its masthead and issue line. `z-index` for the reason
    `.lf-tile-mark` gives — the covers sit at 1 to clear their own shadow, and a
    mark left on `auto` is painted underneath one. */
-.lf-tile-now {
-  position: absolute;
-  z-index: 2;
-  top: 8px;
-  left: 8px;
-  width: 12px;
-  height: 12px;
-  background: var(--now, #0ba85f);
-  border: 2px solid #fff;
-  border-radius: 999px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
-  pointer-events: none;
-}

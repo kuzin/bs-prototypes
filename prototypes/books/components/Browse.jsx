@@ -79,7 +79,7 @@ function FilterGroup({ title, options, selected, onToggle }) {
 }
 
 // Library facets are gated by the matching settings toggle (Libby defaults off).
-const GATED_FACETS = ['sora', 'libby', 'scholastic']
+const GATED_FACETS = ['epic', 'sora', 'libby', 'scholastic']
 
 export function Browse({
   initialQuery = '',

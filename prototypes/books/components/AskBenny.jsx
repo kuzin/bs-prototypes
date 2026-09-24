@@ -40,17 +40,10 @@ export function AskBenny({ onOpen, onWish, wishlist, settings }) {
     <section className={`bk-ask ${result || loading ? 'is-answered' : ''}`}>
       {!result && !loading && (
         <div className="bk-ask-prompt">
-          <div className="bk-ask-head">
-            <img src="/bs-prototypes/benny-excited.svg" alt="" className="bk-ask-avatar" />
-            <div className="bk-ask-headtext">
-              <h2 className="bk-ask-title">
-                Ask Benny <Icon name="sparkles" size={16} />
-              </h2>
-              <p className="bk-ask-sub">
-                Tell me what you’re in the mood for and I’ll find your next read.
-              </p>
-            </div>
-          </div>
+          {/* Benny on the bar's white disc, the way the quiz banner above
+              carries its mark — and the field says the rest, so there's no
+              title or line of copy beside him taking its width. */}
+          <img src="/bs-prototypes/benny-excited.svg" alt="" className="bk-ask-avatar" />
 
           <form
             className="bk-ask-form"
@@ -65,7 +58,7 @@ export function AskBenny({ onOpen, onWish, wishlist, settings }) {
               /* Sparkles, not a loupe: you are describing a mood to Benny, not
                  looking up a title you already know the name of. */
               icon="sparkles"
-              placeholder="e.g. funny graphic novels, or something like The Wild Robot…"
+              placeholder="What are you in the mood for? Try “funny graphic novels” or “something like The Wild Robot”"
               ariaLabel="Ask Benny for a recommendation"
             />
             {/* The brand's teal, not the page's action blue — this is Benny's

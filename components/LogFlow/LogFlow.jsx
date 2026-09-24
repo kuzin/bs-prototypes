@@ -6,6 +6,7 @@ import { SearchInput } from '@components/SearchInput/SearchInput'
 import { EmptyState, Spinner } from '@components/Primitives/Primitives'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Icon } from '@components/Icon/Icon'
+import { ReadNowMark } from '@components/ReadNowMark/ReadNowMark'
 
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { PARTNER_BRANDS, PartnerMark } from '@components/PartnerBrand/PartnerBrand'
@@ -899,10 +900,9 @@ function CoverTile({
               Gated on `onRead` for the same reason the menu item is: without
               somewhere to go it would be a promise the tile can't keep. */}
           {partner && onRead && (
-            <span
-              className="lf-tile-now"
-              title={`Read it now in ${PARTNER_NAMES[partner] ?? 'the app'}`}
-              style={{ '--now': PARTNER_BRANDS[partner]?.accent }}
+            <ReadNowMark
+              color={PARTNER_BRANDS[partner]?.accent}
+              title={`Read it now in ${PARTNER_NAMES[partner] ?? PARTNER_BRANDS[partner]?.name ?? 'the app'}`}
             />
           )}
           {/* `.completed-checkmarker-wrapper` */}
@@ -936,7 +936,7 @@ function CoverTile({
                   onRead?.(book)
                 }}
               >
-                Read in {PARTNER_NAMES[partner] ?? 'the app'}
+                Read in {PARTNER_NAMES[partner] ?? PARTNER_BRANDS[partner]?.name ?? 'the app'}
               </FlyoutMenuItem>
             )}
             <FlyoutMenuItem

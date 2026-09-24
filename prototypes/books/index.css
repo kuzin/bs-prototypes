@@ -140,48 +140,52 @@ button {
   min-width: 0;
 }
 
-/* A title a linked app can open right now wears that app's mark on the jacket,
-   on every shelf that shows one. No label — a shelf is scanned rather than
-   read, and "Read now" under a dozen covers is a wall of words where a mark is
-   a glance. The bookmark owns the top-right corner, so this takes the bottom
-   left. */
-.bk-card-now,
-.bk-shelftile-now {
+/* Where a title is, under its jacket — the tags that replaced the single dot
+   a jacket used to wear. */
+.bk-card-where,
+.bk-shelftile-where {
+  margin-top: 8px;
+  /* Centred on the jacket above them. */
+  justify-content: center;
+}
+
+/* The rating on the jacket itself, bottom-left, on white so it reads over any
+   cover art. Two classes so the Ask Benny tint on the in-body pill doesn't
+   reach it. */
+.bk-card .bk-card-rate--over {
   position: absolute;
-  top: 8px;
   left: 8px;
-  width: 12px;
-  height: 12px;
-  background: var(--now, #0ba85f);
-  border: 2px solid #fff;
-  border-radius: 999px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+  bottom: 8px;
+  color: var(--c-text-dark);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
   pointer-events: none;
 }
 
 /* ─── Ask Benny — working recommendation prompt ────────────────────────────── */
 
+/* The Book Quiz banner sits right over Ask Benny, so the two read as a pair of
+   bars rather than a bar and a section — the stack's own gap, not the page's. */
+.bk-quiz-banners {
+  margin-bottom: 16px;
+}
+
 /* Benny's panel, on the brand's own teal rather than a colour of its own: the
    wash to fill with, the solid for the rule, the ink for type. It is the one
    place on Discover where Benny speaks, and plain white said nothing about
-   that — but the tokens keep it inside the system. */
+   that — but the tokens keep it inside the system.
+
+   Shaped like the reader app's banner (`ReaderBanner`), the Book Quiz bar right
+   above it: the same padding, radius and white disc, the same title and sub
+   type — so the two read as one family, not a bar and a slab. */
 .bk-ask {
-  padding: 16px 20px;
+  padding: 12px 16px;
   margin-bottom: 30px;
   background: var(--c-teal-wash);
   /* No outline. The wash already separates the panel from the page, and a rule
      round a tinted block is a second edge saying the same thing. */
   border: 0;
-  border-radius: 16px;
-}
-.bk-ask .bk-ask-title {
-  color: var(--c-teal-ink);
-}
-.bk-ask .bk-ask-title .bp-icon {
-  color: var(--c-teal);
-}
-.bk-ask .bk-ask-sub {
-  color: var(--c-teal-ink);
+  border-radius: 10px;
 }
 /* The field sits on the wash, so it keeps its white ground and loses the
    border that would otherwise draw a second line around it. */
@@ -195,61 +199,39 @@ button {
   color: var(--c-teal);
 }
 
-/* Benny introduces himself, and the field he is asking you to fill runs the
-   whole width underneath. Beside him it was a 380px box sharing a row with two
-   lines of copy — the one thing the panel is for, given the smaller half of
-   it, and a placeholder that had to be cut off to fit. */
+/* One row, the way the banner is: Benny's disc, then the field he's asking you
+   to fill running the whole rest of the bar, and its button. */
 .bk-ask-prompt {
   display: flex;
-  flex-direction: column;
   gap: 14px;
-}
-.bk-ask-prompt .bk-ask-head {
-  margin-bottom: 0;
+  align-items: center;
 }
 /* The field takes the row and the button keeps its own width. */
 .bk-ask-prompt .bk-ask-form {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
 }
 .bk-ask-prompt .bk-ask-form .search-input {
   flex: 1;
   min-width: 0;
 }
 
-.bk-ask-head {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 14px;
+/* The Book Quiz banner's mark: the quiz's own Icons8 Color art on the bar's
+   white disc. */
+.bk-quiz-mark {
+  width: 26px;
+  height: 26px;
 }
-/* White on the wash — the disc is what lifts Benny off the panel behind him. */
+/* White on the wash — the disc is what lifts Benny off the panel behind him.
+   The banner's disc: 40px, and its shadow rather than a rule. */
 .bk-ask-avatar {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   flex: 0 0 auto;
   background: #fff;
-  border: 1px solid #d3ece6;
+  border: 0;
   border-radius: 50%;
-}
-.bk-ask-headtext {
-  flex: 1;
-  min-width: 0;
-}
-.bk-ask-title {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--bk-ink);
-}
-.bk-ask-title .bp-icon {
-  color: #0d9488;
-}
-.bk-ask-sub {
-  font-size: 14px;
-  color: var(--bk-muted);
-  margin: 1px 0 0;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.06);
 }
 /* No rule and no gap above it: the answer *replaces* the prompt rather than
    following it, so the divider was separating Benny's reply from the top edge
@@ -627,15 +609,6 @@ button {
 .bk-card-star {
   color: #f5a524;
 }
-.bk-card-readers {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 4px;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--c-gray-700);
-}
 .bk-card-audiolen {
   display: inline-flex;
   align-items: center;
@@ -647,7 +620,8 @@ button {
 /* play affordance on audiobook (square) covers */
 .bk-card-play {
   position: absolute;
-  left: 8px;
+  /* Bottom-right: the rating owns the bottom-left of every jacket. */
+  right: 8px;
   bottom: 8px;
   width: 34px;
   height: 34px;
@@ -751,7 +725,10 @@ button {
 /* ─── Discover: browse tiles ───────────────────────────────────────────────── */
 
 .bk-browse {
-  margin: 10px 0 36px;
+  /* The same 36 + 36 a shelf leaves before the next one: this is one more
+     section down the page, so it takes the same step. */
+  margin: 0 0 36px;
+  padding-top: 36px;
 }
 /* The same rung the shelves above it are set in — it is one more heading down
    the page, not a different kind of one. */
@@ -1504,7 +1481,10 @@ button {
    hanging off the tabs rather than opening the shelf under them. The groups
    after it keep the tighter gap, because what's above them is a shelf of
    books, not a control. */
-.bk-shelfgroup:first-child .bk-shelfgroup-head {
+/* The first group under the filter tabs takes more air than the gaps between
+   groups. `:first-child` never matched — the tabs are the first child — so
+   it is the first group after anything that isn't one. */
+:not(.bk-shelfgroup) + .bk-shelfgroup .bk-shelfgroup-head {
   padding-top: 38px;
 }
 .bk-shelfgroup-count {
@@ -1963,17 +1943,10 @@ button {
   }
 
   /* ── Ask Benny ────────────────────────────────────────────────────────── */
-  /* No room for both halves of the panel, so Benny goes back above his field,
-     and the field above its button. */
+  /* Benny keeps his place beside the field, level with it; the field and its
+     button each take a full row. */
   .bk-ask-prompt {
-    flex-direction: column;
-    gap: 14px;
-    align-items: stretch;
-  }
-  /* In a column the basis is a height — the row's 380px would reserve 380px of
-     empty panel. */
-  .bk-ask-prompt .bk-ask-form {
-    flex: 0 0 auto;
+    align-items: flex-start;
   }
   .bk-ask-form {
     flex-wrap: wrap;
@@ -2070,28 +2043,6 @@ button {
 .bk-where-loc {
   display: flex;
   flex: 0 0 auto;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  text-align: right;
-}
-
-.bk-where-area {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--p);
-}
-
-/* A call number is a string you read off a spine, so it is set like one. */
-.bk-where-call {
-  padding: 1px 6px;
-  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--c-text-light);
-  background: #fff;
-  border: 1px solid var(--c-border);
-  border-radius: 5px;
 }
 
 /* ─── The book page's tabs, when the column runs out ───────────────────────

@@ -1,0 +1,55 @@
+/* ─── WhereTags ─────────────────────────────────────────────────────────────
+   One line of soft pills, one per place a book can be had. The component fits
+   the count to the width; if even one tag is wider than the line (a narrow
+   card, a long classroom name) it gives way with an ellipsis rather than
+   wrapping or pushing out past the card. */
+
+.wt {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px; /* keep in step with GAP in WhereTags.jsx */
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.wt-tag {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* The "+N" keeps its size; the tags beside it are what give. */
+.wt-tag--more {
+  flex: 0 0 auto;
+}
+
+.wt-tag .pill {
+  max-width: 100%;
+}
+
+.wt-tag .pill-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The ruler: every tag at its natural width, laid out where nothing sees it.
+   `max-content` so the line's own width can't squeeze what it is measuring. */
+.wt-measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  gap: 4px;
+  width: max-content;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.wt-measure .wt-tag {
+  flex: 0 0 auto;
+  max-width: none;
+}

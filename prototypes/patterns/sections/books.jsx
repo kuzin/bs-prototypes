@@ -5,7 +5,12 @@ import { Shelf } from '../../books/components/Shelf'
 import { PartnerBrand, PartnerTag, PartnerMark } from '../../books/components/PartnerBits'
 import { AskBenny } from '../../books/components/AskBenny'
 import { ExpandableText } from '../../books/components/ExpandableText'
-import { getBook, getBooks, SHELVES } from '../../books/data'
+import { getBook, getBooks, SHELVES, whereTagsFor } from '../../books/data'
+import { WhereTags } from '@components/WhereTags/WhereTags'
+import { ReadNowMark } from '@components/ReadNowMark/ReadNowMark'
+import { Button } from '@components/Button/Button'
+import { BookCover } from '@components/BookCover/BookCover'
+import { BookQuiz } from '../../books/components/BookQuiz'
 import { Variant } from './_shared'
 
 const noop = () => {}
@@ -21,6 +26,86 @@ function StarInputDemo() {
 }
 
 export const booksSections = [
+  {
+    group: 'badges',
+    id: 'read-now-mark',
+    name: 'ReadNowMark',
+    desc: (
+      <>
+        The mark on a jacket that opens right now — a small play button in the colour of the app
+        that opens it, ringed in white so it reads over any cover art. It replaced a plain coloured
+        dot, which said &ldquo;something about this one&rdquo; without saying what; a play glyph is
+        the thing a reader already knows means &ldquo;tap and it starts&rdquo;. Top-left of the
+        cover, on every shelf that draws one: Book Discovery&rsquo;s cards and My Shelf, the reading
+        log&rsquo;s All Titles, and the log flow&rsquo;s tiles.
+      </>
+    ),
+    usage: `import { ReadNowMark } from '@components/ReadNowMark/ReadNowMark'
+
+<div style={{ position: 'relative' }}>
+  <BookCover book={book} size="fill" />
+  <ReadNowMark color="#0CA7BC" title="Read it now on Comics Plus" />
+</div>`,
+    render: () => (
+      <div className="bk-catalog">
+        <Variant label="on a jacket, in the opening app's colour">
+          <div style={{ display: 'flex', gap: 16, padding: 16 }}>
+            {[
+              ['dog-man', '#0CA7BC', 'Comics Plus'],
+              ['wild-robot', '#2C6BED', 'Sora'],
+            ].map(([id, color, name]) => (
+              <div key={id} style={{ position: 'relative', width: 110, aspectRatio: '2 / 3' }}>
+                <BookCover book={getBook(id)} size="fill" />
+                <ReadNowMark color={color} title={`Read it now on ${name}`} />
+              </div>
+            ))}
+          </div>
+        </Variant>
+      </div>
+    ),
+  },
+  {
+    group: 'badges',
+    id: 'where-tags',
+    name: 'WhereTags',
+    desc: (
+      <>
+        Where a book is — one soft <code>Pill</code> per place a reader can get it: a linked app
+        (Comics Plus, Sora, Scholastic), the school library, or their own classroom&rsquo;s shelf.
+        It replaced the single read-now dot a jacket used to wear, which could say that something
+        opened a title but never where.
+        <br />
+        <br />
+        Always <strong>one line</strong>: the row measures itself, shows as many tags as fit the
+        width it is given, and folds the rest into a <strong>+N</strong> whose hover names them. The
+        host builds the tags from its own sources, strongest claim first (opens now, then borrow,
+        then a shelf), and each can carry a hover sentence in <code>title</code>. Used under every
+        jacket in Book Discovery and on the reading log&rsquo;s All Titles.
+      </>
+    ),
+    usage: `import { WhereTags } from '@components/WhereTags/WhereTags'
+
+<WhereTags
+  tags={[
+    { id: 'comicsplus', label: 'Comics Plus', color: '#0CA7BC', title: 'Read it now on Comics Plus' },
+    { id: 'library', label: 'School Library', color: '#0BA85F' },
+  ]}
+/>`,
+    render: () => (
+      <div className="bk-catalog">
+        <Variant label="a wide row — every place fits">
+          <div style={{ width: 360, padding: 12 }}>
+            <WhereTags tags={whereTagsFor(getBook('el-deafo'))} />
+          </div>
+        </Variant>
+        <Variant label="under a jacket — what doesn't fit folds into +N">
+          <div style={{ width: 150, padding: 12 }}>
+            <WhereTags tags={whereTagsFor(getBook('el-deafo'))} />
+          </div>
+        </Variant>
+      </div>
+    ),
+  },
   {
     group: 'badges',
     id: 'bk-stars',
@@ -305,4 +390,61 @@ export const booksSections = [
       </div>
     ),
   },
+  {
+    group: 'books',
+    id: 'bk-book-quiz',
+    name: 'BookQuiz',
+    desc: (
+      <>
+        Benny&rsquo;s Book Quiz — an RMI-shaped survey that ends in books. It borrows the RMI
+        student survey&rsquo;s own screen (its progress bar, question header, answer cards with the
+        folded check, the finish art) and asks seven quick steps of several kinds instead of twenty
+        of one: picture cards for kinds of story, two this-or-thats, story openings to choose
+        between, covers to tap, how you like to read, and how long. The picture answers are{' '}
+        <strong>bright</strong>: each wears its own colour and a full-colour Icons8 picture, and a
+        chosen card&rsquo;s ring and corner take that colour. Read Aloud is a small text button with
+        its speaker. Every answer is read against the catalog, and the result is six real titles —
+        each with its own Add to Wish List — which update Benny&rsquo;s Picks on Discover rather
+        than adding a row. Launched from its own <code>ReaderBanner</code> on Discover; a
+        prototype-only link on the first screen skips to the results.
+      </>
+    ),
+    usage: `import { BookQuiz } from './components/BookQuiz'
+
+<BookQuiz
+  open={quizOpen}
+  onClose={() => setQuizOpen(false)}
+  onSave={setQuizAnswers}
+  shelf={shelf}
+  settings={settings}
+  onOpen={openBook}
+  onWish={toggleWant}
+  wishlist={shelfIds}
+/>`,
+    render: () => <BookQuizDemo />,
+  },
 ]
+
+/** The quiz only exists open, so the showcase gives it something to open from. */
+function BookQuizDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="bk-catalog">
+      <Variant label="full-screen, from the first question to six picks">
+        <Button variant="secondary" onClick={() => setOpen(true)}>
+          Take the Book Quiz
+        </Button>
+        <BookQuiz
+          open={open}
+          onClose={() => setOpen(false)}
+          onSave={noop}
+          shelf={{}}
+          settings={{ comicsplus: true, epic: true, sora: true, library: true, classroom: true }}
+          onOpen={noop}
+          onWish={noop}
+          wishlist={new Set()}
+        />
+      </Variant>
+    </div>
+  )
+}

@@ -1,6 +1,8 @@
 import { Icon } from '@components/Icon/Icon'
 import { BookCover } from '@components/BookCover/BookCover'
-import { PARTNERS, readNowPartner } from '../data'
+import { WhereTags } from '@components/WhereTags/WhereTags'
+import { ReadNowMark } from '@components/ReadNowMark/ReadNowMark'
+import { PARTNERS, readNowPartner, whereTagsFor } from '../data'
 
 // Cover-forward card, everywhere this prototype shelves a book.
 //   'reason' → adds Benny's "why" line  |  'rank' → trending: readers count
@@ -23,7 +25,9 @@ export function BookCard({
   settings,
 }) {
   const isAudio = variant === 'audio'
-  // Which app can open this right now — the dot wears that app's colour.
+  // Every place this reader can get it, strongest claim first.
+  const places = whereTagsFor(book, settings)
+  // Which app can open it this minute, if any — a play button on the jacket.
   const now = readNowPartner(book, settings)
 
   return (
@@ -35,6 +39,12 @@ export function BookCard({
     >
       <div className="bk-card-coverwrap">
         <BookCover book={book} size="fill" square={isAudio} />
+        {now && (
+          <ReadNowMark
+            color={PARTNERS[now]?.accent}
+            title={`Read it now on ${PARTNERS[now]?.name ?? 'a linked app'}`}
+          />
+        )}
         {isAudio && (
           <span
             className="bk-card-play"
@@ -49,17 +59,19 @@ export function BookCard({
             <Icon name="play-filled" size={16} />
           </span>
         )}
-        {/* No label and no brand: a shelf is scanned, not read, and the reader
-            is being told one thing — this one opens. *Which* app opens it is a
-            question the book's own page answers, and putting five different
-            logos down a shelf made the marks look like five different
-            statuses. */}
-        {now && (
-          <span
-            className="bk-card-now"
-            title={`Read it now on ${PARTNERS[now]?.name ?? 'a linked app'}`}
-            style={{ '--now': PARTNERS[now]?.accent }}
-          />
+        {/* The one figure the card is about rides the jacket's bottom-left
+            corner, the way the bookmark rides its top-right: the rating, or
+            on the trending shelf how many readers here have it. */}
+        {variant === 'rank' ? (
+          <span className="bk-card-rate bk-card-rate--over">
+            <Icon name="users" size={14} />
+            {book.readersAtSchool} readers
+          </span>
+        ) : (
+          <span className="bk-card-rate bk-card-rate--over">
+            <Icon name="star-filled" size={14} className="bk-card-star" />
+            {book.rating.toFixed(1)}
+          </span>
         )}
         <span
           className={`bk-card-wish ${wished ? 'is-on' : ''}`}
@@ -76,28 +88,18 @@ export function BookCard({
       </div>
 
       <div className="bk-card-body">
-        {variant === 'rank' ? (
-          <span className="bk-card-readers">
-            <Icon name="users" size={15} />
-            {book.readersAtSchool} readers
-          </span>
-        ) : (
+        {/* Where it is, under the jacket rather than on it: a tag on the art
+            covered the cover it was describing, and two of them covered most
+            of it. */}
+        <WhereTags tags={places} className="bk-card-where" />
+        {/* The audio shelf keeps its running time under the jacket — the one
+            format fact that helps you choose which to press play on. */}
+        {isAudio && (
           <span className="bk-card-meta">
-            <span className="bk-card-rate">
-              <Icon name="star-filled" size={15} className="bk-card-star" />
-              {book.rating.toFixed(1)}
+            <span className="bk-card-audiolen">
+              <Icon name="headphones" size={15} />
+              {book.audioLength}
             </span>
-            {/* No format row: three grey glyphs under every jacket said what
-                the book comes in, which is a question you ask after you have
-                chosen it — the book page answers it, beside the place each
-                format comes from. The audio shelf keeps its running time,
-                which is the one format fact that helps you choose. */}
-            {isAudio && (
-              <span className="bk-card-audiolen">
-                <Icon name="headphones" size={15} />
-                {book.audioLength}
-              </span>
-            )}
           </span>
         )}
 

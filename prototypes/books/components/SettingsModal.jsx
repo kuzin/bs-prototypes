@@ -23,6 +23,11 @@ const FEATURES = [
     desc: 'Unlimited comics, graphic novels & magazines — no holds, no waitlists.',
   },
   {
+    key: 'epic',
+    title: 'Epic',
+    desc: 'Ebooks and read-to-me audiobooks for elementary readers — no holds, no waitlists.',
+  },
+  {
     key: 'scholastic',
     title: 'Scholastic Magazines',
     desc: 'Classroom magazines — fresh issues every month, leveled for your grade.',

@@ -1,0 +1,375 @@
+/* ─── Benny's Book Quiz ──────────────────────────────────────────────────────
+   The RMI survey's screen (`rmi/views/SurveyFlow.css`) laid over the whole
+   window, the way the in-app reader is. Only what the RMI doesn't have — the
+   close button, the kinds of step it never asks, and the results — is here. */
+
+.bkq {
+  position: fixed;
+  inset: 0;
+  /* Over the prototype switcher rail too, as the reader is. */
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.bkq-layout {
+  flex: 1 0 auto;
+  --chrome-bottom: 0px;
+}
+
+.bkq-close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  color: var(--c-text-dark);
+  cursor: pointer;
+  background: var(--c-gray-100);
+  border: 0;
+  border-radius: 50%;
+}
+
+.bkq-close:hover {
+  background: var(--c-gray-200);
+}
+
+.bkq-intro-image {
+  width: 200px;
+  max-width: 60vw;
+}
+
+/* The question with its hint tucked under it, and Read Aloud a step below.
+   Scoped to the quiz: the RMI survey's own header keeps its own rhythm. */
+.bkq .rmi-survey-question-header {
+  gap: 8px;
+}
+
+.bkq-hint {
+  margin: 0;
+  font-size: var(--text-body);
+  font-weight: 500;
+  color: var(--c-text-light);
+}
+
+/* Read Aloud: the ghost button in the accent, so it reads as a thing to press
+   while staying small beside the question. Playing, it holds the tint. */
+.bkq .btn.bkq-read {
+  color: var(--c-accent);
+}
+
+.bkq .btn.bkq-read:hover:not(:disabled),
+.bkq .btn.bkq-read[aria-pressed='true'] {
+  color: var(--c-accent);
+  background: color-mix(in srgb, var(--c-accent) 10%, white);
+  border-color: transparent;
+}
+
+/* A label element with the RMI card's look. A picture and a word sit in the
+   middle of their card, so a row whose neighbour wraps to two lines keeps its
+   pictures level; a story card reads from the top. */
+.bkq-answer {
+  justify-content: center;
+}
+
+.bkq .bkq-answer--story {
+  justify-content: flex-start;
+}
+
+/* The folded corner paints over whatever the card holds — a cover is a whole
+   card of picture, and the corner was landing under it. */
+.bkq .rmi-survey-answer-check {
+  z-index: 2;
+}
+
+.bkq-answer-sub {
+  font-size: var(--text-tag);
+  font-weight: 600;
+  color: var(--c-text-light);
+  text-align: center;
+}
+
+/* Cards in colour: each option wears its own bright hue — a tint for the
+   card, a deep shade of it for the label, and its full-colour picture on
+   top. Chosen, the ring and the folded corner turn that same colour rather
+   than the survey's green. Selectors carry `.bkq` so they outrank the
+   survey's own card rules without leaning on file order. */
+.bkq .bkq-answer--color {
+  background: color-mix(in srgb, var(--c) 16%, white);
+  border-color: color-mix(in srgb, var(--c) 16%, white);
+}
+
+.bkq .bkq-answer--color:hover {
+  background: color-mix(in srgb, var(--c) 26%, white);
+  border-color: color-mix(in srgb, var(--c) 26%, white);
+}
+
+.bkq .bkq-answer--color.is-checked {
+  background: color-mix(in srgb, var(--c) 16%, white);
+  border-color: var(--c);
+}
+
+.bkq .bkq-answer--color .rmi-survey-answer-check {
+  background: var(--c);
+}
+
+.bkq .bkq-answer--color .rmi-survey-answer-label {
+  color: color-mix(in srgb, var(--c) 55%, black);
+}
+
+.bkq .bkq-answer--color .bkq-answer-sub {
+  color: color-mix(in srgb, var(--c) 45%, #555);
+}
+
+.bkq .bkq-answer--color .bkq-story-text {
+  color: color-mix(in srgb, var(--c) 40%, black);
+}
+
+/* Kinds of story: four across. */
+.bkq-answers--kinds {
+  grid-template-columns: repeat(4, minmax(120px, 170px));
+}
+
+@media (max-width: 720px) {
+  .bkq-answers--kinds {
+    grid-template-columns: repeat(2, minmax(120px, 170px));
+  }
+}
+
+/* The picture, straight on the card — the survey's own answer-image slot, a
+   size up, since this art is the answer. */
+.bkq .bkq-art {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+/* This or that: two big cards with an "or" between them. */
+.bkq-pair {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.bkq-pair-side {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bkq-or {
+  font-size: var(--text-modal);
+  font-weight: 800;
+  color: var(--c-text-light);
+}
+
+.bkq-answer--pair {
+  width: 240px;
+  padding: 24px 20px;
+}
+
+.bkq-pair-art {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+
+.bkq-pair-label {
+  font-size: var(--text-body);
+}
+
+/* Story openings: a line of prose on each card, read left to right. */
+.bkq-stories {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: min(780px, 100%);
+}
+
+@media (max-width: 720px) {
+  .bkq-stories {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.bkq-answer--story {
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px 22px;
+  text-align: left;
+}
+
+.bkq-story-art {
+  width: 44px;
+  height: 44px;
+}
+
+.bkq-story-text {
+  font-size: var(--text-body);
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--c-text-dark);
+}
+
+/* Covers to tap: the jacket is the whole card, edge to edge. No frame until
+   it's hovered or chosen — then the survey's own ring, round the cover. */
+.bkq-covers {
+  display: grid;
+  grid-template-columns: repeat(6, 112px);
+  gap: 14px;
+  justify-content: center;
+}
+
+@media (max-width: 860px) {
+  .bkq-covers {
+    grid-template-columns: repeat(3, 112px);
+  }
+}
+
+.bkq .bkq-answer--cover {
+  padding: 0;
+  background: transparent;
+  border-color: transparent;
+}
+
+.bkq .bkq-answer--cover:hover {
+  border-color: var(--c-gray-250);
+}
+
+.bkq .bkq-answer--cover.is-checked {
+  border-color: var(--c-green);
+}
+
+/* The card's radius less its 3px ring, so the jacket's corners follow it. */
+.bkq-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 9px;
+}
+
+.bkq-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+/* ── Results ────────────────────────────────────────────────────────────── */
+/* Centred like every other screen of the quiz: Benny above, the heading and
+   what he heard under him, then the six picks, then Close with the retake
+   link beneath it. One step between the three blocks. */
+
+.bkq-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: min(1100px, 100%);
+}
+
+.bkq-results-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.bkq-results-benny {
+  width: 80px;
+  height: 80px;
+}
+
+.bkq-results-head .rmi-survey-heading {
+  line-height: 1.2;
+}
+
+.bkq-results-sub {
+  margin: 6px 0 0;
+  font-size: var(--text-body);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--c-text-light);
+}
+
+.bkq-results-grid {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  /* Six picks, one row of six on a desktop; three by two when it's narrow. */
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 860px) {
+  .bkq-results-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.bkq-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bkq-pick-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgb(15 23 42 / 14%);
+  transition: transform 0.15s ease;
+}
+
+.bkq-pick-cover:hover {
+  transform: translateY(-3px);
+}
+
+.bkq-pick .btn {
+  width: 100%;
+}
+
+.bkq-results-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* The quiet way out: small, grey and light, so Close is plainly the answer
+   and this is the afterthought. Hover brings it up to the text colour. */
+.bkq-retake {
+  padding: 0;
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 500;
+  color: var(--c-text-light);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.bkq-retake:hover {
+  color: var(--c-text);
+  text-decoration: underline;
+}

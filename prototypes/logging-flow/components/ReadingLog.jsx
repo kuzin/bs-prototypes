@@ -1,3 +1,5 @@
+import { WhereTags } from '@components/WhereTags/WhereTags'
+import { ReadNowMark } from '@components/ReadNowMark/ReadNowMark'
 import { useEffect, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
@@ -489,7 +491,10 @@ function TitleStats({ entries }) {
 }
 
 /** One shelf tile: the cover, a completed check, and the app it came from. */
-function TitleTile({ row, index, onOpen, book, readNow }) {
+function TitleTile({ row, index, onOpen, book, readNow, whereTags }) {
+  // Where the title is, when the host can say — a tag per place, under the
+  // cover, beside the play mark on it.
+  const places = whereTags?.(book) ?? null
   const opensIn = readNow?.(book)
   return (
     <li className="rl-tile">
@@ -500,15 +505,14 @@ function TitleTile({ row, index, onOpen, book, readNow }) {
         aria-label={`${row.title}${row.completed ? ' — completed' : ''}`}
       >
         <BookCover book={coverBook(row.title, row.author, index, book)} size="fill" />
-        {/* One dot, in the colour of the app that opens the title — the same
-            mark the Discover shelves draw. `readNow` answers with a partner id
-            rather than a yes: the log knows what you read, not what your site
-            can open, and the colour is the whole of what the dot says. */}
+        {/* A play mark, in the colour of the app that opens the title — the
+            same mark the Discover shelves draw. `readNow` answers with a
+            partner id rather than a yes: the log knows what you read, not what
+            your site can open. */}
         {opensIn && (
-          <span
-            className="rl-tile-now"
+          <ReadNowMark
+            color={PARTNER_BRANDS[opensIn]?.accent}
             title={`Read it now in ${PARTNER_BRANDS[opensIn]?.name ?? 'a linked app'}`}
-            style={{ '--now': PARTNER_BRANDS[opensIn]?.accent }}
           />
         )}
         {/* Both marks stack in one corner rather than taking a corner each: a
@@ -522,6 +526,7 @@ function TitleTile({ row, index, onOpen, book, readNow }) {
           )}
         </span>
       </button>
+      {places?.length > 0 && <WhereTags tags={places} className="rl-tile-where" />}
     </li>
   )
 }
@@ -599,7 +604,7 @@ function TitleDetail({ row, index, onClose }) {
 }
 
 /** "All Titles" — every logged title as a cover, grouped by month. */
-function TitlesView({ entries, stats = true, onOpenBook, bookFor, readNow }) {
+function TitlesView({ entries, stats = true, onOpenBook, bookFor, readNow, whereTags }) {
   // The app's own pair of tabs on this page: everything, or just what's done.
   const [filter, setFilter] = useState('all')
   const [open, setOpen] = useState(null)
@@ -655,6 +660,7 @@ function TitlesView({ entries, stats = true, onOpenBook, bookFor, readNow }) {
                   index={at}
                   book={book}
                   readNow={readNow}
+                  whereTags={whereTags}
                   onOpen={() =>
                     book && onOpenBook ? onOpenBook(book) : setOpen({ row, index: at })
                   }
@@ -718,10 +724,15 @@ export function ReadingLog({
   onTab,
   onOpenBook,
   bookFor = (title) => BOOK_BY_TITLE.get(title),
-  /* `(book) => boolean` — whether this site can open that title right now, for
-     the dot on an All Titles tile. The log knows what was read; which of it
-     opens is the surface's question. Left off, no tile carries one. */
+  /* `(book) => partner | null` — which app this site can open that title in
+     right now, for the play mark on an All Titles tile. The log knows what was
+     read; which of it opens is the surface's question. Left off, no tile
+     carries one. */
   readNow,
+  /* `(book) => tags` — every place this site can get that title, for the tag
+     row under an All Titles tile (see `WhereTags`). Left off, no tile carries
+     one. */
+  whereTags,
   /* The month the calendar draws. logging-flow's own log is a fixed June 2026
      fixture, so that's the default; a prototype whose entries are counted back
      from today passes `currentMonth()` and its log lands where its reader is. */
@@ -921,6 +932,7 @@ export function ReadingLog({
               onOpenBook={onOpenBook}
               bookFor={bookFor}
               readNow={readNow}
+              whereTags={whereTags}
             />
           )}
         </>

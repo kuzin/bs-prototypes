@@ -456,6 +456,7 @@ export function Dashboard({
   /* `(book) => boolean` — passed straight to the log's All Titles shelf, where
      it decides which jackets wear the read-now dot. */
   readNow,
+  whereTags,
   personalize,
   /* The site's registration questions, and what this profile has already
      answered. Left off, joining a challenge is the one press it was. */
@@ -655,6 +656,7 @@ export function Dashboard({
               onOpenBook={onOpenBook}
               bookFor={bookFor}
               readNow={readNow}
+              whereTags={whereTags}
             />
           ) : view === 'account' ? (
             <AccountSettings title={accountLabel} {...account} />

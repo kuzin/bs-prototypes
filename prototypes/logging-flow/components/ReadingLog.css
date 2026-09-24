@@ -475,7 +475,9 @@
 .rl-tilegrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
-  align-items: end;
+  /* Top, so every cover in a row starts on the same line whether or not it
+     has a row of tags under it. */
+  align-items: start;
   gap: 32px;
   margin: 24px 0 40px;
   padding: 0;
@@ -487,17 +489,28 @@
 }
 /* The shelf the covers sit on — the app draws it as a blurred bar under each
    tile so the grid reads as books standing up rather than floating images. It
-   is the tile's own ::before so it paints under the button, which sits above
-   it; a negative z-index on the button would escape into the page. */
-.rl-tile::before {
+   hangs off the cover's own button rather than the tile, so a row of tags
+   under the cover doesn't carry the shadow down with it; the cover stacks
+   above it (the same pair the log flow's tiles use). */
+.rl-tile-hit::before {
   content: '';
   position: absolute;
   right: 10px;
   bottom: -6px;
   left: 10px;
+  z-index: 0;
   height: 20px;
   background: rgba(0, 0, 0, 0.07);
   border-radius: 20px;
+}
+.rl-tile-hit .bkcov {
+  position: relative;
+  z-index: 1;
+}
+/* Where the title is, clear of the cast shadow and centred on the cover. */
+.rl-tile-where {
+  margin-top: 12px;
+  justify-content: center;
 }
 .rl-tile-hit {
   position: relative;
@@ -521,6 +534,8 @@
   position: absolute;
   top: -8px;
   right: -8px;
+  /* Above the cover, which stacks at 1 to clear its own shadow. */
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -681,20 +696,6 @@
 
 /* The read-now dot, in the corner every other surface puts it in. The tile's
    own marks stack top-right, so this keeps the left. */
-.rl-tile-now {
-  position: absolute;
-  z-index: 2;
-  top: 8px;
-  left: 8px;
-  width: 12px;
-  height: 12px;
-  background: var(--now, #0ba85f);
-  border: 2px solid #fff;
-  border-radius: 999px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
-  pointer-events: none;
-}
-
 /* ─── List view type ────────────────────────────────────────────────────────
    The entry's parts are sized for a calendar cell — about 80px wide, where
    13.5 and 12.5 are what fits. A list row is the full width of the page, and at
