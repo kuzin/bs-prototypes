@@ -1,22 +1,25 @@
 #!/usr/bin/env node
 // Narrated click-through videos of the prototypes.
 //
-//   node .claude/skills/demo-video/demo.js <demo> [stage…] [--base URL] [--voice id] [--speed n] [--out dir]
+//   node .claude/skills/demo-video/demo.js <demo> [stage…] [--base URL] [--voice id] [--speed n] [--music track]
 //
 // <demo>   a spec in ./demos (e.g. collection-engine)
 // stages   narration · check · record · build · sheet — or `all` (the default),
-//          which runs them in that order
+//          which runs them in that order, in a temp folder. Then, once the
+//          contact sheet checks out, one of:
+//            site   the video into the repo (public/demo-videos/, listed on the
+//                   prototype picker's Demo videos tab), and the temp folder gone
+//            clean  the temp folder gone, keeping nothing
 // --base   the dev server up to /bs-prototypes (default $DEMO_BASE, else
 //          http://localhost:5173/bs-prototypes — check the port Vite printed)
 // --voice  a Kokoro voice (default: the spec's, else am_michael)
 // --speed  speaking rate (default: the spec's, else 1.0)
-// --out    where the videos go (default ~/Desktop/<spec name>)
-// --music  a track under the voice: a path, or a file in ~/.cache/bs-demo-video/music
-//          (default: the spec's `music`); `none` for none
+// --music  a track under the voice: a path, or a file in ./music (then
+//          ~/.cache/bs-demo-video/music); default the spec's `music`; `none` for none
 const fs = require('fs')
 const path = require('path')
 const { execFileSync } = require('child_process')
-const { KOKORO_DIR, MUSIC_DIR, runDir, outDir } = require('./lib/paths')
+const { KOKORO_DIR, MUSIC_DIRS, runDir } = require('./lib/paths')
 
 const args = process.argv.slice(2)
 const flag = (name) => {
@@ -30,7 +33,6 @@ const base = (
 ).replace(/\/$/, '')
 const voiceFlag = flag('voice')
 const speedFlag = flag('speed')
-const outFlag = flag('out')
 const musicFlag = flag('music')
 const [demo, ...asked] = args
 if (!demo) {
@@ -41,17 +43,18 @@ if (!demo) {
 
 const spec = require(path.join(__dirname, 'demos', `${demo}.js`))
 const run = runDir(spec.name)
-const out = outFlag || outDir(spec.name)
 const voice = voiceFlag || spec.voice || 'am_michael'
 const speed = speedFlag || String(spec.speed ?? 1)
 fs.mkdirSync(run, { recursive: true })
-// A track by path, or by file name in the cache's music folder; `--music none` for none.
+// A track by path, or by file name in the skill's music/ (then the cache's);
+// `--music none` for none.
 const musicName = musicFlag ?? spec.music
 const music =
   musicName && musicName !== 'none'
     ? path.isAbsolute(musicName)
       ? musicName
-      : path.join(MUSIC_DIR, musicName)
+      : (MUSIC_DIRS.map((d) => path.join(d, musicName)).find((f) => fs.existsSync(f)) ??
+        path.join(MUSIC_DIRS[0], musicName))
     : null
 if (music && !fs.existsSync(music)) {
   console.error(`no music at ${music}`)
@@ -59,8 +62,12 @@ if (music && !fs.existsSync(music)) {
 }
 
 const ORDER = ['narration', 'check', 'record', 'build', 'sheet']
+// `site` writes into the repo and `clean` throws the run away, so each only
+// runs when asked for — after the contact sheet has been checked.
 const stages =
-  !asked.length || asked.includes('all') ? ORDER : ORDER.filter((s) => asked.includes(s))
+  !asked.length || asked.includes('all')
+    ? ORDER
+    : [...ORDER, 'site', 'clean'].filter((s) => asked.includes(s))
 
 ;(async () => {
   for (const stage of stages) {
@@ -83,8 +90,18 @@ const stages =
     if (stage === 'check' || stage === 'record') {
       await require('./lib/recorder').record(spec, { run, base, mode: stage })
     }
-    if (stage === 'build') require('./lib/build').build(spec, run, out, music)
-    if (stage === 'sheet') require('./lib/build').sheet(run, out, spec.name)
+    if (stage === 'build') require('./lib/build').build(spec, run, music)
+    if (stage === 'sheet') require('./lib/build').sheet(run, spec.name)
+    if (stage === 'site') require('./lib/site').site(spec, run)
+    if (stage === 'clean') {
+      fs.rmSync(run, { recursive: true, force: true })
+      try {
+        fs.rmdirSync(path.dirname(run)) // the shared temp folder, once it's empty
+      } catch {
+        // another demo's run is still in it
+      }
+      console.log(`removed ${run}`)
+    }
   }
 })().catch((e) => {
   console.error(`FAILED: ${e.message.split('\n')[0]}`)

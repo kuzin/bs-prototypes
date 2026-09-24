@@ -1,7 +1,8 @@
-// Frames + narration → the finished files: <name>.mp4 (with the voice),
-// <name>-silent.mp4 (for recording your own), and <name>-script.md (every line
-// with its timestamp and what's on screen). Also sheet(): one frame per line in
-// a contact sheet, to check each moment landed before calling it done.
+// Frames + narration → the video, <run>/<name>.mp4, encoded once at the size
+// it's published at: `site` copies this exact file into the repo, so there's
+// no master to re-encode from and nothing lost to a second pass. Also sheet():
+// one frame per line in a contact sheet, to check each moment landed before
+// calling it done.
 const fs = require('fs')
 const path = require('path')
 const { execFileSync } = require('child_process')
@@ -69,7 +70,7 @@ function withMusic(voice, music, length, run, volume = 0.14) {
   return mixed
 }
 
-function build(spec, run, out, music) {
+function build(spec, run, music) {
   const frames = load(run, 'frames.json')
   const lines = load(run, 'narration.timed.json')
   const byId = Object.fromEntries(lines.map((l) => [l.id, l]))
@@ -80,13 +81,16 @@ function build(spec, run, out, music) {
   let i0 = frames.findIndex((f) => f.ts > start)
   i0 = Math.max(0, i0 - 1)
   const shown = frames.slice(i0).filter((f) => f.ts < end)
+  // By name, inside this run's own frames/ — so a run folder still builds after
+  // it has been moved.
+  const frame = (f) => path.join(run, 'frames', path.basename(f.file))
   const list = ['ffconcat version 1.0']
   shown.forEach((f, i) => {
     const from = Math.max(f.ts, start)
     const to = i + 1 < shown.length ? shown[i + 1].ts : end
-    list.push(`file '${f.file}'`, `duration ${Math.max(to - from, 0.001).toFixed(4)}`)
+    list.push(`file '${frame(f)}'`, `duration ${Math.max(to - from, 0.001).toFixed(4)}`)
   })
-  list.push(`file '${shown[shown.length - 1].file}'`)
+  list.push(`file '${frame(shown[shown.length - 1])}'`)
   fs.writeFileSync(path.join(run, 'frames.ffconcat'), list.join('\n') + '\n')
 
   // Every line at its own start, on the clock the frames were stamped with.
@@ -114,32 +118,21 @@ function build(spec, run, out, music) {
   ])
   const narration = music ? withMusic(voice, music, length, run) : voice
 
-  fs.mkdirSync(out, { recursive: true })
-  const mp4 = path.join(out, `${spec.name}.mp4`)
+  // CRF 23 at 1440×810 keeps small UI type crisp; screen recordings hold
+  // still most of the time, so it comes out at 2–3 MB a minute (the Challenge
+  // Creator's 2:25 is 4.7 MB, the Collection Engine's 7:49 is 21 MB).
+  const mp4 = path.join(run, `${spec.name}.mp4`)
   ff([
     ...['-f', 'concat', '-safe', '0', '-i', path.join(run, 'frames.ffconcat'), '-i', narration],
-    ...['-vf', 'fps=30,format=yuv420p', '-c:v', 'libx264', '-preset', 'slow', '-crf', '18'],
-    ...['-movflags', '+faststart', '-c:a', 'aac', '-b:a', '160k', '-t', length.toFixed(2), mp4],
+    ...['-vf', 'fps=30,format=yuv420p', '-c:v', 'libx264', '-preset', 'slow', '-crf', '23'],
+    ...['-movflags', '+faststart', '-c:a', 'aac', '-b:a', '128k', '-t', length.toFixed(2), mp4],
   ])
-  ff(['-i', mp4, '-c:v', 'copy', '-an', path.join(out, `${spec.name}-silent.mp4`)])
-
-  // The script, timestamped against the video.
   const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
-  let md = `# ${spec.title} (${mmss(length)})\n\nTimestamps match \`${spec.name}.mp4\` and \`${spec.name}-silent.mp4\`. To narrate it yourself, read each line as its moment comes up.\n`
-  let chapter = null
-  for (const t of said) {
-    const l = byId[t.id]
-    if (l.chapter && l.chapter !== chapter) {
-      chapter = l.chapter
-      md += `\n## ${chapter}\n\n`
-    }
-    md += `**${mmss(t.epoch - start)}**${l.screen ? ` — _${l.screen}_` : ''}  \n${l.text}\n\n`
-  }
-  fs.writeFileSync(path.join(out, `${spec.name}-script.md`), md)
-  console.log(`${mp4} — ${mmss(length)}, ${shown.length} frames`)
+  const mb = (fs.statSync(mp4).size / 1e6).toFixed(1)
+  console.log(`${mp4} — ${mmss(length)}, ${mb} MB, ${shown.length} frames`)
 }
 
-function sheet(run, out, name) {
+function sheet(run, name) {
   const lines = load(run, 'narration.timed.json')
   const byId = Object.fromEntries(lines.map((l) => [l.id, l]))
   const { timeline, start } = span(run)
@@ -147,7 +140,7 @@ function sheet(run, out, name) {
   fs.rmSync(dir, { recursive: true, force: true })
   fs.mkdirSync(dir)
   const said = timeline.filter((t) => byId[t.id])
-  const mp4 = path.join(out, `${name}.mp4`)
+  const mp4 = path.join(run, `${name}.mp4`)
   said.forEach((t, i) => {
     // Most of the way through the line: its moment should be on screen by then.
     const sec = t.epoch - start + (byId[t.id].dur / 1000) * 0.85

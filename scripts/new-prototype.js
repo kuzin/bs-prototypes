@@ -43,7 +43,7 @@ if (!id || flags.help) {
       '  --name="…"        display name        (default: Title Case of <id>)',
       '  --section=…       Prototypes | Experiments   (default: Prototypes)',
       '  --accent=#hex     landing-card accent color   (default: #0CA7BC)',
-      '  --icon=<name>     <Icon> registry name        (default: layout-grid)',
+      '  --icon=<name>     <PlumpyIcon> name           (default: grid-view)',
       '  --desc="…"        one-line description',
     ].join('\n'),
   )
@@ -72,7 +72,7 @@ const name =
     .join(' ')
 const section = flags.section === 'Experiments' ? 'Experiments' : 'Prototypes'
 const accent = flags.accent || '#0CA7BC'
-const icon = flags.icon || 'layout-grid'
+const icon = flags.icon || 'grid-view'
 const description = flags.desc || `TODO: describe the ${name} prototype.`
 const href = `${BASE}${id}/`
 

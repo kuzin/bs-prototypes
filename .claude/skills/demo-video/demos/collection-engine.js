@@ -11,9 +11,20 @@ module.exports = {
   title: 'Collection Engine — demo',
   voice: 'am_michael',
   speed: 1.08,
-  // Licensed (Envato Elements) — lives in ~/.cache/bs-demo-video/music, not the repo.
+  // Licensed (Envato Elements) — in the skill's music/ folder.
   music: 'lofi-full.mp3',
   viewport: { width: 1440, height: 810 },
+  // The picker's Demo videos tab.
+  description:
+    "The reader side — where every book is, Ask Benny, the Wish List, logging with Read now and what's next, a book's page tab by tab, the Book Quiz — then the school, district and teacher views, how the engine decides, and Book Lists.",
+  prototypes: [
+    'books',
+    'collection-engine',
+    'collection-engine-district',
+    'collection-engine-teacher',
+    'discover-lists',
+  ],
+  posterLine: 'r01',
 
   lines: [
     // ── Reader: Discover ──

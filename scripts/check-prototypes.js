@@ -4,6 +4,10 @@
 //   2. the registry       components/prototypes.js     (landing card, switcher, title)
 //   3. its landing glyph  landing/App.jsx ICON_NAMES   (keyed by prototype id)
 //
+// …and that every landing glyph is one the Plumpy pack draws. <PlumpyIcon>
+// quietly falls back to the stroked <Icon> for a name it doesn't carry, which
+// would put one Tabler glyph among the duotone cards.
+//
 // Each can drift independently and the failure is silent — a folder with no
 // registry entry builds with a fallback title and no card; a missing icon just
 // renders no glyph. This fails the build instead. Run via `pnpm check` (and CI).
@@ -33,9 +37,25 @@ const ids = new Set(PROTOTYPES.map((p) => p.id))
 const landing = readFileSync(resolve(ROOT, 'landing/App.jsx'), 'utf8')
 const block = landing.match(/const ICON_NAMES = \{([\s\S]*?)\n\}/)
 const iconIds = new Set()
+const iconNames = new Map() // prototype id → glyph name
 if (block) {
-  for (const m of block[1].matchAll(/(?:^|\n)\s*(?:'([^']+)'|([A-Za-z0-9_-]+))\s*:/g)) {
+  for (const m of block[1].matchAll(
+    /(?:^|\n)\s*(?:'([^']+)'|([A-Za-z0-9_-]+))\s*:\s*(?:'([^']+)')?/g,
+  )) {
     iconIds.add(m[1] ?? m[2])
+    if (m[3]) iconNames.set(m[1] ?? m[2], m[3])
+  }
+}
+
+// 4. What the Plumpy pack can draw: its own keys, plus the aliases onto them.
+const plumpy = readFileSync(resolve(ROOT, 'components/PlumpyIcon/PlumpyIcon.jsx'), 'utf8')
+const drawable = new Set(
+  [...plumpy.matchAll(/^ {2}'?([a-z0-9-]+)'?: \{\n {4}id: '/gm)].map((m) => m[1]),
+)
+const alias = plumpy.match(/const ALIAS = \{([\s\S]*?)\n\}/)
+if (alias) {
+  for (const m of alias[1].matchAll(/(?:^|\n)\s*(?:'([^']+)'|([A-Za-z0-9_-]+))\s*:/g)) {
+    drawable.add(m[1] ?? m[2])
   }
 }
 
@@ -62,6 +82,14 @@ for (const p of PROTOTYPES) {
   if (!iconIds.has(p.id)) {
     errors.push(
       `prototypes.js entry "${p.id}" has no icon in landing/App.jsx ICON_NAMES (card renders with no glyph).`,
+    )
+  }
+}
+// …drawn from the Plumpy pack…
+for (const [id, name] of iconNames) {
+  if (!drawable.has(name)) {
+    errors.push(
+      `landing/App.jsx ICON_NAMES gives "${id}" the glyph "${name}", which the Plumpy pack doesn't carry — pick one from components/PlumpyIcon/PlumpyIcon.jsx, or fetch the real one from Icons8 into it.`,
     )
   }
 }

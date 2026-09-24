@@ -1,6 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { PROTOTYPES } from '@components/prototypes'
-import { Icon } from '@components/Icon/Icon'
+import { Button } from '@components/Button/Button'
+import { Modal, ModalClose } from '@components/Modal/Modal'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
+import { Tabs } from '@components/Tabs/Tabs'
+// Narrated click-throughs, written by the demo-video skill's `site` stage.
+import DEMO_VIDEOS from '@components/demoVideos.json'
+
+// Files in public/ are served under the site's base (/bs-prototypes/). A bare
+// relative path only resolves when the page URL is that folder exactly — the
+// dev server also answers at `/`, where `bs.svg` meant `/bs.svg`, a 404.
+const BASE = import.meta.env.BASE_URL
 
 const PATTERNS = PROTOTYPES.find((p) => p.id === 'patterns')
 const CARDS = PROTOTYPES.filter((p) => p.id !== 'patterns')
@@ -36,108 +47,237 @@ const SECTIONS = (() => {
   return sorted.map(([title, items]) => ({ title, items, categories: byCategory(items) }))
 })()
 
-// Per-prototype card glyphs, rendered via the shared <Icon> (Tabler). Color is
-// applied by the wrapping .card-icon span (accent). Keyed by prototype id.
-const ICON_NAMES = {
-  'm-app': 'device-mobile', // phone — the mobile design system
-  'challenge-creator': 'trophy', // a trophy
-  'student-profile': 'user', // a person
-  'ris-school': 'school', // schoolhouse
-  'ris-district': 'building-community', // clustered buildings
-  sfr: 'message-check', // chat bubble + check (review)
-  patterns: 'layout-grid', // four little tiles
-  'admin-dashboard': 'layout-dashboard', // dashboard layout
-  'web-app': 'browser', // browser window
-  footers: 'layout-bottombar', // page with footer strip
-  rostering: 'arrows-exchange', // sync between systems
-  'rostering-district': 'refresh', // district-wide sync
-  insights: 'chart-bar', // analytics
-  'book-talks': 'message-circle',
-  books: 'book-2',
-  'logging-flow': 'reading-log',
-  'pick-your-path': 'route',
-  btwb: 'message-chatbot',
-  gameboard: 'dice-5',
-  'gameboard-reader': 'route',
-  beeverso: 'plug-connected', // an account plugged into Beanstack
-  'words-with-benny': 'vocabulary',
-  'reader-profile': 'users',
-  'engagement-signals': 'activity-pulse',
-  rmi: 'flame',
-  'collection-engine': 'books',
-  'collection-engine-district': 'building-community',
-  'collection-engine-teacher': 'school',
-  'discover-lists': 'clipboard-list',
+// Each category in one of the app's eight hues (components/ui/tokens.css): its
+// heading in the hue's ink, its cards' icon tiles on the wash with the glyph in
+// the hue. No two categories in a tab share one, and a category keeps its hue
+// in every tab it turns up in (Analytics is blue in both). A category missing
+// here falls back to teal.
+const CATEGORY_HUES = {
+  Challenges: 'orange',
+  Profiles: 'pink',
+  Analytics: 'blue',
+  'Book Talks': 'purple',
+  'Collection Engine': 'teal',
+  Integrations: 'green',
+  Other: 'yellow',
+  'Reader experience': 'teal',
+  'Mobile app': 'purple',
+  'Reading integrity': 'red',
+  Admin: 'blue',
+  Rostering: 'green',
+}
+const hueVars = (category) => {
+  const hue = CATEGORY_HUES[category] ?? 'teal'
+  return {
+    '--cat': `var(--c-${hue})`,
+    '--cat-wash': `var(--c-${hue}-wash)`,
+    '--cat-ink': `var(--c-${hue}-ink)`,
+    // Yellow is too pale to draw on its own wash; it takes its ink instead.
+    '--cat-glyph': hue === 'yellow' ? 'var(--c-yellow-ink)' : `var(--c-${hue})`,
+  }
 }
 
-const ICONS = Object.fromEntries(
-  Object.entries(ICON_NAMES).map(([id, name]) => [id, <Icon key={id} name={name} size={22} />]),
-)
+// Per-prototype card glyphs, keyed by prototype id: <PlumpyIcon> names — the
+// duotone pack the admin chrome uses. A prototype that comes in levels
+// (School / District / Teacher) gets the level's glyph; the category heading
+// names the product. `pnpm check` keeps every name on the pack.
+const ICON_NAMES = {
+  'm-app': 'phone',
+  'challenge-creator': 'challenges',
+  'student-profile': 'user',
+  'ris-school': 'school-building',
+  'ris-district': 'district',
+  sfr: 'flag',
+  patterns: 'grid-view',
+  'admin-dashboard': 'dashboard',
+  'web-app': 'browser',
+  footers: 'footer',
+  rostering: 'school-building',
+  'rostering-district': 'district',
+  insights: 'insights',
+  'book-talks': 'medal',
+  books: 'book',
+  'logging-flow': 'news', // built around a Scholastic magazine
+  'pick-your-path': 'signpost',
+  btwb: 'chat',
+  gameboard: 'dice',
+  'gameboard-reader': 'pawn', // the reader's piece on the board
+  beeverso: 'connected',
+  'words-with-benny': 'vocabulary',
+  'reader-profile': 'people',
+  'engagement-signals': 'heart-monitor',
+  rmi: 'fire',
+  'collection-engine': 'school-building',
+  'collection-engine-district': 'district',
+  'collection-engine-teacher': 'classroom',
+  'discover-lists': 'list-view',
+}
 
-function ProtoCard({ id, name, description, href, accent }) {
+const VIDEOS_TAB = 'Demo videos'
+const TABS = [...SECTIONS.map((s) => s.title), ...(DEMO_VIDEOS.length ? [VIDEOS_TAB] : [])]
+
+// The open tab lives in the URL hash, so it survives a trip into a prototype
+// and back, and a link can open straight onto one (…/bs-prototypes/#demo-videos).
+const slug = (tab) => tab.toLowerCase().replace(/\s+/g, '-')
+const tabFromHash = () => TABS.find((t) => `#${slug(t)}` === window.location.hash) ?? TABS[0]
+
+const byId = Object.fromEntries(PROTOTYPES.map((p) => [p.id, p]))
+const recordedOn = (iso) =>
+  new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+
+// The Demo videos tab is laid out like the others: each video under the
+// category of the first prototype it covers, in that category's hue.
+const VIDEO_GROUPS = (() => {
+  const groups = new Map()
+  for (const v of DEMO_VIDEOS) {
+    const key = byId[v.prototypes[0]]?.category || 'Other'
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key).push(v)
+  }
+  return [...groups.entries()].map(([title, items]) => ({ title, items }))
+})()
+
+/* A category's card: its name as the title, its rows below. */
+function Category({ title, count, children }) {
   return (
-    <a href={href} className="card" style={{ '--accent': accent }}>
-      {ICONS[id] && (
-        <span className="card-icon" style={{ color: accent }}>
-          {ICONS[id]}
+    <section className="cat" style={hueVars(title)}>
+      <h2 className="cat-title">
+        {title}
+        <span className="cat-count">{count}</span>
+      </h2>
+      <div className="list">{children}</div>
+    </section>
+  )
+}
+
+/* A demo video as a row like a prototype's, a play glyph where the icon would
+   be. Pressing it opens the full view — the player in a modal, portalled
+   to <body> so the page's zoom doesn't scale it. Nothing downloads until then. */
+function VideoRow({ title, duration, recorded, src, poster }) {
+  const [open, setOpen] = useState(false)
+  const close = () => setOpen(false)
+  return (
+    <div className="video-row">
+      <button type="button" className="card" onClick={() => setOpen(true)}>
+        <span className="card-icon">
+          <PlumpyIcon name="play" size={18} className="card-icon-play" />
+        </span>
+        <span className="card-title">{title}</span>
+        <span className="card-meta">{duration}</span>
+        <span className="card-arrow">→</span>
+      </button>
+      {createPortal(
+        <Modal
+          open={open}
+          onClose={close}
+          variant="center"
+          closeBadge
+          className="video-modal"
+          ariaLabel={title}
+        >
+          <ModalClose onClick={close} />
+          {/* Mounted only while open, so closing the modal stops the sound. */}
+          {open && <video src={BASE + src} poster={BASE + poster} controls autoPlay playsInline />}
+          <div className="video-modal-foot">
+            <div>
+              <h3>{title}</h3>
+              <span className="video-date">
+                {duration} · Recorded {recordedOn(recorded)}
+              </span>
+            </div>
+          </div>
+        </Modal>,
+        document.body,
+      )}
+    </div>
+  )
+}
+
+function ProtoCard({ id, name, href }) {
+  return (
+    <a href={href} className="card">
+      {ICON_NAMES[id] && (
+        <span className="card-icon">
+          <PlumpyIcon name={ICON_NAMES[id]} size={20} />
         </span>
       )}
-      <div className="card-body">
-        <h2>{name}</h2>
-        <p>{description}</p>
-      </div>
+      <span className="card-title">{name}</span>
       <span className="card-arrow">→</span>
     </a>
   )
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState(SECTIONS[0]?.title || 'Prototypes')
+  const [activeTab, setActiveTab] = useState(tabFromHash)
+  useEffect(() => {
+    const onHash = () => setActiveTab(tabFromHash())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+  const choose = (tab) => {
+    setActiveTab(tab)
+    const { pathname, search } = window.location
+    window.history.replaceState(null, '', tab === TABS[0] ? pathname + search : `#${slug(tab)}`)
+  }
+
+  const videos = activeTab === VIDEOS_TAB
   const active = SECTIONS.find((s) => s.title === activeTab) || SECTIONS[0]
   return (
     <div className="page">
       <header>
         <h1>
-          <img src="bs.svg" alt="Beanstack" className="logo-mark" />
+          <img src={`${BASE}bs.svg`} alt="Beanstack" className="logo-mark" />
           Prototypes
         </h1>
         {PATTERNS && (
-          <a href={PATTERNS.href} className="patterns-btn">
-            Pattern Library →
-          </a>
+          <Button as="a" href={PATTERNS.href} variant="secondary" size="sm">
+            Pattern Library
+          </Button>
         )}
       </header>
 
-      <nav className="tabs" role="tablist" aria-label="Prototype sections">
-        {SECTIONS.map((s) => (
-          <button
-            key={s.title}
-            type="button"
-            role="tab"
-            aria-selected={s.title === active.title}
-            className={`tab ${s.title === active.title ? 'is-active' : ''}`}
-            onClick={() => setActiveTab(s.title)}
-          >
-            {s.title}
-            <span className="tab-count">{s.items.length}</span>
-          </button>
-        ))}
-      </nav>
+      {/* The system's segmented control, full width. On a phone (`collapse`)
+          it becomes a select with ‹ › steppers — four labels don't fit 375px. */}
+      <Tabs
+        variant="pill"
+        size="sm"
+        block
+        onTint
+        collapse
+        className="page-tabs"
+        ariaLabel="Prototype sections"
+        active={activeTab}
+        onChange={choose}
+        items={TABS.map((tab) => ({
+          id: tab,
+          label: tab,
+          count:
+            tab === VIDEOS_TAB
+              ? DEMO_VIDEOS.length
+              : SECTIONS.find((s) => s.title === tab).items.length,
+        }))}
+      />
 
       <main>
-        {active.categories.map((cat) => (
-          <section key={cat.title} className="cat">
-            <h2 className="cat-title">
-              {cat.title}
-              <span className="cat-count">{cat.items.length}</span>
-            </h2>
-            <div className="list">
-              {cat.items.map((p) => (
-                <ProtoCard key={p.href} {...p} />
-              ))}
-            </div>
-          </section>
-        ))}
+        {videos
+          ? VIDEO_GROUPS.map((g) => (
+              <Category key={g.title} title={g.title} count={g.items.length}>
+                {g.items.map((v) => (
+                  <VideoRow key={v.id} {...v} />
+                ))}
+              </Category>
+            ))
+          : active.categories.map((cat) => (
+              <Category key={cat.title} title={cat.title} count={cat.items.length}>
+                {cat.items.map((p) => (
+                  <ProtoCard key={p.href} {...p} />
+                ))}
+              </Category>
+            ))}
       </main>
     </div>
   )

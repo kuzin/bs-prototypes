@@ -185,6 +185,15 @@
 .tabs--pill.tabs--on-tint .tab-count {
   background: rgb(255 255 255 / 70%);
 }
+/* Those two rules outrank the active state's (three classes to its two), so on
+   a tinted page the active label came out the inactive grey, not the blue of
+   every other pill group. Restate it at the same weight. */
+.tabs--pill.tabs--on-tint .tab--active {
+  color: var(--c-blue);
+}
+.tabs--pill.tabs--on-tint .tab--active .tab-count {
+  background: color-mix(in srgb, currentColor 15%, transparent);
+}
 
 /* A pill group sitting on a band of its own — the sub-tab bar under the reader's
    main nav. No track: the band is the surface. The active pill takes a tint of

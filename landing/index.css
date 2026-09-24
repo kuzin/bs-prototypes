@@ -7,9 +7,14 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  background: #f8f7f4;
-  color: #1a1a1a;
+  /* Museo Sans Rounded, like every other page (the Typekit kit the HTML
+     template loads). The kit has 100/300/500/700/800/900 — no 400 or 600 — so
+     the weights below all stick to those. */
+  font-family: var(--font-sans);
+  /* The admin's light grey, the ground the shared controls are drawn for. */
+  background: var(--c-gray-150);
+  /* The app's body grey (#424242) — the app never sets black. */
+  color: var(--c-text);
   min-height: 100dvh;
 }
 
@@ -27,28 +32,6 @@ header {
   margin-bottom: 28px;
 }
 
-.patterns-btn {
-  flex-shrink: 0;
-  font-size: 12px;
-  font-weight: 500;
-  color: #6d6a63;
-  text-decoration: none;
-  padding: 5px 12px;
-  border: 1px solid #ebe9e4;
-  border-radius: 20px;
-  background: #fff;
-  transition:
-    background 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.patterns-btn:hover {
-  background: #faf9f6;
-  border-color: #ddd9d1;
-  color: #1a1a1a;
-}
-
 h1 {
   display: flex;
   align-items: center;
@@ -64,174 +47,205 @@ h1 {
   flex-shrink: 0;
 }
 
-.tabs {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  margin: 0 0 16px;
-  padding: 3px;
-  background: #efece6;
-  border-radius: 10px;
+/* The shared pill <Tabs>, full width. Its block mode wraps to a second line
+   when the labels outgrow the row; here they stay on one line, in equal
+   segments, and truncate — the bar only has to hold until 700px, where it
+   collapses to the select. */
+.page-tabs {
+  margin-bottom: 20px;
 }
 
-.tab {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: #8c897f;
-  background: transparent;
-  border: 0;
-  border-radius: 7px;
-  cursor: pointer;
-  transition:
-    color 0.15s,
-    background 0.15s,
-    box-shadow 0.15s;
+.page-tabs.tabs--pill.tabs--block {
+  flex-wrap: nowrap;
 }
 
-.tab:hover {
-  color: #1a1a1a;
+.page-tabs.tabs--pill.tabs--block .tab {
+  flex: 1 1 0;
 }
 
-.tab.is-active {
-  color: #1a1a1a;
-  background: #fff;
-  box-shadow:
-    0 1px 2px rgba(26, 26, 26, 0.06),
-    0 0 0 0.5px rgba(26, 26, 26, 0.04);
+.page-tabs .tab-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.tab-count {
-  font-size: 10px;
-  font-weight: 700;
-  color: #a8a59e;
-  background: rgba(255, 255, 255, 0.6);
-  padding: 1px 6px;
-  border-radius: 999px;
-  letter-spacing: 0.02em;
-}
-
-.tab.is-active .tab-count {
-  color: #6d6a63;
-  background: #f0eee9;
+.page-tabs .tab-count {
+  flex-shrink: 0;
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid #ebe9e4;
-  border-bottom: 1px solid #ebe9e4;
 }
 
 .card {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 4px;
-  border-bottom: 1px solid #ebe9e4;
-  background: transparent;
+  padding: 12px 18px 12px 14px;
   text-decoration: none;
   color: inherit;
   transition: background 0.15s;
 }
 
-.card:last-child {
-  border-bottom: 0;
+/* A row is a link (a prototype) or a button (a demo video). */
+button.card {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.list > * + * {
+  border-top: 1px solid var(--c-border);
 }
 
 .card:hover {
-  background: rgba(26, 26, 26, 0.025);
+  background: color-mix(in srgb, var(--cat-wash) 40%, #fff);
 }
 
+/* Sized to the one-line title beside it. */
 .card-icon {
   flex-shrink: 0;
-  width: 30px;
-  height: 30px;
-  border-radius: 7px;
-  background: #f0eee9;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  color: var(--cat-glyph);
+  background: var(--cat-wash);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.card-icon svg {
-  width: 16px;
-  height: 16px;
-}
-
 .card:hover .card-icon {
   transform: rotate(-6deg) scale(1.08);
 }
 
-.card-body {
+.card-title {
   flex: 1;
   min-width: 0;
-}
-
-.card-body h2 {
-  font-size: 13.5px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.card-body p {
-  font-size: 12px;
-  color: #a09d93;
-  margin-top: 1px;
-  line-height: 1.35;
-  white-space: nowrap;
   overflow: hidden;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.card-meta {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-text-light);
 }
 
 .card-arrow {
   flex-shrink: 0;
   font-size: 16px;
-  color: #ccc;
+  color: var(--c-gray-400);
   transition:
     color 0.15s,
     transform 0.15s;
 }
 
 .card:hover .card-arrow {
-  color: var(--accent);
+  color: var(--cat);
   transform: translateX(3px);
 }
 
 /* ── Categories within a tab ─────────────────────────────────────────────── */
+/* Each category is one white card on the grey page: its name as the card's
+   title, then its prototypes, joined by hairlines — so a row's hover tint
+   stops at the card's edge instead of running the width of the page. */
+.cat {
+  overflow: hidden;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+
 .cat + .cat {
-  margin-top: 26px;
+  margin-top: 20px;
 }
 
 .cat-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0 0 8px;
-  font-size: 12px;
+  margin: 0;
+  padding: 14px 18px 12px 14px;
+  font-size: 16px;
   font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #8a8378;
+  color: var(--cat-ink);
+  /* The bar in its category's tint — the hue's wash, as behind a tag. */
+  background: var(--cat-wash);
+  border-bottom: 1px solid color-mix(in srgb, var(--cat) 22%, var(--cat-wash));
 }
 
+/* The count sits at the far end, over the rows' arrow column. */
 .cat-count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 17px;
-  height: 17px;
-  padding: 0 5px;
+  min-width: 24px;
+  height: 20px;
+  margin-left: auto;
+  padding: 0 7px;
   border-radius: 999px;
-  background: rgba(26, 26, 26, 0.06);
-  font-size: 10.5px;
+  background: var(--c-surface);
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0;
-  color: #6d675e;
+  color: var(--cat-ink);
+}
+
+/* ── Demo videos ─────────────────────────────────────────────────────────── */
+/* The play triangle's weight sits left of its box — nudge it to look centred
+   in its tile. */
+.card-icon-play {
+  margin-left: 2px;
+}
+
+/* The full view: the shared centre modal, widened to the video — and capped by
+   the window's height too, so the player and its caption always fit. */
+.modal.modal--center.video-modal {
+  width: min(1100px, calc(100vw - var(--modal-gutter) * 2), calc((100vh - 64px - 84px) * 16 / 9));
+}
+
+.video-modal video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: calc(var(--modal-radius) - 1px) calc(var(--modal-radius) - 1px) 0 0;
+}
+
+.video-modal-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 16px;
+}
+
+.video-modal-foot h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+
+.video-date {
+  font-size: 13px;
+  color: var(--c-text-light);
+}
+
+/* ── Phones ──────────────────────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  .page {
+    padding: 28px 16px 56px;
+  }
 }

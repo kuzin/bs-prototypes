@@ -227,7 +227,7 @@ The entry HTML (title from the registry below, `<script>` pointing at this `main
 
 This drives the landing card, the prototype switcher, and the generated page `<title>`. Registry order decides both the category order and the order within it.
 
-**3. Add a card icon** — `landing/App.jsx`, in the `ICON_NAMES` map: `'my-proto': '<name>'`, where `<name>` is any `<Icon>` registry name (add a new glyph to `components/Icon/Icon.jsx` if none fits). It renders via the shared `<Icon>` — no hand-rolled SVG. `pnpm check` fails if it's missing.
+**3. Add a card icon** — `landing/App.jsx`, in the `ICON_NAMES` map: `'my-proto': '<name>'`, where `<name>` is a `<PlumpyIcon>` name — the duotone Icons8 pack the admin chrome uses, drawn in the card's accent on a tile tinted with it. If none fits, fetch the real glyph from Icons8 into [components/PlumpyIcon/PlumpyIcon.jsx](components/PlumpyIcon/PlumpyIcon.jsx) with its Icons8 id — no lookalikes, no hand-rolled SVG. `pnpm check` fails if the icon is missing or isn't on the pack.
 
 Then `pnpm dev` — it'll show up on the landing page and in the prototype switcher automatically.
 

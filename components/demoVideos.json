@@ -1,0 +1,28 @@
+[
+  {
+    "id": "challenge-creator-demo",
+    "title": "Challenge Creator",
+    "description": "Building a reading challenge end to end: how the wizard adapts to each role, the six types, a template, badges, rewards, what counts as finished, the reader preview, and publishing.",
+    "duration": "2:25",
+    "recorded": "2026-09-24",
+    "src": "demo-videos/challenge-creator-demo.mp4",
+    "poster": "demo-videos/challenge-creator-demo.jpg",
+    "prototypes": ["challenge-creator"]
+  },
+  {
+    "id": "collection-engine-demo",
+    "title": "Collection Engine",
+    "description": "The reader side — where every book is, Ask Benny, the Wish List, logging with Read now and what's next, a book's page tab by tab, the Book Quiz — then the school, district and teacher views, how the engine decides, and Book Lists.",
+    "duration": "7:48",
+    "recorded": "2026-09-24",
+    "src": "demo-videos/collection-engine-demo.mp4",
+    "poster": "demo-videos/collection-engine-demo.jpg",
+    "prototypes": [
+      "books",
+      "collection-engine",
+      "collection-engine-district",
+      "collection-engine-teacher",
+      "discover-lists"
+    ]
+  }
+]
