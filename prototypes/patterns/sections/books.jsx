@@ -3,6 +3,8 @@ import { Stars, RatingInline, RatingBlock, StarInput } from '@components/Stars/S
 import { BookCard } from '../../books/components/BookCard'
 import { Shelf } from '../../books/components/Shelf'
 import { PartnerBrand, PartnerTag, PartnerMark } from '../../books/components/PartnerBits'
+import { AskBenny } from '../../books/components/AskBenny'
+import { ExpandableText } from '../../books/components/ExpandableText'
 import { getBook, getBooks, SHELVES } from '../../books/data'
 import { Variant } from './_shared'
 
@@ -79,28 +81,57 @@ export const booksSections = [
     group: 'books',
     id: 'bk-book-card',
     name: 'BookCard',
+    usage: `import { BookCard } from './components/BookCard'
+
+<BookCard book={book} onOpen={open} onWish={toggleWish} wished={wishlist.has(book.id)} />
+<BookCard book={book} variant="rank" … />
+<BookCard book={book} variant="audio" onPlay={play} … />
+<BookCard book={book} variant="reason" reason="Because you loved Hilda" … />`,
     desc: (
       <>
-        The cover-forward card used on every Discover shelf. A bookmark toggles "want to read"; a
-        Comics Plus mark appears when the title is available there. Variants: <code>default</code>{' '}
-        and <code>rank</code> (trending number + reader count).
+        The cover-forward card on every Discover shelf. The jacket carries the title, so there is{' '}
+        <strong>no caption</strong> — a shelf is a wall of covers you scan, and a title under each
+        one left the ratings on a ragged line. Under the cover sits one fact: the rating, or on a
+        trending shelf the readers at school.
+        <br />
+        <br />
+        Two marks ride on the cover. The bookmark toggles the reader&rsquo;s list. A small dot says
+        the title <strong>opens right now</strong> in a linked app, in that app&rsquo;s colour — no
+        logo, because five logos down a shelf read as five different statuses, and which app it is
+        belongs on the book&rsquo;s own page. Pass <code>settings</code> so the dot only promises an
+        app the site has switched on.
+        <br />
+        <br />
+        Variants: <code>default</code>, <code>rank</code> (reader count), <code>audio</code> (square
+        art, a play button and the running time) and <code>reason</code> (Benny&rsquo;s one-line
+        why).
       </>
     ),
     render: () => {
       const wild = getBook('wild-robot')
       const dogman = getBook('dog-man')
+      const audio = getBooks(SHELVES.find((sh) => sh.id === 'audio').books)[0]
       return (
         <div className="bk-catalog">
-          <Variant label="default / rank">
-            <div style={{ display: 'flex', gap: 18, padding: 16, alignItems: 'flex-start' }}>
+          <Variant label="default · rank · audio · reason">
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 18,
+                padding: 16,
+                alignItems: 'flex-start',
+              }}
+            >
               <BookCard book={wild} onOpen={noop} onWish={noop} wished={false} />
+              <BookCard book={dogman} onOpen={noop} onWish={noop} wished variant="rank" />
+              <BookCard book={audio} onOpen={noop} onWish={noop} onPlay={noop} variant="audio" />
               <BookCard
-                book={dogman}
+                book={wild}
                 onOpen={noop}
                 onWish={noop}
-                wished={false}
-                variant="rank"
-                rank={2}
+                variant="reason"
+                reason="Because you loved Hilda"
               />
             </div>
           </Variant>
@@ -112,25 +143,115 @@ export const booksSections = [
     group: 'books',
     id: 'bk-shelf',
     name: 'Shelf',
+    usage: `import { Shelf } from './components/Shelf'
+
+<Shelf
+  shelf={shelf}
+  books={getBooks(shelf.books)}
+  onOpen={open}
+  onWish={toggleWish}
+  wishlist={wishlist}
+  onViewAll={viewAll}
+/>`,
     desc: (
       <>
-        A titled, horizontally scrolling row of <code>BookCard</code>s with arrow controls. Partner
-        shelves (<code>shelf.partner</code>) render a tinted, branded header; <code>rank</code>{' '}
-        shelves number the cards. Props: <code>shelf</code>, <code>books</code>, <code>onOpen</code>
-        , <code>onWish</code>, <code>wishlist</code>.
+        A titled row of <code>BookCard</code>s. Every shelf shares one header — title over a
+        subtitle — and a curated shelf swaps the subtitle for its curator&rsquo;s line, because that
+        is who is speaking.
+        <br />
+        <br />
+        The row is a <strong>grid, not a scrolling track</strong>: six equal cells, so every jacket
+        on the page is the same size. It shows five titles and, when there are more and{' '}
+        <code>onViewAll</code> is passed, ends in a <strong>View More</strong> card — a shelf that
+        ends in a card reads as continuing, where a button up in the corner read as a separate thing
+        to press. <code>shelf.kind</code> picks the cards: <code>rank</code> numbers them by
+        readers, <code>audio</code> goes square. Props: <code>shelf</code>, <code>books</code>,{' '}
+        <code>onOpen</code>, <code>onWish</code>, <code>wishlist</code>, <code>onPlay</code>,{' '}
+        <code>onViewAll</code>, <code>settings</code>.
+      </>
+    ),
+    render: () => {
+      const shelf = (id) => SHELVES.find((sh) => sh.id === id)
+      const row = (id, label) => (
+        <Variant label={label} full>
+          <div style={{ padding: 16 }}>
+            <Shelf
+              shelf={shelf(id)}
+              books={getBooks(shelf(id).books)}
+              onOpen={noop}
+              onWish={noop}
+              onPlay={noop}
+              onViewAll={noop}
+              wishlist={new Set()}
+            />
+          </div>
+        </Variant>
+      )
+      return (
+        <div className="bk-catalog">
+          {row('reyes-picks', 'curated — the curator speaks in the subtitle')}
+          {row('trending', 'rank — readers at school')}
+          {row('audio', 'audio — square covers, ending in a square View More')}
+        </div>
+      )
+    },
+  },
+  {
+    group: 'books',
+    id: 'bk-ask-benny',
+    name: 'AskBenny',
+    usage: `import { AskBenny } from './components/AskBenny'
+
+<AskBenny onOpen={open} onWish={toggleWish} wishlist={wishlist} settings={settings} />`,
+    desc: (
+      <>
+        Discover&rsquo;s recommendation prompt. A reader describes a mood — &ldquo;funny graphic
+        novels&rdquo;, &ldquo;something like The Wild Robot&rdquo; — and after a short thinking beat
+        Benny answers with a line and a row of <code>BookCard</code>s. The field wears{' '}
+        <strong>sparkles, not a loupe</strong>: this is asking, not looking up a title you already
+        know. The button takes Benny&rsquo;s teal rather than the page&rsquo;s action blue.
+        <br />
+        <br />
+        Three states: the prompt, <em>thinking</em> (skeleton covers in the same rail the answer
+        lands in, so the panel doesn&rsquo;t change size), and the answer with a Clear that goes
+        back to the prompt. Try typing <em>funny</em> or <em>dragons</em>, or submit it empty.
       </>
     ),
     render: () => (
       <div className="bk-catalog">
-        <Variant label="partner shelf (Comics Plus)" full>
+        <Variant label="type a mood, then Ask Benny" full>
           <div style={{ padding: 16 }}>
-            <Shelf
-              shelf={SHELVES[0]}
-              books={getBooks(SHELVES[0].books)}
-              onOpen={noop}
-              onWish={noop}
-              wishlist={new Set()}
-            />
+            <AskBenny onOpen={noop} onWish={noop} wishlist={new Set()} />
+          </div>
+        </Variant>
+      </div>
+    ),
+  },
+  {
+    group: 'books',
+    id: 'bk-expandable-text',
+    name: 'ExpandableText',
+    usage: `import { ExpandableText } from './components/ExpandableText'
+
+<ExpandableText text={book.description} lines={3} />`,
+    desc: (
+      <>
+        A clamped paragraph with a <strong>View more</strong> toggle — a book&rsquo;s blurb on its
+        detail page. The toggle only appears when the text actually runs past the clamp, so a short
+        blurb is just a paragraph. Props: <code>text</code>, <code>lines</code> (default 3),{' '}
+        <code>className</code>.
+      </>
+    ),
+    render: () => (
+      <div className="bk-catalog">
+        <Variant label="overflows — the toggle appears">
+          <div style={{ maxWidth: 420 }}>
+            <ExpandableText text={getBook('wild-robot').description} lines={3} />
+          </div>
+        </Variant>
+        <Variant label="fits — no toggle">
+          <div style={{ maxWidth: 420 }}>
+            <ExpandableText text="A short blurb that fits in three lines." lines={3} />
           </div>
         </Variant>
       </div>

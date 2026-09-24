@@ -203,17 +203,19 @@
 }
 
 /* ── Icon ───────────────────────────────────────────────────────────────── */
+/* The glyph alone, in its row's colour. A bordered, tinted tile behind every
+   icon made a list of ten factors read as ten boxes — the bar and the figure
+   are the row, and the icon only has to say which factor it is. */
 .bl-icon {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: color-mix(in srgb, var(--bl-ic, var(--c-gray-500)) 55%, var(--c-gray-800));
-  background: var(--bl-ic-bg, var(--c-gray-0));
-  border: 1px solid color-mix(in srgb, var(--bl-ic, var(--c-gray-500)) 25%, var(--c-border));
+  /* Taken a little toward the ink, so the pale factor colours (Compliance's
+     light grey) still read as a glyph on white. */
+  color: color-mix(in srgb, var(--bl-ic, var(--c-gray-500)) 75%, var(--c-gray-800));
 }
 
 .bl-icon svg {

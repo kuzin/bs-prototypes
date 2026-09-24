@@ -55,37 +55,6 @@
   background: color-mix(in srgb, var(--rc-stat-color) 24%, white);
 }
 
-/* ─── The progress ring ────────────────────────────────────────────────────
-   Fills whatever the icon slot is, so a strip of progress tiles sizes it by
-   sizing `.rc-stat-ico`. */
-.rc-ring {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-}
-.rc-ring svg {
-  position: absolute;
-  inset: 0;
-  fill: none;
-  transform: rotate(-90deg);
-}
-.rc-ring-track {
-  stroke: color-mix(in srgb, var(--rc-stat-color) 26%, white);
-  stroke-width: 9;
-}
-.rc-ring-fill {
-  stroke: var(--rc-stat-color);
-  stroke-width: 9;
-  stroke-linecap: round;
-}
-.rc-ring-pct {
-  font-size: 12.5px;
-  font-weight: 900;
-  color: var(--c-text-dark);
-}
-
 /* Optional — the tile reads fine as just a figure and its label. */
 /* The glyph sits on a plate: a bare 20px glyph on the tile's own tint reads as
    a stray mark beside the figure rather than as the tile's icon.
@@ -105,16 +74,6 @@
   background: #fff;
   border-radius: 999px;
   box-shadow: 0 2px 3px rgb(0 0 0 / 6%);
-}
-
-/* A progress ring is the mark itself and fills the slot edge to edge — no room
-   for a plate behind it, and a circle peeking out from under one is worse than
-   none. (A Plumpy glyph used to be excepted here too, from when Plumpy meant
-   full-bleed artwork. At 22px in a 40px slot it is a glyph like any other, and
-   the exception was what left it sitting bare.) */
-.rc-stat-ico:has(.rc-ring) {
-  background: none;
-  box-shadow: none;
 }
 
 /* 22, a rung down the app's ladder from 24. The tile is a figure over a

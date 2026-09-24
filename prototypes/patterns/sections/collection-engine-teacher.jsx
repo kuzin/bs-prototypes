@@ -37,7 +37,7 @@ export const collectionEngineTeacherSections = [
 <ClassRecommendations />`,
     render: () => (
       <Variant label={`the tab's content — ${PICKS.length} titles for this room`} full>
-        <div style={{ padding: '24px 24px 0' }}>
+        <div style={{ padding: 24 }}>
           <ClassRecommendations />
         </div>
       </Variant>
@@ -81,12 +81,16 @@ export const collectionEngineTeacherSections = [
     render: () => (
       <>
         <Variant label="a reader who saves and doesn't finish — Tyler" full>
-          <div style={{ padding: 24, maxWidth: 720 }}>
+          {/* The profile pane brings its own 20px, so the wrapper only caps the
+              width — padding here as well doubled it. */}
+          <div style={{ maxWidth: 720 }}>
             <ReaderRecommendations studentKey="tyler" />
           </div>
         </Variant>
         <Variant label="a reader the engine is reaching — Anne" full>
-          <div style={{ padding: 24, maxWidth: 720 }}>
+          {/* The profile pane brings its own 20px, so the wrapper only caps the
+              width — padding here as well doubled it. */}
+          <div style={{ maxWidth: 720 }}>
             <ReaderRecommendations studentKey="anne" />
           </div>
         </Variant>

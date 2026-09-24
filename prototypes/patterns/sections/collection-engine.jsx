@@ -255,7 +255,7 @@ import { freshness } from './derive'
   ))}
 </TitleGrid>`,
     render: () => (
-      <Variant label="four titles off Lincoln's own shelves" full>
+      <Variant label="four titles off Lincoln's own shelves">
         <TitleGrid>
           {discovered(LINCOLN)
             .slice(0, 4)

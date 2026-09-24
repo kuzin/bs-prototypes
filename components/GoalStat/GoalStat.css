@@ -8,17 +8,9 @@
   margin-top: 18px;
 }
 
-/* `.rc-stat-ico` is a 40px slot, sized for a glyph. A ring carries its
-   percentage inside it and wants the room. */
+/* A total tile's glyph sits on the tone its hue's bar track carries, rather
+   than on the white plate a lone stat tile's mark gets. */
 .goal-stats .rc-stat-ico {
-  width: 52px;
-  height: 52px;
-}
-
-/* A total tile has no ring to fill, so its glyph takes the ring's place — the
-   same cell, on the tone the ring's own track carries. Without it a mixed strip
-   alternates a drawn disc and a bare glyph floating on the tile's tint. */
-.goal-stats .rc-stat-ico:not(:has(.rc-ring)) {
   background: color-mix(in srgb, var(--rc-stat-color) 26%, white);
   border-radius: 999px;
 }

@@ -35,13 +35,7 @@ function BarListRow({
     <div className={cls}>
       {prefix != null && <span className="bl-prefix">{prefix}</span>}
       {icon != null && (
-        <span
-          className="bl-icon"
-          style={{
-            '--bl-ic': iconColor || color,
-            '--bl-ic-bg': `color-mix(in srgb, ${iconColor || color} 10%, white)`,
-          }}
-        >
+        <span className="bl-icon" style={{ '--bl-ic': iconColor || color }}>
           {icon}
         </span>
       )}

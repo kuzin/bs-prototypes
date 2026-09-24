@@ -33,36 +33,6 @@ import '@components/Cards/Cards.css'
  * two numbers on the tile and made the eye pick between them. `footer` stays
  * for the things that aren't trends ("79% of the class").
  */
-/**
- * The ring a progress figure wears in its tile's icon slot —
- * `fundraisers/overview/_progress_card`, `programs/_overview_list_goals`.
- *
- * It fills the slot it is given, so a caller sizes it by sizing `.rc-stat-ico`.
- * A drawn graphic rather than a glyph, which is why it is inline SVG: the
- * percentage *is* the reading, and a number in a footer is not the same thing
- * as an arc you can take in at a glance.
- *
- *   <StatCard icon={<ProgressRing pct={62} />} value="620" unit="/1,000" … />
- */
-export function ProgressRing({ pct, done = false }) {
-  return (
-    <span className={`rc-ring${done ? ' is-done' : ''}`}>
-      <svg viewBox="0 0 100 100" aria-hidden="true">
-        <circle className="rc-ring-track" cx="50" cy="50" r="44" />
-        <circle
-          className="rc-ring-fill"
-          cx="50"
-          cy="50"
-          r="44"
-          pathLength="100"
-          strokeDasharray={`${pct} 100`}
-        />
-      </svg>
-      <span className="rc-ring-pct">{pct}%</span>
-    </span>
-  )
-}
-
 export function StatCard({
   value,
   unit,
@@ -72,9 +42,8 @@ export function StatCard({
   color,
   icon,
   /* `{ value, max }` — the figure drawn again as a bar under the label, for a
-     tile whose number is a position in something rather than a total. A ring in
-     the mark's slot says the same thing, but small and to one side; a bar says
-     it at the tile's full width, which is what "how far through" wants. */
+     tile whose number is a position in something rather than a total: pages
+     through a book, minutes toward a requirement. */
   progress,
   trend,
   action,
@@ -93,7 +62,7 @@ export function StatCard({
      one — is read for its name and swapped, so a tile doesn't depend on which
      of the two spellings its author happened to use. The stroked glyph is the
      fallback for a name the pack has nothing for, and any other node (a
-     progress ring, a partner's mark) is passed through untouched.
+     partner's mark) is passed through untouched.
 
      This used to be admin-only, with the reader app deliberately left on the
      stroked set. One icon language on a stat tile beat two. */
