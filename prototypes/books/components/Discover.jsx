@@ -8,8 +8,9 @@ import { Button } from '@components/Button/Button'
 import '@components/SearchInput/SearchInput.css'
 import { Shelf } from './Shelf'
 import { AskBenny } from './AskBenny'
+import { QuizStickers } from './QuizStickers'
 import { READER, BENNY_PICKS, SHELVES, BROWSE, getBooks } from '../data'
-import { colorIcon, quizRecommendations, quizSummary } from '../quiz'
+import { quizRecommendations, quizSummary } from '../quiz'
 
 // The Benny recommendation row is a normal shelf with a sparkles icon badge.
 const BENNY_SHELF = {
@@ -90,18 +91,23 @@ export function Discover({
         <BannerStack className="bk-quiz-banners">
           <ReaderBanner
             tone="amber"
-            mark={<img src={colorIcon('ask-question')} alt="" className="bk-quiz-mark" />}
+            className="bk-quiz-banner"
+            /* No mark in the disc: the stickers are the picture here — a peek
+               inside, a few of the quiz's own pictures stuck on at angles
+               between what the bar says and its button. A lone glyph on the
+               left beside them read as a second, flatter idea. */
+            decoration={<QuizStickers />}
             title={
               <strong>
                 {quizAnswers
-                  ? 'Benny’s Picks are from your Book Quiz'
-                  : 'Find your next favorite book!'}
+                  ? 'Your quiz picks are in — they’re Benny’s Picks below!'
+                  : 'Unicorns or detectives? Laughs or goosebumps?'}
               </strong>
             }
             sub={
               quizAnswers
                 ? 'Changed your mind? Take it again any time.'
-                : 'Take Benny’s Book Quiz — pick pictures, stories and covers, and get books picked just for you.'
+                : 'Take Benny’s quick Book Quiz and he’ll pick your next favorite books.'
             }
             action={
               <ReaderBannerAction solid={!quizAnswers} onClick={onQuiz}>

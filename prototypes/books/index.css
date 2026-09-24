@@ -216,12 +216,50 @@ button {
   min-width: 0;
 }
 
-/* The Book Quiz banner's mark: the quiz's own Icons8 Color art on the bar's
-   white disc. */
-.bk-quiz-mark {
-  width: 26px;
-  height: 26px;
+/* The Book Quiz banner's stickers. They ride in the bar's own row, between the
+   words and the button (the banner renders a decoration first, so `order`
+   moves it), tipped at angles like stickers on a folder — and on hover they
+   hop, one after another. A bar too narrow for them simply drops them. */
+.bk-quiz-banner .wa-banner-body {
+  order: 1;
 }
+.bk-quiz-banner .bkst {
+  order: 2;
+  margin-right: 6px;
+}
+.bk-quiz-banner .wa-banner-actions {
+  order: 3;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bk-quiz-banner:hover .bkst img {
+    animation: bk-sticker-hop 0.5s ease;
+  }
+  .bk-quiz-banner:hover .bkst img:nth-child(2) {
+    animation-delay: 0.06s;
+  }
+  .bk-quiz-banner:hover .bkst img:nth-child(3) {
+    animation-delay: 0.12s;
+  }
+  .bk-quiz-banner:hover .bkst img:nth-child(4) {
+    animation-delay: 0.18s;
+  }
+  .bk-quiz-banner:hover .bkst img:nth-child(5) {
+    animation-delay: 0.24s;
+  }
+}
+/* A `transform`, so it lands on top of each sticker's tilt (see QuizStickers). */
+@keyframes bk-sticker-hop {
+  40% {
+    transform: translateY(-6px);
+  }
+}
+/* Scoped to the banner — the quiz's own full-size row must never drop out. */
+@container (max-width: 860px) {
+  .bk-quiz-banner .bkst {
+    display: none;
+  }
+}
+
 /* White on the wash — the disc is what lifts Benny off the panel behind him.
    The banner's disc: 40px, and its shadow rather than a rule. */
 .bk-ask-avatar {

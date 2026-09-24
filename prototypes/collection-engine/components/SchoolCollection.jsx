@@ -126,12 +126,19 @@ export function SchoolCollection({ school }) {
   const rows = narrowed.filter((r) => matchStatus(status, r))
   const hiddenRows = rows.filter((r) => hidden.has(r.title.id))
   const queries = bennyQueries(school)
-  /* Titles this school's readers asked for when a search in Discover found
-     nothing (`books`). Nothing in the collection answers them yet, so each is
-     a gap until someone buys it — newest first, above what readers ask Benny. */
+  /* Titles this school's readers asked for from a book in Discover that none
+     of the school's sources carries (`books`). Nothing in the collection
+     answers them yet, so each is a gap until someone buys it — newest first,
+     above what readers ask Benny. */
   const titleRequests = useTitleRequests(school.id)
   const requestRows = [
-    ...titleRequests.requests.map((r) => ({ q: r.q, asks: r.asks, hits: 0, fresh: true })),
+    ...titleRequests.requests.map((r) => ({
+      q: r.q,
+      author: r.author,
+      asks: r.asks,
+      hits: 0,
+      fresh: true,
+    })),
     ...[...queries].sort((a, b) => a.hits / a.asks - b.hits / b.asks),
   ]
   const genres = genreHealth(school)
@@ -316,6 +323,7 @@ export function SchoolCollection({ school }) {
                 render: (_, r) => (
                   <span className="ce-asked">
                     <em>&ldquo;{r.q}&rdquo;</em>
+                    {r.author && <span className="ce-dim">by {r.author}</span>}
                     {r.fresh && (
                       <Pill color="#196DD5" size="sm">
                         New request
@@ -347,8 +355,8 @@ export function SchoolCollection({ school }) {
         )}
         {tab === 'requests' && titleRequests.requests.length > 0 && (
           <CardNote>
-            A <strong>new request</strong> is a title a reader asked for from Discover, when their
-            search found nothing in the collection.{' '}
+            A <strong>new request</strong> is a title a reader asked for from its page in Discover,
+            because none of the school&rsquo;s sources carries it.{' '}
             <button type="button" className="ce-proto-link" onClick={titleRequests.clear}>
               Clear readers&rsquo; requests — prototype only
             </button>

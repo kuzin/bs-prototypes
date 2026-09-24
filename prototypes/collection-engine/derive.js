@@ -984,9 +984,10 @@ export const HEALTH = {
  * many readers are running out of books — because those are the two ways a
  * collection fails a reader. Everything else is a reason, not a score.
  *
- * `readerRequests` are titles this school's readers asked for from Discover
- * when a search found nothing (`useTitleRequests`) — each one a request the
- * collection can't answer yet, so they count with Benny's unanswered ones.
+ * `readerRequests` are titles this school's readers asked for from a book in
+ * Discover that none of the school's sources carries (`useTitleRequests`) —
+ * each one a request the collection can't answer yet, so they count with
+ * Benny's unanswered ones.
  */
 export function collectionHealth(school, readerRequests = []) {
   const genres = genreHealth(school)

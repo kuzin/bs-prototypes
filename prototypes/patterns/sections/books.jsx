@@ -11,6 +11,7 @@ import { ReadNowMark } from '@components/ReadNowMark/ReadNowMark'
 import { Button } from '@components/Button/Button'
 import { BookCover } from '@components/BookCover/BookCover'
 import { BookQuiz } from '../../books/components/BookQuiz'
+import { QuizStickers } from '../../books/components/QuizStickers'
 import { Variant } from './_shared'
 
 const noop = () => {}
@@ -386,6 +387,34 @@ export const booksSections = [
             <PartnerTag partner="comicsplus" action="Read now" />
             <PartnerTag partner="sora" action="Borrow" format="audiobook" />
           </div>
+        </Variant>
+      </div>
+    ),
+  },
+  {
+    group: 'books',
+    id: 'bk-quiz-stickers',
+    name: 'QuizStickers',
+    usage: `import { QuizStickers } from './components/QuizStickers'
+
+<QuizStickers />
+<QuizStickers size="lg" pop />`,
+    desc: (
+      <>
+        Five of the Book Quiz&rsquo;s own pictures, tipped at angles like stickers on a folder — the
+        quiz&rsquo;s calling card. Small on Discover&rsquo;s quiz banner, where they hop when the
+        bar is hovered; full size on the quiz&rsquo;s first screen, where they pop in one by one.
+        Props: <code>size</code> (<code>sm</code> | <code>lg</code>), <code>pop</code>,{' '}
+        <code>className</code>.
+      </>
+    ),
+    render: () => (
+      <div className="bk-catalog">
+        <Variant label="sm — the Discover banner">
+          <QuizStickers />
+        </Variant>
+        <Variant label="lg, pop — the quiz's first screen">
+          <QuizStickers size="lg" pop />
         </Variant>
       </div>
     ),

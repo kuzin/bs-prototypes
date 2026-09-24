@@ -23,6 +23,10 @@ import { BOOKS, getBook, rowEnabled } from './data'
    pictures, which show bigger). */
 export const colorIcon = (name) => `${import.meta.env.BASE_URL}icons8-color/${name}.png`
 
+/* The quiz's calling card — five of its own pictures, as stickers on the
+   Discover banner and on the quiz's first screen (`QuizStickers`). */
+export const QUIZ_STICKERS = ['unicorn', 'detective', 'fox', 'wizard', 'treasure-map']
+
 /* What kinds of stories, each with a picture and a bright colour of its own.
    It's a picture question for kids, and the colour is half of what tells
    eight cards apart before a word is read. */
