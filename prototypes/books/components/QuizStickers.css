@@ -1,0 +1,88 @@
+/* ─── QuizStickers ──────────────────────────────────────────────────────────
+   The tilt is the individual `rotate` / `translate` properties, so anything
+   that moves a sticker — the banner's hover hop (a `transform`), the quiz's
+   pop-in (a `scale`) — lands on top of its angle instead of resetting it. The
+   nudges are percentages of the sticker, so both sizes sit the same. */
+
+.bkst {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  pointer-events: none;
+}
+
+.bkst img {
+  flex: none;
+}
+
+.bkst--sm img {
+  width: 40px;
+  height: 40px;
+  margin-left: -4px;
+  filter: drop-shadow(0 2px 2px rgb(138 90 0 / 22%));
+}
+
+.bkst--lg img {
+  width: 76px;
+  height: 76px;
+  margin-left: -8px;
+  filter: drop-shadow(0 4px 6px rgb(15 23 42 / 16%));
+}
+
+.bkst img:first-child {
+  margin-left: 0;
+}
+
+.bkst img:nth-child(1) {
+  rotate: -14deg;
+}
+
+.bkst img:nth-child(2) {
+  rotate: 9deg;
+  translate: 0 -8%;
+}
+
+.bkst img:nth-child(3) {
+  rotate: -6deg;
+  translate: 0 8%;
+}
+
+.bkst img:nth-child(4) {
+  rotate: 12deg;
+  translate: 0 -5%;
+}
+
+.bkst img:nth-child(5) {
+  rotate: -9deg;
+  translate: 0 5%;
+}
+
+/* Arriving: one after another, each overshooting a touch before it settles. */
+@media (prefers-reduced-motion: no-preference) {
+  .bkst--pop img {
+    animation: bkst-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .bkst--pop img:nth-child(2) {
+    animation-delay: 0.07s;
+  }
+
+  .bkst--pop img:nth-child(3) {
+    animation-delay: 0.14s;
+  }
+
+  .bkst--pop img:nth-child(4) {
+    animation-delay: 0.21s;
+  }
+
+  .bkst--pop img:nth-child(5) {
+    animation-delay: 0.28s;
+  }
+}
+
+@keyframes bkst-pop {
+  from {
+    opacity: 0;
+    scale: 0.3;
+  }
+}

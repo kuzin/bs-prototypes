@@ -20,6 +20,7 @@ import '@components/Modal/Modal.css'
 import '@components/RowAction/RowAction.css'
 import '@components/ProgressBar/ProgressBar.css'
 import { EmptyState } from '@components/Primitives/Primitives'
+import { useTitleRequests } from '@components/useTitleRequests/useTitleRequests'
 import '@components/Primitives/Primitives.css'
 import '@components/Table/Table.css'
 import { BookCover } from '@components/BookCover/BookCover'
@@ -38,6 +39,7 @@ import { ExpandableText } from './ExpandableText'
 import { PartnerMark } from './PartnerBits'
 import { Avatar } from '@components/Avatar/Avatar'
 import {
+  READER,
   GENRES,
   FORMATS,
   PARTNERS,
@@ -473,6 +475,45 @@ function FriendsWhoRead({ book, onOpenProfile }) {
    same app as the Read now button and the play mark on the jacket. */
 const WHERE_RANK = { own: 0, hold: 1, shelf: 2 }
 
+/**
+ * Where to read, when there's nowhere: none of the school's sources carries
+ * this title, so the page can't hand it to the reader — but the school can get
+ * it. The request lands in the school's Requests view (the Collection Engine),
+ * the list its librarian reads when deciding what to buy.
+ *
+ * Bare, like "Nothing logged yet" under it: an empty state is already a
+ * bordered block with a heading, and a card around it said the same twice.
+ */
+function RequestTitle({ book }) {
+  const { request, isRequested } = useTitleRequests(READER.schoolId)
+  if (isRequested(book.title))
+    return (
+      <EmptyState
+        variant="dashed"
+        icon={<Icon name="circle-check" size={24} />}
+        title="Requested!"
+        description={`“${book.title}” is on your library’s list. If they get it, it’ll show up right here.`}
+      />
+    )
+  return (
+    <EmptyState
+      variant="dashed"
+      icon={<Icon name="books" size={24} />}
+      title="Not at your school yet"
+      description="Want to read it? Ask your school library to get it — your librarian sees every request."
+      action={
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => request(book.title, { author: book.author })}
+        >
+          Request this title
+        </Button>
+      }
+    />
+  )
+}
+
 function WhereToRead({ book, availability, onRead }) {
   if (!availability.length) return null
   const rows = [...availability].sort(
@@ -753,7 +794,11 @@ export function BookDetail({
               getting it. On its own, a row of format chips said less twice. */}
           {/* Where to read leads the rail: it is the one card here a reader
               acts on — the stats under it are about what they already did. */}
-          <WhereToRead book={book} availability={availability} onRead={setReaderVia} />
+          {availability.length ? (
+            <WhereToRead book={book} availability={availability} onRead={setReaderVia} />
+          ) : (
+            <RequestTitle book={book} />
+          )}
           <StatStrip book={book} sessions={sessions} status={status} />
         </aside>
       </article>

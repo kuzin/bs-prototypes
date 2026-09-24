@@ -11,6 +11,7 @@ import '@components/BookCover/BookCover.css'
    reader has already sat, and only what's new is styled here. */
 import '../../rmi/views/SurveyFlow.css'
 import { asset } from '../../rmi/assets'
+import { QuizStickers } from './QuizStickers'
 import {
   KINDS,
   PAIRS,
@@ -168,11 +169,13 @@ export function BookQuiz({ open, onClose, onSave, shelf, settings, onOpen, onWis
 
         {step === 'intro' && (
           <section className="rmi-survey-checkpoint">
-            <img src={asset('benny-intro-image.svg')} alt="Benny" className="bkq-intro-image" />
+            {/* The banner's stickers, full size: the quiz opens on the same
+                pictures the reader just tapped, and they pop in to say hello. */}
+            <QuizStickers size="lg" pop />
             <header className="rmi-survey-checkpoint-header">
               <h1 className="rmi-survey-heading">Let’s find your next favorite book!</h1>
               <p className="rmi-survey-lede">
-                Pick pictures, stories and covers — I’ll pick books just for you.
+                Pick pictures, stories and covers — Benny will pick books just for you.
               </p>
             </header>
             {cta(false, 'Let’s Go')}

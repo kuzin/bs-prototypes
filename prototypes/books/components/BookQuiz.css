@@ -40,11 +40,6 @@
   background: var(--c-gray-200);
 }
 
-.bkq-intro-image {
-  width: 200px;
-  max-width: 60vw;
-}
-
 /* The question with its hint tucked under it, and Read Aloud a step below.
    Scoped to the quiz: the RMI survey's own header keeps its own rhythm. */
 .bkq .rmi-survey-question-header {
