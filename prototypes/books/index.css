@@ -621,6 +621,13 @@ button {
   flex: 1;
   flex-direction: column;
   gap: 2px;
+  /* The card's full width, not its content's: the card is a column that
+     doesn't stretch its items, so the body was as wide as the widest thing in
+     it — and the where tags, which fit themselves to the width they're given,
+     were measuring their own tags. Rows spilled under the next card, or shrank
+     to one tag and a "+N". */
+  align-self: stretch;
+  min-width: 0;
 }
 .bk-card-meta {
   display: flex;
