@@ -67,7 +67,9 @@ import { Icon } from '@components/Icon/Icon'
 - Register the prototype in `components/prototypes.js` (drives the landing card, switcher, and page
   title). The `id` may differ from the folder name (e.g. id `ris-school` lives in folder `ris`).
 - Give it a landing-card glyph via the `ICON_NAMES` map in `landing/App.jsx`
-  (`'<id>': '<Icon name>'`).
+  (`'<id>': '<PlumpyIcon name>'`). The cards use the duotone Plumpy pack, not `<Icon>` — if no
+  glyph fits, fetch the real one from Icons8 into `components/PlumpyIcon/PlumpyIcon.jsx` (with its
+  Icons8 id). `pnpm check` fails on a name the pack doesn't carry.
 - **CSS:** folder-components self-import their own CSS (importing the component pulls its styles).
   The exception is `@components/ui` — consumers must import its CSS (e.g. `BeanstackProfile.css`)
   themselves.

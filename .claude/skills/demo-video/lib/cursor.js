@@ -1,7 +1,8 @@
 // Injected into every page of a recording (addInitScript). A headless browser
 // draws no pointer, so this draws one — an arrow that glides to each target and
-// a ripple on every click — and hides the prototype-only chrome (the switcher
-// at the bottom, the preview bar at the top) so the video shows the product.
+// a ripple on every click — and hides the preview bar at the top (the
+// reviewer's persona switcher). The prototype bar at the bottom stays: without
+// it the pages lose their frame and look off (Kuzin, 2026-09-24).
 // The cursor's position rides in sessionStorage so it doesn't jump back to the
 // middle of the screen on every navigation.
 ;(() => {
@@ -14,8 +15,7 @@
     // no storage — start in the middle
   }
   const css = `
-    .proto-nav, .pvb { display: none !important; }
-    :root, body { --chrome-bottom: 0px !important; }
+    .pvb { display: none !important; }
     #__demo-cursor { position: fixed; left: 0; top: 0; z-index: 2147483647; pointer-events: none;
       width: 30px; height: 30px; will-change: transform; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
     #__demo-ripple { position: fixed; left: 0; top: 0; z-index: 2147483646; pointer-events: none;
