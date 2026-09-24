@@ -698,6 +698,17 @@ const RAW = [
       review('zoe', 5, 'Feb 20, 2026', 'I love Bob the dog. Read this if you like animals.', {
         helpful: 11,
       }),
+      review(
+        'diego',
+        5,
+        'Apr 2, 2026',
+        'I drew Ivan with his crayons. He is the bravest gorilla ever.',
+        {
+          // A `PictureReview`, on the art made for it (`public/picture-reviews/gorilla`).
+          image: 'gorilla',
+          helpful: 16,
+        },
+      ),
     ],
   },
   {
@@ -2721,6 +2732,8 @@ export const FRIENDS = [
       { book: 'brown-girl', date: 'Apr 11, 2026', minutes: 30 },
       { book: 'matilda', date: 'Apr 4, 2026', minutes: 45 },
       { book: 'charlottes-web', date: 'Mar 28, 2026', minutes: 25 },
+      // The day before her review of it (Mar 12) — she'd read it.
+      { book: 'one-ivan', date: 'Mar 11, 2026', minutes: 35 },
     ],
     badges: [
       badge('Kindness Reader', 'May 8, 2026', '#DB2777', 'heart'),

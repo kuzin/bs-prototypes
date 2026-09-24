@@ -31,6 +31,7 @@ import { AudioPlayer } from './components/AudioPlayer'
 import { BookQuiz } from './components/BookQuiz'
 import {
   BENNY_PICKS,
+  BOOKS,
   bookByTitle,
   getBook,
   getBooks,
@@ -125,17 +126,27 @@ export function App() {
     /* Which app can open it, so a tile in the log offers the same "Read in …"
        and wears the same play mark as the same jacket on the shelves outside it. */
     const via = readNowPartner(b, settings)
-    return via ? { ...base, partner: via } : base
+    /* What Benny suggests once it's finished — the finished screen's "Here's
+       what I'd read next". The log's own record may bring its picks; a Discover
+       title's are its own More Like This, minus what the reader has finished,
+       each with the first line of that book's Benny's take as the reason. */
+    const nextUp =
+      base.nextUp ??
+      getBooks(b.similar ?? [])
+        .filter((s) => shelf[s.id] !== 'finished')
+        .slice(0, 3)
+        .map((s) => ({ id: s.id, reason: s.bennyTake?.split(/(?<=[.!?])\s/)[0] }))
+    return { ...base, ...(via ? { partner: via } : {}), ...(nextUp.length ? { nextUp } : {}) }
   }
 
   /* One set of recommendations. The log flow ships its own `bennyPicks` for the
      prototypes that have no catalog of their own; this one does, and two
      Bennys with two opinions in one app is one too many. The log's catalog is
-     widened with whatever those picks are, since it doesn't carry them all. */
-  const bennyBooks = getBooks(BENNY_PICKS)
+     widened with this whole catalog — Benny's picks among it — so any title
+     the reader finishes has a "what next", and every one of those resolves. */
   const logCatalog = {
     ...LOG_FIXTURES.books,
-    ...Object.fromEntries(bennyBooks.map((b) => [b.id, toLogBook(b)])),
+    ...Object.fromEntries(BOOKS.map((b) => [b.id, toLogBook(b)])),
   }
 
   /* `finished` comes from the partner reader's last page: the form opens with
@@ -356,7 +367,7 @@ export function App() {
      in. This app has no linked accounts — it has the site's title sources — so
      the two are the same question asked twice. */
   const openableHere = Object.fromEntries(
-    ['comicsplus', 'scholastic', 'sora', 'libby']
+    ['comicsplus', 'epic', 'scholastic', 'sora', 'libby']
       .filter((id) => settings[id])
       .map((id) => [id, true]),
   )
@@ -553,8 +564,26 @@ export function App() {
         /* Confirming a finished log is what actually moves the book on the
            shelf — the reader reaching the last page no longer does it alone. */
         onLogged={(entry) => {
-          if (entry.finished && entry.book?.id && getBook(entry.book.id))
-            finishBook(entry.book.id, { celebrate: false })
+          const id = entry.book?.id
+          if (!id || !getBook(id)) return
+          /* The session lands on the book's own Reading Log tab, newest first —
+             logging a title is how its page learns you read it. */
+          const on = entry.dates?.[0] ? new Date(entry.dates[0]) : new Date()
+          const session = {
+            id: `logged-${Date.now()}`,
+            date: on.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            }),
+            minutes: entry.minutes,
+            format: entry.book.partner ? 'ebook' : 'print',
+          }
+          setSessionsByBook((prev) => ({
+            ...prev,
+            [id]: [session, ...(prev[id] ?? getSessions(id))],
+          }))
+          if (entry.finished) finishBook(id, { celebrate: false })
         }}
         /* Benny's recommendation on the finished screen goes on the same Wish
            List as every other save. A title this catalog has no page for still
