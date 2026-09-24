@@ -10,6 +10,7 @@ import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import { Select } from '@components/Form/Form'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import { useStickyState } from '@components/useStickyState/useStickyState'
+import { useTitleRequests } from '@components/useTitleRequests/useTitleRequests'
 import '@components/Primitives/Primitives.css'
 import '@components/FilterBar/FilterBar.css'
 import '@components/Form/Form.css'
@@ -125,6 +126,14 @@ export function SchoolCollection({ school }) {
   const rows = narrowed.filter((r) => matchStatus(status, r))
   const hiddenRows = rows.filter((r) => hidden.has(r.title.id))
   const queries = bennyQueries(school)
+  /* Titles this school's readers asked for when a search in Discover found
+     nothing (`books`). Nothing in the collection answers them yet, so each is
+     a gap until someone buys it — newest first, above what readers ask Benny. */
+  const titleRequests = useTitleRequests(school.id)
+  const requestRows = [
+    ...titleRequests.requests.map((r) => ({ q: r.q, asks: r.asks, hits: 0, fresh: true })),
+    ...[...queries].sort((a, b) => a.hits / a.asks - b.hits / b.asks),
+  ]
   const genres = genreHealth(school)
   const filtered = q || genre || source || format || status || action
 
@@ -301,7 +310,20 @@ export function SchoolCollection({ school }) {
         {tab === 'requests' && (
           <Table
             columns={[
-              { key: 'q', label: 'Asked for', render: (_, r) => <em>&ldquo;{r.q}&rdquo;</em> },
+              {
+                key: 'q',
+                label: 'Asked for',
+                render: (_, r) => (
+                  <span className="ce-asked">
+                    <em>&ldquo;{r.q}&rdquo;</em>
+                    {r.fresh && (
+                      <Pill color="#196DD5" size="sm">
+                        New request
+                      </Pill>
+                    )}
+                  </span>
+                ),
+              },
               { key: 'asks', label: 'Times asked', align: 'right', render: (_, r) => r.asks },
               {
                 key: 'hits',
@@ -319,9 +341,18 @@ export function SchoolCollection({ school }) {
                 render: (_, r) => <RequestCoverage hits={r.hits} />,
               },
             ]}
-            rows={[...queries].sort((a, b) => a.hits / a.asks - b.hits / b.asks)}
-            getRowKey={(r) => r.q}
+            rows={requestRows}
+            getRowKey={(r) => `${r.fresh ? 'request' : 'benny'}:${r.q}`}
           />
+        )}
+        {tab === 'requests' && titleRequests.requests.length > 0 && (
+          <CardNote>
+            A <strong>new request</strong> is a title a reader asked for from Discover, when their
+            search found nothing in the collection.{' '}
+            <button type="button" className="ce-proto-link" onClick={titleRequests.clear}>
+              Clear readers&rsquo; requests — prototype only
+            </button>
+          </CardNote>
         )}
 
         {/* Titles pulled out of the recommendations. A tab rather than another

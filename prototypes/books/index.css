@@ -2087,13 +2087,6 @@ button {
   }
 }
 
-/* The progress tile takes the whole row. Its bar is a length you read across,
-   and in a third of the row it was a 120px stub under a figure — the two tiles
-   beside it are single numbers and sit happily at that width. */
-.bkp-readnums .rc-stat:has(.rc-stat-bar) {
-  grid-column: 1 / -1;
-}
-
 /* ─── Picture reviews ───────────────────────────────────────────────────────
    `PictureReview` is a real subclass of `Review` in the app, sitting beside
    `WrittenReview` — a reader can answer a book with a drawing instead of, or

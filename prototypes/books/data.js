@@ -14,6 +14,9 @@ export const READER = {
   grade: 'Grade 4',
   color: '#F0966F',
   school: 'Lincoln Elementary',
+  /* The Collection Engine's id for that school — where a title this reader
+     requests lands, in the school's Requests view. */
+  schoolId: 'lincoln',
   streak: 12,
   booksThisYear: 27,
   justFinished: 'The Wild Robot',

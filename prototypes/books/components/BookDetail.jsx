@@ -95,6 +95,7 @@ function StatStrip({ book, sessions, status }) {
      Plumpy pack, which is full-colour Icons8 art — a tile of one figure and
      one label is mostly empty until something sits beside it, and a flat
      stroked glyph on a tinted card reads as a missing image. */
+  const prog = status === 'reading' ? readProgress(book, sessions) : null
   const stats = [
     { value: totalMin, show: fmtMins(totalMin), label: 'Minutes read', c: '#0B6B78', i: 'clock' },
     {
@@ -140,6 +141,20 @@ function StatStrip({ book, sessions, status }) {
     <SectionCard header="divider" title="Your stats">
       {
         <div className="bk-statgrid">
+          {/* How far through it you are, while you're reading it — the one
+              figure here that's a length, so it carries its bar. A bookmark
+              for the mark (your place in it), in a colour none of the other
+              tiles use. */}
+          {prog && (
+            <StatCard
+              value={prog.toPage}
+              unit={`/${book.pageCount}`}
+              label="Pages read"
+              color="#C2410C"
+              icon="bookmark"
+              progress={{ value: prog.toPage, max: book.pageCount }}
+            />
+          )}
           {shown.map((s) => (
             <StatCard key={s.label} value={s.show} label={s.label} color={s.c} icon={s.i} />
           ))}
@@ -156,20 +171,18 @@ function StatStrip({ book, sessions, status }) {
 }
 
 /**
- * This title's reading log — web-app's `BookPage` Reading Log tab: two of the
- * reading log's own stat tiles over the design system's table.
+ * This title's reading log — web-app's `BookPage` Reading Log tab: the design
+ * system's table of sessions. The figures — minutes, sessions, pages read —
+ * are the rail's Your stats, right beside it, so the tab doesn't repeat them.
  *
  * It was a tinted panel with a list of rows inside it, which is a card where
  * the app has a table — a session is a date, an amount, what of the book it
  * covered and what it was read on, and none of those reads as a sentence.
  */
-function ReadingLogTab({ book, sessions, status, onEditSession, onRemoveSession }) {
+function ReadingLogTab({ sessions, onEditSession, onRemoveSession }) {
   const [editing, setEditing] = useState(null) // session index being corrected
   const [draft, setDraft] = useState('')
   const [removing, setRemoving] = useState(null) // session awaiting confirmation
-  const total = sessions.reduce((a, s) => a + s.minutes, 0)
-  const prog = status === 'reading' ? readProgress(book, sessions) : null
-
   if (sessions.length === 0) {
     return (
       <EmptyState
@@ -184,30 +197,6 @@ function ReadingLogTab({ book, sessions, status, onEditSession, onRemoveSession 
   return (
     <div className="bk-readlogtab">
       <h3 className="bk-section-h">Your reading</h3>
-
-      <div className="bkp-readnums">
-        <StatCard
-          value={sessions.length}
-          label={sessions.length === 1 ? 'Session' : 'Sessions'}
-          color="#B45309"
-          icon="calendar"
-        />
-        <StatCard value={fmtMins(total)} label="Minutes" color="#0B6B78" icon="clock" />
-        {/* How far through the book those sessions have got — a tile like the
-            two beside it rather than a bar in a card of its own, which read as
-            a different kind of thing sitting under them. The house shape for
-            progress on a tile is a ring in the mark's slot, and the page count
-            is the figure's denominator. */}
-        {prog && (
-          <StatCard
-            value={prog.toPage}
-            unit={`/${book.pageCount}`}
-            label="Pages read"
-            color="#0D9488"
-            progress={{ value: prog.toPage, max: book.pageCount }}
-          />
-        )}
-      </div>
 
       <Table
         className="bkp-sessions"
@@ -725,9 +714,7 @@ export function BookDetail({
             {tab === 'overview' && <OverviewTab book={book} onOpenProfile={onOpenProfile} />}
             {tab === 'reading' && (
               <ReadingLogTab
-                book={book}
                 sessions={sessions}
-                status={status}
                 onEditSession={onEditSession}
                 onRemoveSession={onRemoveSession}
               />
