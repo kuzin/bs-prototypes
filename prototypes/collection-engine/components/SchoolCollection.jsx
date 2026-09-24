@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { PageHeader } from '@components/PageHeader/PageHeader'
-import { StatCard } from '@components/Cards/Cards'
+import { StatCard, CardNote } from '@components/Cards/Cards'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Table } from '@components/Table/Table'
 import { RowAction, RowActions } from '@components/RowAction/RowAction'
@@ -19,25 +19,42 @@ import '@components/Table/Table.css'
 import '@components/RowAction/RowAction.css'
 import '@components/Pill/Pill.css'
 
-import { SOURCES, SOURCE_ORDER, ALL_GENRES } from '../data'
-import { discovered, deadShelf, bennyQueries, bookDetail, readerTalks } from '../derive'
+import { SOURCES, SOURCE_ORDER, FORMATS, FORMAT_ORDER, ALL_GENRES } from '../data'
+import {
+  schoolTitles,
+  bennyQueries,
+  genreHealth,
+  titleActions,
+  titleStatus,
+  reach,
+  REQUEST_GAP_BELOW,
+  TITLE_ACTION,
+} from '../derive'
 import { TitleCell, HoldingPills, openClassroom } from './Bits'
-import { BookModal } from './BookModal'
-import { ReaderPanel } from './ReaderPanel'
-import { TalkPanel } from './TalkPanel'
+import { GenreTable } from './Health'
+import { SchoolBookPanels } from './SchoolBookPanels'
 
-const TAB_IDS = ['all', 'hidden', 'requests']
+const TAB_IDS = ['all', 'gaps', 'requests', 'hidden']
 
-/* Found and untouched are two ends of one list, not two lists: the same
-   columns, the same filters, and a librarian moving between them is narrowing
-   a view rather than changing subject. So they are a filter over All Titles,
-   and the tabs are the three things that really are separate — the collection,
-   what has been pulled out of it, and what readers asked for that it can't
-   answer. */
-const STATUS = {
+/* Where a title stands against the engine. `recommended` is the two middle
+   states together — the first tile's figure — so every tile has a filter that
+   means exactly what it counts. */
+export const STATUS = {
   '': 'Every title',
-  found: 'Readers have found it',
-  untouched: 'Sitting untouched',
+  recommended: 'Recommended',
+  read: 'Recommended, then read',
+  unread: 'Recommended, not read',
+  never: 'Never recommended',
+}
+export const matchStatus = (status, s) =>
+  !status || (status === 'recommended' ? s.suggested > 0 : titleStatus(s) === status)
+
+/** A request's coverage, the one scale the Requests tab and the gap count share. */
+export function RequestCoverage({ hits }) {
+  if (hits === 0) return <Pill color="#DC2626">Nothing to offer</Pill>
+  if (hits < REQUEST_GAP_BELOW) return <Pill color="#DC2626">Gap</Pill>
+  if (hits < 12) return <Pill color="#D97706">Thin</Pill>
+  return <Pill color="#0BA85F">Covered</Pill>
 }
 
 export function SchoolCollection({ school }) {
@@ -54,45 +71,65 @@ export function SchoolCollection({ school }) {
       else next.add(id)
       return next
     })
-  // A reader opened out of the book panel. The book panel closes behind it, the
-  // way the classroom's does — two stacked overlays is one too many.
-  const [openReader, setOpenReader] = useState(null)
-  // A book talk opened out of the book panel — SfR's own session panel, so a
-  // talk reads the same wherever you reach it from.
-  const [openTalk, setOpenTalk] = useState(null)
   const [stickyTab, setTab] = useStickyState('ce:collection-tab', 'all')
-  // A value left in sessionStorage from before the Gaps tab was removed would
-  // otherwise render an empty panel.
+  // A value left in sessionStorage from an older set of tabs would otherwise
+  // render an empty panel.
   const tab = TAB_IDS.includes(stickyTab) ? stickyTab : 'all'
   // Filters belong to the browsing, not to where you were — they reset when
   // the school changes under you, which a sticky value wouldn't.
   const [q, setQ] = useState('')
   const [genre, setGenre] = useState('')
   const [source, setSource] = useState('')
-  const [status, setStatus] = useState('')
+  const [format, setFormat] = useState('')
+  // A signal on the Overview can open this page already narrowed to a status;
+  // it leaves one in sessionStorage, read once and cleared.
+  const [status, setStatus] = useState(() => {
+    try {
+      const handed = sessionStorage.getItem('bsp:ce:collection-status')
+      sessionStorage.removeItem('bsp:ce:collection-status')
+      return handed ?? ''
+    } catch {
+      return ''
+    }
+  })
+  const [action, setAction] = useState('')
 
-  const filter = useMemo(() => {
+  const actions = useMemo(() => titleActions(school), [school])
+  const allTitles = useMemo(
+    () =>
+      schoolTitles(school).sort(
+        (a, b) =>
+          b.logged - a.logged ||
+          b.suggested - a.suggested ||
+          a.title.title.localeCompare(b.title.title),
+      ),
+    [school],
+  )
+
+  // Every filter but status. The tiles count this, so they describe whatever
+  // the list is narrowed to — pick a genre and the four figures are that
+  // genre's — and the status filter is the tiles themselves.
+  const narrowed = useMemo(() => {
     const needle = q.trim().toLowerCase()
-    return (rows) =>
-      rows.filter((r) => {
-        const t = r.title
-        if (status === 'found' && !r.saved) return false
-        if (status === 'untouched' && r.saved) return false
-        if (genre && t.genre !== genre) return false
-        if (source && !t.holdings.some((h) => h.source === source)) return false
-        if (needle && !`${t.title} ${t.author}`.toLowerCase().includes(needle)) return false
-        return true
-      })
-  }, [q, genre, source, status])
-
-  const allFound = discovered(school)
-  const allDead = deadShelf(school)
-  // One list, ordered the way the two used to be: what readers found first, the
-  // untouched tail after it.
-  const allTitles = useMemo(() => [...allFound, ...allDead], [allFound, allDead])
-  const rows = filter(allTitles)
-  const hiddenRows = filter(allTitles.filter((r) => hidden.has(r.title.id)))
+    return allTitles.filter((r) => {
+      const t = r.title
+      if (genre && t.genre !== genre) return false
+      if (source && !t.holdings.some((h) => h.source === source)) return false
+      if (format && !t.holdings.some((h) => h.format === format)) return false
+      if (action && actions.get(t.id)?.kind !== action) return false
+      if (needle && !`${t.title} ${t.author}`.toLowerCase().includes(needle)) return false
+      return true
+    })
+  }, [allTitles, q, genre, source, format, action, actions])
+  const counts = reach(narrowed)
+  const rows = narrowed.filter((r) => matchStatus(status, r))
+  const hiddenRows = rows.filter((r) => hidden.has(r.title.id))
   const queries = bennyQueries(school)
+  const genres = genreHealth(school)
+  const filtered = q || genre || source || format || status || action
+
+  // A tile is a toggle: pressing the one that is on clears it.
+  const toggleStatus = (id) => setStatus((cur) => (cur === id ? '' : id))
 
   return (
     <>
@@ -101,26 +138,41 @@ export function SchoolCollection({ school }) {
       <div className="ce-stats">
         <StatCard
           icon="books"
-          value={school.catalog.length}
-          label="Titles in the catalog"
+          value={counts.recommended}
+          unit={`/${counts.total}`}
+          label="Titles recommended"
           color="#196DD5"
+          active={status === 'recommended'}
+          onClick={() => toggleStatus('recommended')}
         />
-        {/* The tiles describe the collection, not whatever the filters are
-            currently narrowing it to — the same reason the tab counts don't
-            move either. */}
         <StatCard
           icon="circle-check"
-          value={allFound.length}
-          label="Readers have found"
-          color="#0F766E"
+          value={counts.read}
+          label="Recommended, then read"
+          color="#0BA85F"
+          active={status === 'read'}
+          onClick={() => toggleStatus('read')}
         />
-        <StatCard icon="clock" value={allDead.length} label="Sitting untouched" color="#D97706" />
+        <StatCard
+          icon="clock"
+          value={counts.unread}
+          label="Recommended, not read"
+          color="#D97706"
+          active={status === 'unread'}
+          onClick={() => toggleStatus('unread')}
+        />
+        <StatCard
+          icon="cancel"
+          value={counts.never}
+          label="Never recommended"
+          color="#767676"
+          active={status === 'never'}
+          onClick={() => toggleStatus('never')}
+        />
       </div>
 
       {/* The tab bar and the filter bar are controls *for* the panel below
-          them, not siblings of it. Wrapping the three means the page rhythm
-          applies once, at the top, and they read as one block instead of
-          three strips floating 20px apart. */}
+          them, not siblings of it — one block, one rhythm. */}
       <div className="ce-panel">
         <Tabs
           active={tab}
@@ -129,12 +181,17 @@ export function SchoolCollection({ school }) {
           ariaLabel="Collection views"
           items={[
             { id: 'all', label: 'All Titles', count: allTitles.length },
-            { id: 'hidden', label: 'Hidden', count: hidden.size },
+            {
+              id: 'gaps',
+              label: 'Gaps & Strengths',
+              count: genres.filter((g) => g.verdict === 'gap').length,
+            },
             { id: 'requests', label: 'Requests' },
+            { id: 'hidden', label: 'Hidden', count: hidden.size },
           ]}
         />
 
-        {tab !== 'requests' && (
+        {(tab === 'all' || tab === 'hidden') && (
           <FilterBar compact>
             <FilterItem label="Search titles and authors">
               <SearchInput
@@ -154,12 +211,22 @@ export function SchoolCollection({ school }) {
                 ))}
               </Select>
             </FilterItem>
-            <FilterItem label="Source">
+            <FilterItem label="Collection">
               <Select value={source} onChange={(e) => setSource(e.target.value)}>
-                <option value="">All sources</option>
+                <option value="">All collections</option>
                 {SOURCE_ORDER.map((id) => (
                   <option key={id} value={id}>
                     {SOURCES[id].name}
+                  </option>
+                ))}
+              </Select>
+            </FilterItem>
+            <FilterItem label="Format">
+              <Select value={format} onChange={(e) => setFormat(e.target.value)}>
+                <option value="">All formats</option>
+                {FORMAT_ORDER.map((id) => (
+                  <option key={id} value={id}>
+                    {FORMATS[id].label}
                   </option>
                 ))}
               </Select>
@@ -173,11 +240,19 @@ export function SchoolCollection({ school }) {
                 ))}
               </Select>
             </FilterItem>
+            <FilterItem label="Suggested action">
+              <Select value={action} onChange={(e) => setAction(e.target.value)}>
+                <option value="">Any action</option>
+                {Object.entries(TITLE_ACTION).map(([id, a]) => (
+                  <option key={id} value={id}>
+                    {a.label}
+                  </option>
+                ))}
+              </Select>
+            </FilterItem>
           </FilterBar>
         )}
 
-        {/* No cards around these lists. The tab above already names each one,
-            so a card title only said it a second time. */}
         {tab === 'all' && (
           <Table
             scrollX
@@ -187,7 +262,7 @@ export function SchoolCollection({ school }) {
             getRowKey={(s) => s.title.id}
             pageSize={10}
             empty={
-              q || genre || source || status ? (
+              filtered ? (
                 <EmptyState
                   title="Nothing matches those filters"
                   description="Clear one of them to widen the list."
@@ -202,9 +277,55 @@ export function SchoolCollection({ school }) {
           />
         )}
 
-        {/* Titles pulled out of the recommendations. It is a tab rather than
-            another status, because what you do here is put them back — you are
-            reviewing your own decisions, not browsing the collection. */}
+        {/* Supply against demand, a genre to a row. Picking one narrows All
+            Titles to it, which is the list you'd buy against. */}
+        {tab === 'gaps' && (
+          <>
+            <GenreTable
+              rows={genres}
+              onPick={(g) => {
+                setGenre(g)
+                setTab('all')
+              }}
+            />
+            <CardNote tone="info">
+              A <strong>gap</strong> is a genre with more than three readers into it for every title
+              on the shelf — readers who have wish listed or read one — so the engine keeps handing
+              the same few books round. A <strong>strength</strong> is well stocked, nearly all of
+              it recommended, and read more often than the school&rsquo;s average. Pick a genre to
+              see its titles.
+            </CardNote>
+          </>
+        )}
+
+        {tab === 'requests' && (
+          <Table
+            columns={[
+              { key: 'q', label: 'Asked for', render: (_, r) => <em>&ldquo;{r.q}&rdquo;</em> },
+              { key: 'asks', label: 'Times asked', align: 'right', render: (_, r) => r.asks },
+              {
+                key: 'hits',
+                label: 'Titles we could offer',
+                align: 'right',
+                render: (_, r) => (
+                  <span className={r.hits < REQUEST_GAP_BELOW ? 'ce-bad' : undefined}>
+                    {r.hits}
+                  </span>
+                ),
+              },
+              {
+                key: 'verdict',
+                label: 'Coverage',
+                render: (_, r) => <RequestCoverage hits={r.hits} />,
+              },
+            ]}
+            rows={[...queries].sort((a, b) => a.hits / a.asks - b.hits / b.asks)}
+            getRowKey={(r) => r.q}
+          />
+        )}
+
+        {/* Titles pulled out of the recommendations. A tab rather than another
+            status, because what you do here is put them back. */}
         {tab === 'hidden' && (
           <Table
             scrollX
@@ -228,78 +349,23 @@ export function SchoolCollection({ school }) {
             }
           />
         )}
-
-        {tab === 'requests' && (
-          <Table
-            columns={[
-              { key: 'q', label: 'Asked for', render: (_, r) => <em>&ldquo;{r.q}&rdquo;</em> },
-              { key: 'asks', label: 'Times asked', align: 'right', render: (_, r) => r.asks },
-              {
-                key: 'hits',
-                label: 'Titles we could offer',
-                align: 'right',
-                render: (_, r) => (
-                  <span className={r.hits < 12 ? 'ce-bad' : undefined}>{r.hits}</span>
-                ),
-              },
-              {
-                key: 'verdict',
-                label: 'Coverage',
-                render: (_, r) =>
-                  r.hits === 0 ? (
-                    <Pill color="#DC2626">Nothing to offer</Pill>
-                  ) : r.hits < 12 ? (
-                    <Pill color="#D97706">Thin</Pill>
-                  ) : (
-                    <Pill color="#0BA85F">Covered</Pill>
-                  ),
-              },
-            ]}
-            rows={[...queries].sort((a, b) => a.hits / a.asks - b.hits / b.asks)}
-            getRowKey={(r) => r.q}
-          />
-        )}
       </div>
 
-      <BookModal
-        detail={openTitle ? bookDetail(school, openTitle) : null}
-        onClose={() => setOpenTitle(null)}
-        hidden={hidden.has(openTitle)}
-        onToggleHidden={toggleHidden}
+      <SchoolBookPanels
+        school={school}
+        openTitle={openTitle}
         onOpenTitle={setOpenTitle}
-        onOpenTalk={setOpenTalk}
-        onOpenReader={(key, section = null) => setOpenReader({ key, section })}
-      />
-
-      <ReaderPanel
-        studentKey={openReader?.key}
-        section={openReader?.section}
-        onClose={() => setOpenReader(null)}
-      />
-
-      {/* The rail beside a talk is that reader's other conversations, so you can
-          step through them the way the review queue does. */}
-      <TalkPanel
-        talk={openTalk}
-        siblings={openTalk ? readerTalks(school, openTalk.reader.id) : []}
-        onSelect={(sess) =>
-          setOpenTalk(
-            readerTalks(school, openTalk.reader.id).find(
-              (t) => `ce-talk-${t.reader.id}-${t.title.id}` === sess.id,
-            ) ?? openTalk,
-          )
-        }
-        onClose={() => setOpenTalk(null)}
+        actions={actions}
+        hidden={hidden}
+        onToggleHidden={toggleHidden}
       />
     </>
   )
 }
 
-/* The row's own actions, at its trailing edge. The row already opens the book
-   panel; the eye says so, because a table of books gives no other sign that a
-   row is a thing you can look inside. The second one only appears on a title a
-   teacher has scanned in — that copy lives in a room, and the room has its own
-   screen. */
+/* The row's own actions, at its trailing edge. The second one only appears on a
+   title a teacher has scanned in — that copy lives in a room, and the room has
+   its own screen. */
 const actionsColumn = (onOpen) => ({
   key: 'open',
   label: '',
@@ -322,11 +388,9 @@ const actionsColumn = (onOpen) => ({
   ),
 })
 
-/* One column set for the whole collection, because Found and Untouched are now
-   a filter over it rather than two lists. `Shown` says Never rather than 0 on a
-   title the engine has genuinely never surfaced — the difference between a book
-   readers passed on and a book they were never offered is the whole point of
-   the untouched filter. */
+/* `Shown` says Never rather than 0 on a title the engine has genuinely never
+   surfaced — the difference between a book readers passed on and a book they
+   were never offered is the whole point of the Never recommended tile. */
 const titleColumns = (onOpen, hidden) => [
   {
     key: 'title',
@@ -344,7 +408,7 @@ const titleColumns = (onOpen, hidden) => [
   },
   {
     key: 'where',
-    label: 'Get it from',
+    label: 'Collection',
     render: (_, s) => <HoldingPills holdings={s.title.holdings} />,
   },
   {

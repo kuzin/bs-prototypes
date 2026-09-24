@@ -1,0 +1,221 @@
+/* ─── Collection health ─────────────────────────────────────────────────────
+   The health card, and the few cells the comparison tables add. */
+
+.ceh {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ceh-verdict {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* The verdict as the app's own tinted note, full width of the card. The
+   note's top margin is for sitting under a chart; here the stack's gap does
+   the spacing. */
+.ceh-verdict-note {
+  align-self: stretch;
+}
+
+.ceh-verdict-note .rc-card-note {
+  margin: 0;
+}
+
+.ceh-verdict-note-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* On white, so a soft pill doesn't vanish into a note of its own hue. */
+.ceh-verdict-note .pill {
+  flex: 0 0 auto;
+  background: #fff;
+}
+
+.ceh-caveat {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: var(--text-tag);
+  line-height: 1.4;
+  color: var(--c-text-light);
+}
+
+.ceh-caveat > svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+/* The collection as one bar, parts of one shelf. Each segment's count is its
+   tooltip. A grid rather than flex, because each segment sits inside the
+   tooltip's own wrapper and the column widths carry the proportions. */
+.ceh-shelf-bar {
+  display: grid;
+  align-self: stretch;
+  gap: 3px;
+  height: 16px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.ceh-shelf-seg {
+  display: block;
+  height: 100%;
+}
+
+.ceh-shelf-seg > span {
+  display: block;
+  height: 100%;
+}
+
+/* The checklist: one ruled row per signal, in one bordered box. */
+.ceh-checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ceh-checks > li + li {
+  border-top: 1px solid var(--c-border);
+}
+
+.ceh-check {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto 16px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  background: #fff;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.ceh-check--link {
+  cursor: pointer;
+}
+
+.ceh-check--link:hover {
+  background: var(--c-gray-100);
+}
+
+.ceh-check-label {
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-dark);
+}
+
+.ceh-check-value {
+  font-size: var(--text-modal);
+  font-weight: var(--fw-black);
+}
+
+.ceh-check-chev {
+  display: inline-flex;
+  color: var(--c-text-light);
+}
+
+.ceh-src {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+}
+
+.ceh-src-mark {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.ceh-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.ceh-rank {
+  color: var(--c-text-light);
+  font-weight: var(--fw-bold);
+}
+
+.ceh-genre {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+/* Gaps & strengths: the verdict tints the whole row, so the list reads as red
+   at the top, green under it, and plain for everything simply covered. */
+.ceh-row--gap .tbl-td {
+  background: color-mix(in srgb, #dc2626 7%, white);
+}
+.ceh-row--gap.tbl-row--clickable:hover .tbl-td {
+  background: color-mix(in srgb, #dc2626 12%, white);
+}
+.ceh-row--strength .tbl-td {
+  background: color-mix(in srgb, #0ba85f 7%, white);
+}
+.ceh-row--strength.tbl-row--clickable:hover .tbl-td {
+  background: color-mix(in srgb, #0ba85f 12%, white);
+}
+
+/* A row with nothing to open has no chevron column to hold open. */
+.ceh-check--flush {
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+}
+
+/* District Collection Health: schools grouped under their colour. Each group
+   is titled by its status — the glyph on a tinted plate, the word, and how
+   many schools it holds. */
+.ceh-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ceh-group-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ceh-group-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ceh-c) 14%, white);
+  color: var(--ceh-c);
+}
+
+.ceh-group-label {
+  font-size: var(--text-body);
+  font-weight: var(--fw-black);
+  color: color-mix(in srgb, var(--ceh-c) 80%, black);
+}
+
+/* The count sits at the right edge, in line with the verdict pill above it. */
+.ceh-group-head .pill {
+  margin-left: auto;
+}
+
+.ceh-check-meta {
+  font-size: var(--text-label);
+  color: var(--c-text-light);
+}

@@ -54,6 +54,10 @@
 .rc-stat--hit:hover {
   background: color-mix(in srgb, var(--rc-stat-color) 24%, white);
 }
+/* The tile standing in for a filter that is on. */
+.rc-stat--active {
+  box-shadow: inset 0 0 0 2px var(--rc-stat-color);
+}
 
 /* Optional — the tile reads fine as just a figure and its label. */
 /* The glyph sits on a plate: a bare 20px glyph on the tile's own tint reads as
@@ -157,7 +161,7 @@
    14 here and 12 there put two different card shapes on one page. */
 .rc-card {
   background: #fff;
-  border: 1px solid var(--c-gray-200);
+  border: 1px solid var(--c-gray-300);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -186,13 +190,18 @@
 /* `.insights-metric-label` — 12px 14px, divided from the body by the app's own
    #f4f4f4 hairline (a lighter rule than the card's $gray200 outline, so the
    division inside the card doesn't compete with its edge). */
+/* The head sits on a light grey band, so a card's title reads as a header
+   rather than the first line of its body. Its top corners follow the card's
+   own radius (12px less the 1px border). */
 .rc-card-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   padding: 12px 14px;
-  border-bottom: 1px solid #f4f4f4;
+  background: var(--c-gray-0);
+  border-bottom: 1px solid var(--c-gray-250);
+  border-radius: 11px 11px 0 0;
 }
 
 .rc-card-icon {
@@ -281,15 +290,15 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   border: none;
   padding: 0;
   background: #c3c3c3;
   color: #fff;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1;
   cursor: pointer;

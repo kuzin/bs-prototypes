@@ -26,7 +26,7 @@ import '@components/Primitives/Primitives.css'
 import { Card, SectionHeading } from '../../student-profile/components/kit'
 import { TitleCard, TitleGrid } from '../../collection-engine/components/TitleCard'
 
-import { READER_BY_KEY, counts, reasonFor } from '../data'
+import { READER_BY_KEY, counts, reasonFor, recommendedGenres } from '../data'
 import { SIGNALS } from '../../collection-engine/data'
 import './ReaderRecommendations.css'
 
@@ -107,6 +107,27 @@ function PassedRow({ entry, reader }) {
   )
 }
 
+/**
+ * A genre we would point this reader at, and the one reason why — the engine's
+ * own signal pill, the same one a recommended title carries, with the specific
+ * case for this reader in its tooltip.
+ */
+function GenreRow({ g }) {
+  const sig = SIGNALS[g.reason.id]
+  return (
+    <li className="crr-title">
+      <div className="crr-title-text">
+        <span className="crr-title-name">{g.label}</span>
+      </div>
+      <Tooltip content={g.reason.detail} placement="auto">
+        <Pill color={sig.color} size="sm">
+          {sig.label}
+        </Pill>
+      </Tooltip>
+    </li>
+  )
+}
+
 /* Covers or rows, the same switch the classroom list has — browsing a shelf and
    working through a list are two jobs, and a reader's own shelf is mostly the
    first. The tile is the shared TitleCard, so a book looks the same wherever it
@@ -156,6 +177,7 @@ export function ReaderRecommendations({ studentKey }) {
   }
   const c = counts(reader)
   const kept = reader.shelf.filter((t) => t.via === 'engine')
+  const genres = recommendedGenres(reader)
 
   return (
     /* `bp-content` is the profile's own section padding — without it a section
@@ -192,8 +214,12 @@ export function ReaderRecommendations({ studentKey }) {
           items={[
             { id: 'why', label: 'Recommendations', count: c.suggested },
             { id: 'shelf', label: 'Wish List', count: reader.shelf.length },
+            { id: 'genres', label: 'Genres', count: genres.length },
           ]}
         />
+        {/* Covers or rows means nothing for a list of genres, but the switch
+            stays put rather than vanishing and shifting the bar — it is
+            disabled there instead. */}
         <Tabs
           variant="pill"
           size="sm"
@@ -202,11 +228,36 @@ export function ReaderRecommendations({ studentKey }) {
           onChange={setView}
           ariaLabel="How to show the list"
           items={[
-            { id: 'cards', label: 'Covers', icon: <PlumpyIcon name="grid-view" size={20} /> },
-            { id: 'list', label: 'List', icon: <PlumpyIcon name="list-view" size={20} /> },
+            {
+              id: 'cards',
+              label: 'Covers',
+              icon: <PlumpyIcon name="grid-view" size={20} />,
+              disabled: tab === 'genres',
+            },
+            {
+              id: 'list',
+              label: 'List',
+              icon: <PlumpyIcon name="list-view" size={20} />,
+              disabled: tab === 'genres',
+            },
           ]}
         />
       </div>
+
+      {/* The genres to point this reader at, strongest case first, each with
+          the reasons it is on the list. */}
+      {tab === 'genres' && (
+        <Card>
+          <SectionHeading>
+            Genres we recommend <span className="crr-group-count">{genres.length}</span>
+          </SectionHeading>
+          <ul className="crr-list">
+            {genres.map((g) => (
+              <GenreRow key={g.genre} g={g} />
+            ))}
+          </ul>
+        </Card>
+      )}
 
       {tab === 'why' && (
         <>

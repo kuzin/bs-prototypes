@@ -10,8 +10,31 @@ import {
 import { TitleCard, TitleGrid } from '../../collection-engine/components/TitleCard'
 import { BookModal } from '../../collection-engine/components/BookModal'
 import { Button } from '@components/Button/Button'
+import {
+  HealthPill,
+  HealthCard,
+  HealthVerdict,
+  GenreHealthCard,
+  DistrictHealthCard,
+  CompareTable,
+  ClassroomBoard,
+  GenreTable,
+  ActionPill,
+} from '../../collection-engine/components/Health'
 import { SCHOOL_BY_ID, CERTAINTY } from '../../collection-engine/data'
-import { freshness, discovered, bookDetail } from '../../collection-engine/derive'
+import {
+  freshness,
+  discovered,
+  bookDetail,
+  collectionHealth,
+  bySourceHealth,
+  byFormatHealth,
+  classroomBoard,
+  genreHealth,
+  titleActions,
+  districtCollectionHealth,
+  schoolHealthRows,
+} from '../../collection-engine/derive'
 import { Variant } from './_shared'
 
 const LINCOLN = SCHOOL_BY_ID.lincoln
@@ -28,6 +51,7 @@ const PRINT_ONLY = discovered(LINCOLN).find(
 export const collectionEngineSections = [
   {
     group: 'collection-engine',
+    sub: 'titles',
     id: 'ce-holding-pills',
     name: 'HoldingPills',
     desc: (
@@ -63,6 +87,7 @@ export const collectionEngineSections = [
   },
   {
     group: 'collection-engine',
+    sub: 'titles',
     id: 'ce-shelf-line',
     name: 'ShelfLine',
     desc: (
@@ -92,6 +117,7 @@ export const collectionEngineSections = [
   },
   {
     group: 'collection-engine',
+    sub: 'titles',
     id: 'ce-title-cell',
     name: 'TitleCell',
     desc: (
@@ -119,6 +145,7 @@ export const collectionEngineSections = [
   },
   {
     group: 'collection-engine',
+    sub: 'catalogs',
     id: 'ce-asof',
     name: 'AsOf',
     desc: (
@@ -158,6 +185,7 @@ import { freshness } from './derive'
   },
   {
     group: 'collection-engine',
+    sub: 'catalogs',
     id: 'ce-feed-state',
     name: 'FeedState',
     desc: (
@@ -183,6 +211,7 @@ import { freshness } from './derive'
   },
   {
     group: 'collection-engine',
+    sub: 'catalogs',
     id: 'ce-feed-card',
     name: 'FeedCard',
     desc: (
@@ -219,6 +248,7 @@ import { freshness } from './derive'
   },
   {
     group: 'collection-engine',
+    sub: 'titles',
     id: 'ce-title-card',
     name: 'TitleCard / TitleGrid',
     desc: (
@@ -273,6 +303,7 @@ import { freshness } from './derive'
   },
   {
     group: 'collection-engine',
+    sub: 'titles',
     id: 'ce-book-modal',
     name: 'BookModal',
     desc: (
@@ -306,7 +337,254 @@ import { freshness } from './derive'
 />`,
     render: () => <BookModalDemo />,
   },
+  {
+    group: 'collection-engine',
+    sub: 'health',
+    id: 'ce-health-pill',
+    name: 'HealthPill',
+    desc: (
+      <>
+        Red, yellow or green, as a word — <strong>Healthy</strong>, <strong>Needs attention</strong>
+        , <strong>At risk</strong> — on the shared <code>Pill</code> with its glyph. One scale for a
+        whole collection, a school in the district list, and a classroom shelf on the leaderboard,
+        so the three read as the same judgement at three sizes.
+      </>
+    ),
+    usage: `import { HealthPill } from './components/Health'
+
+<HealthPill level="yellow" />`,
+    render: () => (
+      <Variant label="the three levels">
+        <span style={{ display: 'inline-flex', gap: 8 }}>
+          <HealthPill level="green" />
+          <HealthPill level="yellow" />
+          <HealthPill level="red" />
+        </span>
+      </Variant>
+    ),
+  },
+  {
+    group: 'collection-engine',
+    sub: 'health',
+    id: 'ce-health-card',
+    name: 'HealthCard',
+    desc: (
+      <>
+        A collection&rsquo;s health. The verdict leads as the app&rsquo;s own tinted note (
+        <code>HealthVerdict</code>) — red, yellow or green, with the status pill at its right edge.
+        Under it, the whole collection as one bar: read off a recommendation, recommended and not
+        read, never recommended, each segment&rsquo;s count in its tooltip. Then a checklist of what
+        the verdict is made of — genres outgrown, Benny requests unanswered, titles never
+        recommended — each row pressing through to where you would act on it (
+        <code>onOpen(target)</code>).
+      </>
+    ),
+    usage: `import { HealthCard } from './components/Health'
+import { collectionHealth } from './derive'
+
+<HealthCard
+  health={collectionHealth(school)}
+  onOpen={(target) => goTo(target)}
+/>`,
+    render: () => (
+      <>
+        <Variant label="healthy — Lincoln">
+          <HealthCard health={collectionHealth(LINCOLN)} />
+        </Variant>
+        <Variant label="at risk — Hillcrest, which has never synced its catalog">
+          <HealthCard health={collectionHealth(HILLCREST)} />
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'collection-engine',
+    sub: 'health',
+    id: 'ce-health-verdict',
+    name: 'HealthVerdict',
+    desc: (
+      <>
+        The top line of every health card: the app&rsquo;s own tinted note (<code>CardNote</code>)
+        in the tone of the level — error, warning or success — with the one-line verdict and the
+        status pill at the right edge. The note carries the glyph, so the pill drops its own and
+        sits on white rather than sinking into the tint.
+      </>
+    ),
+    usage: `import { HealthVerdict } from './components/Health'
+
+<HealthVerdict level="green" line="Your collection is keeping up with your readers." />`,
+    render: () => (
+      <>
+        <Variant label="the three levels">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <HealthVerdict level="green" line="Your collection is keeping up with your readers." />
+            <HealthVerdict
+              level="yellow"
+              line="Mostly keeping up — a few gaps are starting to show."
+            />
+            <HealthVerdict level="red" line="Falling behind — readers are running out of books." />
+          </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'collection-engine',
+    sub: 'health',
+    id: 'ce-genre-health-card',
+    name: 'GenreHealthCard',
+    desc: (
+      <>
+        The genres a collection has outgrown or is strong in, as a ruled list with a status pill on
+        each row — outgrown first. A one-line summary leads it, and the full list is one link away
+        in the header (<code>onSeeAll</code>). <code>scope=&quot;district&quot;</code> takes the
+        rolled-up genres and says how many schools each holds in.
+      </>
+    ),
+    usage: `import { GenreHealthCard } from './components/Health'
+import { genreHealth } from './derive'
+
+<GenreHealthCard genres={genreHealth(school)} onSeeAll={() => goTo('gaps')} />`,
+    render: () => (
+      <Variant label="Lincoln">
+        <GenreHealthCard genres={genreHealth(LINCOLN)} />
+      </Variant>
+    ),
+  },
+  {
+    group: 'collection-engine',
+    sub: 'health',
+    id: 'ce-district-health-card',
+    name: 'DistrictHealthCard',
+    desc: (
+      <>
+        The district at a glance: which schools are healthy and which aren&rsquo;t. The verdict note
+        on top, then every school grouped under its colour — worst group first — each group titled
+        by its status with a count, each school with its collection-gap count.
+      </>
+    ),
+    usage: `import { DistrictHealthCard } from './components/Health'
+import { districtCollectionHealth, schoolHealthRows } from './derive'
+
+<DistrictHealthCard health={districtCollectionHealth()} rows={schoolHealthRows()} />`,
+    render: () => (
+      <Variant label="Riverbend Unified's six schools">
+        <DistrictHealthCard health={districtCollectionHealth()} rows={schoolHealthRows()} />
+      </Variant>
+    ),
+  },
+  {
+    group: 'collection-engine',
+    sub: 'comparisons',
+    id: 'ce-compare-table',
+    name: 'CompareTable',
+    desc: (
+      <>
+        One collection — or one format — against the others on the same figures: titles, the share
+        the engine has recommended (the bar), recommended then read, reads per suggestion, and never
+        recommended. A title carried by two collections counts in both, because the question is how
+        that collection&rsquo;s titles are doing. <code>kind=&quot;format&quot;</code> swaps the
+        partner marks for print / ebook / audiobook.
+      </>
+    ),
+    usage: `import { CompareTable } from './components/Health'
+import { bySourceHealth, byFormatHealth } from './derive'
+
+<CompareTable rows={bySourceHealth(school)} kind="source" />
+<CompareTable rows={byFormatHealth(school)} kind="format" />`,
+    render: () => (
+      <>
+        <Variant label="by collection">
+          <CompareTable rows={bySourceHealth(LINCOLN)} kind="source" />
+        </Variant>
+        <Variant label="by format">
+          <CompareTable rows={byFormatHealth(LINCOLN)} kind="format" />
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'collection-engine',
+    sub: 'comparisons',
+    id: 'ce-classroom-board',
+    name: 'ClassroomBoard',
+    desc: (
+      <>
+        The classroom library leaderboard: every shelf scanned into the Classroom Library Connector,
+        ranked by how much of it has been read off a recommendation — a teacher&rsquo;s question is
+        whether their books are being used, not how busy the engine is.
+      </>
+    ),
+    usage: `import { ClassroomBoard } from './components/Health'
+import { classroomBoard } from './derive'
+
+<ClassroomBoard rows={classroomBoard(school)} />`,
+    render: () => (
+      <Variant label="Lincoln's eleven connected classrooms">
+        <ClassroomBoard rows={classroomBoard(LINCOLN)} />
+      </Variant>
+    ),
+  },
+  {
+    group: 'collection-engine',
+    sub: 'health',
+    id: 'ce-genre-table',
+    name: 'GenreTable',
+    desc: (
+      <>
+        Supply against demand, a genre to a row. A <strong>gap</strong> has more than three readers
+        into it (they wish listed or read one) for every title on the shelf, so the engine keeps
+        handing the same few books round — <em>Top 3 take</em> is that concentration. A{' '}
+        <strong>strength</strong> is well stocked, nearly all recommended, and read more often than
+        the school&rsquo;s average. <code>scope=&quot;district&quot;</code> counts how many schools
+        are short of each instead.
+      </>
+    ),
+    usage: `import { GenreTable } from './components/Health'
+import { genreHealth } from './derive'
+
+<GenreTable rows={genreHealth(school)} onPick={(genre) => filterTo(genre)} />`,
+    render: () => (
+      <Variant label="Garfield — seven genres readers have outgrown">
+        <GenreTable rows={genreHealth(SCHOOL_BY_ID.garfield)} />
+      </Variant>
+    ),
+  },
+  {
+    group: 'collection-engine',
+    sub: 'titles',
+    id: 'ce-action-pill',
+    name: 'ActionPill',
+    desc: (
+      <>
+        The one thing the collection suggests doing about a title, with its reason on hover.{' '}
+        <strong>Buy more like this</strong>: it is being read, in a genre readers have outgrown the
+        shelf on. <strong>Consider weeding</strong>: old, and nothing has come of it all year.
+        Renders nothing for a title with no suggestion.
+      </>
+    ),
+    usage: `import { ActionPill } from './components/Health'
+import { titleActions } from './derive'
+
+const actions = titleActions(school)
+<ActionPill action={actions.get(title.id)} />`,
+    render: () => <ActionPillDemo />,
+  },
 ]
+
+function ActionPillDemo() {
+  const actions = [...titleActions(SCHOOL_BY_ID.garfield).values()]
+  const buy = actions.find((a) => a.kind === 'buy')
+  const weed = actions.find((a) => a.kind === 'weed')
+  return (
+    <Variant label="the two actions">
+      <span style={{ display: 'inline-flex', gap: 8 }}>
+        <ActionPill action={buy} />
+        <ActionPill action={weed} />
+      </span>
+    </Variant>
+  )
+}
 
 /** The panel only exists open, so the showcase gives it something to open from. */
 function BookModalDemo() {

@@ -303,8 +303,14 @@ export const GROUPS = [
     id: 'collection-engine',
     kind: 'prototype',
     title: 'Collection Engine',
-    desc: 'Components for the Collection Engine \u2014 the parts that keep a recommendation honest about where a reader can actually get a book: the three-certainty holdings row, the call number that walks them to a shelf, the catalog\u2019s "as of" stamp, and the feed cards behind it.',
+    desc: 'Components for the Collection Engine \u2014 the parts that keep a recommendation honest about where a reader can actually get a book (the three-certainty holdings row, the call number, the catalog\u2019s "as of" stamp and the feed cards behind it), and the collection-health read that sits on top: the verdict, the genre and district health cards, and the comparisons by collection, format and classroom.',
     color: 'var(--c-teal-ink)',
+    subs: [
+      { id: 'titles', title: 'Titles' },
+      { id: 'catalogs', title: 'Catalogs' },
+      { id: 'health', title: 'Collection health' },
+      { id: 'comparisons', title: 'Comparisons' },
+    ],
   },
   {
     id: 'collection-engine-teacher',

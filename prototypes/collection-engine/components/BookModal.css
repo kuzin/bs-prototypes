@@ -290,6 +290,7 @@
    so the same two elements sat 16px apart on one tab and 28px on another. */
 .bkm-panel .section-card-title {
   margin-bottom: 0;
+  font-size: var(--text-modal);
 }
 
 /* An empty state is a content block like a list, so it takes the same step off
@@ -297,7 +298,7 @@
    tighter 10px below. Without this it sat flush against the filter strip,
    because only a list had the rule. */
 .bkm-panel .emp {
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 /* The panel's section header is the system's own title row (`SectionCardTitle`
@@ -322,7 +323,7 @@
   /* The 16px step under whatever names the list. The rows carry their own
      padding, so the card around them only needs enough to keep the hairlines
      off its edge. */
-  margin: 16px 0 0;
+  margin: 20px 0 0;
   display: flex;
   flex-direction: column;
 }
@@ -340,6 +341,11 @@
 .bkm-reader:hover,
 .bkm-simrow:hover {
   background: var(--c-gray-100);
+}
+
+/* A row that only states something — a school's figures — isn't a control. */
+.bkm-reader--static:hover {
+  background: none;
 }
 
 /* Tooltip wraps the claim in its own span, so the row's flex sizing lands on
@@ -545,13 +551,13 @@
    it is what the header is describing, so it sits under it rather than beside
    the tab bar above. Same 16px step off the sub-line that a list gets. */
 .bkm-filter {
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 /* The filter sits closer to what it filters than a title does. */
 .bkm-filter + .bkm-list,
 .bkm-filter + .emp {
-  margin-top: 10px;
+  margin-top: 14px;
 }
 
 /* ── Lists ─────────────────────────────────────────────────────────────────
@@ -564,8 +570,8 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  /* The same 16px step off the section title every other panel's list takes. */
-  margin-top: 16px;
+  /* The same 20px step off the section title every other panel's list takes. */
+  margin-top: 20px;
 }
 
 /* Each kind is a card, and the kind's name is that card's title — same shape as
@@ -642,4 +648,20 @@
 .bkm-listrow-sub {
   font-size: var(--text-tag);
   color: var(--c-gray-750);
+}
+
+/* The suggested action takes the footer's free width, left of the button. */
+.bkm-action {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin: 0 16px 0 0;
+  font-size: var(--text-label);
+  color: var(--c-text-dark);
+}
+
+.bkm-action .pill {
+  flex: 0 0 auto;
 }

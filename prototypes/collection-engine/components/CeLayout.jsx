@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { AppShell } from '@components/AppShell/AppShell'
 import { useStickyState } from '@components/useStickyState/useStickyState'
 import { useTooltipFlip } from '@components/useTooltipFlip/useTooltipFlip'
@@ -47,6 +48,11 @@ export function CeLayout({ scope }) {
   // it navigates — that path sets which school this is, not a control here.
   const [schoolId] = useStickyState('ce:school', LIBRARIAN.schoolId)
   useTooltipFlip()
+  // A new page opens at its top, not at wherever the last one was scrolled to —
+  // the content column is one scroller shared by all three.
+  useEffect(() => {
+    document.querySelector('.ce-shell .app-shell-content')?.scrollTo(0, 0)
+  }, [page])
 
   const school = SCHOOLS.find((s) => s.id === schoolId) ?? SCHOOLS[0]
 

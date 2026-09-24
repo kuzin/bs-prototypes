@@ -239,6 +239,33 @@ function BarListKnobs() {
   )
 }
 
+/* Tiles that are also the list's status filter — the Collection Engine's title
+   report. Pressing the one that is on clears it. */
+function StatFilterVariant() {
+  const [on, setOn] = useState('read')
+  const tiles = [
+    { id: 'read', label: 'Recommended, then read', value: 170, color: '#0BA85F' },
+    { id: 'unread', label: 'Recommended, not read', value: 71, color: '#D97706' },
+    { id: 'never', label: 'Never recommended', value: 70, color: '#767676' },
+  ]
+  return (
+    <Variant label="filter — `active` rings the tile that is on; each tile toggles">
+      <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
+        {tiles.map((t) => (
+          <StatCard
+            key={t.id}
+            label={t.label}
+            value={t.value}
+            color={t.color}
+            active={on === t.id}
+            onClick={() => setOn((cur) => (cur === t.id ? '' : t.id))}
+          />
+        ))}
+      </div>
+    </Variant>
+  )
+}
+
 function StatCardShowcase() {
   return (
     <>
@@ -297,6 +324,8 @@ function StatCardShowcase() {
           />
         </div>
       </Variant>
+
+      <StatFilterVariant />
 
       <Variant label="trend — a TrendChip in the tile's top trailing corner">
         <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
@@ -1745,6 +1774,15 @@ import '@components/Cards/Cards.css'
   value={12}
   color="var(--c-purple)"
   icon={<PlumpyIcon name="book" size={40} />}
+/>
+
+/* \`active\` + \`onClick\` — a row of tiles that is also a filter */
+<StatCard
+  label="Never recommended"
+  value={70}
+  color="#767676"
+  active={status === 'never'}
+  onClick={() => setStatus('never')}
 />
 
 /* \`action\` — a link at the foot, for the stats that lead somewhere */

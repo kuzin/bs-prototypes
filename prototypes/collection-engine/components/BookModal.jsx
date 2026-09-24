@@ -16,7 +16,15 @@ import '@components/Button/Button.css'
 import '@components/Stars/Stars.css'
 import '@components/Primitives/Primitives.css'
 
-import { SOURCES, SIGNALS, CERTAINTY, LIST_KINDS, LIST_KIND_ORDER } from '../data'
+import {
+  SOURCES,
+  SIGNALS,
+  CERTAINTY,
+  LIST_KINDS,
+  LIST_KIND_ORDER,
+  FORMATS,
+  FORMAT_ORDER,
+} from '../data'
 import { TALK_KINDS } from '../../sfr/data'
 import { HoldingPills } from './Bits'
 import './BookModal.css'
@@ -39,13 +47,13 @@ const WHO = {
     match: (x) => x.viaEngine && x.outcome === 'saved',
   },
   shown: {
-    label: 'Did not interact',
+    label: 'Did Not Interact',
     emptyTitle: 'Everyone did something with it',
     emptyBody: 'Nobody the engine offered it to left it alone.',
     match: (x) => x.viaEngine && x.outcome === 'shown',
   },
   own: {
-    label: 'Found it themselves',
+    label: 'Found It Themselves',
     emptyTitle: 'Nobody found this one on their own',
     emptyBody: 'Every reader who touched this title was shown it by the engine first.',
     match: (x) => !x.viaEngine,
@@ -54,19 +62,35 @@ const WHO = {
 const WHO_ORDER = ['read', 'saved', 'shown', 'own']
 
 /* What a reader can actually be handed, read off the holdings rather than
-   stored on the title: the format a school can supply *is* which of its
-   catalogs carry the book. */
-const FORMAT_OF = { destiny: 'Print', clc: 'Print', sora: 'Ebook', comicsplus: 'Digital comic' }
-const FORMAT_ORDER = ['Print', 'Ebook', 'Digital comic']
+   stored on the title: the same book is print on one shelf and an audiobook in
+   another catalog. */
 const formatsOf = (holdings) =>
-  FORMAT_ORDER.filter((f) => holdings.some((h) => FORMAT_OF[h.source] === f)).join(' · ')
+  FORMAT_ORDER.filter((f) => holdings.some((h) => h.format === f))
+    .map((f) => FORMATS[f].label)
+    .join(' · ')
+
+/* A district opening a title compares buildings rather than children, so the
+   reader-level tabs give way to one row per school. */
+const SCHOOL_TABS = [
+  { id: 'readers', label: 'Readers' },
+  { id: 'talks', label: 'Book Talks' },
+  { id: 'reviews', label: 'Reviews' },
+  { id: 'lists', label: 'Lists' },
+  { id: 'similar', label: 'Similar' },
+  { id: 'about', label: 'Details' },
+]
+const DISTRICT_TABS = [
+  { id: 'schools', label: 'Schools' },
+  { id: 'similar', label: 'Similar' },
+  { id: 'about', label: 'Details' },
+]
 
 /* The three kinds of Book Talk, as SfR names them. A librarian looking at one
    title wants to know which sort of conversation it produced: a warm chat, a
    check on what the reader took from it, or a check on the log. */
 const KIND_ORDER = ['all', 'engagement', 'comprehension', 'integrity']
 const KIND_LABEL = {
-  all: 'All talks',
+  all: 'All Talks',
   engagement: TALK_KINDS.engagement.short,
   comprehension: TALK_KINDS.comprehension.short,
   integrity: TALK_KINDS.integrity.short,
@@ -77,7 +101,7 @@ const KIND_LABEL = {
    is pending / approved / rejected, which is moderation, a different job from
    this panel.) */
 const STAR_ORDER = ['all', '5', '4', '3']
-const STAR_LABEL = { all: 'All reviews', 5: '5 stars', 4: '4 stars', 3: '3 stars' }
+const STAR_LABEL = { all: 'All Reviews', 5: '5 Stars', 4: '4 Stars', 3: '3 Stars' }
 const matchesStars = (rev, band) => band === 'all' || rev.stars === Number(band)
 
 /* Every reader row is a link, as long as the host knows how to open one. Only
@@ -121,8 +145,16 @@ export function BookModal({
   onOpenTalk,
   hidden = false,
   onToggleHidden,
+  /* The one thing the collection suggests doing about this title — buy more
+     like it, or consider weeding it — with the reason. */
+  action,
 }) {
-  const [tab, setTab] = useStickyState('ce:book-tab', 'readers')
+  const district = detail?.scope === 'district'
+  const tabs = district ? DISTRICT_TABS : SCHOOL_TABS
+  const [stickyTab, setTab] = useStickyState('ce:book-tab', 'readers')
+  // The two scopes share a remembered tab; one the other doesn't have opens
+  // on its first.
+  const tab = tabs.some((t) => t.id === stickyTab) ? stickyTab : tabs[0].id
   // "Readers" means the people who read it; the filter widens that out to
   // everyone the engine offered it to.
   const [who, setWho] = useStickyState('ce:book-who', 'read')
@@ -192,8 +224,8 @@ export function BookModal({
                     <dd>{detail.stats.read}</dd>
                   </div>
                   <div>
-                    <dt>Book talks</dt>
-                    <dd>{detail.bookTalks.length}</dd>
+                    <dt>{district ? 'Schools' : 'Book talks'}</dt>
+                    <dd>{district ? detail.schools.length : detail.bookTalks.length}</dd>
                   </div>
                 </dl>
               </aside>
@@ -204,18 +236,44 @@ export function BookModal({
                   onChange={setTab}
                   ariaLabel="Book details"
                   collapse={false}
-                  items={[
-                    { id: 'readers', label: 'Readers' },
-                    { id: 'talks', label: 'Book talks' },
-                    { id: 'reviews', label: 'Reviews' },
-                    { id: 'lists', label: 'Lists' },
-                    { id: 'similar', label: 'Similar' },
-                    { id: 'about', label: 'Details' },
-                  ]}
+                  items={tabs}
                 />
               </div>
 
               <div className="bkm-panel">
+                {tab === 'schools' && (
+                  <section>
+                    <SectionCardTitle>How it is doing, school by school</SectionCardTitle>
+                    <ul className="bkm-list">
+                      {detail.schools.map((x) => (
+                        <li key={x.school.id}>
+                          <div className="bkm-reader bkm-reader--static">
+                            <div className="bkm-reader-text">
+                              <span className="bkm-reader-name">{x.school.name}</span>
+                              <span className="bkm-reader-sub">
+                                Suggested to {x.suggested} · wish listed by {x.saved}
+                              </span>
+                            </div>
+                            <span className="bkm-readerright">{x.read} read</span>
+                          </div>
+                        </li>
+                      ))}
+                      {detail.missingAt.map((sch) => (
+                        <li key={sch.id}>
+                          <div className="bkm-reader bkm-reader--static">
+                            <div className="bkm-reader-text">
+                              <span className="bkm-reader-name">{sch.name}</span>
+                              <span className="bkm-reader-sub">
+                                Not in this school&rsquo;s collection
+                              </span>
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+
                 {tab === 'readers' && (
                   <section>
                     <SectionCardTitle>Readers</SectionCardTitle>
@@ -578,15 +636,29 @@ export function BookModal({
                   In the footer rather than at the foot of the rail: it acts on
                   the whole title, not on the column it sat under, and the rail
                   had to be scrolled to reach it. */}
-              {onToggleHidden && (
+              {(onToggleHidden || action) && (
                 <div className="bkm-foot">
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    onClick={() => onToggleHidden(detail.title.id)}
-                  >
-                    {hidden ? 'Suggest it again' : 'Stop suggesting it'}
-                  </Button>
+                  {/* What the collection suggests doing about this title, with
+                      the reason — beside the one control the panel has for
+                      acting on a title, because both are about the book as a
+                      holding rather than about any one reader. */}
+                  {action && (
+                    <p className="bkm-action">
+                      <Pill color={action.color} size="sm">
+                        {action.label}
+                      </Pill>
+                      <span>{action.reason}</span>
+                    </p>
+                  )}
+                  {onToggleHidden && (
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      onClick={() => onToggleHidden(detail.title.id)}
+                    >
+                      {hidden ? 'Suggest it again' : 'Stop suggesting it'}
+                    </Button>
+                  )}
                 </div>
               )}
             </div>

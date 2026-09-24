@@ -104,9 +104,29 @@ export const SOURCES = {
     feed: 'Direct',
     blurb: 'Unlimited simultaneous access — no holds, no waitlists.',
   },
+  epic: {
+    id: 'epic',
+    brand: 'epic',
+    name: 'Epic',
+    short: 'Epic',
+    kind: 'own',
+    color: '#0A96E6',
+    feed: 'Direct',
+    blurb: 'Ebooks and read-to-me audiobooks for elementary readers, no holds.',
+  },
 }
 
-export const SOURCE_ORDER = ['destiny', 'clc', 'sora', 'comicsplus']
+export const SOURCE_ORDER = ['destiny', 'clc', 'sora', 'comicsplus', 'epic']
+
+/* The three formats a reader can be handed. Stored on the holding rather than
+   the title: the same book is print on the library shelf and an audiobook in
+   Sora, and "how are audiobooks doing" is a question about the copies. */
+export const FORMATS = {
+  print: { id: 'print', label: 'Print', color: '#196DD5' },
+  ebook: { id: 'ebook', label: 'Ebook', color: '#0CA7BC' },
+  audiobook: { id: 'audiobook', label: 'Audiobook', color: '#B43DD0' },
+}
+export const FORMAT_ORDER = ['print', 'ebook', 'audiobook']
 
 /** What a holding lets us honestly say on a book card. */
 export const CERTAINTY = {
@@ -280,11 +300,14 @@ function editionYears(r) {
   return { published, addedYear: between(r, published, 2026) }
 }
 
-function buildCatalog(seed, { coverage, clcShare }) {
+function buildCatalog(seed, { coverage, clcShare }, classrooms) {
   const rows = []
   for (const genre of ALL_GENRES) {
     for (const book of TITLES_BY_GENRE[genre]) {
       const r = rng(`${seed}:${book.id}`)
+      // Formats and the Epic licence draw from their own stream, so adding them
+      // left every existing figure where it was.
+      const rf = rng(`${seed}:${book.id}:format`)
       // Not every school owns every book — `coverage` is how much of the pool
       // this school's collection reaches.
       if (r() > coverage) continue
@@ -293,19 +316,32 @@ function buildCatalog(seed, { coverage, clcShare }) {
       if (r() < 0.82) {
         holdings.push({
           source: 'destiny',
+          format: 'print',
           copies: between(r, 1, 4),
           callNumber: callNumber(genre, book.author),
         })
       }
       if (r() < clcShare) {
+        // The draw that used to pick a room number now picks whose room: the
+        // same call, so the stream after it is unchanged.
+        const room = classrooms[between(r, 101, 214) % classrooms.length]
         holdings.push({
           source: 'clc',
+          format: 'print',
           copies: 1,
-          room: `Rm ${between(r, 101, 214)}`,
+          classroomId: room.id,
+          room: room.room,
         })
       }
-      if (r() < 0.46) holdings.push({ source: 'sora' })
-      if (GRAPHIC.has(genre) && r() < 0.74) holdings.push({ source: 'comicsplus' })
+      if (r() < 0.46) {
+        holdings.push({ source: 'sora', format: rf() < 0.32 ? 'audiobook' : 'ebook' })
+      }
+      if (GRAPHIC.has(genre) && r() < 0.74) holdings.push({ source: 'comicsplus', format: 'ebook' })
+      // Epic only reaches what a school already carries somewhere — it rides on
+      // top of the catalog rather than adding titles to it.
+      if (holdings.length && !GRAPHIC.has(genre) && rf() < 0.28) {
+        holdings.push({ source: 'epic', format: rf() < 0.4 ? 'audiobook' : 'ebook' })
+      }
       if (!holdings.length) continue
 
       rows.push({
@@ -576,7 +612,7 @@ export const TODAY = 'Sep 21, 2026'
    that is simply live — has no run to start, and a button offering one would be
    a control that does nothing. Destiny takes a file; Sora pulls nightly and can
    be pulled early. */
-function buildFeeds(catalog, { destinyAsOf, destinyDays, soraState }) {
+function buildFeeds(catalog, { destinyAsOf, destinyDays, soraState }, classrooms) {
   const count = (source) =>
     catalog.filter((t) => t.holdings.some((h) => h.source === source)).length
   /* The order Setup lists them in, which is the order a librarian meets them:
@@ -594,7 +630,7 @@ function buildFeeds(catalog, { destinyAsOf, destinyDays, soraState }) {
       asOf: 'Sep 19, 2026',
       staleDays: 2,
       titles: count('clc'),
-      scope: '11 of 24 classrooms',
+      scope: `${classrooms.length} of 24 classrooms`,
     },
     {
       source: 'sora',
@@ -625,6 +661,16 @@ function buildFeeds(catalog, { destinyAsOf, destinyDays, soraState }) {
       asOf: 'Sep 21, 2026',
       staleDays: 0,
       titles: count('comicsplus'),
+      scope: 'Whole school',
+    },
+    {
+      source: 'epic',
+      state: 'ok',
+      method: 'Direct — Epic School',
+      cadence: 'Nightly',
+      asOf: 'Sep 21, 2026',
+      staleDays: 0,
+      titles: count('epic'),
       scope: 'Whole school',
     },
   ]
@@ -719,12 +765,63 @@ function reachOf({ coverage, destinyDays }) {
   return Math.round((0.62 + 0.38 * coverage - drift) * 100) / 100
 }
 
+// ─── Classrooms ──────────────────────────────────────────────────────────────
+// The rooms whose teachers have scanned a shelf into the Classroom Library
+// Connector. How many a school has follows how much of its collection sits in
+// classrooms at all. Lincoln's first room is Mr. Reyes's Class A — the one the
+// Teacher prototype is — so the leaderboard can open it.
+
+const TEACHER_NAMES =
+  `Ms. Alvarez|Mr. Brooks|Ms. Chen|Mrs. Dubois|Mr. Okafor|Ms. Patel|Mr. Lindqvist
+|Ms. Haddad|Mrs. Nguyen|Mr. Moreau|Ms. Osei|Mrs. Kowalski|Mr. Rivera|Ms. Tanaka|Mr. Silva|Ms. Byrne
+|Mrs. Adeyemi|Mr. Novak|Ms. Castillo|Mr. Park`
+    .split('|')
+    .map((n) => n.trim())
+
+function buildClassrooms(spec) {
+  const r = rng(`${spec.id}:classrooms`)
+  const n = Math.max(2, Math.round(spec.clcShare * 50))
+  const names = [...TEACHER_NAMES].sort(() => r() - 0.5)
+  const rooms = []
+  for (let i = 0; i < n; i++) {
+    const grade = 3 + Math.floor(r() * 3)
+    rooms.push({
+      id: `${spec.id}-room-${i}`,
+      teacher: names[i % names.length],
+      grade: `Grade ${grade}`,
+      room: `Rm ${grade}${String(between(r, 1, 19)).padStart(2, '0')}`,
+      // How much of the room's shelf the teacher has actually scanned in,
+      // against how many books are in it. A half-scanned shelf is invisible to
+      // the engine, which is a health fact of its own.
+      scanned: 0.35 + r() * 0.65,
+    })
+  }
+  if (spec.id === 'lincoln') {
+    Object.assign(rooms[0], {
+      teacher: 'Mr. Reyes',
+      grade: 'Grade 4',
+      room: 'Class A',
+      openable: true,
+    })
+  }
+  return rooms
+}
+
 function buildSchool(spec) {
-  const catalog = buildCatalog(spec.id, spec)
+  const classrooms = buildClassrooms(spec)
+  const catalog = buildCatalog(spec.id, spec, classrooms)
   const readers = buildReaders(spec.id, spec.readerCount)
   const reach = reachOf(spec)
   const events = buildEvents(spec.id, readers, catalog, reach)
-  return { ...spec, reach, catalog, readers, events, feeds: buildFeeds(catalog, spec) }
+  return {
+    ...spec,
+    reach,
+    classrooms,
+    catalog,
+    readers,
+    events,
+    feeds: buildFeeds(catalog, spec, classrooms),
+  }
 }
 
 export const SCHOOLS = SCHOOL_SPECS.map(buildSchool)
