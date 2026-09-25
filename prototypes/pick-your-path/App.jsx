@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
@@ -24,7 +24,6 @@ import { ChallengeDashboard } from './components/ChallengeDashboard'
 import { Collections } from './components/Collections'
 import { PathPickerModal } from './components/PathPickerModal'
 import { TitleReader } from './components/TitleReader'
-import { ActivityModal } from './components/ActivityModal'
 import { BadgeCelebration } from './components/BadgeCelebration'
 /* The word-unlock round, from the vocabulary mocks — Benny hands the word over
    and the reader banks it by working through three short activities on it.
@@ -85,10 +84,12 @@ export function App() {
   const [readIds, setReadIds] = useState(SEED.readTitleIds)
   // When each title went on the log — a challenge log has to say when.
   const [loggedOn, setLoggedOn] = useState(SEED.loggedOn)
+  // …and how long each session was — the challenge logs minutes.
+  const [loggedMinutes, setLoggedMinutes] = useState(SEED.loggedMinutes)
+  // When the in-app reader opened, so finishing a title there logs the time it took.
+  const readingSince = useRef(0)
   const [doneIds, setDoneIds] = useState(SEED.doneActivityIds)
-  const [responses, setResponses] = useState({})
   const [streak] = useState(SEED.streak)
-  const [openAct, setOpenAct] = useState(null) // activity object shown in the modal
   const [viewing, setViewing] = useState(null) // a badge the student tapped to look at
   const [logOpen, setLogOpen] = useState(false) // the reader's log-reading flow
   const [logBook, setLogBook] = useState(null) // the title it was opened on, if any
@@ -128,9 +129,9 @@ export function App() {
     const seeded = [p.titles[0].id, p.titles[2].id]
     setReadIds(seeded)
     setLoggedOn({ [seeded[0]]: 'April 18, 2026', [seeded[1]]: 'April 27, 2026' })
+    setLoggedMinutes({ [seeded[0]]: SEED.loggedMinutes.s1, [seeded[1]]: SEED.loggedMinutes.s3 })
     setCollected(p.titles[0].words.concat(p.titles[2].words).slice(0, 3))
     setDoneIds([])
-    setResponses({})
     setPickerOpen(false)
     setView('student')
   }
@@ -145,11 +146,12 @@ export function App() {
   /* Marking a title read is the whole engine: it moves the reading badge, it
      may finish the path, and it unlocks whichever of the four words that title
      was hiding. One place does all three, whichever button got here. */
-  function markRead(titleId, { at } = {}) {
+  function markRead(titleId, { at, minutes } = {}) {
     if (readIds.includes(titleId)) return null
     const title = path.titles.find((t) => t.id === titleId)
     setReadIds((ids) => [...ids, titleId])
     setLoggedOn((m) => ({ ...m, [titleId]: at ?? today() }))
+    if (minutes) setLoggedMinutes((m) => ({ ...m, [titleId]: minutes }))
     // What this title was hiding that the reader hasn't banked yet. Logging
     // turns it up; the round is what keeps it.
     return title ? wordWaitingFor(path, title, collected) : null
@@ -166,7 +168,7 @@ export function App() {
   function handleLogged(session) {
     const title = path.titles.find((t) => t.title === session.book?.title)
     if (!title) return
-    const won = markRead(title.id)
+    const won = markRead(title.id, { minutes: session.minutes })
     // Held for the flow's own "Unlock My Word" button, which fires next.
     setWordWon(won ? { word: won, book: title, pending: true } : null)
   }
@@ -187,7 +189,8 @@ export function App() {
   // Finishing in the in-app reader logs the title, same as pressing Log.
   function logFromReader(titleId) {
     setReadingTitle(null)
-    const won = markRead(titleId)
+    const minutes = Math.max(1, Math.round((Date.now() - readingSince.current) / 60000))
+    const won = markRead(titleId, { minutes })
     if (won) setWordWon({ word: won, book: path.titles.find((t) => t.id === titleId) })
   }
 
@@ -206,12 +209,15 @@ export function App() {
     })
   }
 
-  function completeActivity(text) {
-    if (!openAct) return
-    const actId = openAct.id
+  // An activity is done once it's answered — the shared activity list's own
+  // text activity, the same as any challenge's.
+  function completeActivity(actId) {
     setDoneIds((ids) => (ids.includes(actId) ? ids : [...ids, actId]))
-    setResponses((r) => ({ ...r, [actId]: text }))
-    setOpenAct(null)
+  }
+
+  function openReader(title) {
+    readingSince.current = Date.now()
+    setReadingTitle(title)
   }
 
   function reset() {
@@ -219,9 +225,8 @@ export function App() {
     setChosenPathId(SEED.chosenPathId)
     setReadIds(SEED.readTitleIds)
     setLoggedOn(SEED.loggedOn)
+    setLoggedMinutes(SEED.loggedMinutes)
     setDoneIds(SEED.doneActivityIds)
-    setResponses({})
-    setOpenAct(null)
     setViewing(null)
     setLogOpen(false)
     setLogBook(null)
@@ -292,12 +297,12 @@ export function App() {
           path={path}
           readIds={readIds}
           doneIds={doneIds}
-          responses={responses}
           streak={streak}
           loggedOn={loggedOn}
+          loggedMinutes={loggedMinutes}
           onToggleRead={toggleRead}
-          onReadTitle={setReadingTitle}
-          onOpenActivity={setOpenAct}
+          onReadTitle={openReader}
+          onCompleteActivity={completeActivity}
           collected={collected}
           onOpenBadge={setViewing}
           tab={challengeTab}
@@ -336,7 +341,7 @@ export function App() {
         books={logBooksForPath(path)}
         recentlyLogged={path.titles.slice(0, 5).map((t) => t.id)}
         readingList={logListForPath(path, readIds)}
-        logType="page"
+        logType="minute"
         reader={READER}
         site={{ name: SITE.school }}
         /* `completed_summary_earnables` — what finishing a title wins *here*.
@@ -367,16 +372,6 @@ export function App() {
           setView('student')
           setChallengeTab('word-list')
         }}
-      />
-
-      <ActivityModal
-        activity={openAct}
-        path={path}
-        open={!!openAct}
-        done={openAct ? doneIds.includes(openAct.id) : false}
-        response={openAct ? responses[openAct.id] : ''}
-        onClose={() => setOpenAct(null)}
-        onComplete={completeActivity}
       />
 
       {/* `earnables/_earnable_modal` — a badge the student tapped, opened. It is

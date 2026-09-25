@@ -8,6 +8,7 @@ import { EmptyState, Skeleton } from '@components/Primitives/Primitives'
 import { GoalStat, GoalStats } from '@components/GoalStat/GoalStat'
 import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
 import { ReaderBack, ReaderPageHead } from '@components/ReaderApp/ReaderApp'
+import { ActivityList } from '@components/ActivityList/ActivityList'
 import { BadgeArt, CollectionCard, ShelfGrid } from '@components/CollectionShelf/CollectionShelf'
 import { Table } from '@components/Table/Table'
 import { StatCard } from '@components/Cards/Cards'
@@ -39,6 +40,7 @@ const TABS = [
   { id: 'overview', label: 'Overview' },
   { id: 'reading-list', label: 'Reading List' },
   { id: 'word-list', label: 'Word List' },
+  { id: 'activities', label: 'Activities' },
   { id: 'badges', label: 'Badges' },
   { id: 'rewards', label: 'Rewards' },
   { id: 'log', label: 'Challenge Log' },
@@ -106,38 +108,6 @@ function BookCard({ title, path, read, onToggle, onReadInApp }) {
   )
 }
 
-// One extension-activity card.
-function ActivityCard({ activity, path, done, response, onOpen }) {
-  return (
-    <button
-      type="button"
-      className={`pyp-actcard${done ? ' is-done' : ''}`}
-      style={{ '--path-color': path.color }}
-      onClick={onOpen}
-    >
-      <span className="pyp-actcard-icon">
-        <Icon name={activity.icon} size={22} stroke={1.8} />
-      </span>
-      <span className="pyp-actcard-text">
-        <span className="pyp-actcard-name">{activity.name}</span>
-        <span className="pyp-actcard-prompt">{done ? `“${response}”` : activity.short}</span>
-      </span>
-      <WordChips words={activity.words} className="pyp-actcard-words" />
-      <span className={`pyp-actcard-foot${done ? ' is-done' : ''}`}>
-        {done ? (
-          <>
-            <Icon name="circle-check-filled" size={15} color="#0BA85F" /> Completed
-          </>
-        ) : (
-          <>
-            Start activity <Icon name="arrow-right" size={14} stroke={2.3} />
-          </>
-        )}
-      </span>
-    </button>
-  )
-}
-
 /**
  * Screen 3 — one destination, from the student's side: the reader's challenge
  * page, with the path the student chose carried in the header band.
@@ -146,13 +116,13 @@ export function Destination({
   path,
   readIds,
   loggedOn,
+  loggedMinutes,
   collected,
   doneIds,
-  responses,
   streak,
   onToggleRead,
   onReadTitle,
-  onOpenActivity,
+  onCompleteActivity,
   onOpenBadge,
   tab: tabProp,
   onTab,
@@ -200,7 +170,7 @@ export function Destination({
       label: 'Activities Done',
       have: doneCount,
       need: path.activities.length,
-      tab: 'badges',
+      tab: 'activities',
     },
     {
       label: 'Badges Earned',
@@ -216,7 +186,7 @@ export function Destination({
 
   /* `programs#full_reading_log` — the challenge's own log: one row a session,
      with what it was, when it went on, and what it was worth. This challenge
-     logs in pages, which is what its titles are counted in. */
+     logs minutes. */
   const log = path.titles
     .filter((t) => read.has(t.id))
     .map((t) => ({
@@ -224,10 +194,10 @@ export function Destination({
       title: t.title,
       author: t.author,
       date: loggedOn?.[t.id],
-      pages: t.pages,
+      minutes: loggedMinutes?.[t.id],
     }))
     .sort((a, b) => (a.date < b.date ? 1 : -1))
-  const pagesLogged = log.reduce((n, r) => n + r.pages, 0)
+  const minutesLogged = log.reduce((n, r) => n + (r.minutes ?? 0), 0)
 
   const logColumns = [
     {
@@ -241,12 +211,12 @@ export function Destination({
       ),
     },
     { key: 'date', label: 'Added On' },
-    { key: 'type', label: 'Log Type', render: () => 'Pages' },
+    { key: 'type', label: 'Log Type', render: () => 'Minutes' },
     {
-      key: 'pages',
+      key: 'minutes',
       label: 'Log Value',
       align: 'right',
-      render: (v) => `${v} pages`,
+      render: (v) => (v ? `${v} minutes` : '—'),
     },
   ]
 
@@ -310,8 +280,8 @@ export function Destination({
                 <p className="cp-description">
                   Everyone in Room 14 is learning the same four motion words — you just get to pick
                   the subject you learn them through. Read any {readGoal} of the{' '}
-                  {path.titles.length} titles on {path.name}, finish both extension activities, and
-                  the capstone badge is yours.
+                  {path.titles.length} titles on {path.name}, finish both activities, and the
+                  capstone badge is yours.
                 </p>
               </section>
 
@@ -489,6 +459,29 @@ export function Destination({
             </section>
           )}
 
+          {/* ── Activities — the path's own, worked the way every challenge's
+              activities are (`activities/_activity.html.haml`, the shared
+              list): each asks for a written answer, and answering it completes
+              it and earns its badge. ── */}
+          {tab === 'activities' && (
+            <section className="cp-section">
+              <ReaderPageHead as="h2" title="Activities" />
+              <p className="cp-subhead">
+                {doneCount} of {path.activities.length} done — each one earns its own badge.
+              </p>
+              <ActivityList
+                heading={null}
+                activities={path.activities.map((a) => ({
+                  id: a.id,
+                  name: `${a.name}: ${a.prompt} ${a.requirement}`,
+                  kind: 'text',
+                }))}
+                done={done}
+                onToggle={(a) => onCompleteActivity(a.id)}
+              />
+            </section>
+          )}
+
           {/* ── Badges — `earnables/grid/_earnable`, the shelf every badge
               surface in the system uses. ── */}
           {tab === 'badges' && (
@@ -519,30 +512,6 @@ export function Destination({
                   />
                 ))}
               </ShelfGrid>
-
-              {/* An activity badge *is* its activities (`LearningTrack`), so
-                  they belong on the badges page rather than a tab of their own —
-                  the app lists them under the badge they earn. These ask for a
-                  written answer, which a tick can't collect, so each one opens
-                  its own card. */}
-              <div className="cp-listhead">
-                <h3 className="cp-h2">Extension Activities</h3>
-                <p className="cp-subhead">
-                  {doneCount} of {path.activities.length} done — each one earns the badge above it.
-                </p>
-              </div>
-              <div className="pyp-actgrid">
-                {path.activities.map((a) => (
-                  <ActivityCard
-                    key={a.id}
-                    activity={a}
-                    path={path}
-                    done={done.has(a.id)}
-                    response={responses[a.id]}
-                    onOpen={() => onOpenActivity(a)}
-                  />
-                ))}
-              </div>
             </section>
           )}
 
@@ -606,10 +575,10 @@ export function Destination({
                     icon={<Icon name="book" size={22} />}
                   />
                   <StatCard
-                    label="Pages"
-                    value={pagesLogged.toLocaleString()}
+                    label="Minutes"
+                    value={minutesLogged.toLocaleString()}
                     color="#1A6DD5"
-                    icon={<Icon name="file-text" size={22} />}
+                    icon={<Icon name="clock" size={22} />}
                   />
                   <StatCard
                     label="Words Found"

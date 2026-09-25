@@ -2,10 +2,10 @@
 // Models the vocabulary cut of the proposal: a teacher sets a Destination — a
 // Tier-2 vocabulary cluster (Words of Motion: accelerate, propel, momentum,
 // velocity) — and students pick a high-interest Path to practice those words
-// through, then read titles + do offline extension activities to earn badges.
+// through, then read titles + do activities to earn badges.
 //
 // The vocabulary cluster, the three path taglines, and each path's lead
-// extension activity use the EXACT copy from the "Vocabulary Focus Shift"
+// activity use the EXACT copy from the "Vocabulary Focus Shift"
 // demo-examples doc.
 
 import badgeReading from './assets/badges/reading.png'
@@ -574,7 +574,8 @@ export const SEED = {
   /* When each of those went on the log. A challenge log is a log: it has to say
      when, and the first two entries predate the demo. */
   loggedOn: { s1: 'April 18, 2026', s3: 'April 27, 2026' },
-  loggedValue: { s1: 31, s3: 32 },
+  // How long each of those sessions was — this challenge logs minutes.
+  loggedMinutes: { s1: 25, s3: 30 },
   // The words those two titles turned up, already banked.
   collectedWords: ['accelerate', 'propel', 'momentum'],
   doneActivityIds: [], // 0 of 2 done — the student completes these live
@@ -793,8 +794,8 @@ export function logBooksForPath(path) {
         author: t.author,
         coverId: coverIdOf(t.cover),
         cover: [path.color, path.color],
-        // These are 24–32 page nonfiction titles: pages is what they're read in.
-        measure: 'pages',
+        // Logged in minutes, the challenge's own log type; `pages` is only how
+        // long the book is.
         pages: t.pages,
       },
     ]),
@@ -838,7 +839,7 @@ export const REWARDS = [
   {
     id: 'rw-activities',
     name: 'Choose the Class Read-Aloud',
-    unlock: { badge: 'both extension activities' },
+    unlock: { badge: 'both activities' },
     instructions: 'Tell Mr. Reyes which book you want — he reads it to the class next Friday.',
     needs: { activities: 'all' },
   },
@@ -890,7 +891,7 @@ const on = (r) => (r.on ? ` on ${r.on}` : '')
 // ─── Badge model ──────────────────────────────────────────────────────────────
 // Badges are derived from progress so there's one source of truth. A path shows:
 //   • one reading badge     — per title, earned as soon as that title is read
-//   • one activity badge    — per extension activity by default, but an
+//   • one activity badge    — per activity by default, but an
 //     activity can name another activity's id as its `badgeId` to join that
 //     badge instead; the badge is earned once every activity in its group is
 //     done (typically a group of one)

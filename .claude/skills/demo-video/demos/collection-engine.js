@@ -80,7 +80,7 @@ module.exports = {
     {
       id: 'l03',
       screen: 'Finish reading → the log, filled in',
-      text: "When they're done, the log is already filled in: how long they read, and that they finished the book.",
+      text: "When they're done, the log is already filled in: how long they [read](red), and that they finished the book.",
     },
     {
       id: 'l04',
@@ -113,7 +113,7 @@ module.exports = {
     {
       id: 'p04',
       screen: 'Reviews tab — ratings, the review form, Add a photo',
-      text: "Reviews for each title live here now, too: the book's ratings, and a place to write a review, or add a photo of a drawing.",
+      text: "Reviews for each title [live](liv) here now, too: the book's ratings, and a place to write a review, or add a photo of a drawing.",
     },
     {
       id: 'p05',
@@ -169,12 +169,12 @@ module.exports = {
     {
       id: 'a04',
       screen: 'Classroom Libraries',
-      text: "Classroom libraries are the Book Lists teachers already keep, so there's nothing new to set up, and this ranks each one by how much of it gets read off a recommendation.",
+      text: "Classroom libraries are the Book Lists teachers already keep, so there's nothing new to set up, and this ranks each one by how much of it gets [read](red) off a recommendation.",
     },
     {
       id: 'a05',
       screen: 'Top Titles',
-      text: 'And Top Titles shows the books the engine suggests most, and where each one lives.',
+      text: 'And Top Titles shows the books the engine suggests most, and where each one [lives](livs).',
     },
     {
       id: 'a06',

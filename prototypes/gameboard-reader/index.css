@@ -1043,11 +1043,14 @@ body {
 /* The card's last row: where this badge puts the reader on the board. The
    strip is three fixed-width markers threaded on one line, so it hugs them
    rather than stretching to the card. */
+/* Centred under the badge card's row — the strip is a picture of the board,
+   not a line of text, so it sits in the middle like the badge art above it. */
 .gr-boardrow {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
 }
 .gr-boardrow-label {
   font-size: 16px;

@@ -203,6 +203,32 @@ button.card {
 }
 
 /* ── Demo videos ─────────────────────────────────────────────────────────── */
+/* A video row: the row's own button opens the video, and its link button sits
+   at the trailing edge beside it — so the hover tint belongs to the pair. */
+.video-row {
+  display: flex;
+  align-items: center;
+  transition: background 0.15s;
+}
+
+.video-row > .card {
+  flex: 1;
+  min-width: 0;
+  padding-right: 10px;
+}
+
+.video-row > .card:hover {
+  background: none;
+}
+
+.video-row:hover {
+  background: color-mix(in srgb, var(--cat-wash) 40%, #fff);
+}
+
+.video-copy {
+  margin-right: 12px;
+}
+
 /* The play triangle's weight sits left of its box — nudge it to look centred
    in its tile. */
 .card-icon-play {

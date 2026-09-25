@@ -18,7 +18,17 @@ on the landing page's **Demo videos** tab, and deletes the temp folder. Nothing 
 anywhere else — not the Desktop, not the cache.
 
 Existing demos: `collection-engine` (reader → school → district → teacher → Book Lists),
-`challenge-creator` (roles → a template → badges → rewards → publish).
+`challenge-creator` (roles → a template → an activity badge, Book Talks, a prize and a ticket
+reward, completion → the preview → catching a missed step from the review → publish),
+`engagement-signals` (the class Engagement tab → a declining reader's signal → earlier windows
+→ two more readers), `pick-your-path` (the teacher's destination and paths → picking a path → a
+minutes log and a word round → Collections), `gameboards` (building the board in the creator →
+a reader clearing a space), `words-with-benny` (a log → the word round → the collection, a
+review session and a friend's words → the class Vocabulary tab).
+
+When a spec has to cut between a prototype's views and the only switch is its preview bar
+(hidden in recordings), click the hidden button from `page.evaluate` in a line's silent `pre`
+— see `pick-your-path.js`'s `view()`.
 
 ## 0. One-time setup
 
@@ -54,7 +64,8 @@ module.exports = {
   posterLine: 'r01', // the line whose moment becomes the poster
   lines: [
     { id: 'r01', chapter: 'Reader', screen: 'Discover', text: 'What the voice says.' },
-    { id: 'r02', text: 'Upload a MARC file.', say: 'Upload a mark file.' }, // `say` fixes pronunciation
+    { id: 'r02', text: 'Upload a MARC file.', say: 'Upload a mark file.' }, // `say` re-words a line
+    { id: 'r03', text: 'The days [read](red), and the [RMI](R M I).' }, // `[word](respelling)` fixes one word
   ],
   async script(h) {
     await h.go('/books/')
@@ -68,14 +79,24 @@ module.exports = {
 }
 ```
 
+**Pronunciation.** Kokoro's front end (espeak-ng) guesses homographs from the words just
+before them, and only reads past-tense _read_ as "red" after a word like _have_ or _they've_ —
+"the days read", "how long they read", "gets read" all come out "reed". Likewise _live_ /
+_lives_ the verb come out "lyve", and a bare "the RMI" slurs to "ar-rim-eye". So `narration`
+prints how every homograph and acronym came out, line by line (`s04 read → reed …the days
+read and the…`). Read that list every time; fix a wrong one in place with
+`[word](respelling)` — the spec keeps the word, the voice says the respelling (`red`, `liv`,
+`livs`, `R M I`) — and run `narration` again.
+
 `line(id, run, { pre, gap })` — `pre` sets the screen up in silence, then the line starts
 and `run` plays under it; the line lasts as long as the longer of the two. Every line in
 `lines` needs exactly one `line()` call, in order.
 
 Helpers on `h`: `page` (Playwright), `go(path)`, `moveTo(loc, { dx, dy, ms, scroll })`
 (glides the drawn cursor there, and hovers), `click(loc)`, `tap(loc)` (quicker, for a run
-of clicks the narration only summarises), `type(loc, text)`, `tab(regex)` (a `.tab` by its
-text), `reveal(loc)` (smooth-scrolls it to the middle), `scrollTop()`, `settle()`, `wait(ms)`.
+of clicks the narration only summarises), `type(loc, text)` (types over whatever the field
+already holds — forms prefill, e.g. a badge takes its art's name as its title), `tab(regex)`
+(a `.tab` by its text), `reveal(loc)` (smooth-scrolls it to the middle), `scrollTop()`, `settle()`, `wait(ms)`.
 
 Find selectors by probing the real page first (a short playwright-core script, or the
 in-app browser) — don't guess them.
@@ -91,7 +112,9 @@ whole script, fast, no pacing — a selector check, ~40s) · `record` (the real 
 `build` (the MP4, encoded once at the size it's published at) · `sheet` (a contact sheet).
 No stage = all of them, all inside the temp folder.
 
-Iterating: fix a selector → `check`; change wording → `narration record build sheet`
+Iterating: fix a selector → `check` (a failed step saves the screen it failed on,
+`failed.png` in the temp folder, and names it in the error — read it before guessing); change
+wording → `narration record build sheet`
 (the pacing follows the speech, so a new line length needs a new recording); change the
 music or its level → `build sheet` (the frames are still there).
 
@@ -101,6 +124,14 @@ A clean run can still click the wrong thing. Read the contact sheet the run prin
 (`$TMPDIR/bs-demo-video/<name>/sheet.png`) — one frame per line, most of the way through
 it, left to right, top to bottom (`sheet.txt` lists the order) — and check each frame shows
 what its line says. Fix and re-run until it does.
+
+Check the pacing too. A line lasts as long as the longer of its speech and its clicks (a
+`click` is ~1.45 s of glide and settle, a `tap` ~0.86 s), so a form filled under a short line is
+dead air: a line whose length runs 4 s or more past its speech (`timeline.json` against
+`narration.timed.json`) wants quicker hands — `tap` for the clicks the narration only
+summarises — or a line that says more. And never end a line on a comma when a long action
+follows: the sentence hangs until the next line picks it up. Make each line a whole sentence
+about its own action, and split one whose action has two halves.
 
 Then:
 
@@ -113,6 +144,10 @@ node .claude/skills/demo-video/demo.js <demo> site
 Demo videos tab reads it: title, length, description, recorded date, links to the
 prototypes it covers) — and deletes the temp folder. Send the repo copy with
 `SendUserFile`; it ships with the next `/publish`. To throw a run away instead, `clean`.
+
+Once it's live, each video has its own link to share — the landing page opens straight onto
+it: `https://kuzin.github.io/bs-prototypes/#demo-videos/<name>` (the row's link icon and the
+full view's **Copy link** both copy it).
 
 After `site` there's nothing left to rebuild from, so a later change means a fresh run.
 
@@ -150,5 +185,19 @@ one line to a WAV with the Kokoro venv and send it.
 - **Toggles cut both ways.** A "wish" or "add" button on something already added removes
   it — pick the element by its current label (`filter({ hasText: 'Add to Wish List' })`).
 - **Kokoro's own espeak can't find its data on Apple Silicon** — `tts.py` uses Homebrew's.
+- **Homographs are guesses** — see _Pronunciation_ above; the report after `narration` is
+  the check, and a mark `[read](red)` is the fix.
+- **Pick controls by their accessible name.** A button drawn as an icon plus a word has
+  text `" It does"`, so `hasText: /^It does$/` never matches — use
+  `getByRole('button', { name: 'It does', exact: true })`. Quiz choices can be
+  `role="radio"` (Words with Benny's rounds), and `getByRole('button')` won't see those.
+- **Tabs are `role="tab"`, and a labelled control is named by its label.** A `Tabs` item
+  isn't a button (`getByRole('tab')`, or `h.tab()`), and a picker inside a `Field` takes the
+  field's label as its name ("Earned by badge"), not its placeholder — target its class
+  (`.msel-trigger`).
+- **The badge multi-select stays open until its Done**, and its list covers the dialog's own
+  buttons — click **Done** before **Add reward**.
+- **Preview-bar buttons hold two labels** (the full one and the `short` one the strip
+  swaps to), so match their text with `includes`, not `===`.
 - **A background tab reports an animation's first frame** if read right after mount;
   check `el.getAnimations()` before calling it broken.
