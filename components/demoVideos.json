@@ -2,18 +2,58 @@
   {
     "id": "challenge-creator-demo",
     "title": "Challenge Creator",
-    "description": "Building a reading challenge end to end: how the wizard adapts to each role, the six types, a template, badges, rewards, what counts as finished, the reader preview, and publishing.",
-    "duration": "2:25",
-    "recorded": "2026-09-24",
+    "description": "Building a reading challenge end to end: roles and types, a template, an activity badge, Book Talks with Benny, a prize and a ticket reward, what counts as finished, the preview, and fixing a missed step from the review.",
+    "duration": "3:47",
+    "recorded": "2026-09-25",
     "src": "demo-videos/challenge-creator-demo.mp4",
     "poster": "demo-videos/challenge-creator-demo.jpg",
     "prototypes": ["challenge-creator"]
   },
   {
+    "id": "words-with-benny-demo",
+    "title": "Words with Benny",
+    "description": "A word from the book a reader just finished: logging it, the three-activity round that collects it, their collection and review deck, a friend’s words, and the class’s Vocabulary tab.",
+    "duration": "2:33",
+    "recorded": "2026-09-25",
+    "src": "demo-videos/words-with-benny-demo.mp4",
+    "poster": "demo-videos/words-with-benny-demo.jpg",
+    "prototypes": ["words-with-benny"]
+  },
+  {
+    "id": "pick-your-path-demo",
+    "title": "Pick Your Path",
+    "description": "The teacher sets a vocabulary destination and the paths on offer; the student picks a path, logs a title, unlocks a word with Benny, and collects it.",
+    "duration": "2:29",
+    "recorded": "2026-09-24",
+    "src": "demo-videos/pick-your-path-demo.mp4",
+    "poster": "demo-videos/pick-your-path-demo.jpg",
+    "prototypes": ["pick-your-path"]
+  },
+  {
+    "id": "gameboards-demo",
+    "title": "Gameboards",
+    "description": "Building a gameboard challenge — a template, its badges, the board’s theme and path — then a reader clearing the next space by logging a finished book.",
+    "duration": "1:52",
+    "recorded": "2026-09-24",
+    "src": "demo-videos/gameboards-demo.mp4",
+    "poster": "demo-videos/gameboards-demo.jpg",
+    "prototypes": ["gameboard", "gameboard-reader"]
+  },
+  {
+    "id": "engagement-signals-demo",
+    "title": "Reading Engagement Signals",
+    "description": "A direction for every reader: the class page’s Engagement tab, a declining reader’s signal and what’s driving it, Benny’s questions and actions, earlier windows, and two more readers.",
+    "duration": "2:38",
+    "recorded": "2026-09-24",
+    "src": "demo-videos/engagement-signals-demo.mp4",
+    "poster": "demo-videos/engagement-signals-demo.jpg",
+    "prototypes": ["engagement-signals"]
+  },
+  {
     "id": "collection-engine-demo",
     "title": "Collection Engine",
     "description": "The reader side — where every book is, Ask Benny, the Wish List, logging with Read now and what's next, a book's page tab by tab, the Book Quiz — then the school, district and teacher views, how the engine decides, and Book Lists.",
-    "duration": "7:48",
+    "duration": "7:49",
     "recorded": "2026-09-24",
     "src": "demo-videos/collection-engine-demo.mp4",
     "poster": "demo-videos/collection-engine-demo.jpg",

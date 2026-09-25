@@ -172,7 +172,7 @@ function PathOffer({ path, on, disabled, onToggle, open, onToggleOpen }) {
             <Table
               columns={[
                 { key: 'activity', label: 'Activity' },
-                { key: 'prompt', label: 'What students do offline' },
+                { key: 'prompt', label: 'What students do' },
                 { key: 'requirement', label: 'To earn the badge' },
               ]}
               rows={path.activities.map((a) => ({

@@ -608,76 +608,6 @@ body,
   border-radius: inherit;
 }
 
-/* Activities */
-.pyp-actgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 16px;
-}
-.pyp-actcard {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 16px;
-  text-align: left;
-  border: 1.5px solid var(--pyp-line);
-  border-radius: 14px;
-  background: #fff;
-  transition: all 0.14s ease;
-}
-.pyp-actcard:hover {
-  border-color: color-mix(in srgb, var(--path-color) 45%, #fff);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
-}
-.pyp-actcard.is-done {
-  background: #f8f8f8;
-}
-.pyp-actcard-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--path-color) 12%, #fff);
-  color: var(--path-color);
-  display: grid;
-  place-items: center;
-}
-.pyp-actcard-text {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-}
-.pyp-actcard-name {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--pyp-ink);
-}
-.pyp-actcard-prompt {
-  font-size: 12.5px;
-  color: #656565;
-  line-height: 1.45;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.pyp-actcard.is-done .pyp-actcard-prompt {
-  font-style: italic;
-  color: #424242;
-}
-.pyp-actcard-foot {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--path-color);
-}
-.pyp-actcard-foot.is-done {
-  color: #0ba85f;
-}
-
 /* ─── Common: badge disc ──────────────────────────────────────────────── */
 .pyp-badge {
   display: flex;
@@ -755,139 +685,6 @@ body,
   line-height: 1.2;
 }
 
-/* ─── Activity modal ──────────────────────────────────────────────────── */
-.pyp-activity {
-  position: relative;
-  padding: 24px;
-}
-.pyp-activity-head {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  margin-bottom: 18px;
-}
-.pyp-activity-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 13px;
-  background: color-mix(in srgb, var(--path-color) 13%, #fff);
-  color: var(--path-color);
-  display: grid;
-  place-items: center;
-}
-.pyp-activity-kicker {
-  font-size: 11.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--pyp-muted);
-}
-.pyp-activity-name {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--pyp-ink);
-}
-.pyp-activity-sec-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--pyp-muted);
-  margin-bottom: 7px;
-}
-.pyp-activity-prompt {
-  padding: 14px 16px;
-  border-radius: 12px;
-  background: #f8f8f8;
-  border: 1px solid #eef2f6;
-  margin-bottom: 16px;
-}
-.pyp-activity-prompt p {
-  font-size: 14px;
-  color: #424242;
-  line-height: 1.55;
-}
-.pyp-activity-req {
-  margin-bottom: 18px;
-}
-.pyp-activity-question {
-  display: block;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--pyp-ink);
-  line-height: 1.4;
-  margin-bottom: 10px;
-}
-/* The shared Textarea brings the system's own chrome; the path's colour is the
-   one thing it can't know. */
-.pyp-activity-input {
-  width: 100%;
-}
-.pyp-activity-input:focus {
-  border-color: var(--path-color);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--path-color) 18%, transparent);
-}
-.pyp-activity-answer {
-  display: flex;
-  gap: 8px;
-  padding: 12px 14px;
-  border-radius: 11px;
-  background: color-mix(in srgb, var(--path-color) 6%, #fff);
-  border: 1px solid color-mix(in srgb, var(--path-color) 20%, #fff);
-  color: #424242;
-}
-.pyp-activity-answer svg {
-  flex: 0 0 auto;
-  color: var(--path-color);
-  margin-top: 2px;
-}
-.pyp-activity-answer p {
-  font-size: 14px;
-  line-height: 1.5;
-  font-style: italic;
-}
-.pyp-activity-foot {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-}
-.pyp-activity-earned {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #0ba85f;
-  font-weight: 700;
-  margin-right: auto;
-}
-@keyframes pyp-fall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0;
-  }
-  12% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(380px) rotate(240deg);
-    opacity: 0;
-  }
-}
-@keyframes pyp-pop {
-  0% {
-    transform: scale(0.2);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
 /* ─── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 960px) {
   .pyp-dest-grid {
@@ -895,9 +692,6 @@ body,
   }
 }
 @media (max-width: 620px) {
-  .pyp-actgrid {
-    grid-template-columns: 1fr;
-  }
   .pyp-dest-grid {
     grid-template-columns: 1fr;
   }
@@ -1586,11 +1380,6 @@ body,
 .pyp-pathoffer-tabs .tab-count {
   font-size: 12.5px;
 }
-.pyp-actcard-words,
-.pyp-activity-words {
-  margin-top: 2px;
-}
-
 /* ─── Reader: highlighted words + glossary page ────────────────────────────
    A text page's "type" is grey bars; the target word is the one thing actually
    set as type on it, so it reads like a bolded glossary term mid-paragraph. */

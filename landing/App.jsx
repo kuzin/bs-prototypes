@@ -4,6 +4,7 @@ import { PROTOTYPES } from '@components/prototypes'
 import { Button } from '@components/Button/Button'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
+import { RowAction } from '@components/RowAction/RowAction'
 import { Tabs } from '@components/Tabs/Tabs'
 // Narrated click-throughs, written by the demo-video skill's `site` stage.
 import DEMO_VIDEOS from '@components/demoVideos.json'
@@ -116,10 +117,31 @@ const ICON_NAMES = {
 const VIDEOS_TAB = 'Demo videos'
 const TABS = [...SECTIONS.map((s) => s.title), ...(DEMO_VIDEOS.length ? [VIDEOS_TAB] : [])]
 
-// The open tab lives in the URL hash, so it survives a trip into a prototype
-// and back, and a link can open straight onto one (…/bs-prototypes/#demo-videos).
+// Where you are lives in the URL hash — the tab, and on the Demo videos tab the
+// open video — so it survives a trip into a prototype and back, and a link can
+// open straight onto either: …/bs-prototypes/#demo-videos, or
+// …/bs-prototypes/#demo-videos/collection-engine-demo for one video.
 const slug = (tab) => tab.toLowerCase().replace(/\s+/g, '-')
-const tabFromHash = () => TABS.find((t) => `#${slug(t)}` === window.location.hash) ?? TABS[0]
+const fromHash = () => {
+  const [tabSlug, videoId] = window.location.hash.slice(1).split('/')
+  const tab = TABS.find((t) => slug(t) === tabSlug) ?? TABS[0]
+  const video = tab === VIDEOS_TAB && DEMO_VIDEOS.some((v) => v.id === videoId) ? videoId : null
+  return { tab, video }
+}
+// The link a video's copy buttons hand out: the site's own landing page (under
+// its base), whatever address this copy of the page was opened at.
+const videoLink = (id) => `${window.location.origin}${BASE}#${slug(VIDEOS_TAB)}/${id}`
+
+// Copy, and say so for a moment — the profile panel's "Copy link to this view".
+function useCopy() {
+  const [copied, setCopied] = useState(false)
+  const copy = (text) => {
+    navigator.clipboard?.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1600)
+  }
+  return [copied, copy]
+}
 
 const byId = Object.fromEntries(PROTOTYPES.map((p) => [p.id, p]))
 const recordedOn = (iso) =>
@@ -155,31 +177,40 @@ function Category({ title, count, children }) {
 }
 
 /* A demo video as a row like a prototype's, a play glyph where the icon would
-   be. Pressing it opens the full view — the player in a modal, portalled
-   to <body> so the page's zoom doesn't scale it. Nothing downloads until then. */
-function VideoRow({ title, duration, recorded, src, poster }) {
-  const [open, setOpen] = useState(false)
-  const close = () => setOpen(false)
+   be. Pressing it opens the full view — the player in a modal, portalled to
+   <body> so the page's zoom doesn't scale it; nothing downloads until then.
+   Its link button sits outside the row's own button (a button can't hold
+   another), so a link can be copied without opening the video. */
+function VideoRow({ id, title, duration, recorded, src, poster, open, onOpen, onClose }) {
+  const [rowCopied, copyFromRow] = useCopy()
+  const [copied, copy] = useCopy()
+  const link = videoLink(id)
   return (
     <div className="video-row">
-      <button type="button" className="card" onClick={() => setOpen(true)}>
+      <button type="button" className="card" onClick={onOpen}>
         <span className="card-icon">
           <PlumpyIcon name="play" size={18} className="card-icon-play" />
         </span>
         <span className="card-title">{title}</span>
         <span className="card-meta">{duration}</span>
-        <span className="card-arrow">→</span>
       </button>
+      <RowAction
+        icon={rowCopied ? 'check' : 'link'}
+        label={rowCopied ? 'Link copied' : 'Copy link to this video'}
+        done={rowCopied}
+        onClick={() => copyFromRow(link)}
+        className="video-copy"
+      />
       {createPortal(
         <Modal
           open={open}
-          onClose={close}
+          onClose={onClose}
           variant="center"
           closeBadge
           className="video-modal"
           ariaLabel={title}
         >
-          <ModalClose onClick={close} />
+          <ModalClose onClick={onClose} />
           {/* Mounted only while open, so closing the modal stops the sound. */}
           {open && <video src={BASE + src} poster={BASE + poster} controls autoPlay playsInline />}
           <div className="video-modal-foot">
@@ -189,6 +220,9 @@ function VideoRow({ title, duration, recorded, src, poster }) {
                 {duration} · Recorded {recordedOn(recorded)}
               </span>
             </div>
+            <Button variant="secondary" size="sm" onClick={() => copy(link)}>
+              {copied ? 'Link copied' : 'Copy link'}
+            </Button>
           </div>
         </Modal>,
         document.body,
@@ -212,17 +246,21 @@ function ProtoCard({ id, name, href }) {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState(tabFromHash)
+  const [{ tab: activeTab, video: openVideo }, setView] = useState(fromHash)
   useEffect(() => {
-    const onHash = () => setActiveTab(tabFromHash())
+    const onHash = () => setView(fromHash())
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
-  const choose = (tab) => {
-    setActiveTab(tab)
+  // Written back to the URL with replace, not push: a tab or an open video
+  // isn't a page for Back to step through.
+  const show = (tab, video = null) => {
+    setView({ tab, video })
     const { pathname, search } = window.location
-    window.history.replaceState(null, '', tab === TABS[0] ? pathname + search : `#${slug(tab)}`)
+    const hash = tab === TABS[0] ? '' : `#${slug(tab)}${video ? `/${video}` : ''}`
+    window.history.replaceState(null, '', hash || pathname + search)
   }
+  const choose = (tab) => show(tab)
 
   const videos = activeTab === VIDEOS_TAB
   const active = SECTIONS.find((s) => s.title === activeTab) || SECTIONS[0]
@@ -267,7 +305,13 @@ export default function App() {
           ? VIDEO_GROUPS.map((g) => (
               <Category key={g.title} title={g.title} count={g.items.length}>
                 {g.items.map((v) => (
-                  <VideoRow key={v.id} {...v} />
+                  <VideoRow
+                    key={v.id}
+                    {...v}
+                    open={openVideo === v.id}
+                    onOpen={() => show(VIDEOS_TAB, v.id)}
+                    onClose={() => show(VIDEOS_TAB)}
+                  />
                 ))}
               </Category>
             ))

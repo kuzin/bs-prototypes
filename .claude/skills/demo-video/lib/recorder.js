@@ -109,8 +109,11 @@ async function record(spec, { run, base, mode }) {
   }
   // Quicker hands, for a run of clicks the narration only summarises.
   const tap = (loc) => click(loc, { ms: 430, after: 260, quick: true })
+  // Types over whatever the field holds — a form can prefill one (a badge
+  // takes its art's name as its title) — the way a person selects it first.
   const type = async (loc, text) => {
     await click(loc, { after: 200 })
+    await page.keyboard.press('ControlOrMeta+A')
     await loc.pressSequentially(text, { delay: FAST ? 0 : 55 })
     await wait(300)
   }
@@ -146,6 +149,12 @@ async function record(spec, { run, base, mode }) {
 
   try {
     await spec.script(h)
+  } catch (e) {
+    // The screen as the step failed on it — the quickest way to see why.
+    const shot = path.join(run, 'failed.png')
+    await page.screenshot({ path: shot }).catch(() => {})
+    e.message = `${e.message.split('\n')[0]} — screen: ${shot}`
+    throw e
   } finally {
     if (RECORD) {
       await cdp.send('Page.stopScreencast').catch(() => {})
